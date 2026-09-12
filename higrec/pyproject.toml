@@ -1,0 +1,35 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "higrec"
+version = "0.1.0"
+description = "HiGrEC: a controlled study of structural inductive bias for response clarity classification"
+requires-python = ">=3.11"
+dependencies = [
+    "torch>=2.7",
+    "transformers>=4.48",
+    "peft>=0.14",
+    "accelerate>=1.3",
+    "datasets",
+    "scikit-learn",
+    "scipy",
+    "numpy",
+    "pandas",
+    "krippendorff",
+    "statsmodels",
+    "pytest",
+    "sentencepiece",
+]
+
+[project.optional-dependencies]
+quant = ["bitsandbytes>=0.45"]
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+# REF/ is reference-only and must never be packaged or importable.
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+norecursedirs = ["REF", "runs"]

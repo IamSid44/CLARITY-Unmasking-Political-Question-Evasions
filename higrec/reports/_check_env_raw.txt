@@ -1,0 +1,64 @@
+
+====================================================================
+Platform
+====================================================================
+python            : 3.12.3 (CPython)
+executable        : /scratch/shlok/Temp/.venv/bin/python
+os                : Linux-6.8.0-139-generic-x86_64-with-glibc2.39
+
+====================================================================
+Core packages
+====================================================================
+  torch            2.11.0+cu128
+  transformers     5.17.0
+  peft             0.20.0
+  accelerate       1.15.0
+  datasets         5.0.1
+  bitsandbytes     0.50.2
+  scikit-learn     1.9.1
+  scipy            1.18.1
+  numpy            2.5.2
+  pandas           3.0.5
+  krippendorff     0.8.2
+  statsmodels      0.15.0
+  pytest           9.1.1
+  sentencepiece    0.2.2
+
+====================================================================
+Torch and CUDA
+====================================================================
+torch.__version__          : 2.11.0+cu128
+torch.version.cuda         : 12.8
+torch.cuda.is_available()  : True
+
+====================================================================
+CUDA devices (card is SHARED — see CLAUDE.md invariant 5)
+====================================================================
+device_count: 1
+  [0] NVIDIA RTX PRO 6000 Blackwell Max-Q Workstation Edition
+      capability : 12.0  (sm_120, as expected)
+      VRAM       : total   95.0 GB | used   26.9 GB | free   68.1 GB
+
+====================================================================
+bitsandbytes 4-bit viability
+====================================================================
+bitsandbytes 0.50.2 imported
+  4-bit Linear4bit forward OK, output shape (2, 64)
+
+====================================================================
+Attention backends
+====================================================================
+NOTE: FlashAttention-4 is NOT expected to work on sm_120 — consumer/workstation
+Blackwell lacks the TMEM subsystem that FA4 requires (only sm_100/sm_103 B200/B300
+get FA4). The targets for this project are FA2 or the FlashInfer backend.
+For vLLM, set VLLM_FLASH_ATTN_VERSION=2.
+
+  flash_attn   not installed   # FlashAttention (expect v2.x; v4 will not run on sm_120)
+  flashinfer   not installed   # FlashInfer backend (preferred alternative on Blackwell)
+  xformers     not installed   # xformers memory-efficient attention
+  torch SDPA   AVAILABLE   # always-present fallback (math/mem-efficient/flash)
+
+====================================================================
+Summary
+====================================================================
+Environment OK, no warnings.
