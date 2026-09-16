@@ -115,7 +115,7 @@ def test_marginal_objective_is_cross_entropy_on_the_leaf_posterior():
     target = torch.randint(0, N_EVASION, (5,))
 
     expected = torch.nn.functional.nll_loss(head(hidden), target)
-    assert head.loss(hidden, target) == pytest.approx(expected.item(), abs=1e-6)
+    assert head.loss(hidden, target).item() == pytest.approx(expected.item(), abs=1e-6)
 
 
 def test_attribute_sum_objective_supervises_each_head_separately():
@@ -124,7 +124,7 @@ def test_attribute_sum_objective_supervises_each_head_separately():
     target = torch.randint(0, N_EVASION, (5,))
 
     expected = attribute_sum_loss(head.attribute_logits(hidden), target, head.code_index)
-    assert head.loss(hidden, target) == pytest.approx(expected.item(), abs=1e-6)
+    assert head.loss(hidden, target).item() == pytest.approx(expected.item(), abs=1e-6)
 
 
 def test_both_objective_requires_a_positive_auxiliary_weight():

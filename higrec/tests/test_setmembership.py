@@ -96,21 +96,40 @@ def test_q_does_not_underflow_with_many_annotators():
 def test_set_membership_diverges_from_consensus_on_high_disagreement_items():
     """C4's core claim, as an executable example.
 
-    A class can be in the reference set more often than it is ever the mode.
-    Here every annotator puts 0.4 on Dodging and each puts 0.6 on a DIFFERENT
-    class, so Dodging is never the consensus argmax but is very likely to appear
-    somewhere in G.
+    The two rules diverge when ONE annotator reliably assigns a class that the
+    panel as a whole rates lower. Set-membership asks "will this class appear
+    ANYWHERE in G?", so a class one annotator picks consistently has high q even
+    though its panel AVERAGE is below a class everyone rates moderately.
+
+    This is not a contrived regime -- it is the measured one. Annotator 85
+    assigns `General` 15.8% of the time against roughly 9% for the other two, so
+    an idiosyncratic-but-consistent annotator is exactly what this dataset has.
+
+    Note the direction of the noisy-OR: for a FIXED mean, Π(1-p) is maximized
+    when the p are equal, so q is *minimized* by an even spread. q therefore
+    rewards concentrated, reliable assignment by one annotator over diffuse
+    moderate support from all of them -- which is precisely set membership rather
+    than consensus.
     """
     probs = np.zeros((1, 3, N_EVASION))
-    for a, name in enumerate(["Explicit", "Implicit", "General"]):
-        probs[0, a, L[name]] = 0.6
-        probs[0, a, L["Dodging"]] = 0.4
+    # One annotator reliably says Dodging; the others rarely do. Mean = 0.35.
+    probs[0, 0, L["Dodging"]] = 0.95
+    probs[0, 1, L["Dodging"]] = 0.05
+    probs[0, 2, L["Dodging"]] = 0.05
+    # Everyone rates Explicit moderately. Higher mean (0.40) than Dodging.
+    probs[0, :, L["Explicit"]] = 0.40
 
     q = set_membership_from_annotators(probs)
     consensus = consensus_posterior_baseline(probs)
 
-    assert q[0].argmax() == L["Dodging"], "Dodging should dominate set-membership"
-    assert consensus[0].argmax() != L["Dodging"], "but never the consensus posterior"
+    assert consensus[0, L["Explicit"]] > consensus[0, L["Dodging"]], (
+        "setup broken: Explicit must win on the consensus posterior"
+    )
+    assert q[0, L["Dodging"]] > q[0, L["Explicit"]], (
+        "set-membership must prefer the class one annotator reliably assigns"
+    )
+    assert q[0].argmax() == L["Dodging"]
+    assert consensus[0].argmax() == L["Explicit"]
 
 
 def test_rules_coincide_when_annotators_are_unanimous():
@@ -150,20 +169,55 @@ def test_thresholds_never_reduce_in_fold_macro_f1():
 
 
 def test_thresholds_lift_a_rare_class_that_argmax_never_selects():
-    """The mechanism C4 relies on: a multiplier can surface a suppressed class."""
-    n = 60
-    q = np.zeros((n, N_EVASION))
-    q[:, L["Explicit"]] = 0.9
-    q[:, L["Clarification"]] = 0.4  # always present, never the argmax
+    """The mechanism C4 relies on: a multiplier can surface a suppressed class.
 
-    refs = [["Explicit", "Clarification"]] * n
+    50 items where only Explicit is available, 10 where Clarification is ALSO in
+    the reference set. Raw argmax takes Explicit everywhere and scores 1/9,
+    because Clarification never earns a TP and contributes F1 = 0. Boosting
+    lambda_Clarification flips exactly the 10 items where it is available,
+    earning a second class its full 1/9 -- doubling macro-F1 with no change to
+    the model.
+    """
+    q = np.zeros((60, N_EVASION))
+    q[:, L["Explicit"]] = 0.9
+    q[50:, L["Clarification"]] = 0.4  # available on the last 10 items only
+
+    refs = [["Explicit"]] * 50 + [["Explicit", "Clarification"]] * 10
     mask = multi_reference_mask(refs)
 
-    fit = fit_thresholds_coordinate_ascent(q, mask, EVASION_LABELS, n_restarts=3, seed=0)
-    chosen = np.unique(predict_with_thresholds(q, fit.lambda_))
+    from higrec.scoring.official import macro_f1_multireference
 
+    before = macro_f1_multireference(q.argmax(axis=1), mask, EVASION_LABELS).macro_f1
+    fit = fit_thresholds_coordinate_ascent(q, mask, EVASION_LABELS, n_restarts=3, seed=0)
+    chosen = predict_with_thresholds(q, fit.lambda_)
+
+    assert before == pytest.approx(1 / 9), "raw argmax should collect only Explicit"
     assert fit.lambda_[L["Clarification"]] > fit.lambda_[L["Explicit"]]
-    assert L["Clarification"] in chosen
+    assert L["Clarification"] in np.unique(chosen)
+    assert fit.in_fold_macro_f1 == pytest.approx(2 / 9), "both classes should now score"
+
+
+def test_thresholds_cannot_help_when_every_item_has_the_same_reference_set():
+    """A real property of the metric, found by a test that was wrong first.
+
+    If every item carries an identical G, only ONE class can ever collect true
+    positives: predicting any member makes every other member's support drop to
+    zero (the endogenous-support property). Macro-F1 is pinned at 1/9 regardless
+    of lambda, so the optimizer correctly finds nothing to do.
+
+    The corollary matters for C4: the decision rule needs VARIATION in reference
+    sets across items to have any purchase. Gains must come from items whose sets
+    differ, which is consistent with the pre-registered prediction that gains
+    fall on non-unanimous items.
+    """
+    q = np.zeros((60, N_EVASION))
+    q[:, L["Explicit"]] = 0.9
+    q[:, L["Clarification"]] = 0.4
+
+    mask = multi_reference_mask([["Explicit", "Clarification"]] * 60)
+    fit = fit_thresholds_coordinate_ascent(q, mask, EVASION_LABELS, n_restarts=3, seed=0)
+
+    assert fit.in_fold_macro_f1 == pytest.approx(1 / 9)
 
 
 def test_effective_examples_per_class_is_reported():

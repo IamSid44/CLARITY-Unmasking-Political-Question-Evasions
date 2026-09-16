@@ -1,0 +1,19 @@
+{
+  "schema_version": 1,
+  "source": "ailsntua/QEvasion",
+  "note": "The HuggingFace split named 'test' is the shared task's VALIDATION set (308 rows). The real 237-row evaluation test set is not published on HuggingFace.",
+  "splits": {
+    "train": {
+      "n_rows": 3448,
+      "content_hash": "43b7f8be4e4a9e8a2f4cc70c3ec9c1a524625ca809776886d088935d8f3ff83f",
+      "has_evasion_label": true,
+      "has_multi_reference": false
+    },
+    "dev": {
+      "n_rows": 308,
+      "content_hash": "8b49707ba19b3524d9eddb212a5d3e4e79ba29c7b9e521cf3a9bd66cfae52c00",
+      "has_evasion_label": false,
+      "has_multi_reference": true
+    }
+  }
+}
