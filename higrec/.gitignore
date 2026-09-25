@@ -1,7 +1,0 @@
-runs/
-REF/
-__pycache__/
-*.pyc
-.pytest_cache/
-*.egg-info/
-.ipynb_checkpoints/

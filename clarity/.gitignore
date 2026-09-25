@@ -1,0 +1,9 @@
+runs/
+logs/
+*.log
+__pycache__/
+*.pyc
+.env
+wandb/
+submissions/*/**/prediction
+submissions/_exploratory/

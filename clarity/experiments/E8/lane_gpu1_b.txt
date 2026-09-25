@@ -1,0 +1,3 @@
+# GPU 1, lane b
+E8_fullq_bal_focal 1
+E8_fullq_bal_focal 4
