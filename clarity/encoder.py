@@ -61,7 +61,9 @@ from transformers import AutoConfig, AutoModel, AutoTokenizer, get_cosine_schedu
 
 from qevasion.labels import (
     EVASION_LABELS,
+    N_CLARITY,
     N_EVASION,
+    OFFICIAL_PARTITION_MAP,
     encode_clarity,
     encode_evasion,
     leaf_to_official_clarity,
@@ -222,6 +224,19 @@ class ClarityEncoder(nn.Module):
                   this is the cheapest possible instantiation of that -- the
                   9-way head still makes the prediction, the 3-way head only
                   shapes the representation.
+      hsoft       E9. A trained hierarchy over the official taxonomy: one head scores
+                  the 3 clarity levels, another the 9 leaves, and
+                      p(leaf) = p(level) * p(leaf | level),
+                  where p(leaf | level) is a softmax over only the leaves inside
+                  that level. The head returns log p(leaf), so ordinary cross-
+                  entropy on it is exactly the hierarchical loss
+                      -log p(level of y) - log p(y | level of y):
+                  every example trains the 3-way decision AND the choice within
+                  its level, with no weighting to tune. Unlike `hier`, the coarse
+                  head is part of the prediction, not just an auxiliary signal;
+                  and Subtask 1 comes straight from p(level) = sum of its leaves.
+                  `Clear Reply` has one leaf (Explicit), so p(Explicit) is simply
+                  p(Clear Reply).
       annotator   flat, plus a per-annotator bias vector added to the logits
                   (Davani et al., TACL 2022, "annotator-level" modelling). The
                   train split carries `annotator_id`, so each row's label is a
@@ -250,8 +265,8 @@ class ClarityEncoder(nn.Module):
         # what isolated it to the checkpoint dtype rather than the recipe.
         #
         # Master weights stay fp32; bf16 is applied by autocast at compute time,
-        # which keeps the speed without the range problem. This is CLAUDE.md's
-        # risk R3 ("transformers 5.x API drift") firing for real.
+        # which keeps the speed without the range problem. (A `transformers` 5.x
+        # behaviour change; see reports/02_experiment_log.md, Step 1.)
         self.enc = AutoModel.from_pretrained(name, dtype=torch.float32)
         H = self.cfg.hidden_size
         self.head = head
@@ -262,6 +277,13 @@ class ClarityEncoder(nn.Module):
         self.drop = nn.Dropout(dropout)
         self.cls9 = nn.Linear(H, N_EVASION)
         self.cls3 = nn.Linear(H, 3) if head == "hier" else None
+        self.branch = None
+        if head == "hsoft":
+            self.branch = nn.Linear(H, N_CLARITY)
+            part = torch.as_tensor(OFFICIAL_PARTITION_MAP)
+            for b in range(N_CLARITY):  # leaf indices inside each clarity level
+                self.register_buffer(f"members_{b}", torch.nonzero(part == b).squeeze(1),
+                                     persistent=False)
         self.ann_bias = nn.Parameter(torch.zeros(n_ann, N_EVASION)) if head == "annotator" else None
 
     def forward(self, input_ids, attention_mask, token_type_ids=None, annotator=None):
@@ -278,6 +300,15 @@ class ClarityEncoder(nn.Module):
         logits = self.cls9(pooled)
         if self.ann_bias is not None and annotator is not None:
             logits = logits + self.ann_bias[annotator]
+        if self.branch is not None:
+            # log p(leaf) = log p(level) + log p(leaf | level); computed in fp32.
+            log_level = F.log_softmax(self.branch(pooled).float(), dim=-1)
+            z = logits.float()
+            logp = torch.empty_like(z)
+            for b in range(N_CLARITY):
+                idx = getattr(self, f"members_{b}")
+                logp[:, idx] = F.log_softmax(z[:, idx], dim=-1) + log_level[:, b:b + 1]
+            logits = logp  # normalised: cross-entropy on it is the hierarchical NLL
         aux = self.cls3(pooled) if self.cls3 is not None else None
         return logits, aux
 
@@ -513,7 +544,7 @@ def set_seed(seed: int) -> None:
 
 
 def check_vram(max_gb: float) -> None:
-    """CLAUDE.md invariant 5: the card is shared; fail fast, never OOM a neighbour."""
+    """The card is shared with other users' jobs: fail fast, never OOM a neighbour."""
     if not torch.cuda.is_available():
         raise SystemExit("CUDA unavailable")
     free_b, total_b = torch.cuda.mem_get_info()

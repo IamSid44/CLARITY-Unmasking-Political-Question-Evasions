@@ -25,6 +25,7 @@ from qevasion.labels import (
     N_EVASION,
     encode_clarity,
     leaf_to_official_clarity,
+    OFFICIAL_PARTITION_MAP,
 )
 from qevasion.loader import dev_reference_mask, load_qevasion
 from qevasion.scoring import score_subtask1, score_subtask2
@@ -60,7 +61,7 @@ def main() -> None:
     probs = np.stack([np.load(f) for f in seeds])
     print(f"{run.name}: {len(seeds)} seed(s)\n")
 
-    s2, s1, ins, cov = [], [], [], []
+    s2, s1, s1_level, ins, cov = [], [], [], [], []
     per_class_2 = {c: [] for c in EVASION_LABELS}
     per_class_1 = {c: [] for c in CLARITY_LABELS}
     sup_2 = {c: [] for c in EVASION_LABELS}
@@ -70,6 +71,13 @@ def main() -> None:
         pred = consensus(p).argmax(1)
         r2 = score_subtask2(pred, mask)
         r1 = score_subtask1(leaf_to_official_clarity(pred), clarity_true)
+        # Subtask 1 a second way: the most probable clarity LEVEL (sum of its
+        # leaves' probabilities), rather than the level of the most probable leaf.
+        # This is the natural read-out for a hierarchical head, so it is reported
+        # for every model -- the baseline included -- to keep comparisons fair.
+        pc = consensus(p)
+        level = np.stack([pc[:, OFFICIAL_PARTITION_MAP == b].sum(1) for b in range(len(CLARITY_LABELS))], 1)
+        s1_level.append(score_subtask1(level.argmax(1), clarity_true).macro_f1)
         rate, named = inset(pred, mask)
         s2.append(r2.macro_f1)
         s1.append(r1.macro_f1)
@@ -89,6 +97,7 @@ def main() -> None:
     print("HEADLINE")
     print(f"  Subtask 2 (9-way, multi-reference)  macro-F1 = {pm(s2)}")
     print(f"  Subtask 1 (3-way clarity, derived)  macro-F1 = {pm(s1)}")
+    print(f"  Subtask 1, most probable level      macro-F1 = {pm(s1_level)}")
     print("\nDECOMPOSITION  (macro-F1 = classes-named/9 exactly, when every prediction is in-set)")
     print(f"  in-set rate                              = {pm(ins)}")
     print(f"  class coverage (classes named / 9)       = {pm(cov)}")
@@ -117,6 +126,7 @@ def main() -> None:
         "n_seeds": len(seeds),
         "subtask2_macro_f1": {"mean": float(np.mean(s2)), "std": float(np.std(s2, ddof=1)) if len(s2) > 1 else 0.0},
         "subtask1_macro_f1": {"mean": float(np.mean(s1)), "std": float(np.std(s1, ddof=1)) if len(s1) > 1 else 0.0},
+        "subtask1_level_macro_f1": {"mean": float(np.mean(s1_level)), "std": float(np.std(s1_level, ddof=1)) if len(s1_level) > 1 else 0.0},
         "inset_rate": float(np.mean(ins)),
         "class_coverage": float(np.mean(cov)),
         "per_class_subtask2": {c: float(np.mean(v)) for c, v in per_class_2.items()},

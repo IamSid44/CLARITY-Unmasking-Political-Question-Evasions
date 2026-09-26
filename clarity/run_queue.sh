@@ -10,10 +10,23 @@
 #   common.args          flags shared by every run in the experiment (one per line is fine)
 #   lane_gpu<N>_<x>.txt  one lane each; the GPU is taken from the file name.
 #                        Each non-comment line:   <run-name> <seed> [extra flags]
+#                        or a wait:   @after <run-name> <seed> [<seed> ...]
+#                        which blocks the lane until those runs have finished --
+#                        for queueing behind another experiment on the same GPU,
+#                        since two runs sharing a GPU finish no sooner than in turn.
 #
 # Several lanes may share a GPU (lane_gpu1_a, lane_gpu1_b). To move work off a GPU,
 # move lines between lane files and restart: finished runs are skipped and
 # interrupted ones resume from their last epoch, so nothing is lost.
+#
+# Lanes may also list the SAME runs (e.g. one lane seeds 0..3, another 3..0): each
+# run is locked while it trains, so a lane that reaches a run another lane holds
+# skips it and moves on. The lanes then share the work between them, and whichever
+# GPU is faster ends up doing more of it.
+#
+# Never edit this file in place while lanes are running: bash reads a script as it
+# executes, so a running lane can pick up a fragment of the new text. Write a new
+# copy and `mv` it over this one; running lanes keep reading the old file.
 #
 # Checkpointing, at three levels:
 #   * run finished (metrics.json)        -> skipped
@@ -45,7 +58,7 @@ TAG="$(basename "$LANE" .txt)"
 log() { echo "[$(date '+%F %T')] [$TAG] $*" | tee -a "$LOG"; }
 
 # How many seeds a configuration has, across every lane of the experiment.
-expected_seeds() { cat "$EXPDIR"/lane_gpu*_*.txt | grep -vE '^\s*(#|$)' | awk -v n="$1" '$1==n' | wc -l; }
+expected_seeds() { cat "$EXPDIR"/lane_gpu*_*.txt | grep -vE '^\s*(#|$)' | awk -v n="$1" '$1==n {print $2}' | sort -u | wc -l; }
 finished_seeds() { ls "$RUNS/$1"/seed*/metrics.json 2>/dev/null | wc -l; }
 
 post_process() {  # name -- analysis + decision rules + submission, once, when all seeds are in
@@ -67,26 +80,45 @@ attempt() {  # name seed extra...
   local name="$1" seed="$2"; shift 2
   local out="$RUNS/$name/seed$seed" logf="logs/${name}_seed${seed}.log"
   [ -f "$out/metrics.json" ] && { log "skip  $name seed$seed (finished)"; return 0; }
+  mkdir -p "$out"
+  exec 8>"$out/.lane.lock"   # held (also by the trainer, which inherits it) until this run ends
+  if ! flock -n 8; then log "skip  $name seed$seed (another lane is running it)"; exec 8>&-; return 1; fi
+  # a run another lane finished while this one waited for the lock
+  [ -f "$out/metrics.json" ] && { log "skip  $name seed$seed (finished)"; exec 8>&-; return 0; }
   [ -f "$out/resume.pt" ] && log "resume $name seed$seed from its last checkpoint"
   for try in $(seq 1 12); do
     log "start $name seed$seed on GPU $GPU"
     # shellcheck disable=SC2086
     if $PY encoder.py --name "$name" --seed "$seed" --outroot "$RUNS" $COMMON "$@" >>"$logf" 2>&1; then
       log "ok    $name seed$seed  $(grep -oE 'devS2=[0-9.]+ devS1=[0-9.]+' "$logf" | tail -1)"
-      return 0
+      exec 8>&-; return 0
     fi
     if tail -3 "$logf" | grep -q "FAIL FAST"; then
       log "wait  $name seed$seed: GPU $GPU memory held by another job, retry $try/12 in 10 min"; sleep 600
     else
-      log "FAIL  $name seed$seed (see $logf):"; tail -4 "$logf" | tee -a "$LOG"; return 1
+      log "FAIL  $name seed$seed (see $logf):"; tail -4 "$logf" | tee -a "$LOG"; exec 8>&-; return 1
     fi
   done
-  log "GAVE UP $name seed$seed after 2 h waiting for GPU memory"; return 1
+  log "GAVE UP $name seed$seed after 2 h waiting for GPU memory"; exec 8>&-; return 1
 }
 
-log "lane start ($EXP, GPU $GPU): $(grep -cvE '^\s*(#|$)' "$LANE") run(s)"
+wait_for() {  # run-name seed... -- block until each seed has finished (metrics.json)
+  local name="$1"; shift
+  local s pending
+  log "wait  for $name seed(s) $* to finish before starting this lane's next run"
+  while :; do
+    pending=""; for s in "$@"; do [ -f "$RUNS/$name/seed$s/metrics.json" ] || pending+=" $s"; done
+    [ -z "$pending" ] && break
+    sleep 300
+  done
+  log "done  waiting: $name seed(s) $* finished"
+}
+
+log "lane start ($EXP, GPU $GPU): $(grep -cvE '^\s*(#|$|@)' "$LANE") run(s)"
 while read -r name seed extra; do
   [[ -z "${name:-}" || "$name" == \#* ]] && continue
+  # shellcheck disable=SC2086
+  if [ "$name" = "@after" ]; then wait_for "$seed" $extra; continue; fi
   # shellcheck disable=SC2086
   attempt "$name" "$seed" $extra && post_process "$name"
 done < <(grep -vE '^\s*(#|$)' "$LANE")

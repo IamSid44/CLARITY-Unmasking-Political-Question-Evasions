@@ -1,7 +1,6 @@
 """QEvasion data layer.
 
-Canonical source is the HuggingFace parquet (`ailsntua/QEvasion`), per CLAUDE.md
-invariant 8. The organizers' GitHub CSVs are loaded separately as a CROSS-CHECK
+Canonical source is the HuggingFace parquet (`ailsntua/QEvasion`). The organizers' GitHub CSVs are loaded separately as a CROSS-CHECK
 only -- they are the raw pre-cleanup annotations and disagree with the published
 release in ways that matter (see `load_github_multireference`).
 

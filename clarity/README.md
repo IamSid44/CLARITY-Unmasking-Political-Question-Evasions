@@ -12,7 +12,8 @@ track, which is now archived; the copies were checked to give identical results.
 | **Best result** | **0.438** dev Subtask-2 macro-F1 — 5-seed DeBERTa-v3-large ensemble + post-hoc logit adjustment |
 | Baseline (single model) | 0.337 ± 0.044 dev Subtask 2, 0.586 ± 0.039 dev Subtask 1 |
 | The story, in order | [`reports/02_experiment_log.md`](reports/02_experiment_log.md) |
-| Next | **E8** — full question + Balanced Softmax + focal loss; configured in `experiments/E8/`, not yet launched |
+| Latest | **E10 control** — the baseline trained 16 epochs instead of 8: a better, steadier single model (0.377 ± 0.020 vs 0.337 ± 0.044) but no gain in the final system (0.402 vs 0.438). Every configuration: the scoreboard at the top of the log |
+| Running | **E10** full-question seeds (does the full question help once trained long enough?), due 2026-09-26 afternoon |
 
 ---
 
@@ -75,13 +76,15 @@ the only place systems can be compared.
 | **ours — 5-seed ensemble + logit adjustment** | **0.438** | — |
 | TeleAI, DeepSeek-V3 asked directly for the label | 0.421 | 0.662 |
 | ours — 5-seed ensemble | 0.365 | 0.596 |
+| ours — single model, 16 epochs (E10 control) | 0.377 ± 0.020 | 0.604 ± 0.012 |
 | ours — single model (5 seeds) | 0.337 ± 0.044 | 0.586 ± 0.039 |
 
 What these numbers do and don't show is in the experiment log, §E7. In short:
 
 - The fair comparison for our single model is ChulaNLP's fine-tuned DeBERTa
-  (0.46 vs 0.337). Their model sees the full journalist question and ours does not
-  — the most likely source of the gap, and the next experiment.
+  (0.46 vs 0.377 at 16 epochs). Their model sees the full journalist question and
+  ours does not. Adding it has not helped so far (E8, E8b), but it needs about
+  twice the training to be fitted; E10 is the fair test and is still running.
 - Published dev numbers are partly tuned on dev; ours are held-out.
 
 Ablations that did **not** help, all documented:
@@ -91,6 +94,10 @@ Ablations that did **not** help, all documented:
 | per-class decision thresholds (the textbook macro-F1 rule) | 0.394 | overfits 308 items; loses to the one-scalar rule |
 | hard hierarchical routing (clarity branch first, then leaf) | 0.369 | no reliable effect |
 | a second encoder re-ranking the top-3 | 0.354 | negative — [`reports/03_reranker_ablation.md`](reports/03_reranker_ablation.md) |
+| full question + Balanced Softmax + focal loss (E8) | 0.379 | negative — at 8 epochs the full-question input is undertrained (see E8b); experiment log §E8 |
+| full question, plain cross-entropy (E8b) | 0.343 | negative at 8 epochs, but undertrained; single models match the baseline after logit adjustment — E10 retests at 16 epochs |
+| trained hierarchical head, p(level) × p(leaf \| level) (E9) | 0.370 | negative for Subtask 2; Subtask 1 steadier, not better — experiment log §E9 |
+| 16 epochs instead of 8 (E10 control) | 0.402 | better single model (0.377 vs 0.337), but it gains in the same rare classes the decision rule was already fixing, so the final system does not improve |
 
 ---
 
@@ -106,7 +113,7 @@ fine-tuned, with a new 9-way classification head:
 
 | setting | value | why |
 |---|---|---|
-| input | `[CLS] sub-question [SEP] answer [SEP]`, 512 tokens | the minimal pair; the full question is the next experiment |
+| input | `[CLS] sub-question [SEP] answer [SEP]`, 512 tokens | the minimal pair; adding the full question has not helped yet (E8–E10) |
 | loss | plain cross-entropy | the baseline must be a clean control |
 | learning rate | 1e-5, head 1e-4, layer-wise decay 0.95 | measured: beats 2e-5 at every epoch |
 | schedule | 8 epochs, cosine, 10% warmup, batch 16 | 5 epochs was measured to undertrain |
@@ -148,6 +155,15 @@ Each is reproducible; the script or report is named.
 6. **A silent library bug.** `transformers` 5.x loads DeBERTa-v3 in its stored fp16,
    where its attention overflows; with gradient clipping the model then trains
    smoothly to the label prior and learns nothing. Load with `dtype=torch.float32`.
+7. **Undertraining can pass for "this idea doesn't work".** With the full question
+   in the input the model needs about twice the epochs to fit (E8b ended where the
+   baseline was at epoch 3), and an undertrained model leans on the class prior.
+   E8 was first blamed on its loss function; E8b showed the input was the cause.
+   `compare_runs.py` now reports fit (final train loss, best epoch) next to scores.
+8. **Longer training and the decision rule fix the same thing.** Training 16 epochs
+   lifts the rare classes (`General` 0.12 → 0.30) and steadies the seeds, which is
+   what logit adjustment was doing post hoc; together they add nothing over the
+   rule alone (E10 control).
 
 ---
 
@@ -171,8 +187,13 @@ experiments/E8/
   common.args          flags shared by every run (model, input, loss, schedule, ...)
   lane_gpu1_a.txt      one line per run:  <run-name> <seed> [extra flags]
   lane_gpu1_b.txt      several lanes can share a GPU; the GPU comes from the file name
-  lane_gpu0_a.txt
+  lane_gpu0_a.txt      a line "@after <run-name> <seed> ..." makes the lane wait until
+                         those runs finish (queueing behind another experiment)
 ```
+
+Lanes may list the same runs: each run is locked while it trains, so a lane skips
+whatever another lane holds, and the lanes share the work (E10 does this across
+two GPU-0 lanes and the GPU-1 slice).
 
 ```bash
 bash clarity/start.sh E8               # one tmux window per lane, session "clarity-E8"
@@ -211,6 +232,8 @@ python clarity/encoder.py --name L0_large_base --seed 0 --epochs 8   # one basel
 python clarity/analyze.py --run-dir clarity/runs/L0_large_base       # per-class, both subtasks
 python clarity/decide.py  --run-dir clarity/runs/L0_large_base --drop-annotator  # decision rules
 python clarity/summarize.py --per-class                              # all configurations
+python clarity/peek.py clarity/runs/E8_fullq_bal_focal/seed0          # what a run predicts, per class
+python clarity/compare_runs.py L0_large_base E8b_fullq_ce             # paired seeds, bootstrap, length split, undertraining
 python clarity/verify_scorer_geometry.py                             # the scorer findings, CPU
 python clarity/make_submission.py --source stage1 --run L0_large_base --logit-adjust
 ```
@@ -233,7 +256,10 @@ clarity/
   rerank.py                  the (negative-result) second-stage re-ranker
   decide.py                  post-hoc decision rules R0–R3, nested CV, 2-annotator scoring
   analyze.py                 per-class breakdown for both subtasks from saved probabilities
+  peek.py                    per-class predictions of a run, even mid-training (reads its checkpoint)
   summarize.py               table across configurations, mean ± std, paired deltas
+  compare_runs.py            one configuration against another: paired seeds, bootstrap,
+                               per-length split, still-improving-at-the-end check
   verify_scorer_geometry.py  regenerates every number in reports/01
   make_submission.py         builds Codabench zips and checks every format rule
   tracking.py                W&B and HF Hub logging; never allowed to crash a run
@@ -252,7 +278,8 @@ clarity/
     02_experiment_log.md     every experiment in order: why, what, result, takeaway
     03_reranker_ablation.md  the re-ranker negative result, written up for presentation
     raw/                     unedited analysis outputs behind the tables
-  submissions/               packaged predictions for the two main systems
+  submissions/               packaged predictions for the baseline systems (ablations write
+                               theirs locally; not in git)
 ```
 
 Not in git (regenerable or large): `runs/` (probabilities and checkpoints; the

@@ -151,7 +151,7 @@ def push_run(outdir: Path, name: str, seed: int | str) -> bool:
         seed_part = str(seed) if str(seed).startswith(("seed", "fold")) else f"seed{seed}"
         api.upload_folder(
             folder_path=str(outdir),
-            ignore_patterns=["resume.pt", "*.tmp", ".hf_pushed", "wandb_id.txt"],
+            ignore_patterns=["resume.pt", "*.tmp", ".hf_pushed", "wandb_id.txt", ".lane.lock"],
             repo_id=repo,
             path_in_repo=f"{name}/{seed_part}",
             commit_message=f"{name} {seed_part}",

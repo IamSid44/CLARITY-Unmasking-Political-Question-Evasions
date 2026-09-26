@@ -1,0 +1,28 @@
+# E10 -- training length. E8b learned the full-question input far more slowly than
+# E0 learned its input, and ended 8 epochs with train loss ~1.33 (E0: 0.57-1.09),
+# so "the full question does not help" and "it needs more training" cannot yet be
+# told apart. E0 itself was still improving at its last epoch on 2 of 5 seeds.
+#
+# Two configurations, both at 16 epochs, differing ONLY in the input:
+#   E10_base_16ep   = E0  with --epochs 16   (control: what does longer training alone do?)
+#   E10_fullq_16ep  = E8b with --epochs 16   (the full question, given the training it needs)
+#   E10_fullq_16ep vs E10_base_16ep = the value of the full question at equal, adequate training
+# The input flags for E10_fullq_16ep are on its lines in the lane files.
+# Warmup stays 10% of all steps (1.6 epochs) and the cosine decay stretches to 16
+# epochs, identically for both; the best epoch is still chosen on the train slice.
+
+# unchanged from E0
+--model microsoft/deberta-v3-large
+--batch-size 16
+--lr 1e-5
+--head-lr 1e-4
+--llrd 0.95
+--loss ce
+
+# changed: training length (was 8)
+--epochs 16
+
+# operational (1024-token runs peak at ~16.7 GB when sharing; 512-token at ~9 GB)
+--max-vram-gb 18
+--save-model
+--push-to-hub

@@ -22,7 +22,7 @@
 #     between stages (a successful upload leaves a .hf_pushed marker).
 # After a reboot:   bash clarity/start.sh   (same command as the first launch)
 #
-# CLAUDE.md invariant 5: GPU 0 only. If a neighbour has taken the memory, the
+# GPU 0 only (the card is shared). If a neighbour has taken the memory, the
 # run fails fast (never OOMs someone else's job); this script then waits 10 min
 # and retries, up to 2 h, instead of silently skipping it.
 

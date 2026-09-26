@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 """Aggregate the ablation ladder into one table. Reads only metrics.json files.
 
-Prints mean +/- std over seeds (CLAUDE.md invariant 2 -- no single-seed number is
-a result), and a paired per-seed delta against the reference configuration. The
-delta is paired because every configuration shares seeds, the same internal
+Prints mean +/- std over seeds (no single-seed number is a result; README §7),
+and a paired per-seed delta against the reference configuration. The delta is
+paired because every configuration shares seeds, the same internal
 validation split and the same data order, so seed-to-seed variation is common to
 both arms and paired differences are far tighter than the marginal spreads
 suggest.
@@ -103,7 +103,7 @@ def main() -> None:
                 cells.append(f"{np.mean(f1[c]):>9.3f}{flag}{int(round(s)):>3}")
             print(f"{name:<20}" + "".join(cells))
         print(f"\n  * support < {LOW_SUPPORT}: below measurement resolution "
-              f"(CLAUDE.md invariant 3). Trailing integer is mean support.")
+              f"(README §7). Trailing integer is mean support.")
 
 
 if __name__ == "__main__":

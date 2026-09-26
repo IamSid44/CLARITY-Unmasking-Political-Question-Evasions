@@ -1,0 +1,2 @@
+# GPU 0, second lane
+E8b_fullq_ce 2

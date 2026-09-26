@@ -101,7 +101,7 @@ RUNS = Path(os.environ.get("CLARITY_RUNS", Path(__file__).resolve().parent / "ru
 
 # Paraphrased from the organizers' taxonomy table (Thomas et al., EMNLP 2024,
 # Materials/.../EMNLP_2024_Baseline.pdf). Written for this project; no competitor
-# prompt text (CLAUDE.md invariant 1). Kept short on purpose: it shares a
+# prompt text. Kept short on purpose: it shares a
 # 512-token window with the sub-question and the answer.
 LABEL_DESCRIPTIONS: dict[str, str] = {
     "Explicit": "the requested information is stated directly, in the form asked for",

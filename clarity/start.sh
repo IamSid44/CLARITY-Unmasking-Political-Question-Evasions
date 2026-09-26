@@ -27,7 +27,7 @@ fi
 EXPDIR="$DIR/experiments/$EXP"
 LANES=( "$EXPDIR"/lane_gpu*_*.txt )
 [ -e "${LANES[0]}" ] || { echo "no lane files in $EXPDIR"; exit 2; }
-if pgrep -f "run_queue\.sh .*/experiments/$EXP/" >/dev/null; then
+if pgrep -f "^bash .*/run_queue\.sh .*/experiments/$EXP/" >/dev/null; then   # anchored: a leftover `tmux new-session` client carries the same path and must not count
   echo "$EXP already running -- attach with: tmux attach -t clarity-$EXP"; exit 0
 fi
 SESSION="clarity-$EXP"

@@ -1,0 +1,23 @@
+# E8b -- full question, plain cross-entropy. The ablation that separates E8's two changes:
+#   E8b vs E0  = what the full question (and the 1024-token context it needs) is worth
+#   E8  vs E8b = what Balanced Softmax + focal loss cost
+# Identical to E8 except the loss; identical to E0 except the input and context.
+
+# unchanged from E0
+--model microsoft/deberta-v3-large
+--epochs 8
+--batch-size 16
+--lr 1e-5
+--head-lr 1e-4
+--llrd 0.95
+--loss ce
+
+# changed from E0 (same as E8): the full journalist question, and room for it
+--input full
+--max-len 1024
+--a-budget 256
+
+# operational (E8 measured a 14.9 GB peak at 1024 tokens)
+--max-vram-gb 16
+--save-model
+--push-to-hub
