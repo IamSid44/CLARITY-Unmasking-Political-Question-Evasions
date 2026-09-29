@@ -1,0 +1,25 @@
+# E12 -- plan and predictions: reports/02_experiment_log.md §E12.
+# Every model uses the current best settings (full question, 1024 tokens, 16 epochs);
+# what each learns (--task) and how much data it sees (--val-frac) is on its lane line:
+#   E12a_alldata       the 9-way model on ALL of train (no held-out slice), last epoch
+#   E12b_gate          Non-Reply vs the rest                      } combined by
+#   E12b_other6        6-way, non-Non-Reply rows only             } hier_combine.py
+#   E12b_nr3           3-way, Non-Reply rows only                 }
+#   E12c_pair_*        boundary experts for the three most-confused pairs
+# Controls already exist: E10_fullq_16ep seeds 0-2 (same settings, same seeds).
+
+--model microsoft/deberta-v3-large
+--batch-size 16
+--lr 1e-5
+--head-lr 1e-4
+--llrd 0.95
+--loss ce
+--input full
+--max-len 1024
+--a-budget 256
+--epochs 16
+
+# operational (1024-token runs peak at ~15-17 GB)
+--max-vram-gb 18
+--save-model
+--push-to-hub

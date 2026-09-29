@@ -86,12 +86,14 @@ def fit_tau_on_dev(p_dev: np.ndarray) -> tuple[float, float, float]:
 
 
 def stage1_predictions(run: str, logit_adjust: bool = False) -> tuple[np.ndarray, dict]:
-    files = sorted((RUNS / run).glob("seed*/test_probs.npy"))
+    # `run` may list several configurations, comma-separated, whose seeds form one
+    # ensemble (E11's final system pools E10_fullq_16ep and E11_fullq_16ep).
+    files = [f for r in run.split(",") for f in sorted((RUNS / r).glob("seed*/test_probs.npy"))]
     if not files:
-        raise SystemExit(f"no test_probs.npy under {RUNS / run}")
+        raise SystemExit(f"no test_probs.npy under {run}")
     p = np.mean([consensus(np.load(f)) for f in files], axis=0)
     dev = [json.loads((f.parent / "metrics.json").read_text())["dev_subtask2_macro_f1"] for f in files]
-    info = {"seeds": [f.parent.name for f in files], "decision": "seed-ensemble argmax",
+    info = {"seeds": [f"{f.parent.parent.name}/{f.parent.name}" for f in files], "decision": "seed-ensemble argmax",
             "dev_subtask2_per_seed": dev}
     if not logit_adjust:
         return p.argmax(1), info
@@ -148,7 +150,7 @@ def write_zip(labels: list[str], folder: Path) -> Path:
 def main() -> None:
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--source", choices=("stage1", "rerank"), required=True)
-    ap.add_argument("--run", required=True)
+    ap.add_argument("--run", required=True, help="configuration name; several, comma-separated, pool their seeds")
     ap.add_argument("--with-prior", action="store_true")
     ap.add_argument("--logit-adjust", action="store_true",
                     help="stage1 only: apply post-hoc logit adjustment, tau fitted on dev")

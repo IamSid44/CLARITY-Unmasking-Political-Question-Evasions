@@ -1,0 +1,26 @@
+E12 combinations on dev, seeds [0, 1] (paired with E10_fullq_16ep of the same seed).
+S2+rule: logit adjustment by nested CV, mean over 5 splits. CNR = Clear Non-Reply (Subtask 1). NR recall: items with any Non-Reply label that the model calls Non-Reply.
+
+per seed, mean                             S2    S2+rule         S1     CNR F1  NR recall
+flat                                    0.357      0.392      0.609      0.493      0.368
+dedicated gate + flat within            0.341      0.333      0.597      0.460      0.397
+flat gate + specialists                 0.361      0.413      0.640      0.506      0.382
+hierarchy (gate + specialists)          0.331      0.344      0.624      0.460      0.397
+hierarchy, hard routing                 0.331      0.335      0.624      0.460      0.397
+
+minus flat, per seed                       S2    S2+rule         S1     CNR F1  NR recall
+dedicated gate + flat within       -0.016 0/2 -0.059 0/2 -0.012 0/2 -0.033 0/2 +0.029 2/2
+flat gate + specialists            +0.004 1/2 +0.021 1/2 +0.031 2/2 +0.013 1/2 +0.015 1/2
+hierarchy (gate + specialists)     -0.026 0/2 -0.048 0/2 +0.015 1/2 -0.033 0/2 +0.029 2/2
+hierarchy, hard routing            -0.026 0/2 -0.057 0/2 +0.015 1/2 -0.033 0/2 +0.029 2/2
+
+ensemble of the seeds                      S2    S2+rule         S1     CNR F1  NR recall
+flat                                    0.389      0.375      0.652      0.550      0.412
+dedicated gate + flat within            0.387      0.372      0.630      0.489      0.471
+flat gate + specialists                 0.415      0.393      0.659      0.564      0.382
+hierarchy (gate + specialists)          0.345      0.354      0.632      0.500      0.471
+hierarchy, hard routing                 0.308      0.337      0.620      0.465      0.441
+
+E12a, all of train, last epoch, vs the flat model (single models, dev):
+    S2: +0.053 ± 0.025  (2/2 seeds up)
+    S1: +0.017 ± 0.034  (1/2 seeds up)

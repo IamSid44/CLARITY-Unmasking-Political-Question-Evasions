@@ -49,7 +49,11 @@ GPU="$(basename "$LANE" | sed -nE 's/^lane_gpu([0-9]+)_.*\.txt$/\1/p')"
 [ -n "$GPU" ] || { echo "lane file must be named lane_gpu<N>_<x>.txt: $LANE"; exit 2; }
 
 PY=/scratch/shlok/Temp/.venv/bin/python
-export CUDA_VISIBLE_DEVICES="$GPU" TOKENIZERS_PARALLELISM=false PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True
+# A lane file may pin an exact device with a line "# device: <id>" -- e.g. a MIG slice's
+# UUID (`nvidia-smi -L`). GPU 1 is split into two MIG slices, and CUDA_VISIBLE_DEVICES=1
+# reaches only the first; the second needs its UUID.
+DEVICE="$(sed -nE 's/^#[[:space:]]*device:[[:space:]]*([^[:space:]]+).*/\1/p' "$LANE" | head -1)"
+export CUDA_VISIBLE_DEVICES="${DEVICE:-$GPU}" TOKENIZERS_PARALLELISM=false PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True
 COMMON="$(grep -vE '^\s*(#|$)' "$EXPDIR/common.args" | tr '\n' ' ')"
 RUNS="${CLARITY_RUNS:-$CLARITY/runs}"
 mkdir -p logs "$RUNS" reports/raw
@@ -61,8 +65,14 @@ log() { echo "[$(date '+%F %T')] [$TAG] $*" | tee -a "$LOG"; }
 expected_seeds() { cat "$EXPDIR"/lane_gpu*_*.txt | grep -vE '^\s*(#|$)' | awk -v n="$1" '$1==n {print $2}' | sort -u | wc -l; }
 finished_seeds() { ls "$RUNS/$1"/seed*/metrics.json 2>/dev/null | wc -l; }
 
+# E12 sub-task models (gate, specialists, boundary experts) output probabilities over
+# their own classes, not the 9 labels, so the 9-way post-processing does not apply to
+# them; hier_combine.py scores them inside the combined system.
+is_subtask() { cat "$EXPDIR"/lane_gpu*_*.txt | awk -v n="$1" '$1==n' | grep -qE -- "--task +(gate|other6|nr3|pair:)"; }
+
 post_process() {  # name -- analysis + decision rules + submission, once, when all seeds are in
   local name="$1"
+  if is_subtask "$name"; then return; fi
   exec 9>"$RUNS/.post_${name}.lock"; flock 9
   if [ -f "$RUNS/$name/.post_done" ]; then flock -u 9; return; fi
   if [ "$(finished_seeds "$name")" -lt "$(expected_seeds "$name")" ]; then flock -u 9; return; fi

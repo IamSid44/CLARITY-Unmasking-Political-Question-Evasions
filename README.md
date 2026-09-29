@@ -7,9 +7,10 @@ clarity levels (Subtask 1).
 
 | | dev Subtask 2 | dev Subtask 1 |
 |---|---|---|
-| **Our best** — 5 fine-tuned DeBERTa-v3-large models + post-hoc logit adjustment | **0.438** | — |
-| Our single fine-tuned model, trained 16 epochs (mean of 5 seeds) | 0.377 ± 0.020 | 0.604 ± 0.012 |
-| Our single fine-tuned model, 8 epochs — the baseline | 0.337 ± 0.044 | 0.586 ± 0.039 |
+| **Our best single model** — DeBERTa-v3-large with the full question, 16 epochs (mean of 10 seeds) | **0.384 ± 0.030** | **0.614 ± 0.027** |
+| Our baseline single model — sub-question + answer, 8 epochs (mean of 10 seeds) | 0.315 ± 0.040 | 0.576 ± 0.030 |
+| **Our final system** — 10 of the best models + post-hoc logit adjustment | **0.405** | **0.648** |
+| Our baseline system — 10 baseline models + logit adjustment | 0.428 | 0.601 |
 | ChulaNLP (2nd place), fine-tuned DeBERTa-large | 0.46 | 0.65 |
 | TeleAI (1st place), DeepSeek-V3 multi-stage pipeline | 0.617 | 0.812 |
 
@@ -18,14 +19,19 @@ were never released, so dev is the only common ground for comparison; see
 [`clarity/reports/02_experiment_log.md`](clarity/reports/02_experiment_log.md) §E7
 for what these comparisons can and cannot show.
 
-**Status (2026-09-26):** four single-change experiments against the baseline, none
-of which beat its 0.438 once the decision rule is applied — the full question with a
-rebalancing loss (E8, 0.379), the full question alone (E8b, 0.343), a hierarchical
-output head (E9, 0.370) and twice the training (E10 control, 0.402). Twice the
-training does give the best single model so far (0.377 vs 0.337), but it improves
-the same rare classes the decision rule already fixes. **Running:** the second half
-of E10 — the full question with twice the training, since E8b ended its 8 epochs
-far less fitted than the baseline. Results expected on the afternoon of 2026-09-26.
+**Status (2026-09-28):** giving the model the full journalist question and twice
+the training makes it better on **9 of 10 seeds** (Subtask 2 +0.069, Subtask 1
++0.038). As a full system, it is ahead on Subtask 1 (0.648 vs 0.601) but level with
+the baseline on Subtask 2: the post-hoc decision rule already repairs most of what
+the better model fixes. A replication on new seeds (E11) also showed that a single
+5-seed ensemble is too noisy to rank systems on the 308-item dev set, so every
+system number above uses 10 seeds. Negative results along the way — a second-stage
+re-ranker, rebalancing losses, a hierarchical head, mixed-input ensembles — are
+documented with the reasons they failed. **E12 (2026-09-28/29)** tested four
+data-driven variants: training on all of train helps Subtask 2 (+0.029 per model,
+4 of 5 seeds; 5-seed system 0.489); a hierarchy of specialist encoders — the third
+hierarchy tested — boundary experts for the most confused label pairs, and model
+soups do not. Nothing is running.
 
 ---
 
@@ -61,6 +67,11 @@ vocabulary and the official-scorer replica — were carried over into
 
 For someone new to the project, about an hour in total:
 
+0. **The one-page summary** —
+   [`clarity/reports/04_mideval_summary.md`](clarity/reports/04_mideval_summary.md)
+   (5 min): the progression from baseline to final system, what each component
+   did, what did not work, and what the replication changed. Start here for the
+   mid-evaluation.
 1. **This page**, then **the task and the system** —
    [`clarity/README.md`](clarity/README.md) §1–4 (15 min). What the task is, what
    the model does, the results table and the key findings.
@@ -75,7 +86,9 @@ For someone new to the project, about an hour in total:
    - **E4** — the decision rule behind the best result;
    - **E8b results** — why "it didn't help" can mean "it wasn't trained enough",
      including a correction to how E8 was first read;
-   - **E10** — the plan, and the interim result for the control.
+   - **E10** — the 2 × 2 of input and training length;
+   - **E11 results** — the replication on new seeds, judged against hypotheses
+     fixed in advance, and how the final system was chosen.
 4. **A negative result, written up for presentation** —
    [`clarity/reports/03_reranker_ablation.md`](clarity/reports/03_reranker_ablation.md).
 5. **The mid-evaluation plan** — [`MIDEVAL_PLAN.md`](MIDEVAL_PLAN.md).
@@ -105,10 +118,14 @@ To run anything: `clarity/README.md` §5.
    pre-registered hypothesis, refuted.
 7. **Undertraining can pass for "this idea doesn't work".** With the full question
    in the input the model needs about twice the epochs to fit; at 8 epochs it leans
-   on the class prior and looks worse than it is.
-8. **Longer training and the decision rule fix the same thing.** 16 epochs lifts the
-   rare classes and halves the seed-to-seed spread, but on top of the decision rule
-   it adds nothing.
+   on the class prior and looks worse than it is (0.343). Trained 16 epochs it gives
+   a better model on 9 of 10 seeds.
+8. **Better training and the decision rule fix the same thing.** Both remove the pull
+   towards frequent classes; on Subtask 2 either is enough, and together they add
+   nothing.
+9. **One set of 5 seeds cannot rank systems on 308 items.** The same system scored
+   0.438 and 0.356 on two seed sets; per-seed paired comparisons over 10 seeds carry
+   the conclusions.
 
 ---
 
@@ -116,7 +133,7 @@ To run anything: `clarity/README.md` §5.
 
 - Environment: Python 3.12, PyTorch 2.11, `transformers` 5.x. No package install;
   scripts run from the repo root, e.g. `python clarity/analyze.py --run-dir …`.
-- Launch or resume an experiment: `bash clarity/start.sh E10` (tmux, resumable;
+- Launch or resume an experiment: `bash clarity/start.sh E11` (tmux, resumable;
   `clarity/README.md` §5).
 - Every number in the scorer report: `python clarity/verify_scorer_geometry.py`
   (CPU, seconds).

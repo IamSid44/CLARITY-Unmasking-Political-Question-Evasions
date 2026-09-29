@@ -1,0 +1,31 @@
+E11_base_16ep: 5 seed(s)
+
+HEADLINE
+  Subtask 2 (9-way, multi-reference)  macro-F1 = 0.3467 +/- 0.0232
+  Subtask 1 (3-way clarity, derived)  macro-F1 = 0.5989 +/- 0.0205
+  Subtask 1, most probable level      macro-F1 = 0.5975 +/- 0.0172
+
+DECOMPOSITION  (macro-F1 = classes-named/9 exactly, when every prediction is in-set)
+  in-set rate                              = 0.5097 +/- 0.0103
+  class coverage (classes named / 9)       = 0.9556 +/- 0.0609
+  => coverage ceiling on Subtask 2         = 0.9556
+
+PER-CLASS, Subtask 2      (support is from the scorer and is ENDOGENOUS)
+  class                                F1   support
+  Explicit               0.6475 +/- 0.0297     100.2
+  Implicit               0.4697 +/- 0.0398      78.2
+  Dodging                0.3676 +/- 0.0256      76.4
+  General                0.3308 +/- 0.0207      78.0
+  Deflection             0.1523 +/- 0.0601      34.8
+  Partial/half-answer    0.0000 +/- 0.0000       8.8  <- below measurement resolution
+  Declining to answer    0.3709 +/- 0.1294      13.0
+  Claims ignorance       0.4936 +/- 0.1537      12.2
+  Clarification          0.2881 +/- 0.0296       4.0  <- below measurement resolution
+
+PER-CLASS, Subtask 1
+  class                                F1   support
+  Ambivalent             0.7658 +/- 0.0178     206.0
+  Clear Non-Reply        0.4753 +/- 0.0445      23.0
+  Clear Reply            0.5555 +/- 0.0221      79.0
+
+written: /scratch/shlok/Temp/CLARITY-Unmasking-Political-Question-Evasions/clarity/runs/E11_base_16ep/analysis.json

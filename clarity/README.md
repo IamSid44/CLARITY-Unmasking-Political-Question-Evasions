@@ -9,11 +9,11 @@ track, which is now archived; the copies were checked to give identical results.
 
 | | |
 |---|---|
-| **Best result** | **0.438** dev Subtask-2 macro-F1 — 5-seed DeBERTa-v3-large ensemble + post-hoc logit adjustment |
-| Baseline (single model) | 0.337 ± 0.044 dev Subtask 2, 0.586 ± 0.039 dev Subtask 1 |
+| **Final system** | full question + 16 epochs, 10-seed DeBERTa-v3-large ensemble + logit adjustment: dev S2 **0.405**, dev S1 **0.648** (baseline system: 0.428 / 0.601) |
+| Best single model | full question + 16 epochs: 0.384 ± 0.030 dev S2, 0.614 ± 0.027 dev S1 over 10 seeds (baseline 0.315 / 0.576); better on 9 of 10 seeds |
 | The story, in order | [`reports/02_experiment_log.md`](reports/02_experiment_log.md) |
-| Latest | **E10 control** — the baseline trained 16 epochs instead of 8: a better, steadier single model (0.377 ± 0.020 vs 0.337 ± 0.044) but no gain in the final system (0.402 vs 0.438). Every configuration: the scoreboard at the top of the log |
-| Running | **E10** full-question seeds (does the full question help once trained long enough?), due 2026-09-26 afternoon |
+| Latest | **E12**: training on all of train (last epoch) is the one variant that helps — Subtask 2 +0.029 per model on 4 of 5 seeds, 5-seed system 0.489. The hierarchy of specialist encoders, boundary experts and model soups do not. See [`reports/04_mideval_summary.md`](reports/04_mideval_summary.md) |
+| Running | nothing |
 
 ---
 
@@ -73,19 +73,24 @@ the only place systems can be compared.
 | TeleAI (1st), DeepSeek-V3 3-stage CoT pipeline | 0.617 | 0.812 |
 | ChulaNLP (2nd), RoBERTa top-5 → Kimi-K2 | 0.52 | 0.70 |
 | ChulaNLP, DeBERTa-large fine-tuned *(checkpoint chosen on dev)* | 0.46 | 0.65 |
-| **ours — 5-seed ensemble + logit adjustment** | **0.438** | — |
+| ours — baseline system: 10-seed ensemble + logit adjustment | 0.428 | 0.601 |
 | TeleAI, DeepSeek-V3 asked directly for the label | 0.421 | 0.662 |
-| ours — 5-seed ensemble | 0.365 | 0.596 |
-| ours — single model, 16 epochs (E10 control) | 0.377 ± 0.020 | 0.604 ± 0.012 |
-| ours — single model (5 seeds) | 0.337 ± 0.044 | 0.586 ± 0.039 |
+| **ours — final system: full question, 16 epochs, 10-seed ensemble + logit adjustment** | **0.405** | **0.648** |
+| **ours — single model, full question, 16 epochs (10 seeds)** | **0.384 ± 0.030** | **0.614 ± 0.027** |
+| ours — single model, 16 epochs (10 seeds) | 0.362 ± 0.026 | 0.601 ± 0.016 |
+| ours — single model, baseline (10 seeds) | 0.315 ± 0.040 | 0.576 ± 0.030 |
 
-What these numbers do and don't show is in the experiment log, §E7. In short:
+What these numbers do and don't show is in the experiment log (§E7, §E11). In short:
 
-- The fair comparison for our single model is ChulaNLP's fine-tuned DeBERTa
-  (0.46 vs 0.377 at 16 epochs). Their model sees the full journalist question and
-  ours does not. Adding it has not helped so far (E8, E8b), but it needs about
-  twice the training to be fitted; E10 is the fair test and is still running.
-- Published dev numbers are partly tuned on dev; ours are held-out.
+- **Per model, the improvement is solid**: the full question plus 16 epochs beats
+  the baseline model on 9 of 10 seeds (S2 +0.069, S1 +0.038).
+- **As systems, the two are within noise on Subtask 2**: the decision rule lifts the
+  baseline's prior-leaning ensemble by +0.109 and the better model's by nothing.
+  The final system was chosen by a rule written before the last experiment ran.
+- 5-seed system numbers are unreliable on 308 items (the baseline scored 0.438 and
+  0.356 on two seed sets), so all system numbers above use 10 seeds.
+- The fair external comparison is ChulaNLP's fine-tuned DeBERTa (0.46 / 0.65),
+  whose checkpoint was chosen on dev; ours are held-out.
 
 Ablations that did **not** help, all documented:
 
@@ -98,36 +103,43 @@ Ablations that did **not** help, all documented:
 | full question, plain cross-entropy (E8b) | 0.343 | negative at 8 epochs, but undertrained; single models match the baseline after logit adjustment — E10 retests at 16 epochs |
 | trained hierarchical head, p(level) × p(leaf \| level) (E9) | 0.370 | negative for Subtask 2; Subtask 1 steadier, not better — experiment log §E9 |
 | 16 epochs instead of 8 (E10 control) | 0.402 | better single model (0.377 vs 0.337), but it gains in the same rare classes the decision rule was already fixing, so the final system does not improve |
+| mixing both inputs in one ensemble (E11) | 0.403 | no gain over 10 full-question models (0.405), tested on fresh seeds |
+| hierarchy of specialist encoders: Non-Reply gate + branch specialists (E12b) | 0.390 *(3 seeds)* | negative — the gate routes too confidently; specialists level with the flat model on 5 seeds |
+| boundary experts for the three most-confused pairs (E12c) | — | no effect (S2 +0.002, S1 −0.004 per model) |
+| model soup of 10 trained models (E12d) | 0.267 | negative — seeds do not average in weight space |
 
 ---
 
 ## 3. How the system works
 
 ```
- sub-question + answer ──► DeBERTa-v3-large ──► p(9 classes) ──► logit adjustment ──► leaf ──► clarity
-                          (5 seeds, averaged)                    argmax p / prior^τ            (table)
+ sub-question + full question + answer ──► DeBERTa-v3-large ──► p(9 classes) ──► logit adjustment ──► leaf ──► clarity
+                                          (10 seeds, averaged)                   argmax p / prior^τ            (table)
 ```
 
 **The model** (`encoder.py`). Pretrained DeBERTa-v3-large, all 435M parameters
-fine-tuned, with a new 9-way classification head:
+fine-tuned, with a new 9-way classification head. The final system and the
+baseline differ in two settings, marked:
 
-| setting | value | why |
-|---|---|---|
-| input | `[CLS] sub-question [SEP] answer [SEP]`, 512 tokens | the minimal pair; adding the full question has not helped yet (E8–E10) |
-| loss | plain cross-entropy | the baseline must be a clean control |
-| learning rate | 1e-5, head 1e-4, layer-wise decay 0.95 | measured: beats 2e-5 at every epoch |
-| schedule | 8 epochs, cosine, 10% warmup, batch 16 | 5 epochs was measured to undertrain |
-| checkpoint | best epoch on a fixed 10% slice of **train** | dev is never used to choose anything |
-| weights | loaded in **fp32**, computed in bf16 | see §4 |
+| setting | final system | baseline | why |
+|---|---|---|---|
+| input | `[CLS] Sub-question: … Full question: … [SEP] answer [SEP]`, **1024 tokens** (question slot 256) | `[CLS] sub-question [SEP] answer [SEP]`, 512 tokens | the full question shows what else the answer responds to (E8b, E10) |
+| epochs | **16** | 8 | the full-question input needs about twice the training (E8b, E10) |
+| loss | plain cross-entropy | same | rebalancing losses over-correct (E8) |
+| learning rate | 1e-5, head 1e-4, layer-wise decay 0.95 | same | measured: beats 2e-5 at every epoch |
+| schedule | cosine, 10% warmup, batch 16 | same | |
+| checkpoint | best epoch on a fixed 10% slice of **train** | same | dev is never used to choose anything |
+| weights | loaded in **fp32**, computed in bf16 | same | see §4 |
 
-**The ensemble.** Five seeds, probabilities averaged. Seed-to-seed spread is large
-(0.28–0.39), so averaging is worth +0.028.
+**The ensemble.** Ten seeds, probabilities averaged (+0.025 over a single model for
+the final system; +0.004 for the baseline).
 
 **The decision rule** (`decide.py`, `make_submission.py`). Divide each class's
 probability by its training frequency raised to τ, then take the argmax (logit
-adjustment; Menon et al., ICLR 2021). One parameter, τ = 0.85, fitted on dev and
-validated by nested cross-validation: +0.073 held-out, and +0.055 to +0.062 on the
-2-annotator versions of dev that mimic the test set.
+adjustment; Menon et al., ICLR 2021). One parameter, fitted on dev and scored by
+nested cross-validation. It is worth +0.109 on the baseline's ensemble, whose models
+lean on the class prior, and nothing on the final system's (τ = 0.4 when fitted on
+all of dev), which already predicts rare classes.
 
 ---
 
@@ -159,11 +171,15 @@ Each is reproducible; the script or report is named.
    in the input the model needs about twice the epochs to fit (E8b ended where the
    baseline was at epoch 3), and an undertrained model leans on the class prior.
    E8 was first blamed on its loss function; E8b showed the input was the cause.
+   Trained 16 epochs, the same input gives the best single model (9 of 10 seeds, E11).
    `compare_runs.py` now reports fit (final train loss, best epoch) next to scores.
 8. **Longer training and the decision rule fix the same thing.** Training 16 epochs
    lifts the rare classes (`General` 0.12 → 0.30) and steadies the seeds, which is
    what logit adjustment was doing post hoc; together they add nothing over the
-   rule alone (E10 control).
+   rule alone (E10 control, E11).
+9. **One set of 5 seeds cannot rank systems on 308 items.** The same system scored
+   0.438 and 0.356 on two seed sets (E11); every system comparison now uses 10
+   seeds, and per-seed paired comparisons carry the conclusions.
 
 ---
 
@@ -252,7 +268,8 @@ Packaged submissions are in `submissions/`.
 ```
 clarity/
   README.md                  this file
-  encoder.py                 the classifier: fine-tune, predict dev + test; --fold for cross-fitting
+  encoder.py                 the classifier: fine-tune, predict dev + test; --fold for cross-fitting;
+                               --task for a sub-problem (gate, specialists, pair experts)
   rerank.py                  the (negative-result) second-stage re-ranker
   decide.py                  post-hoc decision rules R0–R3, nested CV, 2-annotator scoring
   analyze.py                 per-class breakdown for both subtasks from saved probabilities
@@ -260,6 +277,10 @@ clarity/
   summarize.py               table across configurations, mean ± std, paired deltas
   compare_runs.py            one configuration against another: paired seeds, bootstrap,
                                per-length split, still-improving-at-the-end check
+  e11_replication.py         E11's pre-registered analysis: seed sets, 10-seed systems, hypotheses
+  decode_variants.py         alternative decision rules on trained models (gate, optimal transport, floor)
+  hier_combine.py            E12: gate + specialists + boundary experts -> 9-way, the 2x2 ablation
+  soup.py                    E12d: uniform and greedy weight-averaged model soups
   verify_scorer_geometry.py  regenerates every number in reports/01
   make_submission.py         builds Codabench zips and checks every format rule
   tracking.py                W&B and HF Hub logging; never allowed to crash a run
@@ -277,9 +298,10 @@ clarity/
     01_scorer_geometry.md    what the metric rewards; corrects the earlier data audit
     02_experiment_log.md     every experiment in order: why, what, result, takeaway
     03_reranker_ablation.md  the re-ranker negative result, written up for presentation
+    04_mideval_summary.md    the whole track on one page: progression, component effects, lessons
     raw/                     unedited analysis outputs behind the tables
-  submissions/               packaged predictions for the baseline systems (ablations write
-                               theirs locally; not in git)
+  submissions/               packaged predictions for the baseline and the final system
+                               (ablations write theirs locally; not in git)
 ```
 
 Not in git (regenerable or large): `runs/` (probabilities and checkpoints; the

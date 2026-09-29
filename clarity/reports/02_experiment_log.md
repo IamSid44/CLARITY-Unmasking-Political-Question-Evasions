@@ -11,12 +11,12 @@ over seeds. Raw outputs behind the headline tables are in `reports/raw/`.
 
 | | |
 |---|---|
-| Period | 2026-09-19 → 2026-09-26 |
+| Period | 2026-09-19 → 2026-09-28 |
 | Hardware | 1× RTX PRO 6000 (96 GB), shared with other users' jobs |
 | Backbone throughout | `microsoft/deberta-v3-large` (435M parameters) |
-| Best result so far | **0.438** — 5-seed ensemble + post-hoc logit adjustment (E4) |
-| Latest | E10 control (E0 trained 16 epochs instead of 8): a better, steadier single model (0.377 ± 0.020 vs 0.337 ± 0.044), but no gain once the decision rule is applied (0.402 vs 0.438) |
-| Running | E10's full-question half (seeds 2 and 3 of 5), due ~13:45 on 2026-09-26; it decides whether the full question helps when trained long enough |
+| Final system (E11, by a rule fixed in advance) | full question + 16 epochs, **10-seed** ensemble + logit adjustment: dev S2 **0.405** (0.412 over CV splits), dev S1 **0.648**; the 10-seed baseline system scores 0.428 / 0.601 — not distinguishable on S2 |
+| Latest | E12: training on all of train is the one variant that helps (S2 +0.029 per model, 4/5 seeds; 5-seed system 0.489); the hierarchy of specialist encoders, boundary experts and model soups do not |
+| Running | nothing (E12 finished 2026-09-29 18:52) |
 
 ---
 
@@ -29,18 +29,35 @@ system takes.
 
 | id | what changed from the baseline | single model, S2 | single model, S1 | ensemble + rule, S2 | verdict |
 |---|---|---|---|---|---|
-| E0 | — (DeBERTa-v3-large, sub-question + answer, 8 epochs, cross-entropy) | 0.337 ± 0.044 | 0.586 ± 0.039 | **0.438** | **best final system** |
+| E0 | — (DeBERTa-v3-large, sub-question + answer, 8 epochs, cross-entropy) | 0.337 ± 0.044 | 0.586 ± 0.039 | 0.438 | the baseline; 0.356 on seeds 5–9 (E11) |
 | E4 | per-class thresholds instead of the one-number rule | | | 0.394 | overfits 308 items |
 | E5 | hard hierarchical routing, post hoc | | | 0.369 *(ensemble, no rule)* | no reliable effect |
 | E6 | second encoder re-ranks the baseline's top 3 | 0.329 ± 0.039 *(re-ranker alone)* | | 0.354 *(re-ranker + baseline prior)* | negative; baseline ensemble alone is 0.365 |
 | E8 | + full question, Balanced Softmax + focal loss | 0.322 ± 0.021 | 0.539 ± 0.030 | 0.379 | negative; cause revised after E8b |
 | E8b | + full question | 0.282 ± 0.043 | 0.482 ± 0.039 | 0.343 | undertrained at 8 epochs → E10 |
 | E9 | hierarchical output head | 0.320 ± 0.038 | 0.606 ± 0.024 | 0.370 | negative for S2; S1 steadier, not better |
-| E10 control | 16 epochs instead of 8 | **0.377 ± 0.020** | 0.604 ± 0.012 | 0.402 | better single model; no gain in the final system |
-| E10 | + full question, 16 epochs | *running* | | | due 2026-09-26 |
+| E10 control | 16 epochs instead of 8 | 0.377 ± 0.020 | 0.604 ± 0.012 | 0.402 | better single model; no gain in the final system |
+| E10 | + full question, 16 epochs | 0.387 ± 0.036 | 0.631 ± 0.024 | 0.478 | best on these seeds; 0.434 on seeds 5–9 (E11) |
+| **E11** | **E0, E10 control and E10 re-run on seeds 5–9** | | | | **replication and final system: table below** |
+| E12a | full question, 16 epochs, **trained on all of train**, last epoch (5 seeds) | **0.416 ± 0.020** | 0.613 ± 0.017 | **0.489** | **helps S2**: +0.029 per model (4/5 up); S1 −0.017; 5-seed system only |
+| E12b | hierarchy: Non-Reply gate + branch specialist encoders | 0.345 *(3 seeds)* | 0.608 | 0.390 *(3 seeds)* | negative; specialists alone level on 5 seeds |
+| E12c | boundary experts for the three most-confused pairs (3 seeds) | 0.383 | 0.615 | | no effect |
+| E12d | model soup of 10 trained models | 0.267 *(uniform)* | 0.471 | | negative |
 | — | ChulaNLP's fine-tuned DeBERTa-large (published; checkpoint chosen on dev) | 0.46 | 0.65 | | for reference |
 
-Packaged submissions for E0 are in `../submissions/` (Codabench is closed).
+**The three main systems at 10 seeds (E11)** — the numbers to quote. Single models:
+mean ± std over seeds 0–9; systems: 10-seed ensemble + logit adjustment.
+
+| system | single model, S2 | single model, S1 | system, S2 | system, S1 |
+|---|---|---|---|---|
+| baseline (sub-question + answer, 8 epochs) | 0.315 ± 0.040 | 0.576 ± 0.030 | **0.428** | 0.601 |
+| 16 epochs | 0.362 ± 0.026 | 0.601 ± 0.016 | 0.400 | 0.620 |
+| **full question, 16 epochs — final system** | **0.384 ± 0.030** | **0.614 ± 0.027** | 0.405 | **0.648** |
+
+Per model, the full question plus 16 epochs beats the baseline on 9 of 10 seeds
+(S2 +0.069, S1 +0.038). As systems, the three are within dev-set noise on S2.
+Packaged submissions: the baseline (`../submissions/L0_large_base*`) and the final
+system (`../submissions/FINAL_fullq_16ep_10seed_logitadj/`); Codabench is closed.
 
 ---
 
@@ -62,6 +79,8 @@ Packaged submissions for E0 are in `../submissions/` (Codabench is closed).
 - [E8 — Full question + Balanced Softmax + focal loss: negative result](#e8--full-question--balanced-softmax--focal-loss-negative-result)
 - [E8b and E9 — two single-change runs in parallel](#e8b-and-e9--two-single-change-runs-in-parallel-launched-2026-09-25)
 - [E10 — Training length: is the full question undertrained?](#e10--training-length-is-the-full-question-undertrained-launched-2026-09-26)
+- [E11 — Replication on new seeds, and the final system](#e11--replication-on-new-seeds-and-the-final-system-launched-2026-09-27)
+- [E12 — Groundwork, plan and runs](#e12--groundwork-plan-and-runs-launched-2026-09-28)
 - [Deferred](#deferred)
 
 ---
@@ -1009,6 +1028,604 @@ at the edge of the ±0.04 band.
 **What this means for the main comparison.** The full question must now be judged
 against E10_base_16ep, not against E0: 0.377 ± 0.020 single-model and 0.402 for the
 ensemble with logit adjustment. The full-question seeds finish around 14:00.
+
+### E10 results (2026-09-26, all 10 runs finished 13:35): the full question helps once trained long enough — a new best, 0.478
+
+Raw output: `reports/raw/E10_fullq_16ep_{analysis,decision_rules}.txt`,
+`reports/raw/E10_fullq_vs_base_compare.txt`, `reports/raw/E10_final_system_bootstrap.txt`,
+`reports/raw/E10_ensemble_size.txt`.
+
+| | E0 (8 epochs) | E10_base_16ep | **E10_fullq_16ep** |
+|---|---|---|---|
+| single model, dev S2 | 0.337 ± 0.044 | 0.377 ± 0.020 | **0.387 ± 0.036** |
+| single model, dev S1 | 0.586 ± 0.039 | 0.604 ± 0.012 | **0.631 ± 0.024** |
+| single model + logit adjustment | 0.357 ± 0.044 | 0.375 ± 0.027 | **0.398 ± 0.021** |
+| in-set rate (single model) | 0.529 | 0.526 | 0.540 |
+| 5-seed ensemble, argmax | 0.365 | 0.380 | **0.416** |
+| **ensemble + logit adjustment** | 0.438 | 0.402 | **0.478** |
+| same, averaged over 10 different CV fold splits | 0.446 | 0.403 | **0.472** |
+| same, 2-annotator reference sets | 0.391–0.401 | 0.361–0.400 | **0.423–0.448** |
+| ensemble, S1 (top leaf / most probable level) | 0.596 / 0.598 | 0.618 / 0.619 | **0.631 / 0.627** |
+| final train loss | 0.57–1.09 | 0.06–0.30 | 0.56–0.78 |
+
+| seed | S2: E10_base → E10_fullq | S1: E10_base → E10_fullq | epoch chosen (base / fullq) |
+|---|---|---|---|
+| 0 | 0.359 → 0.344 | 0.617 → 0.591 | 3 / 10 |
+| 1 | 0.366 → 0.370 | 0.612 → 0.627 | 11 / 14 |
+| 2 | 0.398 → 0.428 | 0.592 → 0.640 | 14 / 10 |
+| 3 | 0.363 → 0.421 | 0.609 → 0.641 | 11 / 13 |
+| 4 | 0.400 → 0.369 | 0.589 → 0.655 | 7 / 9 |
+| paired mean | +0.009 ± 0.036 | +0.027 ± 0.035 | |
+
+**The 2 × 2 that E8b and E10 complete.** The input and the training length were
+each tested alone and together, so the effect of the full question can be read at
+both training lengths (ensemble + logit adjustment; single-model mean in brackets):
+
+| | 8 epochs | 16 epochs |
+|---|---|---|
+| sub-question + answer | 0.438 (0.337) — E0 | 0.402 (0.377) — E10_base |
+| + full question | 0.343 (0.282) — E8b | **0.478 (0.387)** — E10_fullq |
+
+The full question costs 0.095 at 8 epochs and gains 0.076 at 16: **its effect
+depends on training length**, which is what "undertrained" predicted. Training
+longer without it does not help the final system.
+
+**Per class** (single-model mean F1, E10_base → E10_fullq): `Dodging` 0.379 →
+**0.478**, `General` 0.295 → 0.323, `Deflection` 0.260 → 0.282, `Declining`
+0.379 → 0.417; against that `Claims ignorance` 0.526 → 0.228 and `Partial`
+0.090 → 0.000. (`Clarification` 0.350 → 0.651 rests on 4 items.) By length
+(ensemble in-set rate): short items 0.560 → 0.599, long items the 1024-token model
+saw in full 0.531 → 0.593, long items it still had to cut 0.505 → 0.505.
+
+**How solid is 0.478?**
+
+- *Not a lucky fold split.* The decision rule's τ is fitted by nested CV; over 10
+  different fold splits the result is 0.472 (range 0.449–0.479), and τ is stable
+  (in-fold minus held-out gap 0.000).
+- *Against the same training without the full question:* +0.075, paired bootstrap
+  95% [+0.001, +0.148] — just clear of zero.
+- *Against the 8-epoch baseline:* +0.042, 95% [−0.049, +0.133] — **not yet
+  conclusive** on 308 dev items. On the three 2-annotator versions of dev the
+  margin is +0.03 to +0.06 each time, which points the same way but is not
+  independent evidence.
+- *Ensemble size.* Averaging over every seed subset of each size (ensemble + rule):
+
+  | seeds in the ensemble | 1 | 2 | 3 | 4 | 5 |
+  |---|---|---|---|---|---|
+  | E0 | 0.361 | 0.398 | 0.415 | 0.437 | 0.449 |
+  | E10_base_16ep | 0.378 | 0.405 | 0.406 | 0.406 | 0.398 |
+  | E10_fullq_16ep | 0.404 | 0.430 | 0.427 | 0.426 | 0.471 |
+
+  The full question is ahead at 1–3 seeds, but its 5-seed value is one draw that
+  sits well above its 4-seed average, and E0 is still climbing at 5. Whether the
+  lead holds for larger ensembles is not settled by these five seeds.
+
+**Why the gain appears after ensembling and the rule rather than per model.** Both
+16-epoch arms have more diverse seeds than E0 (pairwise agreement 0.50–0.51 vs
+0.58), which is what makes ensembles gain. They differ in confidence: the control
+has nearly memorised its training set (loss 0.06–0.30) and is badly overconfident
+(mean top probability 0.728 against an in-set rate of 0.526), so averaging and
+the prior correction have little to work with (the rule adds +0.022). The
+full-question model fits less tightly (loss 0.56–0.78; top probability 0.638 vs
+in-set 0.540), and the rule adds +0.061. A plausible reading, not tested here, is
+that the harder input also acts as a regulariser.
+
+**Predictions.** (1) Train loss at or below E0's: held (0.56–0.78). (2) A gain over
+the control, mostly in `General`, `Dodging`, `Deflection` and on long items: held
+for the final system and clearly for `Dodging`, weakly for `General` and
+`Deflection`; not for the single-model mean (+0.009, noise); on length, the gain
+is as large on short items as on long ones the model saw in full, and absent on
+long items that were still cut. (3) The control within noise of E0: held for the
+final system.
+
+**Verdict.** The full question is worth keeping, but only with the longer
+schedule; together they give the best system so far (0.478; 0.472 over fold
+splits), level with ChulaNLP's fine-tuned DeBERTa (0.46, whose checkpoint was
+chosen on dev). Its lead over the 8-epoch baseline is not yet distinguishable from
+dev-set and seed noise, so the next step replicates on new seeds (E11).
+
+> **Revised after E11 (2026-09-28).** 0.478 did not replicate: the same system scored
+> 0.434 on seeds 5–9 and 0.405 as a 10-seed ensemble, and the baseline system's
+> 0.438 likewise fell to 0.356 on new seeds. What E10 found that does hold is the
+> single-model gain from the full question plus longer training (+0.069 on 9 of 10
+> seeds). See [E11 results](#e11-results-2026-09-28-15-runs-finished-0643-single-models-improve-reliably-systems-are-within-noise).
+
+---
+
+## E11 — Replication on new seeds, and the final system *(launched 2026-09-27)*
+
+*Written before any E11 run started.*
+
+**Why.** E10 gave the best system so far (0.478), but two things about it are not
+settled. Its lead over the 8-epoch baseline (+0.042) is inside the dev-set noise,
+and its 5-seed value sits well above its own 4-seed average (0.426), so part of it
+may be a lucky draw of seeds. And an exploratory look at E10's predictions — a
+10-model ensemble mixing both inputs scored 0.498 — produced a hypothesis that was
+formed on the same dev set it would be judged on. Both need fresh seeds, not new
+ideas. With the mid-evaluation this week, a result that holds on a second set of
+seeds is worth more than one more component.
+
+**Design.** The three systems of the 2 × 2 that matter, each re-run with **seeds
+5–9**, which no earlier run used. Every setting is identical to the original
+(checked against each run's `config.json`); the new names keep the original
+5-seed folders untouched, so each system gets a second, independent 5-seed
+ensemble and a pooled 10-seed one.
+
+| E11 configuration | identical to | seeds |
+|---|---|---|
+| `E11_fullq_16ep` | E10_fullq_16ep (full question, 1024 tokens, 16 epochs) | 5–9 |
+| `E11_base_16ep` | E10_base_16ep (sub-question + answer, 16 epochs) | 5–9 |
+| `E11_base_8ep` | E0 / `L0_large_base` (sub-question + answer, 8 epochs) | 5–9 |
+
+**Hypotheses, fixed now.** All on dev S2, ensemble + logit adjustment unless
+stated, τ by 5-fold nested CV.
+
+1. **Replication.** E11_fullq_16ep scores above E11_base_8ep on seeds 5–9, as
+   E10_fullq did over E0 on seeds 0–4.
+2. **Single models.** With the decision rule applied per model, the E10 ordering
+   holds on the new seeds: full question 16 epochs > base 16 epochs > base 8 epochs
+   (E10: 0.398 > 0.375 > 0.357).
+3. **Mixed inputs (the exploratory idea, tested once).** A 10-model ensemble of
+   E11_fullq_16ep + E11_base_16ep (seeds 5–9 only) scores above the 10-model
+   full-question ensemble (E10 + E11 fullq, seeds 0–9). Same number of models, so
+   the comparison is about mixing, not size.
+4. **Ensemble size.** Each system's 10-seed ensemble scores at least its 5-seed
+   average; the curve for 1–10 seeds is reported for all three.
+
+**The final system is chosen by this rule, now:** the 10-seed full-question
+ensemble (seeds 0–9) with logit adjustment, unless hypothesis 3 holds, in which
+case the mixed ensemble. If hypothesis 1 fails, the final system is the 10-seed
+ensemble of whichever of the three scores highest, and the full question is
+reported as not established.
+
+**What would change the story.** If E11_fullq lands near 0.43 rather than 0.48, the
+E10 number was partly luck and the honest headline is "the full question makes
+single models better and steadier; the final-system gain is within noise".
+
+**Compute.** 15 runs, about 24 GPU-hours: full-question runs ~3.1 h each and
+16-epoch base runs ~1.1 h on either GPU alone, 8-epoch base runs ~0.6 h. Both GPUs
+are free (GPU 0 whole, and our GPU-1 slice). One lane per GPU — alone on a card a
+second lane adds no throughput — and both lanes list all 15 runs, so the per-run
+locks share the work out; the long full-question runs go first. Estimated finish:
+~08:00 on 2026-09-28.
+
+**Throughput test at launch (19:25–19:40).** GPU 0 turned out to be twice as fast
+alone as the estimate above assumed: a full-question epoch took **5.6 min** (the
+11.6 min figure was measured with a lab-mate's jobs on the card). A second lane
+was added to see whether two runs would use the idle card better. They did not:
+sharing, the full-question run slowed to 12.8 min per epoch and the 512-token run
+ran at ~4.5 min, against ~2.0–2.5 min alone — together at most one card's worth of
+work, as expected when one run already keeps the GPU busy 100% of the time and
+processes take turns. The second lane was stopped (its run resumes later from its
+checkpoint). Revised finish with one lane per GPU: ~04:00 on 2026-09-28.
+
+**GPU 0 shared again from ~20:10.** A lab-mate started three jobs on GPU 0 (22 +
+19 + 19 GB); our full-question epoch there went from 5.6–7 min to 17–21 min. The
+GPU-1 slice is unaffected (~12 min). Revised finish, if their jobs keep running:
+late morning on 2026-09-28; the full-question seeds, which decide the replication,
+come first.
+
+At 22:04, with the user's agreement, a second GPU-0 lane was added: with GPU time
+split roughly per process, two of our runs get about 2/5 of the card against the
+lab-mate's three instead of 1/4. It takes the 512-token runs first (~9 GB peak), so
+the card keeps ~12 GB of headroom for the neighbours' jobs; its full-question
+seeds come last and start only if 18 GB is free.
+
+### E11 results (2026-09-28, 15 runs, finished 06:43): single models improve reliably; systems are within noise
+
+Raw output: `reports/raw/E11_replication.txt`, regenerated by
+`python clarity/e11_replication.py` (CPU, seconds); per-configuration analyses in
+`reports/raw/E11_*_{analysis,decision_rules}.txt`.
+
+**The same system, two sets of seeds** (5-seed ensemble + logit adjustment, dev S2;
+in brackets, averaged over 10 CV splits):
+
+| system | seeds 0–4 (E0 / E10) | seeds 5–9 (E11) | all 10 seeds |
+|---|---|---|---|
+| baseline: sub-question + answer, 8 epochs | 0.438 (0.446) | 0.356 (0.348) | **0.428** (0.444) |
+| 16 epochs | 0.402 (0.403) | 0.375 (0.377) | 0.400 (0.386) |
+| full question, 16 epochs | 0.478 (0.472) | 0.434 (0.427) | 0.405 (0.412) |
+
+The first thing this table shows is how noisy a 5-seed ensemble is on 308 items:
+the baseline system scored 0.438 on one set of seeds and 0.356 on another. Both
+headline numbers of the last week — the baseline's 0.438 and E10's 0.478 — were the
+favourable end of that range.
+
+**Single models, all 10 seeds** (mean ± std; paired differences are per seed, same
+initialisation and data order):
+
+| | dev S2 | dev S1 |
+|---|---|---|
+| baseline, 8 epochs | 0.315 ± 0.040 | 0.576 ± 0.030 |
+| 16 epochs | 0.362 ± 0.026 | 0.601 ± 0.016 |
+| full question, 16 epochs | **0.384 ± 0.030** | **0.614 ± 0.027** |
+| 16 epochs − baseline | +0.047 ± 0.044 (t = 3.4; 9/10 seeds up) | +0.026 (t = 2.7; 8/10) |
+| full question − 16 epochs | +0.022 ± 0.034 (t = 2.0; 7/10) | +0.012 (t = 1.3; 6/10) |
+| **full question, 16 epochs − baseline** | **+0.069 ± 0.061 (t = 3.6; 9/10)** | **+0.038 (t = 2.8; 9/10)** |
+
+**The hypotheses, as written before the runs.**
+
+1. *Replication — held, narrowly.* On seeds 5–9 the full-question system beats the
+   baseline system, 0.434 vs 0.356 (+0.077; bootstrap 95% [−0.007, +0.157]).
+2. *Single-model ordering — held on both seed sets.* With the rule applied per
+   model: full question 0.381 > 16 epochs 0.361 > baseline 0.325 on seeds 5–9
+   (0.398 > 0.375 > 0.357 on seeds 0–4).
+3. *Mixed-input ensemble — failed.* 10 mixed models 0.403 vs 10 full-question models
+   0.405. The 0.498 seen in E10 was a feature of those particular seeds.
+4. *Ensembles at least as good at 10 seeds as at 5 — held for both baseline-input
+   systems, failed for the full question.* Averaging over subsets of the 10 seeds:
+
+   | seeds in the ensemble | 1 | 2 | 3 | 5 | 7 | 10 |
+   |---|---|---|---|---|---|---|
+   | baseline, 8 epochs | 0.341 | 0.368 | 0.384 | 0.403 | 0.420 | 0.428 |
+   | 16 epochs | 0.368 | 0.377 | 0.380 | 0.391 | 0.389 | 0.400 |
+   | full question, 16 epochs | 0.389 | 0.407 | 0.416 | 0.418 | 0.417 | 0.405 |
+
+   The full-question system is ahead up to about 5 models; the baseline keeps
+   gaining from every added seed (+0.087 from 1 to 10, against +0.016) and draws
+   level. We do not have a tested explanation. The full-question models are more
+   confident relative to their accuracy (E10), and averaging confident models
+   changes less; that is the leading candidate.
+
+**The final system, by the rule fixed before the runs.** Hypothesis 1 held and
+hypothesis 3 failed, so the final system is the **10-seed full-question ensemble
+with logit adjustment: dev S2 0.405 (0.412 over CV splits), dev S1 0.648**. Its
+submission is packaged by `make_submission.py` from the 10 runs. Reported alongside
+it, as the rule did not anticipate this case: the 10-seed *baseline* ensemble scores
+higher on Subtask 2 (0.428; difference −0.022, 95% [−0.101, +0.061]) and lower on
+Subtask 1 (0.601), and is also a little better on the 2-annotator reference sets
+(0.392–0.407 vs 0.356–0.403). On Subtask 2 the two systems cannot be told apart on
+this dev set; on Subtask 1 the full-question system is ahead.
+
+**What changes in the story.**
+
+- **The robust result is at the level of a single model.** Longer training plus the
+  full question improves a single fine-tuned DeBERTa on both subtasks, on 9 of 10
+  seeds: S2 0.315 → 0.384, S1 0.576 → 0.614. Most of it is the longer training
+  (+0.047); the full question adds a further, smaller +0.022.
+- **At the level of the final system, the gains do not survive.** Ensembling and
+  the decision rule lift the baseline more than they lift better models, and a
+  308-item dev set cannot separate systems within ~0.08 of each other.
+- **Method.** A single 5-seed ensemble is not enough to rank systems here; every
+  system comparison from now on uses at least 10 seeds and reports the spread
+  across seed sets. The E10 "new best 0.478" is annotated accordingly.
+
+---
+
+## E12 — Groundwork, plan and runs *(launched 2026-09-28)*
+
+*The groundwork was run on CPU against models that already exist; the plan was
+written before any E12 model was trained and approved as written on 2026-09-28.*
+
+### Groundwork: what the existing 20 trained models say
+
+**1. The decision layer is saturated** (`decode_variants.py`,
+`reports/raw/decode_variants.txt`). Three alternatives to logit adjustment, each
+fitted by the same nested CV, on the 10-seed baseline and full-question systems and
+per seed:
+
+| rule, minus logit adjustment, per seed | baseline models | full-question models |
+|---|---|---|
+| hierarchical Non-Reply gate with a fitted threshold | +0.009 (8/10 up) | +0.003 (5/10) |
+| prior-matching decoding (per-class weights by Sinkhorn/optimal transport) | −0.007 | −0.005 |
+| coverage floor (every class predicted at least m times) | +0.001 | −0.002 |
+
+None beats the one-parameter rule reliably. Any further gain has to come from the
+models, not from how their outputs are read.
+
+**2. No extra supervision is hiding in the data.** Train has one label per row (the
+`annotator1–3` columns are empty); only 26 question–answer pairs repeat with
+conflicting labels (52 rows). The per-row flags (`multiple_questions`,
+`affirmative_questions`, `inaudible`) and the GPT-3.5 fields are empty in the test
+set, so they cannot be inputs.
+
+**3. The error structure — the data-driven basis for a hierarchy**
+(`reports/raw/E12_design_confusion.txt`; the 10-seed full-question ensemble on the
+fixed 10% train slice, so dev is not touched):
+
+- 179 errors on 345 items: **153 (85%) inside the six non-Non-Reply classes**, 24
+  across the Non-Reply / other line, 2 inside the Non-Reply classes.
+- Clustering the confusion matrix splits the three **Non-Reply classes off first**
+  (the same top cut TeleAI derived from their confusion matrix).
+- But our failure is the **opposite of TeleAI's**: they had Non-Reply false positives;
+  our models *miss* Non-Replies (precision 0.69, recall 0.57). Clear Non-Reply is
+  our weakest Subtask-1 class (F1 0.44–0.52), and the Non-Reply classes carry a
+  third of the Subtask-1 macro-F1 and three of nine classes in Subtask 2.
+- Inside the other six, errors concentrate in three pairs: **Implicit ↔ Dodging**
+  (11 + 13), **Explicit ↔ Implicit** (12 + 13; this one also crosses the Subtask-1
+  line between Clear Reply and Ambivalent) and **General ↔ Deflection** (5 + 8). A
+  tree cut through those pairs would not help; they are the fine decisions, not the
+  coarse ones.
+- For context, TeleAI's own ablation (their Table 4): the confidence-gated hierarchy
+  moved their Subtask 1 from 0.710 to 0.811 but Subtask 2 only from 0.490 to 0.503;
+  their large Subtask-2 gain (→ 0.617) came from boundary examples for exactly such
+  confusable pairs.
+
+**4. Choosing the epoch on the train slice buys nothing**
+(`reports/raw/last_vs_selected_epoch.txt`). Across the 10 full-question seeds the
+last epoch scores at least as well as the selected one (S2 +0.011 ± 0.020, 7/10;
+S1 −0.002). The slice costs 10% of the training data and adds noise (chosen epochs
+ranged from 3 to 14).
+
+### Why fewer seeds are enough now
+
+Ten seeds were needed for *system* claims: two 5-seed ensembles of the same system
+differed by 0.08. *Model-level* claims, paired by seed, need fewer when the effect is
+of useful size: the 16-epoch gain (+0.047) was already clear at 5 paired seeds; only
+the small full-question gain (+0.022) needed 10. E12 therefore **screens each variant
+on 3 seeds**, paired with the existing full-question models of the same seeds
+(E10_fullq_16ep, seeds 0–2), and **extends to 5 seeds only a variant that gains at
+least +0.015 on S1 or S2 with at least 2 of 3 seeds up**. Three seeds reliably catch
+only large effects; that is the intended filter.
+
+### Proposed variants
+
+All use the current best model's settings (DeBERTa-v3-large, full question, 1024
+tokens, 16 epochs) unless stated.
+
+| id | variant | why it should help, from our evidence | new code | GPU per seed |
+|---|---|---|---|---|
+| **E12a** | **Train on all of train**, fixed 16 epochs, keep the last epoch | +11% data; epoch selection adds nothing (groundwork 4) | small: allow `--val-frac 0` with `--select last` | ~1.5 h |
+| **E12b** | **Hierarchy of specialists**: a Non-Reply gate (binary, all data), a 6-way specialist on the non-Non-Reply rows, a 3-way specialist on the Non-Reply rows; combined softly, p(leaf) = p(branch) × p(leaf \| branch) | targets our actual failure (Non-Reply recall 0.57) at the cut the data picks; specialists see a rebalanced label space | `--task gate/other6/nr3` in `encoder.py`; `hier_combine.py` | ~3 h |
+| **E12c** | **Boundary experts** for the three confused pairs (Implicit vs Dodging, Explicit vs Implicit, General vs Deflection), each applied when its pair is the model's top two | 85% of errors sit inside the six, concentrated in these pairs; the encoder analogue of TeleAI's boundary examples | `--task pair:<A>,<B>`; reuses `hier_combine.py` | ~1.5 h |
+| **E12d** | **Model soup**: average the weights of the 10 existing full-question models (uniform, and greedy by train-slice score; Wortsman et al., ICML 2022) | one model with part of the ensemble's gain, no training | `soup.py` (inference only) | ~20 min once |
+
+**How E12b stands apart from TeleAI's pipeline.** Encoder-only, with trained
+specialists instead of prompts; the tree comes from our models' confusion matrix;
+the gate is aimed at our failure mode (missed Non-Replies) rather than theirs
+(false alarms); routing is soft, so a gate error is not final; and its
+contribution is isolated by a 2 × 2 ablation computed on CPU once the models exist —
+{flat model's implied gate, dedicated gate} × {flat model within each branch,
+specialists} — plus soft vs hard routing and a fitted gate threshold.
+
+**Predictions** (written before launch):
+
+- E12a: per model S2 +0.01 to +0.02, S1 about unchanged.
+- E12b: S1 up through Clear Non-Reply, with Non-Reply recall above 0.57; S2 between
+  0 and +0.02. If the gate does not raise recall, the hierarchy is not the fix.
+- E12c: small or no S2 gain; a null result would agree with E6 (a second encoder
+  choosing among the first one's candidates did not help).
+- E12d: the soup scores above the average single model and below the 10-model
+  ensemble.
+
+**Order and cost.** E12d first (minutes; no training), then E12a and E12b on 3
+seeds, then E12c if time allows. Estimated ~18 GPU-hours at GPU 0's unshared speed
+(a full-question epoch takes 5.6 min alone), about 12 hours of wall time with GPU 0
+and the GPU-1 slice, longer if lab-mates share GPU 0. Implementation and smoke tests
+(uploads off) come before any launch.
+
+**Dropped from consideration.** Further decoding rules (groundwork 1); soft-label
+training (no multi-annotator data in train); metadata features (absent in test);
+the LLM step (deferred by decision; §Deferred).
+
+### E12 launch (2026-09-28, 11:29)
+
+**What was built** (no earlier run is affected; the default path is unchanged):
+
+- `encoder.py --task {leaf9, gate, other6, nr3, pair:<A>,<B>}` — a run learns a
+  sub-problem: rows outside it are dropped, labels are remapped, the output layer
+  has as many units as the task has classes, and the epoch is chosen on the
+  task's own rows of the fixed train slice. `--val-frac 0 --select last` trains on
+  every row and keeps the last epoch (E12a).
+- `run_queue.sh` skips the 9-way post-processing for sub-task models.
+- `hier_combine.py` turns gate + specialists (+ boundary experts) back into 9-way
+  distributions and scores every combination against the flat model of the same
+  seed (the 2 × 2, hard vs soft routing, experts on the flat model and on the
+  hierarchy).
+- `soup.py` builds uniform and greedy weight-averaged soups (E12d).
+
+**Checked before launch.** Every task mode ran end to end on a tiny training set
+(1 epoch, 64 rows, uploads off): output shapes 9/2/6/3/2, held-out rows per task
+345/345/310/35/120. The combination code reproduces the flat model exactly when
+fed the flat model's own gate and within-branch distributions (max difference
+2e-7), and boundary experts keep every row a distribution.
+
+**Layout.** tmux session `clarity-E12`: the soup runs first on the GPU-1 slice;
+two lanes (GPU 0, GPU-1 slice) list the same 21 training runs — for each of seeds
+0–2 the gate, the two specialists and the full-data model, then the boundary
+experts — and share them through the per-run locks. GPU 0 is shared with two
+other users' jobs (27 + 45 GB), so our run there gets roughly a third of the card.
+Estimated finish: E12a/E12b early on 2026-09-29, E12c later that morning; sooner
+if GPU 0 frees up.
+
+**A third lane at 14:12.** GPU 1 is split into two MIG slices of 48 GB; ours is the
+first, and the second — used earlier by another user's job — was idle. A lane pinned
+to its UUID (`# device:` line in `lane_gpu1_b.txt`, now supported by `run_queue.sh`)
+runs one model there (~14 GB, leaving ~33 GB free for its usual user; the lane is
+stopped if they need it). GPU 0 had no room for a second run (~9 GB free), and a
+second run on our own slice would only take turns with the first. With the extra
+slice the E12a/E12b runs should finish during the night of 2026-09-28.
+
+**Released at 15:08.** A lab-mate asked for a GPU-1 slice, so the borrowed one was
+given back: lane b was stopped (its run, E12a seed 0, had finished 4 of 16 epochs and
+resumes from that checkpoint in another lane) and its lane file removed. E12
+continues on GPU 0 and our own slice; the finish estimate returns to early
+2026-09-29 for E12a/E12b.
+
+**A second GPU-0 lane at 15:10**, when a lab-mate's 45 GB job on GPU 0 ended (the
+card then held another user's 27 GB job and ours). With GPU time split per process,
+two of our runs get about 2/3 of the card instead of 1/2. It resumed E12a seed 0
+from its checkpoint. The second GPU-1 slice stays with the lab-mate, and our own
+slice keeps one run: a second would only take turns with the first there (measured
+~12.6 min per epoch alone, ~25 min each when two share it).
+
+### E12d result (2026-09-28, 4 min): model soups fail for these models
+
+Raw output: `logs/E12d_soup.log`; soups saved as `runs/E12d_soup_{uniform,greedy}/`.
+
+| | held-out slice (train) | dev S2 | dev S1 |
+|---|---|---|---|
+| a single full-question model (mean of 10) | 0.35–0.42 | 0.384 | 0.614 |
+| **uniform soup** of all 10 | 0.248 | 0.267 | 0.471 |
+| **greedy soup** | kept only its first member | 0.381 | 0.582 |
+
+Averaging the weights of any two of the models already lowered the held-out score
+(from 0.41 to 0.29–0.36), so the greedy recipe rejected all nine additions. The
+prediction (between a single model and the ensemble) failed. The likely reason is
+in how our models are trained, not in the idea: soups work when fine-tuned models
+share their starting point and land in one basin (Wortsman et al. fine-tune from a
+common initialisation, including the head); ours differ by seed in the randomly
+initialised classification head and in data order, so their weights are not
+interchangeable. Averaging *outputs* (the seed ensemble) remains the way to combine
+them. The greedy member's dev score (0.381 vs 0.388 in training) is the cost of the
+checkpoints being stored in bf16.
+
+**GPU 1 fully released at 23:35.** A lab-mate needed GPU 1's first slice (GI 1,
+ours), so its lane was stopped (E12b_nr3 seed 2, 5 of 16 epochs, resumes from its
+checkpoint on GPU 0) and its lane file renamed `lane_gpu1_a.txt.released` so a
+restart does not bring it back. E12 continues on GPU 0 alone (two lanes), which is
+also shared with two other users' jobs. By then 8 of the 21 runs had finished,
+including E12a and E12b for seeds 0 and 1.
+
+### E12 interim (2026-09-28 23:40, seeds 0 and 1 only — not a result yet)
+
+Raw: `reports/raw/E12_interim_seeds01.txt` (`python clarity/hier_combine.py`). Paired
+with the flat full-question model of the same seed; 2 of the planned 3 seeds.
+
+| vs the flat model, per seed | S2 | S2 + rule | S1 | Non-Reply recall |
+|---|---|---|---|---|
+| dedicated gate + flat within each branch | −0.016 | −0.059 | −0.012 | +0.029 |
+| **flat gate + specialists** | +0.004 | **+0.021** | **+0.031 (2/2)** | +0.015 |
+| full hierarchy (dedicated gate + specialists) | −0.026 | −0.048 | +0.015 | +0.029 |
+| E12a, all of train | **+0.053 (2/2)** | | +0.017 | |
+
+Early pattern, to be confirmed by seed 2: the **specialists help and the dedicated
+gate hurts**. The gate ends training with a loss of ~0.03 — it has memorised the
+binary split — so its probabilities sit near 0 or 1 and the soft routing
+effectively becomes hard; the flat model's own, softer Non-Reply mass routes
+better. Training on all of the data looks like the clearest gain so far.
+
+### E12b result on the screening seeds (2026-09-29 01:45, seeds 0–2)
+
+Raw: `reports/raw/E12b_hierarchy_3seeds.txt` (`python clarity/hier_combine.py`).
+Paired with the flat full-question model of the same seed.
+
+| vs the flat model, per seed | S2 | S2 + rule | S1 | Clear Non-Reply F1 | Non-Reply recall |
+|---|---|---|---|---|---|
+| dedicated gate + flat within each branch | −0.030 (0/3) | −0.059 (0/3) | −0.030 (0/3) | −0.082 | −0.039 |
+| **flat model's gate + specialists** | +0.003 (2/3) | **+0.018 (2/3)** | **+0.018 (2/3)** | +0.005 | +0.010 |
+| hierarchy: dedicated gate + specialists | −0.036 (0/3) | −0.050 (0/3) | −0.011 (1/3) | −0.082 | −0.039 |
+| hierarchy, hard routing | −0.038 (0/3) | −0.059 (0/3) | −0.013 (1/3) | −0.085 | −0.039 |
+
+As 3-seed ensembles with the rule: flat 0.418, flat gate + specialists 0.414,
+hierarchy 0.390 (S2); S1 0.643 / 0.640 / 0.641.
+
+**Against the predictions.** The gate was to raise Non-Reply recall and lift
+Subtask 1 through Clear Non-Reply; it did neither (recall −0.039, Clear Non-Reply
+F1 −0.082). By the rule written before launch, *the dedicated gate is not the
+fix*. The reason is visible in training: the gate reaches a training loss of ~0.03,
+memorising a 10%-vs-90% split, so its probabilities are near 0 or 1 — soft routing
+becomes hard routing (the two rows are almost identical), and its mistakes are
+final. The flat model's own Non-Reply mass is a softer, better-calibrated gate.
+
+**What does help is the specialists.** Routed by the flat model's gate, the two
+branch specialists add +0.018 on S2 with the rule and +0.018 on S1, 2 of 3 seeds
+each — past the screening bar (+0.015, 2/3 seeds), so **they are extended to seeds
+3 and 4** (the specialists only; the gate is dropped). Queued at 01:47 on
+GPU 0, ahead of the remaining boundary experts. The 3-seed ensemble shows no gain
+yet (0.414 vs 0.418); the 5-seed read decides.
+
+**Extra GPU-0 lane at 01:46** (GPU 0 then: another user's 27 GB job + our two runs,
+~37 GB free): a third lane, restarted a minute later so that the extension runs
+first. E12a seed 2 finishes around 05:30; if it keeps E12a past the screening bar,
+E12a is extended to seeds 3–4 the same way.
+
+### E12a on the screening seeds (2026-09-29 06:35, seeds 0–2)
+
+All of train, fixed 16 epochs, last epoch kept; paired with the flat full-question
+model of the same seed (which held out 10% and chose its epoch):
+
+| seed | 0 | 1 | 2 | mean |
+|---|---|---|---|---|
+| dev S2 | +0.070 | +0.035 | −0.035 | **+0.023** (2/3 up) |
+| dev S1 | +0.041 | −0.008 | −0.034 | 0.000 |
+
+Past the screening bar on S2, so **E12a is extended to seeds 3 and 4**, queued
+first on GPU-0 lane a at 06:37 (the boundary-expert run it had just begun lost a
+minute and returns to the shared queue). Its post-processing marker was cleared so
+the analysis and submission are rebuilt on all five seeds. The prediction for E12a
+(S2 +0.01 to +0.02, S1 unchanged) holds so far.
+
+### E12b on 5 seeds (2026-09-29 14:30): the specialists do not hold up
+
+Raw: `reports/raw/E12b_specialists_5seeds.txt`
+(`python clarity/hier_combine.py --focus "flat gate + specialists"`).
+
+| flat model's gate + specialists, minus flat | seeds 0–2 (screening) | **seeds 0–4** |
+|---|---|---|
+| S2 | +0.003 (2/3) | −0.012 (2/5) |
+| S2 + rule | +0.018 (2/3) | **−0.009 (2/5)** |
+| S1 | +0.018 (2/3) | **+0.004 (2/5)** |
+| Clear Non-Reply F1 | +0.005 | +0.006 |
+| Non-Reply recall | +0.010 | +0.024 |
+
+As 5-seed ensembles with the rule: S2 0.404 against the flat model's 0.471; S1
+0.646 against 0.631.
+
+Seeds 3 and 4 reversed the screening gain; on five seeds the specialists are level
+with the flat model on both subtasks, and as an ensemble clearly worse on
+Subtask 2. **Verdict on E12b: negative.** Neither part of the hierarchy improves on
+a single flat model — the dedicated gate hurts (it memorises the binary split and
+routes hard), and branch specialists add nothing measurable. This is the third
+hierarchy tested (after post-hoc routing, E5, and a factorised head, E9), each
+with a different mechanism, and none beats the flat model trained on the full
+question. It also shows the screening rule working as intended: a +0.018 on three
+seeds was worth extending, and two more seeds were enough to see it was noise.
+
+### E12 results (all 27 runs finished 2026-09-29 18:52)
+
+Raw: `reports/raw/E12a_vs_flat_compare.txt`, `E12a_alldata_{analysis,decision_rules}.txt`,
+`E12c_experts_3seeds.txt`, `E12_all_combinations_seeds012.txt`, and the E12b/E12d
+files above. Every comparison is paired with the flat full-question model of the
+same seed (E10_fullq_16ep).
+
+**E12a — training on all of train (5 seeds): the one variant that helps Subtask 2.**
+
+| seed | 0 | 1 | 2 | 3 | 4 | mean |
+|---|---|---|---|---|---|---|
+| dev S2 | +0.071 | +0.035 | −0.035 | +0.025 | +0.053 | **+0.029 ± 0.040 (4/5 up)** |
+| dev S1 | +0.041 | −0.008 | −0.034 | −0.020 | −0.066 | −0.017 ± 0.039 (1/5 up) |
+
+| 5 seeds | flat (E10_fullq_16ep) | E12a |
+|---|---|---|
+| single model, S2 / S1 | 0.386 / 0.631 | **0.416** / 0.613 |
+| single model + rule, S2 | 0.398 | **0.417** |
+| ensemble, argmax, S2 | 0.416 | **0.481** (bootstrap +0.066, 95% [−0.004, +0.142]) |
+| ensemble + rule, S2 | 0.478 | **0.489** |
+| same, 2-annotator reference sets | 0.423–0.448 | 0.417–0.483 |
+| ensemble, S1 (top leaf / level) | 0.631 / 0.627 | 0.634 / 0.639 |
+
+More data and no epoch selection lift Subtask 2 per model and as an ensemble. The
+cost is on Subtask 1, which dips for single models (−0.017, 1/5 up) and is level as
+an ensemble. Keeping the last epoch also removes a step the log showed to be noisy.
+Two cautions apply. The comparison seeds (0–4) are the ones whose flat ensemble was
+the lucky 0.478 (E11), so the gain is if anything understated at the system level;
+but a single 5-seed system number is still not enough to rank systems (E11), so
+0.489 is reported as a 5-seed result, not as a new best system.
+
+**E12b — the hierarchy: negative** (above): the dedicated gate hurts, and the branch
+specialists passed 3-seed screening but were level with the flat model on 5 seeds.
+
+**E12c — boundary experts for the three confused pairs (3 seeds): no effect.**
+S2 +0.002 (1/3), S2 + rule −0.004, S1 −0.004; on top of the hierarchy −0.051. The
+experts rarely change a decision the flat model already makes between the same two
+labels from the same input — the same lesson as the E6 re-ranker.
+
+**E12d — model soups: negative** (above).
+
+**Against the predictions written before launch.** E12a: S2 +0.01 to +0.02 with S1
+unchanged — S2 came in a little higher (+0.029), S1 slightly lower (−0.017). E12b:
+the gate was to raise Non-Reply recall — it did not; failed. E12c: small or no gain —
+held (none). E12d: between a single model and the ensemble — failed (below a single
+model).
+
+**What E12 establishes.** Of four variants, one helps: **train on every row and keep
+the last epoch**. The hierarchy — the idea the top systems and the organisers point
+to — was tested in its encoder form three ways (post-hoc routing E5, factorised head
+E9, specialist encoders E12b) and does not beat a flat model trained on the full
+question; in the published systems its benefit came with LLM reasoning stages, which
+this track has deferred. The next encoder step, if any, is to make the full-data
+model the base and run it on 10 seeds, the standard E11 set for any system claim.
 
 ---
 

@@ -96,6 +96,53 @@ def load_test() -> pd.DataFrame:
 SPLIT_SEED = 12345
 ANNOTATOR_IDS = ("85", "86", "89")
 
+# E12. A run can learn a sub-problem of the 9-way task instead of the whole of it:
+#   leaf9          the 9 evasion labels (every run before E12)
+#   gate           Non-Reply vs the rest, 2 classes: 0 = other six, 1 = Non-Reply
+#   other6         the six non-Non-Reply labels, trained on those rows only
+#   nr3            the three Non-Reply labels, trained on those rows only
+#   pair:<A>,<B>   two labels, trained on their rows only (a boundary expert)
+# The tree (Non-Reply split off first; three confused pairs below it) comes from the
+# confusion matrix of the full-question models on the train slice; see
+# reports/02_experiment_log.md §E12. Sub-task models save probabilities over their own
+# classes; hier_combine.py turns them back into 9-way distributions.
+NON_REPLY = ("Declining to answer", "Claims ignorance", "Clarification")
+
+
+def task_classes(task: str) -> list[int] | None:
+    """Leaf indices a task distinguishes, in output order (None for the 2-way gate)."""
+    if task == "leaf9":
+        return list(range(N_EVASION))
+    if task == "gate":
+        return None
+    if task == "nr3":
+        return [EVASION_LABELS.index(c) for c in NON_REPLY]
+    if task == "other6":
+        return [i for i, c in enumerate(EVASION_LABELS) if c not in NON_REPLY]
+    if task.startswith("pair:"):
+        names = task[len("pair:"):].split(",")
+        idx = []
+        for n in names:
+            hits = [i for i, c in enumerate(EVASION_LABELS) if c.lower().startswith(n.strip().lower())]
+            if len(hits) != 1:
+                raise SystemExit(f"--task {task}: {n!r} does not name exactly one label")
+            idx.append(hits[0])
+        if len(idx) != 2:
+            raise SystemExit(f"--task {task}: a pair needs exactly two labels")
+        return idx
+    raise SystemExit(f"unknown --task {task!r}")
+
+
+def task_targets(task: str, y: np.ndarray) -> tuple[np.ndarray, list[str]]:
+    """Map 9-way labels to the task's classes; -1 marks rows outside the task."""
+    if task == "gate":
+        nr = np.isin(y, [EVASION_LABELS.index(c) for c in NON_REPLY])
+        return nr.astype(np.int64), ["other", "Non-Reply"]
+    cls = task_classes(task)
+    lut = np.full(N_EVASION, -1, dtype=np.int64)
+    lut[cls] = np.arange(len(cls))
+    return lut[y], [EVASION_LABELS[i] for i in cls]
+
 
 # --------------------------------------------------------------------------
 # Input construction
@@ -247,7 +294,8 @@ class ClarityEncoder(nn.Module):
                   panel, not of the consensus.
     """
 
-    def __init__(self, name: str, head: str, dropout: float, pooling: str, n_ann: int = 3):
+    def __init__(self, name: str, head: str, dropout: float, pooling: str, n_ann: int = 3,
+                 n_out: int = N_EVASION):
         super().__init__()
         self.cfg = AutoConfig.from_pretrained(name)
         # dtype=float32 is NOT a default -- it is load-bearing, and omitting it
@@ -275,7 +323,7 @@ class ClarityEncoder(nn.Module):
         # mean pooling too so the two differ only in what is pooled.
         self.pooler = nn.Linear(H, H)
         self.drop = nn.Dropout(dropout)
-        self.cls9 = nn.Linear(H, N_EVASION)
+        self.cls9 = nn.Linear(H, n_out)  # 9 unless the run learns a sub-task (E12)
         self.cls3 = nn.Linear(H, 3) if head == "hier" else None
         self.branch = None
         if head == "hsoft":
@@ -448,6 +496,8 @@ def predict(model, loader, device, n_ann: int) -> np.ndarray:
         else:
             probs = torch.softmax(logits, dim=-1)
         out.append(probs.cpu().numpy())
+    if not out:  # no held-out rows (--val-frac 0)
+        return np.zeros((0, model.cls9.out_features), dtype=np.float32)
     return np.concatenate(out, axis=0)
 
 
@@ -534,6 +584,9 @@ class Cfg:
     # Smoke testing only: cap the number of training rows.
     max_train: int = 0
     push_to_hub: bool = False
+    # E12: which problem the run learns (see task_classes). Anything but leaf9 needs
+    # the flat head and saves probabilities over the task's own classes.
+    task: str = "leaf9"
 
 
 def set_seed(seed: int) -> None:
@@ -597,13 +650,29 @@ def run(cfg: Cfg, outdir: Path) -> dict:
         [ANNOTATOR_IDS.index(str(a)) for a in train_df["annotator_id"].astype(str)], dtype=np.int64
     )
 
+    # E12: the labels this run learns, and the rows that carry them.
+    y_task, task_names = task_targets(cfg.task, y_train)
+    n_out = len(task_names)
+    leaf9 = cfg.task == "leaf9"
+    if not leaf9 and (cfg.head != "flat" or cfg.fold >= 0):
+        raise SystemExit("--task other than leaf9 needs --head flat and no --fold")
+
     if cfg.fold >= 0:
         val_idx = stratified_fold_index(y_train, cfg.n_folds, cfg.fold, SPLIT_SEED)
+    elif cfg.val_frac <= 0:
+        # E12a: train on every row. With nothing held out there is nothing to choose
+        # an epoch on, so the last epoch is kept (measured to lose nothing: §E12).
+        if cfg.select != "last":
+            raise SystemExit("--val-frac 0 needs --select last")
+        val_idx = np.zeros(0, dtype=np.int64)
     else:
         val_idx = stratified_val_index(y_train, cfg.val_frac, SPLIT_SEED)
     tr_mask = np.ones(len(y_train), dtype=bool)
     tr_mask[val_idx] = False
     tr_idx = np.where(tr_mask)[0]
+    # Same fixed slice for every task; a sub-task keeps the rows inside it.
+    tr_idx = tr_idx[y_task[tr_idx] >= 0]
+    val_idx = val_idx[y_task[val_idx] >= 0]
     if cfg.max_train > 0:
         tr_idx = np.random.default_rng(cfg.seed).permutation(tr_idx)[: cfg.max_train]
 
@@ -626,7 +695,7 @@ def run(cfg: Cfg, outdir: Path) -> dict:
         tok,
         [a_tr[i] for i in tr_idx],
         [b_tr[i] for i in tr_idx],
-        y_train[tr_idx],
+        y_task[tr_idx],
         c_train[tr_idx],
         ann_train[tr_idx],
         cfg,
@@ -635,7 +704,7 @@ def run(cfg: Cfg, outdir: Path) -> dict:
         tok,
         [a_tr[i] for i in val_idx],
         [b_tr[i] for i in val_idx],
-        y_train[val_idx],
+        y_task[val_idx],
         c_train[val_idx],
         ann_train[val_idx],
         cfg,
@@ -657,12 +726,12 @@ def run(cfg: Cfg, outdir: Path) -> dict:
     dl_dev = DataLoader(ds_dev, batch_size=32, collate_fn=lambda b: collate(b, pad))
     dl_te = DataLoader(ds_te, batch_size=32, collate_fn=lambda b: collate(b, pad))
 
-    model = ClarityEncoder(cfg.model, cfg.head, cfg.dropout, cfg.pooling).to(device)
+    model = ClarityEncoder(cfg.model, cfg.head, cfg.dropout, cfg.pooling, n_out=n_out).to(device)
     reinit_top_layers(model, cfg.reinit_top)
     if cfg.grad_checkpoint:
         model.enc.gradient_checkpointing_enable()
 
-    prior = np.bincount(y_train[tr_idx], minlength=N_EVASION).astype(np.float64)
+    prior = np.bincount(y_task[tr_idx], minlength=n_out).astype(np.float64)
     prior = prior / prior.sum()
     loss_fn = make_loss(cfg.loss, prior, cfg.smoothing, device, cfg.focal_gamma)
 
@@ -722,29 +791,38 @@ def run(cfg: Cfg, outdir: Path) -> dict:
         # dev set is the project's single multi-reference scoring surface and is
         # far too small to select on without overfitting it; it is scored each
         # epoch for monitoring and reported, never optimised against.
-        val_pred = consensus(val_probs).argmax(1)
-        val_score = macro_f1_single_label(val_pred, y_train[val_idx], EVASION_LABELS).macro_f1
-        dev_pred = consensus(dev_probs).argmax(1)
-        s2 = score_subtask2(dev_pred, dev_mask)
-        s1 = score_subtask1(leaf_to_official_clarity(dev_pred), dev_clarity)
-
-        diag = inset_diagnostics(dev_pred, dev_mask)
+        if len(val_idx):
+            val_pred = consensus(val_probs).argmax(1)
+            val_score = macro_f1_single_label(val_pred, y_task[val_idx], tuple(task_names)).macro_f1
+        else:
+            val_score = float("nan")  # nothing held out (--val-frac 0)
         row = {
             "epoch": epoch,
             "train_loss": running / max(nb, 1),
             "val_macro_f1": val_score,
-            "dev_subtask2_macro_f1": s2.macro_f1,
-            "dev_subtask1_macro_f1": s1.macro_f1,
-            "dev_inset_rate": diag["inset_rate"],
-            "dev_classes_named": diag["classes_named"],
             "minutes": (time.time() - t0) / 60,
         }
+        if leaf9:
+            dev_pred = consensus(dev_probs).argmax(1)
+            s2 = score_subtask2(dev_pred, dev_mask)
+            s1 = score_subtask1(leaf_to_official_clarity(dev_pred), dev_clarity)
+            diag = inset_diagnostics(dev_pred, dev_mask)
+            row.update({
+                "dev_subtask2_macro_f1": s2.macro_f1,
+                "dev_subtask1_macro_f1": s1.macro_f1,
+                "dev_inset_rate": diag["inset_rate"],
+                "dev_classes_named": diag["classes_named"],
+            })
+            dev_txt = (f"devS2={s2.macro_f1:.4f} devS1={s1.macro_f1:.4f} "
+                       f"inset={diag['inset_rate']:.3f} named={diag['classes_named']}/9 ")
+        else:
+            # A sub-task model has no 9-way dev score of its own; hier_combine.py
+            # scores it inside the combined system.
+            dev_txt = f"task={cfg.task} "
         history.append(row)
         print(
             f"[{cfg.name} {tag}] ep{epoch} loss={row['train_loss']:.4f} "
-            f"val={val_score:.4f} devS2={s2.macro_f1:.4f} devS1={s1.macro_f1:.4f} "
-            f"inset={diag['inset_rate']:.3f} named={diag['classes_named']}/9 "
-            f"({row['minutes']:.1f}m)",
+            f"val={val_score:.4f} {dev_txt}({row['minutes']:.1f}m)",
             flush=True,
         )
         tracker.log(row, step=epoch)
@@ -767,10 +845,6 @@ def run(cfg: Cfg, outdir: Path) -> dict:
             "elapsed_s": time.time() - t0,
         })
 
-    dev_pred = consensus(best_dev_probs).argmax(1)
-    s2 = score_subtask2(dev_pred, dev_mask)
-    s1 = score_subtask1(leaf_to_official_clarity(dev_pred), dev_clarity)
-
     outdir.mkdir(parents=True, exist_ok=True)
     np.save(outdir / "dev_probs.npy", best_dev_probs)
     np.save(outdir / "val_probs.npy", best_val_probs)
@@ -779,38 +853,48 @@ def run(cfg: Cfg, outdir: Path) -> dict:
     (outdir / "config.json").write_text(json.dumps(asdict(cfg), indent=2))
     result = {
         "config": asdict(cfg),
+        "task_classes": task_names,
         "selected_epoch": best["epoch"],
         "val_macro_f1": best["val_macro_f1"],
-        "dev_subtask2_macro_f1": s2.macro_f1,
-        "dev_subtask1_macro_f1": s1.macro_f1,
-        # The two terms macro-F1 decomposes into -- see reports/01_scorer_geometry.md.
-        "dev_inset": inset_diagnostics(dev_pred, dev_mask),
-        "dev_subtask2_per_class": {
-            k: {"f1": v.f1, "support": v.support, "tp": v.tp, "fp": v.fp, "fn": v.fn}
-            for k, v in s2.per_class.items()
-        },
         "history": history,
         "peak_vram_gb": torch.cuda.max_memory_allocated() / 1024**3,
         "wall_minutes": (time.time() - t0) / 60,
     }
+    if leaf9:
+        dev_pred = consensus(best_dev_probs).argmax(1)
+        s2 = score_subtask2(dev_pred, dev_mask)
+        s1 = score_subtask1(leaf_to_official_clarity(dev_pred), dev_clarity)
+        result.update({
+            "dev_subtask2_macro_f1": s2.macro_f1,
+            "dev_subtask1_macro_f1": s1.macro_f1,
+            # The two terms macro-F1 decomposes into -- see reports/01_scorer_geometry.md.
+            "dev_inset": inset_diagnostics(dev_pred, dev_mask),
+            "dev_subtask2_per_class": {
+                k: {"f1": v.f1, "support": v.support, "tp": v.tp, "fp": v.fp, "fn": v.fn}
+                for k, v in s2.per_class.items()
+            },
+        })
     (outdir / "metrics.json").write_text(json.dumps(result, indent=2))
     clear_resume(outdir)  # the run is complete; metrics.json is now the record
-    tracker.summary({
+    summary = {
         "selected_epoch": result["selected_epoch"],
         "best_val_macro_f1": result["val_macro_f1"],
-        "dev_subtask2_macro_f1": result["dev_subtask2_macro_f1"],
-        "dev_subtask1_macro_f1": result["dev_subtask1_macro_f1"],
-        "dev_inset_rate": result["dev_inset"]["inset_rate"],
         "peak_vram_gb": result["peak_vram_gb"],
-    })
+    }
+    if leaf9:
+        summary.update({
+            "dev_subtask2_macro_f1": result["dev_subtask2_macro_f1"],
+            "dev_subtask1_macro_f1": result["dev_subtask1_macro_f1"],
+            "dev_inset_rate": result["dev_inset"]["inset_rate"],
+        })
+    tracker.summary(summary)
     tracker.finish()
     if cfg.push_to_hub:
         push_async(outdir)
-    print(
-        f"[{cfg.name} {tag}] DONE  devS2={s2.macro_f1:.4f} devS1={s1.macro_f1:.4f} "
-        f"peak={result['peak_vram_gb']:.1f}GB  {result['wall_minutes']:.1f}m",
-        flush=True,
-    )
+    dev_txt = (f"devS2={result['dev_subtask2_macro_f1']:.4f} devS1={result['dev_subtask1_macro_f1']:.4f} "
+               if leaf9 else f"task={cfg.task} ")
+    print(f"[{cfg.name} {tag}] DONE  {dev_txt}"
+          f"peak={result['peak_vram_gb']:.1f}GB  {result['wall_minutes']:.1f}m", flush=True)
     return result
 
 

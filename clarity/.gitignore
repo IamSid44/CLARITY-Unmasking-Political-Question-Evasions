@@ -12,4 +12,5 @@ wandb/
 submissions/*
 !submissions/L0_large_base/
 !submissions/L0_large_base_logitadj/
+!submissions/FINAL_*/
 submissions/*/**/prediction
