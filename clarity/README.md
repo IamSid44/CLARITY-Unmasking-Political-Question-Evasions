@@ -12,7 +12,7 @@ track, which is now archived; the copies were checked to give identical results.
 | **Final system** | full question + 16 epochs, 10-seed DeBERTa-v3-large ensemble + logit adjustment: dev S2 **0.405**, dev S1 **0.648** (baseline system: 0.428 / 0.601) |
 | Best single model | full question + 16 epochs: 0.384 ± 0.030 dev S2, 0.614 ± 0.027 dev S1 over 10 seeds (baseline 0.315 / 0.576); better on 9 of 10 seeds |
 | The story, in order | [`reports/02_experiment_log.md`](reports/02_experiment_log.md) |
-| Latest | **E12**: training on all of train (last epoch) is the one variant that helps — Subtask 2 +0.029 per model on 4 of 5 seeds, 5-seed system 0.489. The hierarchy of specialist encoders, boundary experts and model soups do not. See [`reports/04_mideval_summary.md`](reports/04_mideval_summary.md) |
+| Latest | **E12**: training on all of train (last epoch) is the one variant that helps — Subtask 2 +0.029 per model on 4 of 5 seeds, 5-seed system 0.489. The hierarchy of specialist encoders, boundary experts and model soups do not. See [`reports/03_research_narrative.md`](reports/03_research_narrative.md) |
 | Running | nothing |
 
 ---
@@ -98,7 +98,7 @@ Ablations that did **not** help, all documented:
 |---|---|---|
 | per-class decision thresholds (the textbook macro-F1 rule) | 0.394 | overfits 308 items; loses to the one-scalar rule |
 | hard hierarchical routing (clarity branch first, then leaf) | 0.369 | no reliable effect |
-| a second encoder re-ranking the top-3 | 0.354 | negative — [`reports/03_reranker_ablation.md`](reports/03_reranker_ablation.md) |
+| a second encoder re-ranking the top-3 | 0.354 | negative — [`reports/03_research_narrative.md`](reports/03_research_narrative.md) §10 |
 | full question + Balanced Softmax + focal loss (E8) | 0.379 | negative — at 8 epochs the full-question input is undertrained (see E8b); experiment log §E8 |
 | full question, plain cross-entropy (E8b) | 0.343 | negative at 8 epochs, but undertrained; single models match the baseline after logit adjustment — E10 retests at 16 epochs |
 | trained hierarchical head, p(level) × p(leaf \| level) (E9) | 0.370 | negative for Subtask 2; Subtask 1 steadier, not better — experiment log §E9 |
@@ -297,8 +297,7 @@ clarity/
   reports/
     01_scorer_geometry.md    what the metric rewards; corrects the earlier data audit
     02_experiment_log.md     every experiment in order: why, what, result, takeaway
-    03_reranker_ablation.md  the re-ranker negative result, written up for presentation
-    04_mideval_summary.md    the whole track on one page: progression, component effects, lessons
+    03_research_narrative.md the story: why each experiment was run, what came out, why it worked or failed
     raw/                     unedited analysis outputs behind the tables
   submissions/               packaged predictions for the baseline and the final system
                                (ablations write theirs locally; not in git)

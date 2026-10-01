@@ -41,10 +41,9 @@ soups do not. Nothing is running.
 .
 ├── clarity/           the system: code, experiment definitions, reports, packaged predictions
 │   ├── README.md          start here
-│   └── reports/           the scorer analysis, the experiment log, the re-ranker ablation
+│   └── reports/           the scorer analysis, the experiment log, the research narrative
 ├── Materials/         project proposal and reference papers (task overview, TeleAI,
 │                        ChulaNLP, the QEvasion dataset paper)
-├── MIDEVAL_PLAN.md    the team's mid-evaluation plan and pitch
 └── README.md
 ```
 
@@ -67,11 +66,10 @@ vocabulary and the official-scorer replica — were carried over into
 
 For someone new to the project, about an hour in total:
 
-0. **The one-page summary** —
-   [`clarity/reports/04_mideval_summary.md`](clarity/reports/04_mideval_summary.md)
-   (5 min): the progression from baseline to final system, what each component
-   did, what did not work, and what the replication changed. Start here for the
-   mid-evaluation.
+0. **The research narrative** —
+   [`clarity/reports/03_research_narrative.md`](clarity/reports/03_research_narrative.md)
+   (20 min): the whole track as a chain of reasoning — for each experiment, what
+   led to it, the setup, the result and why it worked or failed. Start here.
 1. **This page**, then **the task and the system** —
    [`clarity/README.md`](clarity/README.md) §1–4 (15 min). What the task is, what
    the model does, the results table and the key findings.
@@ -89,9 +87,6 @@ For someone new to the project, about an hour in total:
    - **E10** — the 2 × 2 of input and training length;
    - **E11 results** — the replication on new seeds, judged against hypotheses
      fixed in advance, and how the final system was chosen.
-4. **A negative result, written up for presentation** —
-   [`clarity/reports/03_reranker_ablation.md`](clarity/reports/03_reranker_ablation.md).
-5. **The mid-evaluation plan** — [`MIDEVAL_PLAN.md`](MIDEVAL_PLAN.md).
 
 To run anything: `clarity/README.md` §5.
 

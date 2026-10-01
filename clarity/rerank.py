@@ -5,7 +5,7 @@ RESULT: NEGATIVE. With the same backbone and budget as Stage 1 (DeBERTa-v3-large
 8 epochs, 5 seeds) it scores 0.329 +/- 0.039 dev Subtask-2 macro-F1 against 0.365
 for the Stage-1 ensemble it re-ranks, and it also loses on the held-out train
 slice (0.300 vs 0.405). Kept as a documented ablation and as the slot an LLM
-chooser will occupy later. Write-up: reports/03_reranker_ablation.md.
+chooser will occupy later. Write-up: reports/03_research_narrative.md §10.
 
 Why
 ---

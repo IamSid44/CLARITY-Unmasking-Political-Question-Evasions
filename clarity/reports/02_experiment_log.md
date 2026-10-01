@@ -355,7 +355,7 @@ scores all nine at once and does not benefit the same way.
 
 ## E6 — A second encoder as re-ranker (negative result)
 
-Full write-up: `03_reranker_ablation.md`. In short:
+The re-ranker design and failure analysis are retold in `03_research_narrative.md` §10. In short:
 
 **Why.** E3: a correct label is in the top-3 for 89.6% of items, and choosing among
 three should be easier than among nine.
@@ -675,7 +675,7 @@ to p(level), and the loss equals the two-term form exactly.)
 - *Over an auxiliary 3-way head* (`--head hier`, already built): that keeps the
   9-way prediction unchanged and only nudges the representation — a weak test.
   Here the coarse decision is part of every prediction.
-- *Over the "marker gate"* (`MIDEVAL_PLAN.md` §2): its premise — that those three
+- *Over the "marker gate"* (the team's mid-evaluation plan, §2; since removed from the tree, in git history): its premise — that those three
   classes score near zero — did not hold (E4: mean F1 0.365, level with the rest).
 - *The official 3-way cut* **is** Subtask 1, and Subtask 1 is our weakest area
   relative to published systems (0.586 vs ChulaNLP 0.65, TeleAI 0.81). A trained
