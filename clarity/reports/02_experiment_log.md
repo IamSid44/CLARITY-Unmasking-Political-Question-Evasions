@@ -16,7 +16,7 @@ over seeds. Raw outputs behind the headline tables are in `reports/raw/`.
 | Backbone throughout | `microsoft/deberta-v3-large` (435M parameters) |
 | Final system (E11, by a rule fixed in advance) | full question + 16 epochs, **10-seed** ensemble + logit adjustment: dev S2 **0.405** (0.412 over CV splits), dev S1 **0.648**; the 10-seed baseline system scores 0.428 / 0.601 — not distinguishable on S2 |
 | Latest | E12: training on all of train is the one variant that helps (S2 +0.029 per model, 4/5 seeds; 5-seed system 0.489); the hierarchy of specialist encoders, boundary experts and model soups do not |
-| Running | nothing (E12 finished 2026-09-29 18:52) |
+| Running | nothing yet. E13 (Qwen3-8B LoRA on JarvisLabs) is registered and ready to launch |
 
 ---
 
@@ -43,6 +43,7 @@ system takes.
 | E12b | hierarchy: Non-Reply gate + branch specialist encoders | 0.345 *(3 seeds)* | 0.608 | 0.390 *(3 seeds)* | negative; specialists alone level on 5 seeds |
 | E12c | boundary experts for the three most-confused pairs (3 seeds) | 0.383 | 0.615 | | no effect |
 | E12d | model soup of 10 trained models | 0.267 *(uniform)* | 0.471 | | negative |
+| E13 | **Qwen3-8B-Base + LoRA** instead of DeBERTa (same input, rows, slice; 3 seeds) | *planned* | | | registered 2026-10-02; runs on JarvisLabs |
 | — | ChulaNLP's fine-tuned DeBERTa-large (published; checkpoint chosen on dev) | 0.46 | 0.65 | | for reference |
 
 **The three main systems at 10 seeds (E11)** — the numbers to quote. Single models:
@@ -81,6 +82,7 @@ system (`../submissions/FINAL_fullq_16ep_10seed_logitadj/`); Codabench is closed
 - [E10 — Training length: is the full question undertrained?](#e10--training-length-is-the-full-question-undertrained-launched-2026-09-26)
 - [E11 — Replication on new seeds, and the final system](#e11--replication-on-new-seeds-and-the-final-system-launched-2026-09-27)
 - [E12 — Groundwork, plan and runs](#e12--groundwork-plan-and-runs-launched-2026-09-28)
+- [E13 — Is the encoder's gap a knowledge gap? A LoRA-tuned Qwen3-8B classifier](#e13--is-the-encoders-gap-a-knowledge-gap-a-lora-tuned-qwen3-8b-classifier-registered-2026-10-02)
 - [Deferred](#deferred)
 
 ---
@@ -1626,6 +1628,61 @@ E9, specialist encoders E12b) and does not beat a flat model trained on the full
 question; in the published systems its benefit came with LLM reasoning stages, which
 this track has deferred. The next encoder step, if any, is to make the full-data
 model the base and run it on 10 seeds, the standard E11 set for any system claim.
+
+---
+
+## E13 — Is the encoder's gap a knowledge gap? A LoRA-tuned Qwen3-8B classifier *(registered 2026-10-02)*
+
+*Written before any E13 run started.*
+
+**Why.** Every encoder-side attempt to choose better among the model's own top candidates has
+failed: decision rules beyond one scalar (E4, E12 groundwork), a re-ranker (E6), boundary
+experts (E12c) and three hierarchies (E5, E9, E12b). The mid-eval analysis
+(`mideval/analysis/mideval_analysis.txt`) adds two facts:
+- 53 of the final ensemble's 137 errors are on items all three annotators agreed on;
+- a human annotator scored against the other two reaches S2 0.684, against the model's 0.38.
+
+So the gap is the model, not label noise. Two explanations remain:
+1. **Missing knowledge:** world and language knowledge a 0.4B encoder lacks, as in the dataset
+   paper's Bernanke example.
+2. **Missing label meaning:** what each evasion type means, which a classifier must infer from
+   3,400 examples.
+
+A larger pretrained classifier tests the first explanation with nothing else changed.
+TeleAI report Qwen2.5-7B fine-tuned without chain-of-thought at 0.495 dev S2 (their Table 2;
+one run, generative fine-tuning, their own protocol).
+
+**Design: one change from E10_fullq_16ep, the backbone.**
+
+| | E10_fullq_16ep | **E13 (`Q8_fullq_lora`)** |
+|---|---|---|
+| backbone | DeBERTa-v3-large, full fine-tune | **Qwen3-8B-Base, LoRA r=16 / alpha 32 / dropout 0.05 on all linear layers; new 9-way head on the last token, trained in full** |
+| learning rate, epochs | 1e-5 (head 1e-4), 16 epochs | **1e-4, 3 epochs** (what LoRA on an 8B model needs) |
+| rows, train slice, selection | train minus the fixed 345-row slice; best epoch on the slice | same (the slice is asserted identical) |
+| input | sub-question + full question (≤256 tokens) + answer, 1024 tokens | same text and budgets, plus a fixed closing question so the head reads the same position on every item |
+| loss, batch | cross-entropy, effective 16 | same (micro-batch 4 × accumulation 4) |
+| seeds | 0–9 | **0–2 (screen)** |
+| hardware | lab RTX PRO 6000 | 1× A100 80GB on JarvisLabs (`JARVISLABS_PORTING_GUIDE.md`) |
+
+Code: `clarity/llm_classifier.py`. Smoke-tested on CPU with Qwen3-0.6B-Base, including an
+interrupted epoch resumed from its checkpoint. Outputs follow `encoder.py`'s layout, so
+`analyze.py` and `decide.py` read them unchanged.
+
+**Hypotheses and predictions** (paired with E10_fullq_16ep on seeds 0–2: S2 0.344 / 0.370 /
+0.428, mean 0.381; S1 0.591 / 0.627 / 0.640, mean 0.619):
+
+1. **Screening (the E12 bar):** S2 at least +0.015 over DeBERTa with at least 2 of 3 seeds up.
+   If it passes, extend to seeds 3–9 and compare 10-seed systems as in E11.
+2. **Size:** if knowledge is the gap, S2 single-model mean 0.43–0.50 (+0.05 to +0.12) and S1
+   +0.02 to +0.05. A gain below +0.015 is read as: knowledge is not what the encoder lacks, and
+   the budget moves to the LLM-over-candidates cascade (`mideval/PLAN_REMAINING.md`, Phase B).
+3. **Where:** the gain falls mostly on the commitment boundary (Explicit ↔ Implicit, General ↔
+   Implicit/Explicit), the largest error pairs in the mid-eval analysis. It falls more on items
+   annotators agreed on than on contested ones.
+4. **Fit:** the slice selects epoch 1 or 2 of 0–2; training loss ends below 1.0.
+
+**Cost guard.** A 20-step timing pilot aborts the run (and pauses the instance) if the 3 seeds
+are projected over 5 hours. Estimated cost ₹400–650 of the ~₹5,880 credit.
 
 ---
 
