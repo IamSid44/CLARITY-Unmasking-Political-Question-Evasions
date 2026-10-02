@@ -139,6 +139,9 @@ def section_b() -> None:
           f"{'ADOPT' if np.mean(sel) >= 0.015 and ups >= 2 else 'KEEP 3 EPOCHS'}"
           f"{'' if len(seeds) == 3 else '  (incomplete: ' + str(len(seeds)) + '/3 seeds)'}")
     print(f"   dev S2 change vs E13 (reported, decides nothing): {np.mean(d):+.3f}")
+    ms = [json.loads((seed_dir("Q8_fullq_lora_12ep", s) / "metrics.json").read_text()) for s in seeds]
+    v2 = np.array([m["dev_subtask2_macro_f1"] for m in ms]); v1 = np.array([m["dev_subtask1_macro_f1"] for m in ms])
+    print(f"   12 epochs, mean over seeds: S2 {v2.mean():.3f} ± {v2.std(ddof=1):.3f}, S1 {v1.mean():.3f} ± {v1.std(ddof=1):.3f}")
 
 
 def section_c() -> None:
@@ -151,9 +154,20 @@ def section_c() -> None:
     a1 = np.array([s1(p.argmax(1)) for p in a]); b1 = np.array([s1(p.argmax(1)) for p in b])
     for i, s in enumerate(seeds):
         print(f"   seed {s}: S2 {a2[i]:.3f} vs {b2[i]:.3f} ({a2[i] - b2[i]:+.3f}), S1 {a1[i]:.3f} vs {b1[i]:.3f} ({a1[i] - b1[i]:+.3f})")
+    print(f"   mean over seeds: all-data S2 {a2.mean():.3f} ± {a2.std(ddof=1):.3f}, S1 {a1.mean():.3f} ± {a1.std(ddof=1):.3f}")
     print(f"   paired S2: {paired(a2, b2)};  S1: {paired(a1, b1)}")
     print(f"   screening bar (+0.015, >= 2/3 up): {'PASSED' if (a2 - b2).mean() >= 0.015 and (a2 > b2).sum() >= 2 else 'not passed'}"
-          f"{'' if len(seeds) == 3 else '  (incomplete)'}")
+          f"  ({len(seeds)} paired seeds)")
+    al = np.array([system(p)[0] for p in a]); bl = np.array([system(p)[0] for p in b])
+    print(f"   single model + logit adjustment, S2: all-data {al.mean():.3f}, E13 {bl.mean():.3f}; paired {paired(al, bl)}")
+    sa1, pra = system(a.mean(0)); sa10, _ = system(a.mean(0), 10)
+    sb1, prb = system(b.mean(0)); sb10, _ = system(b.mean(0), 10)
+    print(f"   {len(seeds)}-seed systems (+LA, nested CV), S2: all-data {sa1:.3f} (10 splits {sa10:.3f}), "
+          f"E13 {sb1:.3f} ({sb10:.3f}); S1 {s1(pra):.3f} vs {s1(prb):.3f}")
+    print(f"   all-data - E13 system, bootstrap: {boot(pra, prb)}")
+    masks = reference_masks(sp.dev, True)
+    two = [nested_cv(R1, a.mean(0), g, 5, 0)["out_of_fold_macro_f1"] for n, g in masks.items() if n != "3ann"]
+    print(f"   all-data system on the 2-annotator sets: {', '.join(f'{v:.3f}' for v in two)} (mean {np.mean(two):.3f})")
 
 
 def section_d() -> None:

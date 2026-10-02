@@ -42,6 +42,7 @@ B. E13b: 12 epochs (Q8_fullq_lora_12ep) -- decision on the TRAIN SLICE
       dev S2 by epoch (reported only): 0.311 0.424 0.322 0.528 0.559 0.508 0.484 0.551 0.539 0.518 0.496 0.505
    slice F1 change vs E13: +0.084 (3/3 seeds up); registered rule: adopt 12 epochs if >= +0.015 with >= 2/3 up -> ADOPT
    dev S2 change vs E13 (reported, decides nothing): +0.082
+   12 epochs, mean over seeds: S2 0.543 ± 0.015, S1 0.742 ± 0.008
 
 C. E13c: all of train, last of 3 epochs (Q8_alldata) vs E13, paired by seed
 
@@ -55,6 +56,7 @@ C. E13c: all of train, last of 3 epochs (Q8_alldata) vs E13, paired by seed
    seed 7: S2 0.515 vs 0.501 (+0.014), S1 0.697 vs 0.702 (-0.005)
    seed 8: S2 0.454 vs 0.474 (-0.020), S1 0.675 vs 0.718 (-0.043)
    seed 9: S2 0.438 vs 0.449 (-0.011), S1 0.713 vs 0.748 (-0.035)
+   mean over seeds: all-data S2 0.492 ± 0.045, S1 0.715 ± 0.027
    paired S2: +0.017 ± 0.045 (t = 1.17, 6/10 seeds up);  S1: +0.006 ± 0.033 (t = 0.54, 6/10 seeds up)
    screening bar (+0.015, >= 2/3 up): PASSED  (10 paired seeds)
    single model + logit adjustment, S2: all-data 0.547, E13 0.538; paired +0.008 ± 0.042 (t = 0.63, 6/10 seeds up)

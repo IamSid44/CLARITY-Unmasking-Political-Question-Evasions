@@ -21,8 +21,10 @@ credit. Cloud runs use a timing pilot, a projected-cost cap and automatic pause.
 | step | what | gate |
 |---|---|---|
 | A1 | **Qwen3-8B-Base + LoRA (r=16, all linear layers) as a 9-way classifier**, 3 epochs. Same rows, train slice, input and selection rule as DeBERTa E10_fullq_16ep. Seeds 0–2. Code: `clarity/llm_classifier.py`; runner: `jarvis_setup.sh` / `jarvis_drive.sh`. **Done 2026-10-02** on 1× RTX PRO 6000 (JarvisLabs VM), 21 min per seed: S2 0.462 ± 0.080, +0.081 over DeBERTa (3/3 up); S1 +0.068 (RESULTS §9). | ≥ +0.015 S2 over DeBERTa, same seeds, ≥ 2/3 up → A2. **Passed** |
-| A2 | Seeds 3–9, then the 10-seed system with LA, compared with DeBERTa's 10-seed system | system claim at 10 seeds |
-| A3 | If A1 passes: one smaller point on the curve (Qwen3.5-4B or Gemma 4 E4B) | — |
+| A2 | Seeds 3–9, then the 10-seed system with LA, compared with DeBERTa's 10-seed system. **Done 2026-10-02:** single S2 0.476 ± 0.043 (10/10 seeds above DeBERTa); system S2 0.543 / S1 0.746 vs 0.405 / 0.648, +0.136 [+0.054, +0.224] (RESULTS §9) | system claim at 10 seeds. **Met** |
+| A2b | 12 epochs instead of 3, seeds 0–2. **Done:** train-slice F1 +0.084 (3/3), best epochs 8–11 → **adopted** by the registered rule. All of train (10 seeds): +0.017 per model, system difference not distinguishable from zero | slice rule (+0.015, ≥ 2/3) |
+| A2c | **Next:** 12 epochs at seeds 3–9 → 10-seed system; then all of train with 12 epochs as its own single-change test (≈ ₹1,600 per 7 seeds on 4 parallel VMs, from E13b's 59 min per seed) | system claim at 10 seeds |
+| A3 | One smaller point on the curve (Qwen3.5-4B or Gemma 4 E4B), same protocol | — |
 
 **Interpreting A1.**
 - **If it passes:** knowledge and scale are a large part of the gap, and the 8B classifier becomes

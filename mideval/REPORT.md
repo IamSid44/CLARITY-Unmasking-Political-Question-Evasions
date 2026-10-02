@@ -5,7 +5,7 @@ SemEval-2026 Task 6: classifying how politicians answer interview questions.
 Every number below is on the **308-item dev set** unless marked, and comes from a file in this
 repository; [`RESULTS.md`](RESULTS.md) gives the source of each. The test labels were never
 released and Codabench has closed, so dev is the only place systems can be compared.
-**Done** and **planned** work are kept apart: §5–6 are done, §7 is planned.
+**Done** and **planned** work are kept apart: §5–7 are done, §8 is planned.
 
 ---
 
@@ -169,41 +169,98 @@ Two typical errors (more in `analysis/error_examples.md`):
 > discusses speculation and violence without answering. Annotators: General ×3. Model: Dodging
 > (p = 0.59).
 
-## 7. Plan to the final (planned)
+## 7. Is the gap knowledge? An 8B classifier (done, 2026-10-02)
 
-Each step has a go/no-go gate. Full plan in [`PLAN_REMAINING.md`](PLAN_REMAINING.md).
+§6 says the model, not the labels, is what fails. Two explanations were left:
+- **missing knowledge:** world and language knowledge a 0.4B encoder lacks, as in the Lieberman
+  example above;
+- **missing label meaning:** what each evasion type means, which 3,400 examples may not teach.
 
-1. **Is the gap knowledge?**
-   - Qwen3-8B fine-tuned with LoRA as a single-pass classifier. Same input, rows, train slice and
-     selection rule as the best DeBERTa model; only the backbone changes.
-   - **Done (3-seed screen, 2026-10-02, one RTX PRO 6000 on JarvisLabs, 21 min per seed).**
-     Dev S2 0.462 ± 0.080 and S1 0.688 ± 0.040, against DeBERTa's 0.381 / 0.619 on the same seeds.
-     That is S2 +0.081 and S1 +0.068, with all 3 seeds up on both. S2 is inside the
-     pre-registered range of 0.43–0.50. Source: `RESULTS.md` §9.
-   - *Gate:* at least +0.015 over DeBERTa with 2 of 3 seeds up, then 10 seeds. **Passed.**
-   - Next (planned): seeds 3–9 for a 10-seed system comparison. Then a longer schedule: the best
-     epoch was the last of 3 on every seed.
-2. **Cascade.** Keep confident items on the cheap model. Send the uncertain ones, with their top-3
-   or a calibrated candidate set, to an open LLM given label definitions and boundary guidance.
-   Sweep the deferral rate to trace accuracy against calls per item, with TeleAI's point on the
-   same axes.
-3. **One-time teacher.** LLM soft labels and short rationales for the training set, distilled into
-   the single-pass student. *Gate:* the student beats its own baseline by more than the seed
-   spread.
-4. **Measured cost.** Quantise the models and measure throughput and latency on real hardware, as
-   cost per million items.
-5. **Final evaluation:** 10 seeds, two-annotator scoring, the human ceiling as a reference line.
+**E13 tests the first with one change: the backbone.** DeBERTa-v3-large becomes
+**Qwen3-8B-Base fine-tuned with LoRA** (r = 16, all linear layers, a 9-way head on the last
+token). Everything else is unchanged:
+- the same rows and train slice;
+- the same input (sub-question + full question + answer, 1024 tokens);
+- the same loss and the same epoch selection on the train slice.
 
-## 8. Risks and fallbacks
+Seeds 0–9 are paired with DeBERTa's. Hypotheses and predictions were written in the experiment
+log before every run. The runs used rented GPUs (JarvisLabs, 1× RTX PRO 6000 per VM), logged to
+W&B, and every seed is on the team's HF repo. Sources: [`RESULTS.md`](RESULTS.md) §9.
+
+![E13: DeBERTa vs Qwen3-8B](figures/e13_qwen_vs_deberta.png)
+
+| dev, 10 paired seeds | Qwen3-8B LoRA | DeBERTa (best, §5) | difference |
+|---|---|---|---|
+| single model, Subtask 2 | **0.476 ± 0.043** | 0.384 ± 0.030 | **+0.092, 10/10 seeds up** (t = 7.1) |
+| single model, Subtask 1 | **0.709 ± 0.031** | 0.614 ± 0.027 | **+0.095, 10/10 seeds up** |
+| **system** (10-seed ensemble + logit adjustment, nested CV), Subtask 2 | **0.543** | 0.405 | **+0.136** [95% CI +0.054, +0.224] |
+| **system**, Subtask 1 | **0.746** | 0.648 | +0.098 |
+| system scored with two annotators, as on test (mean of 3 subsets) | 0.524 | 0.382 | +0.142 |
+
+**What it shows:**
+- **Knowledge is a large part of the gap.**
+  - The 8B classifier wins on every seed.
+  - The gain (+0.092 per model) is larger than everything the encoder track achieved: +0.069 per
+    model from the baseline to the final DeBERTa.
+  - As a single-pass system it is above TeleAI's fine-tuned Qwen2.5-7B (0.495 dev) and ChulaNLP's
+    encoder + Kimi-K2 cascade (0.52 dev).
+  - It is below TeleAI's multi-call pipeline (0.617) and the human ceiling (0.684).
+- **The gain is broad, not on one boundary.**
+  - Per-class F1 rises in 7 of 9 classes, most in the Non-Reply classes (Claims ignorance +0.40,
+    Declining +0.22) and in Dodging (+0.10).
+  - It rises on unanimous and contested items alike (in-set +0.08 and +0.10).
+  - We had predicted the gain would concentrate on the "commitment" boundary and on agreed items.
+    That prediction is **refuted**.
+- **The decision rule matters more for the LLM.** Logit adjustment adds +0.062 per Qwen model,
+  against +0.005 for DeBERTa. Raw Qwen under-predicts General: 24 predictions, though General is
+  in 113 reference sets.
+- **Two single-change follow-ups:**
+  - **12 epochs instead of 3** raises the train-slice F1 by +0.084 on 3 of 3 seeds, and the slice
+    picks epochs 8–11. It is adopted by the rule fixed in advance. Dev S2 for the 3 seeds is
+    0.543 ± 0.015, reported only.
+  - **Training on all of train** gives +0.017 per model (6/10 seeds). Its system is 0.575, but
+    the interval [−0.026, +0.092] includes zero. Not distinguishable, as with DeBERTa (E12a).
+- **Not everything moved:**
+  - `Partial/half-answer` is still never predicted.
+  - `General` stays the weakest frequent class (F1 0.32).
+  - Mixing in DeBERTa adds nothing: nested CV puts 0.79 of the weight on Qwen and scores 0.543,
+    against 0.549 for Qwen alone.
+
+## 8. Plan to the final (planned)
+
+Each step has a go/no-go gate. Full plan in [`PLAN_REMAINING.md`](PLAN_REMAINING.md). What §7
+changes: the single-pass point is now an 8B classifier, and the open question becomes whether
+**label meaning**, supplied through definitions and boundary examples, closes the rest of the gap
+to the multi-call pipelines.
+
+1. **Strongest single-pass model.** 12 epochs (adopted on the slice) at 10 seeds, as a system.
+   Then all of train with the adopted schedule, as its own single-change test.
+   *Gate:* 10-seed system, paired, bootstrap interval.
+2. **Cascade, the label-meaning test.** Confident items keep the classifier's answer. Uncertain
+   items go to a larger open LLM that chooses among the classifier's top-k (top 3 contains an
+   acceptable label for 93% of items), given label definitions, a confusion guide for our measured
+   error pairs, and boundary examples from train.
+   - Prompts are designed on the train slice only.
+   - We sweep the deferral rate (the least-confident fifth is right only 40% of the time) to trace
+     accuracy against calls and tokens per item, with TeleAI's point on the same axes.
+3. **One-time teacher.** The cascade's outputs on train as soft labels, distilled back into the
+   single-pass classifier. *Gate:* the student beats its own baseline by more than the seed spread.
+4. **Measured cost.** Quantised models, throughput and latency on real hardware, as cost per
+   million items, for every point on the curve.
+5. **Final evaluation:** 10 seeds, two-annotator scoring, the short-answer half of dev, the human
+   ceiling as a reference line.
+
+## 9. Risks and fallbacks
 
 | risk | fallback |
 |---|---|
-| the 8B classifier does not beat DeBERTa | reported as evidence that the gap is label meaning, not knowledge; budget moves to the cascade, where definitions and guidance enter through the prompt |
-| GPU access: the lab GPUs are shared; we have about ₹5,880 of cloud credit | encoder work on lab GPUs; cloud only for LLM runs, with a timing pilot and automatic pause; cost per run tracked |
+| the cascade does not beat the 8B classifier | reported as evidence that label meaning is already learned at 8B; the curve then ends at the single-pass point, which is the cheaper answer |
+| GPU access: the lab GPUs are shared; cloud credit ₹4,029 left of ₹5,880 | cloud runs on parallel VMs with a timing pilot, automatic pause and per-run cost tracking (E13 round: ₹1,519) |
 | dev too small to separate systems | paired per-seed comparisons, 10-seed systems, bootstrap intervals; claims stated at the resolution the data supports |
 | test differs from dev (shorter answers, two annotators) | report the short-answer half and the two-annotator scores alongside the headline |
 
-**In one sentence:** a carefully controlled single-pass encoder reaches 0.384 on Subtask 2 (0.405
-as a system), fails mostly on items humans agree on, and usually has the right answer in its top
-three. The second half tests whether that gap is knowledge (an 8B classifier) or label meaning (an
-LLM over the top three), and maps what each costs.
+**In one sentence:** a carefully controlled encoder stops at 0.384 on Subtask 2 (0.405 as a
+system) because it lacks knowledge, not because the labels are noisy. Swapping in a LoRA-tuned 8B
+model, with nothing else changed, gives 0.476 per model and **0.543 as a system** (S1 0.746), on
+all 10 seeds. The second half tests whether label meaning, supplied to a larger LLM only for the
+uncertain items, closes the rest of the gap, and what each step costs.

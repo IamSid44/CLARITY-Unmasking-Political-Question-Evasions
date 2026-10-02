@@ -12,6 +12,8 @@ The main sources are:
 - `analysis/mideval_analysis.txt`, written by `python clarity/mideval_analysis.py` (CPU, 24 s).
 - `clarity/reports/02_experiment_log.md` (the log), and the raw outputs it cites in
   `clarity/reports/raw/`.
+- For the Qwen classifier (§9): `clarity/reports/raw/E13_final_analysis.txt`, written by
+  `python clarity/e13_analysis.py` (CPU, about 3 min, needs the run folders from the HF repo).
 
 ## 1. Main table
 
@@ -83,8 +85,10 @@ Same-split rows only.
 | Qwen2.5-7B LoRA, direct fine-tune | dev | 0.587 | 0.495 | TeleAI, Table 2 |
 | DeepSeek-V3, single-step CoT | dev | 0.710 | 0.490 | TeleAI, Table 2 |
 | DeepSeek-V3, direct | dev | 0.662 | 0.421 | TeleAI, Table 2 |
-| **ours, final system** | dev | **0.648** | **0.405** | above |
-| **ours, single model** | dev | **0.614** | **0.384** | above |
+| **ours, Qwen3-8B LoRA, 10-seed system (ensemble + LA)** | dev | **0.746** | **0.543** | §9 |
+| **ours, Qwen3-8B LoRA, single model (10 seeds)** | dev | **0.709** | **0.476** | §9 |
+| ours, DeBERTa final system (E11) | dev | 0.648 | 0.405 | above |
+| ours, DeBERTa single model | dev | 0.614 | 0.384 | above |
 | human annotator vs the other two (2-annotator scoring) | dev | — | 0.643–0.766 (mean 0.684) | `analysis/mideval_analysis.txt` §G |
 | TeleAI | test | 0.89 | 0.68 | task overview, Table 3 |
 | Llama-70B fine-tuned (organisers) | test | 0.82 | 0.57 | task overview, Table 2 |
@@ -140,28 +144,64 @@ Per-class F1 change on the baseline:
 | a dedicated Non-Reply gate raises recall | recall −0.039 | log §E12b |
 | a model soup lands between one model and the ensemble | 0.267, below a single model | log §E12d |
 
-## 9. Qwen3-8B LoRA classifier
+## 9. Qwen3-8B LoRA classifier (E13, done 2026-10-02)
 
-**Done: 3-seed screen, 2026-10-02.** The setup is identical to E10_fullq_16ep except the
-backbone: Qwen3-8B-Base with LoRA r=16, 3 epochs, epoch chosen on the train slice. Single models
-on dev, paired by seed with E10_fullq_16ep.
-
-| seed | dev S2 | dev S1 | DeBERTa S2 / S1 | paired Δ S2 / S1 |
-|---|---|---|---|---|
-| 0 | 0.405 | 0.647 | 0.344 / 0.591 | +0.061 / +0.056 |
-| 1 | 0.426 | 0.687 | 0.370 / 0.627 | +0.056 / +0.060 |
-| 2 | 0.554 | 0.728 | 0.428 / 0.640 | +0.126 / +0.088 |
-| **mean** | **0.462 ± 0.080** | **0.688 ± 0.040** | 0.381 / 0.619 | **+0.081 / +0.068** |
+**One change from the final DeBERTa model (E10/E11 full question, 16 epochs): the backbone.**
+- The model is Qwen3-8B-Base with LoRA r=16 on every linear layer and a new 9-way head on the
+  last token, trained for 3 epochs, with the epoch chosen on the train slice.
+- Everything else is identical: rows, train slice, input text and budgets, loss, batch size,
+  selection rule.
+- Seeds 0–9 are paired with DeBERTa's seeds 0–9.
 
 Sources:
-- `clarity/reports/raw/E13_Q8_fullq_lora_summary.txt`: per seed and per epoch, with an
-  independent recomputation from the saved probabilities;
-- `clarity/reports/raw/E13_Q8_fullq_lora_analysis.txt`: per class;
-- the experiment log, §E13 results.
+- `clarity/reports/raw/E13_final_analysis.txt`, written by `python clarity/e13_analysis.py`
+  (sections A–E);
+- `clarity/reports/raw/E13_lane_summaries.txt`;
+- the log, §E13–E13c;
+- figure `figures/e13_qwen_vs_deberta.png` (`python clarity/e13_figures.py`).
+
+**Single models and systems, 10 seeds.**
+
+| | Qwen3-8B LoRA | DeBERTa full question 16 ep | Qwen − DeBERTa |
+|---|---|---|---|
+| single model S2 | **0.476 ± 0.043** | 0.384 ± 0.030 | **+0.092** (t = 7.1, **10/10** seeds up) |
+| single model S1 | **0.709 ± 0.031** | 0.614 ± 0.027 | **+0.095** (t = 8.5, **10/10**) |
+| single model + LA, S2 | 0.538 ± 0.043 | 0.389 ± 0.019 | +0.149 (10/10) |
+| 10-seed ensemble, no dev tuning, S2 | 0.495 | 0.409 | |
+| **10-seed system (ensemble + LA, nested CV), S2** | **0.543** (mean of 10 CV splits 0.549) | 0.405 (0.412) | **+0.136**, 95% [+0.054, +0.224] |
+| **10-seed system, S1** | **0.746** | 0.648 | +0.098 |
+| system, three 2-annotator reference sets (test regime) | 0.498 / 0.536 / 0.537 | 0.356 / 0.403 / 0.385 | +0.142 (means) |
+
+**Two follow-ups, each a single change from the Qwen model above.**
+
+| | seeds | single S2 | single S1 | system S2 (+LA) | verdict |
+|---|---|---|---|---|---|
+| **12 epochs instead of 3** (E13b) | 0–2 | 0.543 ± 0.015 | 0.742 ± 0.008 | — | the train-slice F1 rises by +0.084 (3/3), so it is **adopted** by the registered rule; best epochs 8–11 |
+| all of train, last epoch (E13c) | 0–9 | 0.492 ± 0.045 | 0.715 ± 0.027 | 0.575 (10 splits 0.562) | +0.017 per model (6/10); system +0.028 [−0.026, +0.092]: **not distinguishable** |
+
+**Where the gain falls** (per-class S2 F1, mean over 10 seeds, Qwen − DeBERTa):
+- Claims ignorance +0.403, Declining +0.220, Dodging +0.103, Deflection +0.089;
+- General +0.059, Explicit +0.057, Implicit +0.040;
+- Partial 0 for both (never predicted); Clarification −0.144 (4 items).
+
+By annotator agreement, the in-set rate gains are: unanimous items +0.076, 2 labels +0.105,
+3 labels +0.048.
+
+**Mixing Qwen with DeBERTa** (weight and τ fitted inside the nested CV) gives 0.543, against Qwen
+alone at 0.549. The CV puts 0.79 of the weight on Qwen.
 
 How to read this:
-- **The screening bar (+0.015, 2 of 3 seeds up) is passed.** S2 lands inside the pre-registered
-  0.43–0.50, and S1 is above its predicted +0.02 to +0.05.
-- **These are three single models, not a system.** The seed spread is 0.080. A system claim
-  waits for 10 seeds.
-- The selected epoch was the last one on every seed, so 3 epochs may undertrain.
+- **The backbone is the largest single gain in the project.** It is larger than the full
+  question, the epochs and every decision rule combined. It holds on all 10 seeds and on the
+  2-annotator sets.
+- **Against published dev numbers:**
+  - the single-pass 10-seed Qwen system (S2 0.543) is above TeleAI's fine-tuned Qwen2.5-7B (0.495)
+    and ChulaNLP's encoder + Kimi-K2 cascade (0.52);
+  - it is below TeleAI's multi-call pipeline (0.617) and the human ceiling (0.684).
+- **Logit adjustment matters more for Qwen** (+0.062 per model, against +0.005 for DeBERTa). Raw
+  Qwen under-predicts General: 24 predictions, though General is in 113 reference sets
+  (`raw/E13_Q8_topk_confidence.txt`).
+- **An acceptable label is in Qwen's top 3 for 93% of items, and confidence predicts
+  correctness:** the in-set rate rises from 0.40 to 0.87 across confidence fifths. Both are
+  measured on seeds 0–2. This is the headroom the planned cascade targets.
+- **The 3-seed screen of E13 (S2 0.462 ± 0.080) is superseded by the 10-seed numbers.**

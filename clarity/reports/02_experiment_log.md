@@ -11,12 +11,13 @@ over seeds. Raw outputs behind the headline tables are in `reports/raw/`.
 
 | | |
 |---|---|
-| Period | 2026-09-19 → 2026-09-28 |
-| Hardware | 1× RTX PRO 6000 (96 GB), shared with other users' jobs |
-| Backbone throughout | `microsoft/deberta-v3-large` (435M parameters) |
+| Period | 2026-09-19 → 2026-10-02 |
+| Hardware | 1× RTX PRO 6000 (96 GB), shared with other users' jobs; E13 on JarvisLabs VMs with the same GPU |
+| Backbone | `microsoft/deberta-v3-large` (435M parameters) through E12; `Qwen/Qwen3-8B-Base` + LoRA from E13 |
 | Final system (E11, by a rule fixed in advance) | full question + 16 epochs, **10-seed** ensemble + logit adjustment: dev S2 **0.405** (0.412 over CV splits), dev S1 **0.648**; the 10-seed baseline system scores 0.428 / 0.601 — not distinguishable on S2 |
 | Latest | E12: training on all of train is the one variant that helps (S2 +0.029 per model, 4/5 seeds; 5-seed system 0.489); the hierarchy of specialist encoders, boundary experts and model soups do not |
-| Running | nothing. E13 (Qwen3-8B LoRA, 3-seed screen, JarvisLabs, 2026-10-02) is done and passes the screen: single-model dev S2 0.462 ± 0.080, +0.081 over DeBERTa on the same seeds (3/3 up). Seeds 3–9 are next |
+| Latest | **E13: Qwen3-8B + LoRA, the backbone as the one change, 10 seeds.** Single model S2 0.476 ± 0.043 vs 0.384 (+0.092, 10/10 up); **10-seed system S2 0.543 / S1 0.746 vs DeBERTa 0.405 / 0.648** (+0.136, 95% [+0.054, +0.224]). 12 epochs adopted on the slice (3-seed screen); all of train +0.017 per model, not distinguishable |
+| Running | nothing; all JarvisLabs VMs paused |
 
 ---
 
@@ -43,7 +44,9 @@ system takes.
 | E12b | hierarchy: Non-Reply gate + branch specialist encoders | 0.345 *(3 seeds)* | 0.608 | 0.390 *(3 seeds)* | negative; specialists alone level on 5 seeds |
 | E12c | boundary experts for the three most-confused pairs (3 seeds) | 0.383 | 0.615 | | no effect |
 | E12d | model soup of 10 trained models | 0.267 *(uniform)* | 0.471 | | negative |
-| E13 | **Qwen3-8B-Base + LoRA** instead of DeBERTa (same input, rows, slice; 3 seeds) | **0.462 ± 0.080** *(3 seeds)* | **0.688 ± 0.040** | | **passes the screen**: S2 +0.081 over E10 on the same seeds (3/3 up), S1 +0.068; 10 seeds next |
+| E13 + E13x | **Qwen3-8B-Base + LoRA** instead of DeBERTa (same input, rows, slice; 3 epochs; 10 seeds) | **0.476 ± 0.043** | **0.709 ± 0.031** | **0.543** (S1 0.746) | **best by far**: +0.092 S2 / +0.095 S1 per model over DeBERTa, 10/10 seeds; system +0.136 [+0.054, +0.224] |
+| E13b | Qwen, 12 epochs instead of 3 (3 seeds) | 0.543 *(3 seeds)* | 0.742 | | slice F1 +0.084 (3/3) → **adopted**; best epochs 8–11; 10 seeds after the mid-eval |
+| E13c | Qwen, all of train, last epoch (10 seeds) | 0.492 ± 0.045 | 0.715 | 0.575 | +0.017 per model (6/10); system +0.028 [−0.026, +0.092]: not distinguishable |
 | — | ChulaNLP's fine-tuned DeBERTa-large (published; checkpoint chosen on dev) | 0.46 | 0.65 | | for reference |
 
 **The three main systems at 10 seeds (E11)** — the numbers to quote. Single models:
@@ -1808,6 +1811,85 @@ Sources: `raw/E13c_Q8_alldata_seeds012.txt` and `e13_analysis.py` §C.
   as E12a's was.
 - **So, per the rule, it is extended to seeds 3–9**: VM d takes seeds 3–6 and VM c seeds 7–9,
   with the same configuration. The pre-registered prediction stands: +0.01 to +0.03 per seed.
+
+### E13x, E13b, E13c results *(all runs finished 13:18 IST)*
+
+Sources:
+- `raw/E13_final_analysis.txt`: `e13_analysis.py`, sections A–E;
+- `raw/E13_lane_summaries.txt`: the per-VM summaries;
+- `mideval/figures/e13_qwen_vs_deberta.png`;
+- every seed folder is on the HF repo under `Q8_fullq_lora/`, `Q8_fullq_lora_12ep/` and
+  `Q8_alldata/`.
+
+**E13x: Qwen3-8B LoRA at 10 seeds, against DeBERTa full question, 16 epochs (same seeds).**
+
+| | Qwen3-8B LoRA | DeBERTa | paired |
+|---|---|---|---|
+| single model S2 | **0.476 ± 0.043** | 0.384 ± 0.030 | **+0.092 ± 0.041** (t = 7.1, 10/10 up) |
+| single model S1 | **0.709 ± 0.031** | 0.614 ± 0.027 | **+0.095 ± 0.036** (t = 8.5, 10/10 up) |
+| single model + logit adjustment, S2 | 0.538 ± 0.043 | 0.389 ± 0.019 | +0.149 (10/10 up) |
+| 10-seed ensemble, argmax, S2 | 0.495 | 0.409 | |
+| **10-seed system (ensemble + LA, nested CV), S2** | **0.543** (10 CV splits 0.549) | 0.405 (0.412) | **+0.136**, 95% [+0.054, +0.224] |
+| 10-seed system, S1 | **0.746** | 0.648 | |
+| system on the three 2-annotator reference sets | 0.498 / 0.536 / 0.537 (mean 0.524) | mean 0.382 | |
+
+Against the predictions:
+- **The single-model mean "regresses towards 0.42–0.48": held.** It is 0.476. The 3-seed 0.462
+  was not an upward fluke; seeds 3–9 average 0.482.
+- **"Above DeBERTa on at least 7 of 10 seeds": held, on 10 of 10,** for S2 and S1 alike.
+- **"The system beats 0.405 by at least +0.03": held, by +0.138.** The bootstrap interval over
+  items excludes 0.
+- **Logit adjustment helps Qwen far more than DeBERTa** (+0.062 vs +0.005 per model). Qwen's raw
+  predictions lean on frequent classes: across seeds 0–2 it predicted General 24 times, though
+  General is in 113 reference sets (`raw/E13_Q8_topk_confidence.txt`). The one-scalar prior
+  correction moves predictions into those classes.
+
+**E13 hypothesis 3, at 10 seeds (where the gain falls).**
+- **Per-class F1, Qwen − DeBERTa:**
+  - large gains: Claims ignorance +0.403, Declining +0.220, Dodging +0.103, Deflection +0.089;
+  - moderate gains: General +0.059, Explicit +0.057, Implicit +0.040;
+  - Partial is still never predicted;
+  - Clarification −0.144 (4 dev items).
+- **In-set rate by annotator agreement:** unanimous +0.076, two labels +0.105, three labels
+  +0.048.
+- **Verdict: refuted as stated.** The gain does not fall mostly on the commitment boundary
+  (Explicit ↔ Implicit, General ↔ Implicit/Explicit), and it is not larger on agreed items. It
+  is broad, and largest on the Non-Reply classes, which are about recognising what kind of
+  statement the answer is.
+
+**E13b: 12 epochs (seeds 0–2), decided on the slice.**
+
+| seed | selected epoch | slice F1 (E13) | dev S2 (E13) | dev S1 (E13) |
+|---|---|---|---|---|
+| 0 | 9 | 0.524 (0.460) | 0.531 (0.405) | 0.751 (0.647) |
+| 1 | 11 | 0.523 (0.444) | 0.560 (0.426) | 0.740 (0.687) |
+| 2 | 8 | 0.538 (0.431) | 0.539 (0.554) | 0.735 (0.728) |
+| mean | | **+0.084, 3/3 up** | 0.543 (+0.082, reported only) | 0.742 (+0.055) |
+
+- **H1 (undertrained at 3 epochs) is supported, and the registered rule says ADOPT.**
+  - The slice selects epochs 8–11.
+  - Training loss reaches about 0.02, yet the slice F1 does not fall: it plateaus around 0.51–0.54
+    from epoch 8 on. There is no harmful overfitting within 12 epochs.
+- **By the team's decision on 2026-10-02 (time), it stays a 3-seed screen for the mid-eval.** A 10-seed 12-epoch
+  system is the first step afterwards.
+
+**E13c: all of train, last of 3 epochs, at 10 seeds.**
+- **Per model:** S2 +0.017 ± 0.045 (6/10 up, t = 1.2) and S1 +0.006 (6/10 up), against E13 on the
+  same seeds.
+- **Systems:** 0.575 (10 splits 0.562) against 0.543 (0.549). The bootstrap gives +0.028, 95%
+  [−0.026, +0.092]. The system's S1 is lower: 0.711 against 0.746.
+- **Verdict:** inside the predicted +0.01 to +0.03, but not distinguishable from zero at 10 seeds.
+  This is the same pattern as E12a for DeBERTa: a small gain that the 3-seed screen overstated
+  (+0.039).
+
+**E (not pre-registered as a hypothesis; a check): a Qwen + DeBERTa probability mix.** The weight
+and τ are fitted inside the nested CV. It gives 0.543 against Qwen alone at 0.549, and the CV puts
+a mean weight of 0.79 on Qwen. **DeBERTa adds nothing to Qwen.**
+
+**Cost.** 4 VMs, 1× RTX PRO 6000 each, from 11:10 to 13:20 IST, including the extension runs on
+VMs c and d. JarvisLabs credit (API balance) went from ₹5,548.09 to ₹4,029.30, so this round cost
+**₹1,518.79**. The project total is ₹1,850.70 of ₹5,880. Without gradient checkpointing a 3-epoch
+seed takes 15–16 min and a 12-epoch seed about 59 min, peaking at 53 GiB.
 
 ---
 
