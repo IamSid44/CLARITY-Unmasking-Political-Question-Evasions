@@ -1,0 +1,123 @@
+% Appendix -- encoder-track details. Owner: section agent B.
+% Sources: clarity/encoder.py (Cfg defaults, optimiser, schedule), clarity/decide.py (tau grid),
+% clarity/experiments/*/common.args and lane files, clarity/reports/02_experiment_log.md (E0-E12),
+% mideval/RESULTS.md and mideval/analysis/mideval_analysis.txt, clarity/reports/raw/E11_replication.txt.
+% Cells start with \raggedright and rows end with \tabularnewline (no array package needed).
+\section{Encoder-track details}
+\label{sec:app-encoder}
+
+\paragraph{Hyperparameters.}
+Table~\ref{tab:app-enc-hparams} lists the settings, taken from
+\texttt{clarity/encoder.py}, \texttt{clarity/decide.py} and the experiment argument
+files. Baseline and final models differ only in the input and the number of epochs.
+One implementation detail mattered: \texttt{transformers} 5.x loads a checkpoint in
+its stored dtype, and DeBERTa-v3's published weights are fp16, in which its
+attention overflows. With gradient clipping masking the overflow, the model trained
+smoothly to the label prior (loss 1.887, the label entropy) and predicted Explicit
+for every item. We therefore load the weights in fp32 explicitly.
+
+\begin{table}[t]
+\centering
+\footnotesize
+\begin{tabular}{@{}lp{0.64\columnwidth}@{}}
+\toprule
+Setting & Value \tabularnewline
+\midrule
+Backbone & \raggedright \texttt{microsoft/deberta-v3-large}, all weights trained \tabularnewline
+Head & \raggedright \texttt{[CLS]} $\to$ dense + tanh $\to$ dropout 0.1 $\to$ linear (9) \tabularnewline
+Input, baseline & \raggedright sub-question (${\le}96$ tokens) [SEP] answer; 512 tokens \tabularnewline
+Input, final & \raggedright ``Sub-question: \ldots{} Full question: \ldots'' (${\le}256$ tokens) [SEP] answer; 1,024 tokens \tabularnewline
+Truncation & \raggedright answer cut from the right \tabularnewline
+Loss & \raggedright cross-entropy, no smoothing, no class weights \tabularnewline
+Optimiser & \raggedright AdamW, $\beta=(0.9, 0.98)$, $\epsilon=10^{-6}$, weight decay 0.01 (none on biases and LayerNorm) \tabularnewline
+Learning rate & \raggedright $10^{-5}\times0.95^{k}$ for a layer $k$ levels below the head; head and pooler $10^{-4}$ \tabularnewline
+Schedule & \raggedright cosine, warm-up 10\% of steps \tabularnewline
+Batch & \raggedright 16, no accumulation; gradient-norm clipping 1.0 \tabularnewline
+Epochs & \raggedright 8 (baseline) or 16 \tabularnewline
+Precision & \raggedright fp32 weights, bf16 autocast; gradient checkpointing \tabularnewline
+Epoch selection & \raggedright best macro-F1 on the 345-row train slice; last epoch for all-of-train runs \tabularnewline
+Seeds & \raggedright 0--9 (all of train: 0--4) \tabularnewline
+Logit adjustment & \raggedright $\tau\in[-1,2]$, 61-point grid; prior = train label frequencies; 5-fold nested CV on dev \tabularnewline
+Hardware & \raggedright one shared RTX PRO 6000 (96\,GB); peak memory about 9\,GB at 512 tokens, 15--17\,GB at 1,024 \tabularnewline
+\bottomrule
+\end{tabular}
+\caption{DeBERTa-v3-large training and decision settings.}
+\label{tab:app-enc-hparams}
+\end{table}
+
+\paragraph{Negative results.}
+Table~\ref{tab:app-negative} lists each idea that did not help, with its control and
+the reason the experiment log gives. Rows marked ``5 seeds'' compare against the
+baseline's or the full-question model's seeds 0--4. The baseline's 5-seed system
+(0.438) is the favourable draw discussed in \S\ref{sec:encoder}.
+
+\begin{table*}[t]
+\centering
+\footnotesize
+\begin{tabular}{@{}p{0.25\textwidth}p{0.17\textwidth}p{0.14\textwidth}p{0.35\textwidth}@{}}
+\toprule
+Idea & Result (dev \Stwo) & Control & Why it did not help \tabularnewline
+\midrule
+\raggedright Second DeBERTa re-ranks the baseline's top-3 labels from their definitions (5 seeds) &
+\raggedright 0.354\,$\pm$\,0.003 with the baseline prior; 0.329 alone &
+\raggedright 0.365 (baseline ensemble, argmax) &
+\raggedright Training loss moved only 1.06$\to$0.88 in 8 epochs (1.10 = chance among three); learning
+what a label means from its definition is harder than classifying. It fixed 25
+baseline errors and broke 37 correct answers. \tabularnewline
+\raggedright Full question + Balanced Softmax + focal loss, 8 epochs (5 seeds) &
+\raggedright system 0.379; single \pmsd{0.322}{0.021} &
+\raggedright 0.438; \pmsd{0.337}{0.044} &
+\raggedright Over-corrected towards rare classes (Explicit 0.679$\to$0.319, Dodging
+0.475$\to$0.081) and used up the gain of logit adjustment; most of the deficit was
+the undertrained input. \tabularnewline
+\raggedright Post-hoc routing: clarity level first, then leaf &
+\raggedright 0.369 &
+\raggedright 0.365 (ensemble, argmax) &
+\raggedright The model's own top 3 contains an acceptable label for 89.6\% of items,
+against 81.2\% for the taxonomy branch (3.60 labels). \tabularnewline
+\raggedright Factorised head $p(\text{level})\,p(\text{leaf}\mid\text{level})$ (5 seeds) &
+\raggedright system 0.370; single \pmsd{0.320}{0.038} &
+\raggedright 0.438; \pmsd{0.337}{0.044} &
+\raggedright \Sone{} steadier across seeds (sd 0.010 against 0.025 for the level
+read-out) but not better; \Stwo{} lower. \tabularnewline
+\raggedright Non-Reply gate + branch specialist encoders &
+\raggedright 3-seed system 0.390; flat model's gate + specialists $-$0.009 per model
+with the rule (5 seeds, 2/5) &
+\raggedright 0.418 (flat, 3 seeds) &
+\raggedright The gate memorises the binary split (training loss $\approx$0.03), so soft
+routing becomes hard. The specialists passed the 3-seed screen and were level on 5
+seeds. \tabularnewline
+\raggedright Boundary experts for Implicit/Dodging, Explicit/Implicit and General/Deflection (3 seeds) &
+\raggedright +0.002 per model (1/3); \Sone{} $-$0.004 &
+\raggedright flat model, same seeds &
+\raggedright They seldom overturn a decision the flat model makes between the same two
+labels from the same input. \tabularnewline
+\raggedright Uniform model soup of the 10 full-question models &
+\raggedright 0.267 (greedy soup kept 1 model: 0.381) &
+\raggedright 0.384 (single model) &
+\raggedright Seeds differ in the random head initialisation and the data order, so
+their weights do not lie in one basin; averaging any two already lowered the slice
+score. \tabularnewline
+\raggedright Nine per-class multipliers, nested CV (5-seed baseline ensemble) &
+\raggedright 0.394 (in-fold minus held-out gap +0.098) &
+\raggedright 0.438 (logit adjustment) &
+\raggedright Nine parameters overfit 308 items; below argmax on two of the three
+2-annotator reference sets. \tabularnewline
+\raggedright Temperature + nine biases, fitted on one dev half and scored on the other &
+\raggedright 0.293--0.461 over 4 configurations $\times$ 2 directions &
+\raggedright logit adjustment &
+\raggedright Erratic: the same rule swings by up to 0.148 between the two halves.
+\tabularnewline
+\raggedright Mixed-input ensemble: full question and sub-question + answer, both 16 epochs, seeds 5--9 &
+\raggedright 0.403 &
+\raggedright 0.405 (10 full-question models) &
+\raggedright The idea came from one set of seeds (0.498) and did not replicate on fresh
+seeds. \tabularnewline
+\bottomrule
+\end{tabular}
+\caption{Encoder-track ideas that did not help, all on dev \Stwo. ``System'' is the
+seed ensemble with logit adjustment ($\tau$ by nested CV); ``per model'' is a mean of
+per-seed paired differences. Sources: \texttt{clarity/reports/02\_experiment\_log.md}
+(E4--E12) and \texttt{mideval/RESULTS.md}.}
+\label{tab:app-negative}
+\end{table*}

@@ -31,6 +31,7 @@ without the chat history. Read this whole file first, then the files it points t
 | `mideval/RESULTS.md` | every number with its source. §9 is the Qwen classifier |
 | `mideval/SLIDES_OUTLINE.md`, `AUDIT.md`, `PLAN_REMAINING.md`, `REPRODUCE.md` | slides (9), the proposal audit, the plan to the final, how to reproduce |
 | `mideval/figures/` | `per_seed_progression.png` (DeBERTa), `e13_qwen_vs_deberta.png` (E13) |
+| `paper/` | **the ACL-format paper** (official template): `main_v2.pdf` (publication figures, `clarity/paper_figures.py`) and `main.pdf` (original figures), same text; `paper/README.md` explains build and checks |
 | `clarity/reports/03_research_narrative.md` | the story of every experiment, E0 → E13 (§17 is E13) |
 | `clarity/reports/02_experiment_log.md` | chronological record + scoreboard; every experiment pre-registered. **E13, E13x/b/c are registered and have results** |
 | `clarity/reports/raw/E13_*.txt` | raw outputs cited by the E13 write-up (`E13_final_analysis.txt` is the main one) |
@@ -55,7 +56,7 @@ without the chat history. Read this whole file first, then the files it points t
 | Qwen, 12 epochs (E13b, seeds 0–2; adopted on the train slice) | 0.543 ± 0.015 | 0.742 ± 0.008 | §B |
 | Qwen, all of train (E13c, 10 seeds) single / system | 0.492 ± 0.045 / 0.575 | 0.715 / 0.711 | §C |
 | TeleAI (1st), DeepSeek-V3 pipeline / fine-tuned Qwen2.5-7B | 0.617 / 0.495 | 0.812 / 0.587 | TeleAI paper |
-| ChulaNLP (2nd), RoBERTa top-5 → Kimi-K2 | 0.52 | 0.70 | ChulaNLP |
+| ChulaNLP (2nd), DeBERTa-large top-5 → Kimi-K2 | 0.52 | 0.70 | ChulaNLP paper, Table 3 |
 | human annotator vs the other two | 0.684 | — | mideval §G |
 
 **Key findings:**

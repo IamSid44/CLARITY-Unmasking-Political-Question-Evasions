@@ -1,0 +1,38 @@
+\section{Related Work}\label{sec:related}
+
+\paragraph{Response clarity and evasion.}
+Political science has long described how politicians reply, partly reply or do not reply to interview questions \citep{bull1994identifying}.
+\citet{thomas-etal-2024-never} turned this into an NLP task.
+They collected 287 U.S.\ presidential interviews (2006--2023), used ChatGPT to split multi-part questions into single question--answer pairs, and labelled each pair with a two-level taxonomy: three clarity classes over nine evasion leaves.
+Agreement among their three annotators on the 317 items they all labelled was moderate (Fleiss' $\kappa$ 0.644 for clarity, 0.48 for evasion), and they released every annotation alongside the adjudicated label.
+For both prompting and tuning, predicting the nine-way evasion label and mapping it up the hierarchy gave better clarity scores than predicting clarity directly.
+
+The SemEval-2026 shared task \citep{thomas-etal-2026-semeval} reused this data with a new 237-item test set.
+It drew 124 registered teams, 41 of which submitted to the leaderboard, with 946 valid S1 runs and 539 valid S2 runs.
+The organisers' baseline, a fine-tuned Llama-70B, scored 0.82 (S1) and 0.57 (S2) macro-F1 on test.
+The organisers concluded that LLM prompting and hierarchical use of the taxonomy were the most effective strategies, and that systems with any hierarchical decomposition beat direct nine-way inference.
+Fine-tuned encoders levelled off near 0.50 on test S2 regardless of scale, ensembling or architectural additions.
+The organisers also singled out chain-of-thought distillation into 4B--14B open-weight models as a promising direction.
+Test labels have not been released, so all our comparisons with these systems use their development-set scores.
+
+\paragraph{Top systems.}
+TeleAI \citep{shi-etal-2026-teleai} ranked first on both subtasks (test 0.89 S1, 0.68 S2).
+Their pipeline runs three confidence-routed chain-of-thought stages on DeepSeek-V3.
+A gate outputs confident non-replies directly, sends uncertain ones to a nine-way review, and passes the rest to a six-way stage whose prompts include boundary examples mined from the training-set confusion matrix.
+The pipeline averages 1.94 model calls per item and reaches 0.617 (S2) and 0.812 (S1) on dev.
+In their ablation, the boundary few-shot examples gave the largest S2 gain ($+$0.097).
+In the same paper, Qwen2.5-7B fine-tuned directly reached 0.495 S2 on dev, level with single-step chain-of-thought prompting of DeepSeek-V3 (0.490).
+ChulaNLP \citep{peerachaidecho-rutherford-2026-chulanlp}, second on S2 (0.61 test), took the top-five labels from a fine-tuned DeBERTa-large and passed them to few-shot Kimi-K2 as its only allowed labels.
+On dev, this hybrid scored 0.52 S2, against 0.46 for the encoder alone.
+
+\paragraph{Methods we build on.}
+For class imbalance, logit adjustment \citep{menon2021longtail} subtracts scaled log class priors from the logits after training.
+Balanced Softmax \citep{ren2020balanced} applies a similar prior correction inside the training loss, and focal loss \citep{lin2017focal} down-weights well-classified examples; we tested these two together.
+Our multi-reference scoring and our analysis of contested items follow work that treats annotator disagreement as signal rather than noise \citep{plank-etal-2014-linguistically,uma2021learning}.
+Our encoder is DeBERTa-v3-large \citep{he2023debertav3}.
+Our LLM classifier is Qwen3-8B-Base \citep{qwen3}, fine-tuned with LoRA \citep{hu2022lora} and used as a single-pass classifier, whereas the top pipelines rely on chain-of-thought prompting \citep{wei2022chain}.
+Model soups \citep{wortsman2022soups}, which average the weights of fine-tuned models, were our attempt to fold a seed ensemble into one model.
+
+\paragraph{Positioning.}
+We do not propose a leaderboard system.
+Instead, we run a controlled, pre-registered study of single-pass classifiers that asks what limits a fine-tuned encoder on this task and how much of the gap to multi-call LLM pipelines a single fine-tuned LLM closes.

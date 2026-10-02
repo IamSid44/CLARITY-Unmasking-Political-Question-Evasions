@@ -1,0 +1,11 @@
+\section*{Ethical Considerations}
+
+The models classify the \emph{form} of an answer relative to a question; they do not judge honesty, intent or the truth of what is said, and a prediction such as \emph{Dodging} should not be presented as a verdict on a speaker.
+Annotators themselves disagree on many items (\S\ref{sec:analysis}), and automated labels of political speech can be misused to support one-sided narratives; any deployment should report uncertainty and keep humans in the loop.
+The data are public interview transcripts released for the shared task.
+GPU experiments for the 8B classifier ran on rented single-GPU machines (up to four at once, for about two hours of wall-clock time); Appendix~\ref{sec:app-llm} reports their cost.
+
+\section*{Acknowledgments}
+
+We thank the organisers of SemEval-2026 Task~6 for the data and the evaluation tools.
+Parts of the experiment code, the analysis scripts and this write-up were produced with the help of an AI assistant (Claude); every reported number was checked against the logged result files in the project repository.

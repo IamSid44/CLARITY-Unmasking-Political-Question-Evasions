@@ -1,0 +1,8 @@
+SemEval-2026 Task~6 (CLARITY) asks how a politician's answer responds to an interview question: one of nine evasion types (Subtask~2), which fixes one of three clarity levels (Subtask~1).
+We report a controlled, pre-registered study of what limits single-pass classifiers on this task.
+A DeBERTa-v3-large classifier, improved one measured change at a time, reaches 0.384 multi-reference macro-F1 on Subtask~2 per model and 0.405 as a ten-seed system with a one-parameter logit adjustment.
+Every attempt to improve the \emph{decision} rather than the model (re-ranking, three hierarchies, rebalancing losses, model soups) failed, and error analysis points to the model, not label noise, as the bottleneck.
+Replacing only the backbone with Qwen3-8B fine-tuned with LoRA, with data, input, loss and selection unchanged, improves Subtask~2 by 0.092 and Subtask~1 by 0.095 on all ten paired seeds and reaches 0.543 / 0.746 as a system (+0.136, 95\% CI [0.054, 0.224]).
+The gain is spread across classes rather than concentrated on the label boundaries we predicted.
+A longer schedule is adopted on a held-out slice of the training data; training on all data adds no distinguishable gain.
+All scores are on the development set, since test labels were not released.

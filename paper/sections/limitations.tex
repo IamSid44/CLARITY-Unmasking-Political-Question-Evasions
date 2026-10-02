@@ -1,0 +1,19 @@
+\section*{Limitations}
+
+\paragraph{Development-set evaluation.}
+All results are on the 308-item development set, because the test labels were never released and the evaluation server has closed.
+The development set has three annotators per item and the test set two; we re-score with every two-annotator subset to approximate the test regime, but cannot measure the shift in answer length between the splits.
+With 308 items, system-level differences carry wide intervals: the gain of the 8B system has a 95\% bootstrap interval of [0.054, 0.224], and the all-data variant could not be separated from its control.
+
+\paragraph{Seeds and selection.}
+Seed variance is large (the standard deviation of single-model Subtask~2 scores is 0.043 for the 8B classifier), so claims rest on ten paired seeds; the twelve-epoch schedule was screened on three seeds only and is adopted, not established.
+Epochs are chosen on a 345-row slice of the training data, which is itself noisy.
+The one decision-rule parameter is fitted by nested cross-validation on the development set, which keeps the score held out but means the system uses development labels to fit one scalar.
+
+\paragraph{Scope of the comparison.}
+The backbone change also changes the training recipe that a backbone requires (learning rate, epochs, parameter-efficient fine-tuning), so ``knowledge'' is shorthand for everything that comes with a larger pretrained model.
+We cannot rule out that the pretraining data of the 8B model contains the public interview transcripts the dataset is drawn from.
+Published comparison points come from other teams' papers and protocols and are not directly controlled.
+
+\paragraph{Coverage.}
+The rarest class (\emph{Partial/half-answer}, 14 development reference sets) is never predicted by any of our models, and the study covers one dataset in one language (English, U.S.\ presidential interviews).

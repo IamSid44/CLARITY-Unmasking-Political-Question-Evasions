@@ -53,17 +53,20 @@ was confirmed on HF. `create` makes a fresh VM per lane.
 
 ---
 
-## Original guide (written before the first run; the A100 was not offered for VMs)
+## Original guide (written before the first run; corrected 2026-10-02 to match the scripts)
 
 This runs one experiment on JarvisLabs: **Qwen3-8B-Base, fine-tuned with LoRA as a 9-way
-classifier, 3 seeds, on one A100 80GB.** It is registered as **E13** in
+classifier, 3 seeds by default (`SEEDS`), on one GPU.** It was planned for an A100 80GB; that
+GPU was not offered for VMs, so every run used a VM with 1× RTX PRO 6000 (96 GB), which is
+`jarvis_drive.sh`'s default `GPU_TYPE=RTX-PRO6000`. It is registered as **E13** in
 `clarity/reports/02_experiment_log.md`. Everything else (the mid-eval package and the CPU
 analyses) needs no GPU.
 
 A **launch machine**, any always-on Linux/macOS/WSL machine with a clone of this repo, drives the
 instance over SSH from a tmux session, so the run doesn't depend on a laptop staying connected.
-Results come back into that clone automatically, and the instance pauses itself when it is done
-or if anything fails.
+Logs and probabilities come back into that clone automatically. The launch machine's watcher
+pauses the instance as soon as it has copied the final results; as a backup, the instance pauses
+itself 30 minutes (`PAUSE_DELAY=1800`) after finishing or failing.
 
 **The launch machine needs:** `bash`, `ssh`, `scp`, `tar`, `tmux`, `curl` and outbound SSH. It
 needs no Python environment and no GPU. `uv`, used for the JarvisLabs SDK, is installed
@@ -92,7 +95,7 @@ The learning rate and epoch count change because the backbone does: LoRA on an 8
 converges in a few epochs at about 1e-4.
 
 **Read-out.** `summary.txt` puts each seed next to DeBERTa's same seed (0.344 / 0.370 / 0.428 on
-Subtask 2). By the screening rule from E12 (experiment log), the LLM goes on to more seeds only if it gains
+Subtask 2; the reference covers seeds 0–2 only, so other seeds show `nan`). By the screening rule from E12 (experiment log), the LLM goes on to more seeds only if it gains
 at least +0.015 with at least 2 of 3 seeds up. The hypotheses and predictions are pre-registered in the
 experiment log, §E13.
 
@@ -107,12 +110,15 @@ so `analyze.py`, `decide.py` and `mideval_analysis.py` read them unchanged.
 |---|---|---|
 | `clarity/llm_classifier.py` | instance | the training script (tested end to end on CPU with Qwen3-0.6B, including resume) |
 | `jarvis_setup.sh` | instance | environment, model download, smoke test, timing pilot, training, packaging, self-pause |
-| `jarvis_drive.sh` | launch machine | makes the SSH key, pushes the code, starts the pipeline, copies results back every 5 min, pauses the instance |
-| `jarvis_bundle.tgz` | built by `jarvis_drive.sh push` | the 3.4 MB bundle: training script, scorer, data, train slice, `jarvis_setup.sh` |
+| `clarity/tracking.py` | instance | W&B logging (`--track`; offline fallback) and the per-seed Hugging Face upload (`tracking.py push <seed dir>`) |
+| `jarvis_drive.sh` | launch machine | makes the SSH key, creates/resumes VMs through the API, pushes the code and `clarity/.env`, starts the pipeline, copies logs and probabilities back every 5 min (not the LoRA adapters), pauses the instance |
+| `jarvis_bundle.tgz` | built by `jarvis_drive.sh push` | the 3.4 MB bundle: training script, `tracking.py`, scorer (`qevasion/`), data (train/dev/test), train slice, `jarvis_setup.sh`, this guide |
 
 No git clone and no GitHub token on the instance: the bundle carries everything. The model
-(Qwen3-8B-Base, Apache-2.0, ungated) is downloaded on the instance, so no Hugging Face token is
-needed either.
+(Qwen3-8B-Base, Apache-2.0, ungated) is downloaded on the instance without a token. The W&B key
+and the Hugging Face **write** token for the per-seed uploads are in `clarity/.env`, which `push`
+copies to the instance separately (mode 600), never inside the bundle. Without it the run still
+trains; W&B logs offline and the upload is skipped.
 
 ---
 
@@ -130,11 +136,16 @@ created.
 
 ### 2. Create the instance
 
+The scripted way, used for every run on 2026-10-02 (after `keys`, below):
+`JPROFILE=<x> bash jarvis_drive.sh create` makes a VM through the API (`template="vm"`,
+`GPU_TYPE`, 100 GB) and runs `connect` itself, so step 3's `connect` is not needed. By hand on
+the website:
+
 | setting | choose | why |
 |---|---|---|
-| template | **PyTorch** | CUDA drivers; the script builds its own Python 3.12 environment |
-| GPU | **1 × A100 80GB** | Qwen3-8B in bf16 is 16.4 GB of weights; the run should peak around 25–35 GB |
-| storage | **60 GB** | model 16 GB + environment ~10 GB + outputs ~3 GB, with room to spare |
+| template | **VM** (`create` uses `template="vm"`) | CUDA drivers; the script builds its own Python 3.12 environment. VMs log in as `ubuntu`, which `push` handles |
+| GPU | **1 × RTX PRO 6000 (96 GB)** (the A100 80GB was not offered for VMs) | Qwen3-8B in bf16 is 16.4 GB of weights; measured peak 19.3 GiB with gradient checkpointing, 53.4 GiB without (`--no-grad-checkpoint`) |
+| storage | **100 GB** (what `create` requests) | models 17 GB + environment + outputs and per-epoch adapters, with room to spare |
 | pricing | **on-demand** | a spot pre-emption at night would stop the run until morning |
 
 Note the **machine id** and the **SSH command** shown on the instance page.
@@ -154,24 +165,27 @@ bash jarvis_drive.sh all
 
 You can then disconnect. The launch machine itself must stay on for the results to be copied
 back automatically. If it sleeps, the instance still pauses itself 30 minutes after finishing,
-and the results stay on its disk. Resume the instance, run `bash jarvis_drive.sh sync`, then
-pause or destroy it.
+and the results stay on its disk (each finished seed is also on the HF repo). Run
+`bash jarvis_drive.sh resume` (a resumed VM gets a new machine id and IP; `resume` stores them),
+then `bash jarvis_drive.sh sync`, then pause or destroy it.
 
 ### What happens next, unattended
 
 On the instance, inside tmux session `clarity-llm`:
 
-| stage | time (est.) | what it checks | on failure |
+| stage | time (measured 2026-10-02, RTX PRO 6000) | what it checks | on failure |
 |---|---|---|---|
-| setup | ~10–15 min | installs torch (matched to the driver), transformers 5.17.0, peft 0.20.0; GPU bf16 test; downloads both models | pauses the instance |
-| smoke | ~2–3 min | Qwen3-0.6B on the GPU: padding check, 2 epochs, interrupted after epoch 0 and resumed | pauses |
-| pilot | ~5–8 min | 20 real optimizer steps of Qwen3-8B: minutes per epoch, peak VRAM | pauses; also aborts if all 3 seeds are projected over **5 h** |
-| train | ~2–3.5 h (est.) | seeds 0, 1, 2 in turn; each epoch saves probabilities and a resume checkpoint | a failed seed retries once from its last epoch, then pauses |
-| summary, package | 1 min | `summary.txt`, `results_Q8_fullq_lora.tgz`, `adapters_Q8_fullq_lora.tgz` | — |
+| setup | ~2 min with the MTU fix | MTU/IPv6 fix; installs torch (matched to the driver), transformers 5.17.0, peft 0.20.0; GPU bf16 test; downloads both models | pauses the instance |
+| smoke | < 1 min | Qwen3-0.6B-Base on the GPU, 64 rows: padding check, 2 epochs, interrupted after epoch 0 and resumed | pauses |
+| pilot | ~1 min | peak VRAM on the longest micro-batch, then 20 real optimizer steps of Qwen3-8B: minutes per epoch, peak VRAM | pauses; also aborts if all seeds × epochs are projected over `MAX_TOTAL_HOURS` (default **5 h**) |
+| train | 3-epoch seed: 21 min with gradient checkpointing, 15–16 min without; 12-epoch seed: ~59 min | the seeds in turn; each epoch saves probabilities, its LoRA adapter and a resume checkpoint; each finished seed is uploaded to the HF repo in the background | a failed seed retries once from its last epoch, then pauses |
+| HF flush, summary, package | ~1 min | uploads any seed still missing on HF; `summary.txt`, `results_<NAME>.tgz`, `adapters_<NAME>.tgz` (on the instance) | — |
 
-On the launch machine, tmux session `jarvis-watch` copies logs and finished outputs every 5 minutes.
-When the pipeline reports ALL DONE (or FAILED), it copies everything, including the LoRA adapters,
-and **pauses the instance**. As a backup, the instance pauses itself 30 minutes after finishing.
+On the launch machine, tmux session `jarvis-watch` (`jarvis-watch-<profile>` with `JPROFILE`)
+copies logs, probabilities and metrics every 5 minutes, **without the LoRA adapters** (they are on
+the HF repo and in `adapters_<NAME>.tgz` on the instance). When the pipeline reports ALL DONE (or
+FAILED), it copies the final results and `results_<NAME>.tgz`, and **pauses the instance**. As a
+backup, the instance pauses itself 30 minutes after finishing.
 
 ---
 
@@ -181,11 +195,13 @@ and **pauses the instance**. As a backup, the instance pauses itself 30 minutes 
 cat clarity/logs/jarvis/summary.txt           # per seed vs DeBERTa, paired differences, screening verdict
 cat clarity/logs/jarvis/pipeline.log          # every stage, with timestamps
 cat clarity/logs/jarvis/drive.log             # what the launch machine's watcher did, incl. the pause
-ls  clarity/runs/Q8_fullq_lora/               # seed0..2: dev/val/test probabilities, metrics, adapters
+ls  clarity/runs/Q8_fullq_lora/               # seed0..2: dev/val/test probabilities, metrics (adapters: HF repo)
 ```
 
+With `JPROFILE=<x>` the logs are in `clarity/logs/jarvis/<x>/`.
+
 Then **destroy the instance** on the website once the results are here. A paused instance still
-bills storage: 60 GB ≈ ₹0.8/h, ≈ ₹19 a day.
+bills storage: 100 GB ≈ ₹1.30/h.
 
 ## Watching or intervening
 
@@ -193,12 +209,14 @@ bills storage: 60 GB ≈ ₹0.8/h, ≈ ₹19 a day.
 |---|---|
 | `bash jarvis_drive.sh status` | stage log, latest training lines, GPU use on the instance |
 | `tail -f clarity/logs/jarvis/drive.log` | the watcher's log |
-| `tmux attach -t jarvis-watch` | the watcher itself (`Ctrl-b d` to leave) |
+| `tmux attach -t jarvis-watch` (`jarvis-watch-<x>` with `JPROFILE=<x>`) | the watcher itself (`Ctrl-b d` to leave) |
 | `bash jarvis_drive.sh ssh`, then `tmux attach -t clarity-llm` | the live training output on the instance |
 | `bash jarvis_drive.sh sync` | copy results now |
 | `bash jarvis_drive.sh pause` | pause the instance now |
 
-**After a pause (yours or automatic), to continue:** resume the instance on the website, then run
+**After a pause (yours or automatic), to continue:** run `bash jarvis_drive.sh resume` (the VM
+comes back with a new machine id and IP, which `resume` stores), re-apply the MTU fix by hand
+(setup is skipped on a resumed VM; see the table at the top), then run
 `bash jarvis_drive.sh start && bash jarvis_drive.sh watch`. Finished stages and seeds are skipped,
 and an interrupted seed continues from its last finished epoch.
 
@@ -208,15 +226,19 @@ Pass these as environment variables to `jarvis_drive.sh all` (or `start`):
 
 | variable | default | example |
 |---|---|---|
+| `JPROFILE` | none | `JPROFILE=b`: one profile (host, machine id, logs, watcher) per VM, for parallel lanes |
+| `GPU_TYPE` | `RTX-PRO6000` | the GPU `create` asks the API for |
 | `SEEDS` | `0 1 2` | `SEEDS="3 4 5 6 7 8 9"` to extend after a positive screen |
-| `EXTRA_ARGS` | none | `EXTRA_ARGS="--batch-size 8 --grad-accum 2"` if the pilot shows spare memory (same effective batch) |
+| `EXTRA_ARGS` | none | `EXTRA_ARGS="--no-grad-checkpoint"` (used for every run after the first E13 screen: same computation, faster, 53.4 GiB), `--epochs 12`, or `--batch-size 8 --grad-accum 2` (same effective batch) |
 | `MAX_TOTAL_HOURS` | 5 | the pilot's abort threshold for all seeds together |
 | `RUN_NAME` (sets NAME) | `Q8_fullq_lora` | use a new name for any changed configuration, so earlier results stay untouched |
 
 ## Cost
 
-At ₹140.94/h for an A100 80GB (jarvislabs.ai/in, 2026-10-01; 18% GST extra, so ≈ ₹166/h). Times
-are estimates until the pilot measures them.
+**Actual (2026-10-02):** a 1× RTX PRO 6000 VM costs ₹179.01/h + 18% GST ≈ ₹211/h; the four-VM
+round (E13x, E13b, E13c) cost ₹1,518.79 (API balance before and after). The estimate below was
+made before the first run, for an A100 80GB at ₹140.94/h (jarvislabs.ai/in, 2026-10-01; 18% GST
+extra, so ≈ ₹166/h).
 
 | stage | hours | ₹ incl. GST |
 |---|---|---|
@@ -235,6 +257,6 @@ The pilot's 5-hour cap bounds the worst case at roughly ₹900.
 | `setup`: install failed | network, or a torch build that doesn't match the driver | `logs/setup.log`; the script picks cu128 / cu126 / cu124 from the driver version |
 | `smoke`: padding self-check failed | the head isn't reading the last real token | don't train; check the transformers version in `setup.log` |
 | `pilot failed` | usually out of memory | `EXTRA_ARGS="--batch-size 2 --grad-accum 8"` |
-| `projected time over the limit` | the A100 is slower than estimated | raise `MAX_TOTAL_HOURS` deliberately, or use 2 seeds / 2 epochs |
+| `projected time over the limit` | the GPU is slower than estimated, or gradient checkpointing is on | raise `MAX_TOTAL_HOURS` deliberately, or use 2 seeds / 2 epochs |
 | `auto-pause check FAILED` | API key or machine id wrong | the launch machine's watcher still pauses; fix with `jarvis_drive.sh keys` / `connect` |
 | watcher: instance unreachable | paused already, or network | `bash jarvis_drive.sh status`; it stops trying after an hour |

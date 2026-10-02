@@ -73,7 +73,7 @@ the only place systems can be compared.
 | system | dev S2 | dev S1 |
 |---|---|---|
 | TeleAI (1st), DeepSeek-V3 3-stage CoT pipeline | 0.617 | 0.812 |
-| ChulaNLP (2nd), RoBERTa top-5 → Kimi-K2 | 0.52 | 0.70 |
+| ChulaNLP (2nd), DeBERTa-large top-5 → Kimi-K2 | 0.52 | 0.70 |
 | ChulaNLP, DeBERTa-large fine-tuned *(checkpoint chosen on dev)* | 0.46 | 0.65 |
 | **ours — Qwen3-8B LoRA, 10-seed ensemble + logit adjustment (E13)** | **0.543** | **0.746** |
 | ours — Qwen3-8B LoRA, all of train, 10-seed system (E13c) | 0.575 | 0.711 |
@@ -81,6 +81,7 @@ the only place systems can be compared.
 | ours — baseline system: 10-seed ensemble + logit adjustment | 0.428 | 0.601 |
 | TeleAI, DeepSeek-V3 asked directly for the label | 0.421 | 0.662 |
 | ours — DeBERTa final system: full question, 16 epochs, 10-seed ensemble + logit adjustment | 0.405 | 0.648 |
+| ours — DeBERTa, all of train, last epoch (E12a), **5-seed** ensemble + logit adjustment; single model 0.416 ± 0.020 | 0.489 | — |
 | ours — DeBERTa single model, full question, 16 epochs (10 seeds) | 0.384 ± 0.030 | 0.614 ± 0.027 |
 | ours — single model, 16 epochs (10 seeds) | 0.362 ± 0.026 | 0.601 ± 0.016 |
 | ours — single model, baseline (10 seeds) | 0.315 ± 0.040 | 0.576 ± 0.030 |
@@ -93,7 +94,8 @@ What these numbers do and don't show is in the experiment log (§E7, §E11). In 
   baseline's prior-leaning ensemble by +0.109 and the better model's by nothing.
   The final system was chosen by a rule written before the last experiment ran.
 - 5-seed system numbers are unreliable on 308 items (the baseline scored 0.438 and
-  0.356 on two seed sets), so all system numbers above use 10 seeds.
+  0.356 on two seed sets), so all system numbers above use 10 seeds, except
+  E12a's, which is a 5-seed result and not a ranking.
 - The fair external comparison is ChulaNLP's fine-tuned DeBERTa (0.46 / 0.65),
   whose checkpoint was chosen on dev; ours are held-out.
 
@@ -128,12 +130,12 @@ baseline differ in two settings, marked:
 
 | setting | final system | baseline | why |
 |---|---|---|---|
-| input | `[CLS] Sub-question: … Full question: … [SEP] answer [SEP]`, **1024 tokens** (question slot 256) | `[CLS] sub-question [SEP] answer [SEP]`, 512 tokens | the full question shows what else the answer responds to (E8b, E10) |
+| input | `[CLS] Sub-question: … Full question: … [SEP] answer [SEP]`, **1024 tokens** (question slot 256) | `[CLS] sub-question [SEP] answer [SEP]`, 512 tokens (question slot 96) | the full question shows what else the answer responds to (E8b, E10); in both, the answer fills the rest and is cut from the right |
 | epochs | **16** | 8 | the full-question input needs about twice the training (E8b, E10) |
 | loss | plain cross-entropy | same | rebalancing losses over-correct (E8) |
 | learning rate | 1e-5, head 1e-4, layer-wise decay 0.95 | same | measured: beats 2e-5 at every epoch |
-| schedule | cosine, 10% warmup, batch 16 | same | |
-| checkpoint | best epoch on a fixed 10% slice of **train** | same | dev is never used to choose anything |
+| optimiser, schedule | AdamW (β 0.9/0.98, ε 1e-6, weight decay 0.01), gradient clipping 1.0; cosine, 10% warmup, batch 16 | same | |
+| checkpoint | best epoch on a fixed stratified 10% slice of **train** (345 rows) | same | dev is never used to choose anything |
 | weights | loaded in **fp32**, computed in bf16 | same | see §4 |
 
 **The ensemble.** Ten seeds, probabilities averaged (+0.025 over a single model for
@@ -319,14 +321,18 @@ clarity/
 ```
 
 Not in git (regenerable or large): `runs/` (probabilities and checkpoints; the
-checkpoints are also on the private HF repo), `logs/`, `wandb/`, `.env`.
+checkpoints are also on the HF repo `siddarthg44/clarity-semeval26`, which is
+**public**, as checked on 2026-10-02, although `tracking.py` creates it as private; see
+`../CONTEXT.md` §4), `logs/`, `wandb/`, `.env`.
 
 ---
 
 ## 7. Rules this track keeps
 
 - The baseline is frozen once trained and never re-tuned to flatter a later change.
-- Every reported number is a mean over 5 seeds; per-class F1 comes with its support.
+- Single-model numbers are means ± std over paired seeds. A variant is screened on
+  3 seeds (bar: +0.015 with at least 2 of 3 up) and extended only if it passes.
+  Every system claim uses 10 seeds (E11). Per-class F1 comes with its support.
 - Nothing is chosen on dev. The one fitted parameter (τ) is validated by nested
   cross-validation, and the held-out score is the one reported.
 - Code is not edited while a multi-seed run is in progress, so every seed of a

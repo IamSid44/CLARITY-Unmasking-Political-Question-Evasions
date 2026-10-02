@@ -40,7 +40,7 @@ system takes.
 | E10 control | 16 epochs instead of 8 | 0.377 ± 0.020 | 0.604 ± 0.012 | 0.402 | better single model; no gain in the final system |
 | E10 | + full question, 16 epochs | 0.387 ± 0.036 | 0.631 ± 0.024 | 0.478 | best on these seeds; 0.434 on seeds 5–9 (E11) |
 | **E11** | **E0, E10 control and E10 re-run on seeds 5–9** | | | | **replication and final system: table below** |
-| E12a | full question, 16 epochs, **trained on all of train**, last epoch (5 seeds) | **0.416 ± 0.020** | 0.613 ± 0.017 | **0.489** | **helps S2**: +0.029 per model (4/5 up); S1 −0.017; 5-seed system only |
+| E12a | full question, 16 epochs, **trained on all of train**, last epoch (5 seeds) | **0.416 ± 0.020** | 0.614 ± 0.016 *(corrected 2026-10-02 from 0.613 ± 0.017; raw/E12a_alldata_analysis.txt gives 0.6137 ± 0.0164)* | **0.489** | **helps S2**: +0.029 per model (4/5 up); S1 −0.017; 5-seed system only |
 | E12b | hierarchy: Non-Reply gate + branch specialist encoders | 0.345 *(3 seeds)* | 0.608 | 0.390 *(3 seeds)* | negative; specialists alone level on 5 seeds |
 | E12c | boundary experts for the three most-confused pairs (3 seeds) | 0.383 | 0.615 | | no effect |
 | E12d | model soup of 10 trained models | 0.267 *(uniform)* | 0.471 | | negative |
@@ -411,7 +411,7 @@ Published **dev** numbers (Codabench dev leaderboard, 308 items, official scorer
 | system | dev S2 | dev S1 |
 |---|---|---|
 | TeleAI (1st), DeepSeek-V3, 3-stage CoT pipeline | 0.617 | 0.812 |
-| ChulaNLP (2nd), RoBERTa top-5 → Kimi-K2 few-shot | 0.52 | 0.70 |
+| ChulaNLP (2nd), DeBERTa-large top-5 → Kimi-K2 few-shot *(corrected 2026-10-02: the overview paper says RoBERTa; ChulaNLP's own paper, abstract and Table 3, says DeBERTa-large)* | 0.52 | 0.70 |
 | ChulaNLP, Kimi-K2 over DeBERTa top-3, few-shot | 0.50 | 0.71 |
 | TeleAI, DeepSeek-V3 single-step CoT | 0.490 | 0.710 |
 | **ChulaNLP, DeBERTa-large fine-tuned** | **0.46** | **0.65** |

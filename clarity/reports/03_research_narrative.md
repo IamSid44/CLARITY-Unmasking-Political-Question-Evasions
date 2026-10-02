@@ -512,7 +512,7 @@ released. Published dev numbers come from the TeleAI and ChulaNLP papers.
 | system | dev S2 | dev S1 |
 |---|---|---|
 | TeleAI (1st), DeepSeek-V3 3-stage CoT | 0.617 | 0.812 |
-| ChulaNLP (2nd), RoBERTa top-5 → Kimi-K2 | 0.52 | 0.70 |
+| ChulaNLP (2nd), DeBERTa-large top-5 → Kimi-K2 *(the overview paper says RoBERTa; ChulaNLP's own paper says DeBERTa-large)* | 0.52 | 0.70 |
 | **ChulaNLP, DeBERTa-large fine-tuned** | **0.46** | **0.65** |
 | ours, 5-seed ensemble + logit adjustment | 0.438 | — |
 | TeleAI, DeepSeek-V3 asked directly | 0.421 | 0.662 |

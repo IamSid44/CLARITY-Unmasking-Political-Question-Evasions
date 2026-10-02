@@ -1,0 +1,68 @@
+\section{Task, Data and Evaluation}
+\label{sec:task}
+
+\paragraph{Task.}
+SemEval-2026 Task~6 \citep{thomas-etal-2026-semeval} uses the question--answer pairs of \citet{thomas-etal-2024-never}, taken from U.S.\ presidential interviews.
+Each item is a triple: one sub-question (median 15 tokens), split out of the journalist's full turn (median 62 tokens), and the president's entire answer (median 266 tokens).
+The label states how \emph{that sub-question} was answered.
+Subtask~2 (\Stwo{}) has nine evasion types; Subtask~1 (\Sone{}) has three clarity levels that are a fixed function of them: Clear Reply (Explicit; 30.5\% of train), Ambivalent (Implicit, Dodging, General, Deflection, Partial/half-answer; 59.2\%) and Clear Non-Reply (Declining to answer, Claims ignorance, Clarification; 10.3\%).
+Like the dataset paper and the two top-ranked systems \citep{shi-etal-2026-teleai,peerachaidecho-rutherford-2026-chulanlp}, we predict the 9-way label and derive the 3-way label from the taxonomy.
+
+\paragraph{Data.}
+Train has 3,448 items with one label each and an annotator identifier (three annotators, one per item).
+Dev has 308 items labelled by three annotators: 125 are unanimous, 150 split 2--1 and 33 three ways, and 59.4\% carry more than one distinct label.
+Test has 237 items with two annotators each; its labels were never released and the evaluation server has closed, so every comparison in this paper is on dev.
+Two properties shape the modelling.
+First, 69\% of training rows share their answer with another sub-question, and 71.7\% of those shared answers carry different labels, so the model must attribute parts of a long answer to the right sub-question.
+Second, answers are long: for 101 of the 308 dev items the sub-question and answer exceed 512 DeBERTa tokens, and for 20 the full input exceeds 1,024.
+Test answers are much shorter (median 71 tokens against 266 on train and 362 on dev).
+
+\paragraph{Metric.}
+Both subtasks are scored by macro-F1 over all declared classes; a class that is never predicted contributes $F_1=0$.
+\Sone{} uses plain single-label macro-F1.
+\Stwo{} uses \emph{multi-reference macro-F1}: with $G_i$ the set of annotator labels of item~$i$, a prediction $\hat{y}_i$ is a true positive for class~$\hat{y}_i$ if $\hat{y}_i \in G_i$, a false positive if not, and a miss charges one false negative to every member of $G_i$.
+If every prediction is acceptable ($\hat{y}_i \in G_i$ for all $N$ items), there are no false positives or false negatives, every class predicted at least once has $F_1=1$, and
+\begin{equation}
+  \text{macro-F1} = \frac{\lvert\{\hat{y}_1,\dots,\hat{y}_N\}\rvert}{9} .
+  \label{eq:task-coverage}
+\end{equation}
+Which acceptable label is named contributes nothing: a uniformly random member of each dev reference set scores 1.000 on five of five draws.
+The score therefore rewards two things, landing in the reference set (the \emph{in-set rate}) and \emph{coverage}, naming each class at least once.
+Since every class is worth one ninth of the score, a rare class such as Clarification, present in only 4 dev reference sets, counts as much as Explicit (115).
+The floors in Table~\ref{tab:task-floors} show the trade-off: always predicting Explicit lands in-set for 37.3\% of items but scores 0.060, while uniform guessing lands in-set less often yet scores 0.129.
+
+\begin{table}[t]
+\centering
+\small
+\begin{tabular}{lccc}
+\toprule
+ & \multicolumn{2}{c}{\Stwo{}} & \\
+\cmidrule(lr){2-3}
+Floor (dev) & 3 ann. & 2 ann. & \Sone{} \\
+\midrule
+Always majority (Explicit) & 0.060 & 0.055 & 0.136 \\
+Uniform random (20 draws) & 0.129 & 0.116 & 0.299 \\
+TF-IDF + logistic regression & 0.257 & 0.243 & 0.445 \\
+\bottomrule
+\end{tabular}
+\caption{Trivial floors on dev. ``2 ann.'': mean over the three two-annotator versions of the dev reference sets, the test regime. TF-IDF uses word 1--2-grams; its settings were chosen by 5-fold cross-validation on train.}
+\label{tab:task-floors}
+\end{table}
+
+\paragraph{Evaluation protocol.}
+The following protocol holds throughout the paper.
+\emph{Epoch selection} uses the \emph{train slice}, a fixed stratified 10\% of train (345 rows, seed 12345) held out from training; dev is never used to choose anything.
+Every system claim and every final comparison rests on \emph{10 paired seeds}, the same seed numbers for both arms, reported as mean $\pm$ standard deviation, with the per-seed difference, its $t$ statistic and the number of seeds that improve.
+Variants are first screened on three seeds against a bar fixed in advance (+0.015 with at least two of three seeds up).
+A \emph{single model} is one seed with argmax and no tuning on dev.
+A \emph{system} averages the seeds' probabilities and applies logit adjustment \citep{menon2021longtail}:
+\begin{equation}
+  \hat{y}(x) = \arg\max_{c}\; \frac{\bar{p}(c \mid x)}{\pi_c^{\,\tau}},
+  \label{eq:la}
+\end{equation}
+where $\bar{p}$ is the mean of the seeds' probabilities, $\pi_c$ the frequency of class~$c$ in train, and $\tau$ the only fitted parameter.
+Because $\tau$ is fitted on dev, it is chosen by 5-fold nested cross-validation (grid $-1$ to $2$ in steps of 0.05): each fold's $\tau$ maximises \Stwo{} macro-F1 on the other four, and the pooled held-out predictions are scored.
+We report the first cross-validation split and, where given, the mean over ten splits; \Sone{} is derived from the system's final 9-way prediction.
+Two systems are compared by a bootstrap over dev items with the seeds fixed (2,000 resamples; \citealp{efron1993bootstrap}), which understates training-seed noise.
+Because test has two annotators, we also rescore dev against each of its three two-annotator reference sets and report the mean.
+Finally, the hypotheses and predicted outcomes of every experiment were recorded in the experiment log before it ran, and results are reported against them.

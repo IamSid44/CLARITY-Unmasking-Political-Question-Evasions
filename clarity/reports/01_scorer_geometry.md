@@ -1,9 +1,12 @@
 # 01 — What the Subtask-2 scorer actually rewards
 
 **Status:** correction to two committed documents.
-**Reproduce:** `python clarity/verify_scorer_geometry.py` (CPU, seconds). Every
-number below is printed by that script, which calls the project's own scorer
-(`qevasion/scoring.py`) rather than a reimplementation, so it cannot drift from it.
+**Reproduce:** `python clarity/verify_scorer_geometry.py` (CPU, seconds; needs
+numpy, pandas and pyarrow, since it reads `clarity/data/cache/*.parquet`). Every
+number in §3, §6 and the §7 table is printed by that script, which calls the
+project's own scorer (`qevasion/scoring.py`) rather than a reimplementation, so it
+cannot drift from it. The measured outcomes in §5 and at the end of §7 come from
+`clarity/decide.py` on the baseline runs (`raw/E0_decision_rules.txt`).
 
 **Affects:**
 - `higrec/reports/03_data_audit.md` §6 — the "+0.1166 headroom" figure
@@ -38,6 +41,11 @@ TP_c = #{ i : pred_i = c  and  c in G_i }
 FP_c = #{ i : pred_i = c  and  c not in G_i }
 FN_c = #{ i : c in G_i    and  pred_i not in G_i }
 ```
+
+Two properties of `scoring.py` matter below: a prediction outside `G_i` charges one
+false negative to **every** member of `G_i`, and the macro average is always over
+all nine declared classes, so a class that is never predicted contributes
+`F1_c = 0` (zero-denominator divisions return 0).
 
 Suppose **every** prediction lands in its reference set. Then:
 
@@ -148,11 +156,12 @@ Both evaluations were run on the 5-seed baseline ensemble
 - **The one-scalar control won.** Logit adjustment: 0.365 → 0.438 held-out, with
   an in-fold/held-out gap of 0.018. Nine fitted multipliers: 0.394, gap 0.098 —
   they overfit 308 items.
-- **The predicted location of the gain was only partly right.** The largest gains
-  were in rare classes (`Partial/half-answer` 0.000 → 0.462, `Claims ignorance`
-  +0.215, `Clarification` +0.214), but the frequent `Implicit` also gained
-  (+0.118) and the rare `Declining to answer` lost (−0.144). "Entirely in the rare
-  classes" was too strong.
+- **The predicted location of the gain was only partly right.** With τ = 0.85
+  fitted on all of dev (an in-sample view of the per-class effect, as in the log's
+  §E4), the largest gains were in rare classes (`Partial/half-answer` 0.000 →
+  0.462, `Claims ignorance` +0.215, `Clarification` +0.214), but the frequent
+  `Implicit` also gained (+0.118), and the rare `Declining to answer` lost (−0.144)
+  as did `Dodging` (−0.065). "Entirely in the rare classes" was too strong.
 
 ## 6. How much headroom is really there, and how to read a score as an in-set rate
 
@@ -171,6 +180,11 @@ macro-F1 of 0.06, while naming classes at random gets you a *worse* in-set rate
 (0.17) and a *better* macro-F1 (0.11). Coverage and in-set rate trade against
 each other, and the metric rewards both.
 
+The uniform-random row is a single draw (`default_rng(0)`). The mid-evaluation
+floors (`mideval/analysis/mideval_analysis.txt` §B) average 20 draws and report
+0.129 macro-F1 and 0.196 in-set rate for the same predictor; the 0.060 "always
+majority" floor there is the `Explicit` row above.
+
 macro-F1 as a function of in-set rate, for a predictor that hits `G` at rate `r`
 and otherwise names a random wrong class, with all nine classes named
 (20 resamples per row):
@@ -185,9 +199,9 @@ and otherwise names a random wrong class, with all nine classes named
 | 0.50 | 0.3544 |
 | 0.40 | 0.2720 |
 
-Reading **dev** scores off this curve (it is built on dev, so only dev scores
-belong on it): our logit-adjusted ensemble (0.438) sits near an in-set rate of
-0.59, ChulaNLP's fine-tuned DeBERTa (0.46) near 0.61, and TeleAI's winning pipeline
+Reading **dev** scores off this curve by linear interpolation between rows (it is
+built on dev, so only dev scores belong on it): our logit-adjusted ensemble
+(0.438) sits near an in-set rate of 0.59, ChulaNLP's fine-tuned DeBERTa (0.46) near 0.61, and TeleAI's winning pipeline
 (0.617) near 0.76. The curve is steep in that range — +0.10 in-set rate is worth roughly
 +0.10 macro-F1 — so in-set rate is both the right target and a sensitive one.
 

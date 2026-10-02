@@ -1,0 +1,8 @@
+\section{Conclusion and Next Steps}
+\label{sec:conclusion}
+
+A carefully controlled encoder for CLARITY stops at 0.384 Subtask~2 macro-F1 per model (0.405 as a system), and the evidence places the limit in the model rather than in the labels or the decision rule (\S\ref{sec:encoder}, \S\ref{sec:analysis}).
+Changing only the backbone to a LoRA-tuned 8B decoder improves both subtasks on all ten paired seeds and lifts the system to 0.543 / 0.746 (\S\ref{sec:llm}), still below the best multi-call pipeline (0.617) and the human reference (0.684).
+The gain is broad rather than concentrated where we predicted, which suggests that a larger pretrained model reads better what kind of response an answer is, rather than resolving one difficult boundary.
+
+\emph{Proposed next steps} (not yet run): the twelve-epoch schedule on ten seeds; a cascade that tests the remaining explanation, label meaning, by sending only uncertain items with the classifier's top candidates to a larger LLM given label definitions and boundary examples \citep{shi-etal-2026-teleai}, traced as accuracy against LLM calls per item; and distillation of that cascade back into the single-pass model \citep{hinton2015distilling}, with every point measured in cost per item.

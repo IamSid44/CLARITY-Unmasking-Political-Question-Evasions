@@ -53,6 +53,7 @@ for what these comparisons can and cannot show.
 │   ├── e13_analysis.py    E13 analyses (paired seeds, systems, 2-annotator, per class)
 │   └── reports/           the scorer analysis, the experiment log, the research narrative
 ├── mideval/           mid-evaluation package: REPORT, RESULTS (every number + source), slides
+├── paper/            the report as an ACL-format paper (official ACL template; main.tex, sections/, build.sh)
 ├── jarvis_drive.sh    launch machine: VMs on JarvisLabs (create/resume, push, start, watch, pause)
 ├── jarvis_setup.sh    on each VM: environment, model, smoke, pilot, training, HF upload, pause
 ├── JARVISLABS_PORTING_GUIDE.md   how to run the LLM experiments on JarvisLabs
@@ -104,6 +105,10 @@ For someone new to the project, about an hour in total:
      fixed in advance, and how the final system was chosen;
    - **E13, E13x/b/c** — the 8B classifier, pre-registered, with its 10-seed results.
 4. **The mid-evaluation package** — [`mideval/REPORT.md`](mideval/REPORT.md) (10 min).
+5. **The paper** — the same work written up in ACL format (official template), in two versions
+   with identical text: [`paper/main_v2.pdf`](paper/main_v2.pdf) (publication figures from
+   `clarity/paper_figures.py`) and [`paper/main.pdf`](paper/main.pdf) (original figures). See
+   [`paper/README.md`](paper/README.md) for building and the ACL checks.
 
 To run anything: `clarity/README.md` §5.
 

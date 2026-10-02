@@ -33,7 +33,7 @@ CONFIGS = [  # label, run folders (seeds 0-4 and 5-9 may live in different folde
     ("Qwen3-8B LoRA\n(same input, 3 ep)", ["Q8_fullq_lora"]),
     ("Qwen3-8B LoRA\n+ all of train", ["Q8_alldata"]),
 ]
-REFS = [("TeleAI, Qwen2.5-7B fine-tuned", 0.495), ("ChulaNLP, RoBERTa top-5 + Kimi-K2", 0.52),
+REFS = [("TeleAI, Qwen2.5-7B fine-tuned", 0.495), ("ChulaNLP, DeBERTa top-5 + Kimi-K2", 0.52),
         ("TeleAI, 3-stage DeepSeek-V3 (1st)", 0.617), ("human annotator vs the other two", 0.684)]
 SURFACE, INK, INK2, GRID, SEED, MEAN = "#fcfcfb", "#0b0b0b", "#52514e", "#e4e3df", "#b9b8b1", "#2a78d6"
 BAR_D, BAR_Q, REF = "#9a9a94", "#2a78d6", "#c2410c"

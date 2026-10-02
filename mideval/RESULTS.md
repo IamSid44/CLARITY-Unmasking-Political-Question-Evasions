@@ -131,6 +131,8 @@ Per-class F1 change on the baseline:
 | Deflection | +0.151 |
 | General | +0.142 |
 | Implicit | +0.122 |
+| Declining to answer | +0.030 |
+| Clarification | −0.036 |
 | Explicit | −0.082 |
 | Dodging | −0.086 |
 
@@ -138,7 +140,7 @@ Per-class F1 change on the baseline:
 
 | hypothesis | result | source |
 |---|---|---|
-| C2: annotators agree more under the coverage cut | α 0.503 vs 0.623 for the official cut; Δ −0.120, 95% CI [−0.189, −0.049], p = 0.0004 | team's earlier analysis track, in git history; log "Starting point" |
+| C2: annotators agree more under the coverage cut | α 0.503 vs 0.623 for the official cut; Δ −0.120, 95% CI [−0.189, −0.049], p = 0.0004 | team's earlier analysis track, in git history; log "Starting point"; numbers in `clarity/reports/03_research_narrative.md` §3 |
 | E10's 0.478 system replicates | 0.434 on seeds 5–9; 0.405 at 10 seeds | log §E11 |
 | a mixed-input ensemble beats a single-input one | 0.403 vs 0.405 | log §E11 |
 | a dedicated Non-Reply gate raises recall | recall −0.039 | log §E12b |
@@ -189,7 +191,7 @@ By annotator agreement, the in-set rate gains are: unanimous items +0.076, 2 lab
 3 labels +0.048.
 
 **Mixing Qwen with DeBERTa** (weight and τ fitted inside the nested CV) gives 0.543, against Qwen
-alone at 0.549. The CV puts 0.79 of the weight on Qwen.
+alone at 0.549 (both means over 10 CV splits). The CV puts 0.79 of the weight on Qwen.
 
 How to read this:
 - **The backbone is the largest single gain in the project.** It is larger than the full
@@ -200,8 +202,8 @@ How to read this:
     and ChulaNLP's encoder + Kimi-K2 cascade (0.52);
   - it is below TeleAI's multi-call pipeline (0.617) and the human ceiling (0.684).
 - **Logit adjustment matters more for Qwen** (+0.062 per model, against +0.005 for DeBERTa). Raw
-  Qwen under-predicts General: 24 predictions, though General is in 113 reference sets
-  (`raw/E13_Q8_topk_confidence.txt`).
+  Qwen under-predicts General: on seeds 0–2, 24 predictions, though General is in 113 reference
+  sets (`raw/E13_Q8_topk_confidence.txt`).
 - **An acceptable label is in Qwen's top 3 for 93% of items, and confidence predicts
   correctness:** the in-set rate rises from 0.40 to 0.87 across confidence fifths. Both are
   measured on seeds 0–2. This is the headroom the planned cascade targets.

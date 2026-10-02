@@ -25,7 +25,7 @@ the 3-way label from the fixed taxonomy.
 | system | split | Subtask 1 | Subtask 2 | source |
 |---|---|---|---|---|
 | TeleAI (1st), DeepSeek-V3, 3-stage prompting | test | 0.89 | 0.68 | task overview, Table 3 |
-| moswisarut / ChulaNLP (2nd), RoBERTa top-5 → Kimi-K2 | test | 0.82 | 0.61 | task overview, Table 3 |
+| moswisarut / ChulaNLP (2nd), DeBERTa-large top-5 → Kimi-K2 | test | 0.82 | 0.61 | task overview, Table 3; encoder per ChulaNLP's paper (the overview says RoBERTa) |
 | organisers' baseline, fine-tuned Llama-70B | test | 0.82 | 0.57 | task overview, Table 2 |
 | best encoder-only systems | test | ≤ 0.81 | ≤ 0.51 | task overview §5 |
 | TeleAI pipeline | dev | 0.812 | 0.617 | TeleAI, Table 2 |

@@ -1,0 +1,62 @@
+% Nier_ANLP -- SemEval-2026 Task 6 (CLARITY) course report, VERSION 2 (figures re-drawn by clarity/paper_figures.py; text identical to main.tex).
+% Built on the official ACL template (acl_latex_template.tex, acl-org/acl-style-files @ d5adc82);
+% acl.sty and acl_natbib.bst are unmodified copies. Build: bash build.sh
+\documentclass[11pt]{article}
+
+% "final": the camera-ready (non-anonymous) version, as the template's comment describes.
+\usepackage[final]{acl}
+
+% Standard package includes (as in the official template)
+\usepackage{times}
+\usepackage{latexsym}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{microtype}
+\usepackage{inconsolata}
+\usepackage{graphicx}
+
+% Content packages (no layout changes)
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{booktabs}
+
+% Shared notation (owned by the orchestrator)
+\newcommand{\Stwo}{S2}
+\newcommand{\Sone}{S1}
+\newcommand{\pmsd}[2]{#1\,{\scriptsize$\pm$\,#2}}
+
+% Figures of this version (v2: publication figures from clarity/paper_figures.py)
+\input{figs_v2}
+
+\title{Nier\_ANLP at SemEval-2026 Task 6: What Limits Evasion Classification?\\
+A Controlled Study from DeBERTa to a LoRA-Tuned 8B Classifier}
+
+\author{Vidvathama R \and Siddarth Gottumukkula \and Sanjana Reddy Vonteri \and Shashikanta Sahoo \\
+  Team Nier\_ANLP \\
+  International Institute of Information Technology, Hyderabad}
+
+\begin{document}
+\maketitle
+\begin{abstract}
+\input{sections/abstract}
+\end{abstract}
+
+\input{sections/01_introduction}
+\input{sections/02_task}
+\input{sections/03_related}
+\input{sections/04_encoder}
+\input{sections/05_llm}
+\input{sections/06_analysis}
+\input{sections/07_conclusion}
+
+\input{sections/limitations}
+\input{sections/ethics}
+
+\bibliography{references}
+
+\appendix
+\input{sections/appendix_encoder}
+\input{sections/appendix_llm}
+\input{sections/appendix_repro}
+
+\end{document}

@@ -17,7 +17,7 @@
 #   start    run `jarvis_setup.sh all` on the instance, inside ITS tmux session (survives disconnects)
 #   watch    local tmux session "jarvis-watch": every 5 min, copy the instance's logs and finished
 #            outputs into clarity/logs/jarvis/ and clarity/runs/<NAME>/; when the pipeline says
-#            ALL DONE or FAILED, copy everything (incl. LoRA adapters) and pause the instance
+#            ALL DONE or FAILED, copy logs, probabilities and metrics (LoRA adapters go to the HF repo from the instance, not here) and pause the instance
 #   sync     one copy, now          status   the instance's progress          pause   pause it now
 #   ssh      open a shell on the instance
 #

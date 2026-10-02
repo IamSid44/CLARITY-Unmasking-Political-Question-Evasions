@@ -1,0 +1,129 @@
+% Section 4 -- the DeBERTa encoder track. Owner: section agent B.
+% Sources: mideval/RESULTS.md (sec. 1-5, 8), clarity/reports/02_experiment_log.md (E0-E12),
+% clarity/reports/03_research_narrative.md, clarity/reports/raw/E11_replication.txt.
+\section{The Encoder Track}
+\label{sec:encoder}
+
+Our first system is a fine-tuned encoder. We built it one controlled change at a
+time against a frozen baseline, and we judged each change by comparisons paired by
+seed, under the protocol of \S\ref{sec:task}.
+
+\paragraph{Model and training.}
+We fine-tuned all 435M parameters of DeBERTa-v3-large \citep{he2023debertav3} as a
+9-way classifier with \citet{wolf-etal-2020-transformers}. The \texttt{[CLS]} state
+passes through a dense tanh pooler and a new linear layer over the nine evasion
+labels, and Subtask~1 is read off the predicted label. The baseline input pairs the
+sub-question (segment~A, at most 96 tokens) with the answer (segment~B), cut from the
+right at 512 tokens. The final input puts ``Sub-question: \ldots{} Full question:
+\ldots'' in segment~A, with up to 256 tokens for the journalist's whole turn, and
+raises the context to 1,024 tokens. The sub-question comes first, so truncation never
+removes it. We added the full question because 69\% of training rows share their
+answer with another sub-question, and a model that cannot see the other
+sub-questions cannot tell which part of the answer responds to which. Training used
+plain cross-entropy, AdamW \citep{loshchilov2019decoupled} at a learning rate of
+$10^{-5}$ with layer-wise decay 0.95 ($10^{-4}$ for the head), a cosine schedule with
+10\% warm-up, batch size 16, and bf16 autocast over fp32 weights
+(Appendix~\ref{sec:app-encoder}). The epoch was chosen on the train slice. The three
+main configurations used seeds 0--9; a seed fixes the head initialisation and data order,
+so seeds are paired across configurations.
+
+\begin{table}[t]
+\centering
+\small
+\setlength{\tabcolsep}{4pt}% local to this table: five columns in one column width
+\begin{tabular}{@{}lcccc@{}}
+\toprule
+ & \multicolumn{2}{c}{Single model} & \multicolumn{2}{c}{System} \\
+\cmidrule(lr){2-3}\cmidrule(l){4-5}
+Configuration & \Stwo & \Sone & \Stwo & \Sone \\
+\midrule
+Baseline, 8 ep. & \pmsd{0.315}{0.040} & \pmsd{0.576}{0.030} & 0.428 & 0.601 \\
++ 16 epochs & \pmsd{0.362}{0.026} & \pmsd{0.601}{0.016} & 0.400 & 0.620 \\
++ full question & \pmsd{0.384}{0.030} & \pmsd{0.614}{0.027} & 0.405 & 0.648 \\
+\midrule
+All of train$^{\dagger}$ & \pmsd{0.416}{0.020} & \pmsd{0.614}{0.016} & 0.489 & -- \\
+\bottomrule
+\end{tabular}
+\caption{DeBERTa-v3-large on dev. Single model: mean\,$\pm$\,sd over seeds 0--9,
+argmax, no dev tuning. System: the 10-seed mean probability with logit adjustment,
+$\tau$ fitted by 5-fold nested CV. Each of rows 2--3 adds one change to the row
+above; row 3 is the final system. $^{\dagger}$Full question, 16 epochs, all of train,
+last epoch; seeds 0--4 only, so its system is a 5-seed number and is not
+comparable with the others.}
+\label{tab:enc-main}
+\end{table}
+
+\paragraph{What improved the model.}
+Two changes improved single models (Table~\ref{tab:enc-main},
+Figure~\ref{fig:enc-seeds}). Training for 16 epochs instead of 8 raised \Stwo{} by
++0.047 ($t=3.4$, 9/10 seeds up) and \Sone{} by +0.026 ($t=2.7$, 8/10). Adding the
+full question at 16 epochs gave a further +0.022 \Stwo{} ($t=2.0$, 7/10) and +0.012
+\Sone{} ($t=1.3$, 6/10). Together the two changes add +0.069 \Stwo{} ($t=3.6$) and
++0.038 \Sone{} ($t=2.8$), each on 9 of 10 seeds. Most of the gain comes from longer
+training, which also lifted the classes the baseline handled worst: General rose from
+0.119 to 0.295 per model (seeds 0--4).
+
+\FigureEncSeeds
+
+Undertraining at first looked like a negative result. Our first test added the
+full question together with Balanced Softmax and focal loss
+\citep{ren2020balanced,lin2017focal} at 8 epochs, lost to the baseline, and was
+blamed on the loss. A one-change control with plain cross-entropy at 8 epochs
+scored lower still: \pmsd{0.282}{0.043} against \pmsd{0.337}{0.044} on seeds 0--4.
+Its final training loss (1.32--1.50, against 0.57--1.09) showed that it had not
+finished fitting; its last epoch sat where the baseline had been at epoch~3. Its
+seeds were less confident (mean top probability 0.445 against 0.594) and leaned on
+the class prior. After logit adjustment, single models matched the baseline (0.353
+against 0.357). At 16 epochs the same input gave the best single model. The deficit
+came from the training budget, not from the input or the loss, so every run now
+reports its final training loss and selected epoch next to its scores.
+
+\paragraph{From model to system.}
+A system averages the ten seeds' probabilities and applies logit adjustment
+(Eq.~\ref{eq:la}). On \Stwo, better single models did not give a better system.
+Ensembling helped the final model more (0.384 to 0.409) than the baseline (0.315 to
+0.319). Logit adjustment then lifted the baseline ensemble by +0.109 (to 0.428) and
+the final ensemble not at all (0.409 to 0.405; $\tau=0.4$ when fitted on all of dev).
+The final system scores 0.405 \Stwo{} and 0.648 \Sone, against 0.428 and 0.601 for
+the baseline system. The \Stwo{} difference is $-$0.022, with a 95\% bootstrap
+interval of [$-$0.101, +0.061] over dev items (seeds fixed), so the two systems
+cannot be told apart on \Stwo; on \Sone{} the final system is ahead. Our reading
+(inferred, not tested directly) is that longer training and logit adjustment
+correct the same fault, the pull of a prior-leaning model towards frequent classes.
+Either one is enough, and together they add nothing. The final system was chosen by
+a rule written before the replication runs.
+
+Five-seed systems are unreliable on 308 items. The baseline system scored 0.438 on
+seeds 0--4 and 0.356 on seeds 5--9; the final system scored 0.478 and 0.434. This
+spread between two draws of the same system is larger than most effects we wanted
+to measure. All system claims therefore use ten seeds, and the conclusions rest on
+per-seed paired comparisons.
+
+One later variant helped. Training on all of train for 16 epochs and keeping the
+last epoch is supported by the fact that, on the ten full-question seeds, the last
+epoch already scored at least as well as the selected one (\Stwo{}
++0.011\,$\pm$\,0.020, 7/10). Paired with the full-question model on seeds 0--4, it
+gained +0.029 \Stwo{} per model (4/5 seeds up) and lost 0.017 \Sone{} (1/5); its
+5-seed system scored 0.489. Given the spread above, this is a 5-seed result and not
+a ranking; a 10-seed run is proposed.
+
+\paragraph{What did not help.}
+Seven further ideas, each tested against a named control, left the model or the
+system where it was (details in Appendix~\ref{sec:app-encoder},
+Table~\ref{tab:app-negative}). A second encoder that re-ranked the baseline's top-3
+labels from their definitions scored 0.354, against 0.365 for the baseline ensemble
+it re-ranked. Learning what each label means from 3,448 examples is harder than
+classifying them. Balanced Softmax with focal loss over-corrected towards rare
+classes (Explicit F1 fell from 0.679 to 0.319) and used up the gain that logit
+adjustment would have given. Three hierarchy designs did not beat the flat model:
+post-hoc routing through the clarity level, a factorised output head, and a
+Non-Reply gate with branch specialists. The flat softmax already scores all nine
+labels jointly. Boundary experts for the three most-confused pairs changed
+\Stwo{} by +0.002, because they seldom overturn a decision the flat model makes from
+the same input. A uniform model soup \citep{wortsman2022soups} of the ten models
+scored 0.267. Our seeds differ in the random head initialisation and the data order,
+so their weights do not average. Nine per-class decision weights overfit 308
+items, and a temperature with nine biases, fitted on one half of dev and scored on
+the other, swung between 0.29 and 0.46. An ensemble that mixed both inputs scored 0.403, against 0.405. In
+short, adding encoders or rules trained on the same 3,448 examples did not move the
+system. Section~\ref{sec:llm} tests the next candidate, the backbone itself.

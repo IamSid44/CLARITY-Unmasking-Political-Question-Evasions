@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# CLARITY -- Qwen3-8B LoRA classifier on JarvisLabs (1x A100 80GB), end to end.
+# CLARITY -- Qwen3-8B LoRA classifier on JarvisLabs (one GPU VM; run on 1x RTX PRO 6000 96 GB), end to end.
 #
 #   On the lab server (once):
 #     bash jarvis_setup.sh bundle      -> jarvis_bundle.tgz (code + data + this script, ~5 MB)
