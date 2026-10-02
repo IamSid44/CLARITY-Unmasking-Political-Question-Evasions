@@ -15,7 +15,7 @@ track, which is now archived; the copies were checked to give identical results.
 | DeBERTa best single model | full question + 16 epochs: 0.384 ± 0.030 dev S2, 0.614 ± 0.027 dev S1 over 10 seeds (baseline 0.315 / 0.576); better on 9 of 10 seeds |
 | The story, in order | [`reports/02_experiment_log.md`](reports/02_experiment_log.md) |
 | Latest | **E13 (2026-10-02)**: the backbone swap is the largest gain in the project (+0.092 S2 / +0.095 S1 per model, 10/10 seeds; system +0.136). All of train: +0.017 per model, not distinguishable. See the log §E13–E13c and [`reports/03_research_narrative.md`](reports/03_research_narrative.md) §17 |
-| Running | nothing (JarvisLabs VMs paused; `../CONTEXT.md`) |
+| Running | nothing (no VMs; `../CONTEXT.md`) |
 
 ---
 

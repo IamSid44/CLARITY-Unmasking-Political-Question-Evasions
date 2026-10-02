@@ -24,8 +24,8 @@
 - a 3-epoch seed takes 15–16 min, a 12-epoch seed about 59 min;
 - with gradient checkpointing it is 2.11 s per step and 19 GiB.
 
-**Cost of the 2026-10-02 round:** ₹1,518.79, read from the API balance. Credit left: ₹4,029.30
-of ₹5,880.
+**Cost of the 2026-10-02 round:** ₹1,518.79 of GPU time, read from the API balance. Credit left
+after the VMs were destroyed: ₹4,026.64 of ₹5,880.
 
 ## Several VMs in parallel (lanes)
 
@@ -48,8 +48,8 @@ background. All uploads are flushed before the pause. W&B logs per step and per 
 After a run, **destroy** the VMs on the website (or keep them paused at ₹1.30/h each for the
 disk).
 
-**Current profiles:** `a`–`d`, all **paused**. Their machine ids are in
-`~/.config/clarity_jarvis/host_<a|b|c|d>.env` on the laptop's WSL.
+**Current VMs: none.** The four lanes (`a`–`d`) were destroyed on 2026-10-02 after every seed
+was confirmed on HF. `create` makes a fresh VM per lane.
 
 ---
 

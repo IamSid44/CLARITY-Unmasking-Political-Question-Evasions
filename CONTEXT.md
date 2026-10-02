@@ -1,6 +1,6 @@
 # CONTEXT — handover for a new Claude Code session
 
-**Last updated 2026-10-02, about 14:00 IST**, at the end of the session that ran E13 at 10 seeds
+**Last updated 2026-10-02, about 14:00 IST** (`e13-qwen-lora` merged into `main`; VMs destroyed), at the end of the session that ran E13 at 10 seeds
 and its follow-ups on JarvisLabs. It was written so that a new session on any machine can continue
 without the chat history. Read this whole file first, then the files it points to.
 
@@ -79,9 +79,9 @@ without the chat history. Read this whole file first, then the files it points t
 
 ## 4. State of git, machines, keys and money
 
-- **Git.** All work since `8c80313` is on branch **`e13-qwen-lora`**, pushed to `origin`. It holds
-  the E13 results, the script changes, the analysis/figure scripts and the updated docs.
-  **Merging into `main` needs the team's OK; check whether it has happened.**
+- **Git.** All work since `8c80313` was done on branch `e13-qwen-lora` and **fast-forward merged
+  into `main`** (pushed, with the user's OK, 2026-10-02). It holds the E13 results, the script
+  changes, the analysis/figure scripts and the updated docs.
   `clarity/runs/` and `clarity/logs/` are gitignored, as is `clarity/.env`.
 - **Run folders.** Every seed of `Q8_fullq_lora` (0–9), `Q8_fullq_lora_12ep` (0–2) and
   `Q8_alldata` (0–9) is on the HF repo **`siddarthg44/clarity-semeval26`**, as
@@ -107,18 +107,19 @@ without the chat history. Read this whole file first, then the files it points t
   - per-VM host files are `host_<a|b|c|d>.env`;
   - on a new machine, rerun `bash jarvis_drive.sh keys` and `keygen` (add the public key in
     JarvisLabs before creating VMs).
-- **JarvisLabs VMs: four are PAUSED** (`clarity-b` 523821, `Nier_ANLP` 523822, `clarity-d` 523909,
-  `clarity-c` 523920). Each holds the environment and the cached models on a 100 GB disk, at about
-  ₹1.30/h each while paused. **Destroy them when no more runs are planned soon. Ask the user
-  first**: destroying is irreversible, though everything needed is on HF and in git.
-- **Money.** JarvisLabs credit is **₹4,029.30** (API balance, 2026-10-02 ~13:30). The E13 round
-  cost ₹1,518.79; the project total is ₹1,850.70 of ₹5,880. A 1× RTX PRO 6000 VM costs
+- **JarvisLabs VMs: none.** The four used on 2026-10-02 were destroyed at about 13:50 IST, at
+  the user's request, after every seed was confirmed on HF. The next run starts with
+  `JPROFILE=<x> bash jarvis_drive.sh create`. Setup and the model download take about 3 min with
+  the MTU fix. The old `host_<a-d>.env` files on the laptop point at destroyed machines;
+  `create` overwrites them.
+- **Money.** JarvisLabs credit is **₹4,026.64** (API balance after the VMs were destroyed,
+  2026-10-02 ~13:50). The E13 round cost ₹1,518.79 of GPU time plus a few rupees of paused-disk
+  storage; the project total is ₹1,853.36 of ₹5,880. A 1× RTX PRO 6000 VM costs
   ₹179.01/h + 18% GST ≈ ₹211/h.
 
 ## 5. What to do next (in order; ask before any spend over ~2 GPU-hours)
 
 1. **Finish the mid-eval (deadline 2026-10-02 23:59).** The package is complete. What remains:
-   - merge `e13-qwen-lora` → `main` (with the user's OK);
    - make the slides from `mideval/SLIDES_OUTLINE.md`;
    - submit.
 2. **E13b at 10 seeds:** 12 epochs, seeds 3–9, as a new 10-seed single-pass system.
@@ -126,8 +127,8 @@ without the chat history. Read this whole file first, then the files it points t
    - About 59 min per seed. 7 seeds over 4 VMs takes about 2 h wall-clock, ≈ ₹1,600.
    - Command per lane:
      `JPROFILE=b RUN_NAME=Q8_fullq_lora_12ep SEEDS="3 4" EXTRA_ARGS="--epochs 12 --no-grad-checkpoint" MAX_TOTAL_HOURS=4 bash jarvis_drive.sh all`.
-   - To reuse a paused VM: `JPROFILE=b bash jarvis_drive.sh resume` first. Setup is skipped on a
-     resumed VM, so re-apply the MTU fix
+   - Create each lane's VM first: `JPROFILE=b bash jarvis_drive.sh create`. If a VM is later
+     paused and resumed, setup is skipped, so re-apply the MTU fix
      (`sudo ip link set dev enp1s0 mtu 1450; sudo sysctl -w net.ipv4.tcp_mtu_probing=1 net.ipv6.conf.all.disable_ipv6=1`).
 3. **All of train × 12 epochs,** as its own single-change test against item 2.
 4. **The cascade, the label-meaning test** (Phase B in `mideval/PLAN_REMAINING.md`):

@@ -255,7 +255,7 @@ to the multi-call pipelines.
 | risk | fallback |
 |---|---|
 | the cascade does not beat the 8B classifier | reported as evidence that label meaning is already learned at 8B; the curve then ends at the single-pass point, which is the cheaper answer |
-| GPU access: the lab GPUs are shared; cloud credit ₹4,029 left of ₹5,880 | cloud runs on parallel VMs with a timing pilot, automatic pause and per-run cost tracking (E13 round: ₹1,519) |
+| GPU access: the lab GPUs are shared; cloud credit ₹4,027 left of ₹5,880 | cloud runs on parallel VMs with a timing pilot, automatic pause and per-run cost tracking (E13 round: ₹1,519) |
 | dev too small to separate systems | paired per-seed comparisons, 10-seed systems, bootstrap intervals; claims stated at the resolution the data supports |
 | test differs from dev (shorter answers, two annotators) | report the short-answer half and the two-annotator scores alongside the headline |
 

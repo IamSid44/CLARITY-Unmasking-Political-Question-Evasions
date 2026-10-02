@@ -37,7 +37,7 @@ for what these comparisons can and cannot show.
 - **Next: the label-meaning test.** A cascade sends only uncertain items to a larger LLM with
   label definitions and boundary examples, giving an accuracy-vs-cost curve.
   [`mideval/`](mideval/REPORT.md) is the mid-evaluation package.
-- **Nothing is running.** The JarvisLabs VMs are paused; see [`CONTEXT.md`](CONTEXT.md).
+- **Nothing is running, and no VMs exist.** See [`CONTEXT.md`](CONTEXT.md).
 
 ---
 
