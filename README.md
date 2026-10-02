@@ -1,180 +1,114 @@
-# CLARITY — Unmasking Political Question Evasions
+# Knowledge over Structure: Response Clarity Classification in Political Interviews
 
-Team Nier_ANLP's work on **SemEval-2026 Task 6 (CLARITY)**: given a question from a
-U.S. presidential interview and the president's answer, classify *how* the question
-was answered — one of 9 evasion strategies (Subtask 2), which determines one of 3
+Team **Nier_ANLP** (IIIT Hyderabad) on **SemEval-2026 Task 6 (CLARITY)**: given a sub-question from a
+U.S. presidential interview, the journalist's full question and the president's answer, classify
+*how* the sub-question was answered: one of 9 evasion types (Subtask 2), which determines one of 3
 clarity levels (Subtask 1).
 
-| | dev Subtask 2 | dev Subtask 1 |
-|---|---|---|
-| **Our best system** — Qwen3-8B-Base + LoRA (E13), 10-seed ensemble + logit adjustment | **0.543** | **0.746** |
-| **Our best single model** — Qwen3-8B-Base + LoRA, same input and protocol as DeBERTa (mean of 10 seeds) | **0.476 ± 0.043** | **0.709 ± 0.031** |
-| Qwen3-8B LoRA, 12 epochs instead of 3 (E13b, 3 seeds; adopted on the train slice) | 0.543 ± 0.015 | 0.742 ± 0.008 |
-| Best DeBERTa single model — DeBERTa-v3-large with the full question, 16 epochs (mean of 10 seeds) | 0.384 ± 0.030 | 0.614 ± 0.027 |
-| Our baseline single model — sub-question + answer, 8 epochs (mean of 10 seeds) | 0.315 ± 0.040 | 0.576 ± 0.030 |
-| DeBERTa final system (E11) — 10 of the best DeBERTa models + post-hoc logit adjustment | 0.405 | 0.648 |
-| Our baseline system — 10 baseline models + logit adjustment | 0.428 | 0.601 |
-| ChulaNLP (2nd place), fine-tuned DeBERTa-large | 0.46 | 0.65 |
-| TeleAI (1st place), DeepSeek-V3 multi-stage pipeline | 0.617 | 0.812 |
+| Member | Roll number |
+|---|---|
+| Vidvathama R | 2024122002 |
+| Siddarth Gottumukkula | 2023102040 |
+| Sanjana Reddy Vonteri | 2026901007 |
+| Shashikanta Sahoo | 2026900007 |
 
 ## Links
 
 | | |
 |---|---|
-| Code (this repository) | https://github.com/IamSid44/CLARITY-Unmasking-Political-Question-Evasions |
+| Mid-evaluation report | [`paper/main.pdf`](paper/main.pdf) (ACL format; LaTeX source in [`paper/`](paper/README.md)) |
 | Trained runs (Hugging Face) | https://huggingface.co/siddarthg44/clarity-semeval26 — per-seed probabilities, metrics and LoRA adapters, as `<config>/seed<k>/` |
 | Training curves (Weights & Biases) | https://wandb.ai/iamsid44-iiit-hyderabad/clarity-semeval26 — runs `<config>-s<seed>`, grouped by config |
-| Mid-evaluation report | [`paper/main.pdf`](paper/main.pdf) (ACL format; source in [`paper/`](paper/README.md)) |
+| Code | https://github.com/IamSid44/CLARITY-Unmasking-Political-Question-Evasions (this repository) |
 
-All numbers are on the 308-item **dev** set. Codabench has closed and the test labels
-were never released, so dev is the only common ground for comparison; see
-[`clarity/reports/02_experiment_log.md`](clarity/reports/02_experiment_log.md) §E7
-for what these comparisons can and cannot show.
+## Results (dev set)
 
-**Status (2026-10-02, mid-evaluation).** Two tracks, one protocol:
-- **The encoder track (E0–E12)** built DeBERTa-v3-large one measured change at a time:
-  - full journalist question + 16 epochs: +0.069 S2 per model, on 9 of 10 seeds;
-  - final system 0.405 / 0.648;
-  - every decision-layer and architecture alternative is documented as a negative result, with
-    the reason it failed.
-- **E13 (2026-10-02)** asked whether the encoder's gap is *knowledge*. It swapped the backbone for
-  Qwen3-8B-Base with LoRA and changed nothing else:
-  - **+0.092 S2 and +0.095 S1 per model on all 10 seeds;**
-  - **system S2 0.543 / S1 0.746**, against 0.405 / 0.648 (+0.136, 95% CI [+0.054, +0.224]);
-  - 12 epochs instead of 3 is adopted by the train-slice rule (3-seed screen);
-  - training on all of train gives a small gain that isn't distinguishable from zero.
-- **Next: the label-meaning test.** A cascade sends only uncertain items to a larger LLM with
-  label definitions and boundary examples, giving an accuracy-vs-cost curve. The dated plan to the
-  final evaluation (31 October 2026) is §7 of the report.
-- **Nothing is running, and no VMs exist.**
+Test labels were never released and the evaluation server has closed, so all numbers are on the
+308-item dev set. Subtask 2 is multi-reference macro-F1 (a prediction counts if any annotator gave
+it). A *system* averages 10 seeds and applies one-parameter logit adjustment, with τ chosen by nested
+cross-validation.
 
----
+| | Subtask 2 | Subtask 1 |
+|---|---|---|
+| **Qwen3-8B-Base + LoRA, 10-seed system** | **0.543** | **0.746** |
+| **Qwen3-8B-Base + LoRA, single model (mean of 10 seeds)** | **0.476 ± 0.043** | **0.709 ± 0.031** |
+| DeBERTa-v3-large, full question + 16 epochs, 10-seed system | 0.405 | 0.648 |
+| DeBERTa-v3-large, full question + 16 epochs, single model | 0.384 ± 0.030 | 0.614 ± 0.027 |
+| DeBERTa-v3-large baseline (sub-question + answer, 8 epochs), single model | 0.315 ± 0.040 | 0.576 ± 0.030 |
+| TeleAI (1st place), multi-call DeepSeek-V3 pipeline | 0.617 | 0.812 |
+| ChulaNLP (2nd place), DeBERTa top-5 → Kimi-K2 | 0.52 | 0.70 |
+| human annotator scored against the other two | 0.684 | — |
+
+## Where the project stands
+
+**Done (mid-evaluation).**
+- *Encoder track (E0–E12).* DeBERTa-v3-large built one measured change at a time. The full journalist
+  question and 16 epochs gave +0.069 Subtask 2 per model on 9 of 10 seeds. Every decision-layer and
+  structural alternative is documented as a negative result, with the reason it failed: re-ranking,
+  three hierarchies, rebalancing losses, boundary experts and model soups.
+- *The knowledge test (E13).* Swapping only the backbone for Qwen3-8B-Base with LoRA gave
+  +0.092 Subtask 2 and +0.095 Subtask 1 per model on all 10 seeds, and lifted the system from
+  0.405 to 0.543 (95% bootstrap interval of the difference [+0.054, +0.224]).
+
+**Planned (to 31 October 2026; report §7).**
+- *Structure on the stronger backbone.* The hierarchy designs that failed on DeBERTa are re-tested
+  on Qwen, whose remaining errors sit inside the Ambivalent branch.
+- *Accuracy against cost.* A cascade sends only Qwen's least-confident items, with its top
+  candidates, to a larger LLM, tracing macro-F1 against LLM calls and cost per item.
 
 ## Repository layout
 
 ```
 .
-├── clarity/           the system: code, experiment definitions, reports, packaged predictions
-│   ├── README.md          start here
-│   ├── llm_classifier.py  E13: decoder LLM + LoRA as a 9-way classifier
-│   ├── e13_analysis.py    E13 analyses (paired seeds, systems, 2-annotator, per class)
-│   ├── paper_example.py   the worked example in the report (one dev item through both systems)
-│   └── reports/           the scorer analysis, the experiment log, the research narrative,
-│                            every number with its source (04_results_sources.md), raw outputs (raw/)
-├── paper/             the mid-evaluation report, ACL format (official template; main.tex, sections/, build.sh)
-├── Nier_ANLP-Mid/     the mid-evaluation submission package (built by build_mid_submission.sh)
-├── jarvis_drive.sh    launch machine: VMs on JarvisLabs (create/resume, push, start, watch, pause)
-├── jarvis_setup.sh    on each VM: environment, model, smoke, pilot, training, HF upload, pause
-├── JARVISLABS_PORTING_GUIDE.md   how to run the LLM experiments on JarvisLabs
-├── Materials/         project proposal and reference papers (task overview, TeleAI,
-│                        ChulaNLP, the QEvasion dataset paper)
-└── README.md
+├── clarity/                the system: code, experiment definitions, records
+│   ├── README.md               the task, results, method, findings, how to run (start here)
+│   ├── encoder.py              DeBERTa-v3-large classifier
+│   ├── llm_classifier.py       Qwen3-8B-Base + LoRA classifier
+│   ├── decide.py               logit adjustment, nested cross-validation, 2-annotator scoring
+│   ├── experiments/            the flags of every encoder run
+│   └── reports/                scorer analysis, experiment log, research narrative,
+│                                 number-to-source map, raw analysis outputs
+├── paper/                  the report (official ACL template; main.tex, sections/, build.sh)
+├── jarvis_drive.sh, jarvis_setup.sh, JARVISLABS_PORTING_GUIDE.md
+│                           how the 8B runs were launched on rented GPUs
+└── build_mid_submission.sh builds the mid-evaluation zip from this tree
 ```
-
-Everything lives in **[`clarity/`](clarity/README.md)**: an end-to-end fine-tuned
-DeBERTa-v3-large, built from the simplest system that could work and extended one
-measured step at a time — baseline → seed ensemble → decision rules → hierarchy check
-→ second-stage re-ranker → richer input, loss and output head (E8–E9) → training
-length (E10) → replication (E11) → data-driven variants (E12) → an 8B LLM classifier with
-LoRA under the same protocol (E13).
-
-**Earlier work, archived.** The team's first track, `higrec` (a frozen-backbone
-analysis pipeline, the inter-annotator agreement study, and the planning documents
-that preceded this work), is no longer in the current tree. It remains in the git
-history. The three modules the system still needs from it — data loading, the label
-vocabulary and the official-scorer replica — were carried over into
-`clarity/qevasion/` and checked to give identical results.
-
----
 
 ## Reading order
 
-For someone new to the project, about an hour in total:
-
-0. **The research narrative** —
-   [`clarity/reports/03_research_narrative.md`](clarity/reports/03_research_narrative.md)
-   (20 min): the whole track as a chain of reasoning — for each experiment, what
-   led to it, the setup, the result and why it worked or failed. Start here.
-1. **This page**, then **the task and the system** —
-   [`clarity/README.md`](clarity/README.md) §1–4 (15 min). What the task is, what
-   the model does, the results table and the key findings.
-2. **What the metric actually rewards** —
-   [`clarity/reports/01_scorer_geometry.md`](clarity/reports/01_scorer_geometry.md)
-   (10 min). Short, and it changes how every result should be read.
-3. **The experiment log** —
-   [`clarity/reports/02_experiment_log.md`](clarity/reports/02_experiment_log.md).
-   It is long because every run is recorded; read it selectively (30 min):
-   - the **Scoreboard** at the top — every configuration in one table;
-   - **Step 0** — the first-principles analysis the whole plan rests on;
-   - **E4** — the decision rule behind the best result;
-   - **E8b results** — why "it didn't help" can mean "it wasn't trained enough",
-     including a correction to how E8 was first read;
-   - **E10** — the 2 × 2 of input and training length;
-   - **E11 results** — the replication on new seeds, judged against hypotheses
-     fixed in advance, and how the final system was chosen;
-   - **E13, E13x/b/c** — the 8B classifier, pre-registered, with its 10-seed results.
-4. **The report** — the mid-evaluation write-up in ACL format (official template):
-   [`paper/main.pdf`](paper/main.pdf). See [`paper/README.md`](paper/README.md) for building and
-   the ACL checks; every number in it has its source in
-   [`clarity/reports/04_results_sources.md`](clarity/reports/04_results_sources.md).
-
-To run anything: `clarity/README.md` §5.
-
----
+1. **The report**, [`paper/main.pdf`](paper/main.pdf): the whole study in 8 pages.
+2. **[`clarity/README.md`](clarity/README.md)** §1–4: the task, the system, results and key findings.
+3. **[`clarity/reports/03_research_narrative.md`](clarity/reports/03_research_narrative.md)**: each
+   experiment as a chain of reasoning, covering why it was run, what came out and why.
+4. **[`clarity/reports/02_experiment_log.md`](clarity/reports/02_experiment_log.md)**: every
+   experiment in order, with its hypothesis and prediction written before it ran.
+5. **[`clarity/reports/04_results_sources.md`](clarity/reports/04_results_sources.md)**: every
+   reported number with the file it comes from.
 
 ## Main findings so far
 
-1. **The metric rewards landing among the acceptable labels, not matching the
-   consensus.** A prediction is correct if any annotator gave that label, and if
-   every prediction is acceptable, macro-F1 equals the number of classes ever
-   predicted divided by 9.
-2. **The difficulty is mostly attribution.** Most answers respond to several
-   sub-questions at once; without knowing which sub-question is being asked,
-   accuracy is capped at 0.753.
-3. **Failures follow human disagreement, not class rarity.** `General` has plenty of
-   training data and near-worst F1; it is also the label annotators disagree on most.
-4. **A one-parameter decision rule is the biggest single gain** (+0.073), and the
-   textbook per-class alternative overfits the small dev set.
-5. **The right answer is in the model's top 3 for 90% of items**, but a second
-   encoder trained to choose among them does worse than the first — a documented
-   negative result, and the slot an LLM would fill.
-6. **Re-partitioning the taxonomy along "coverage" lowers annotator agreement**
-   (α 0.50 vs 0.62 for the official partition, p = 0.0004) — the earlier track's
-   pre-registered hypothesis, refuted.
-7. **Undertraining can pass for "this idea doesn't work".** With the full question
-   in the input the model needs about twice the epochs to fit; at 8 epochs it leans
-   on the class prior and looks worse than it is (0.343). Trained 16 epochs it gives
-   a better model on 9 of 10 seeds.
-8. **Better training and the decision rule fix the same thing.** Both remove the pull
-   towards frequent classes; on Subtask 2 either is enough, and together they add
-   nothing.
-9. **One set of 5 seeds cannot rank systems on 308 items.** The same system scored
-   0.438 and 0.356 on two seed sets; per-seed paired comparisons over 10 seeds carry
-   the conclusions.
-10. **The encoder's gap is largely knowledge (E13).** Swapping DeBERTa (0.4B) for a
-    LoRA-tuned Qwen3-8B, with nothing else changed, wins on all 10 seeds (+0.092 S2,
-    +0.095 S1). The gain is spread over 7 of 9 classes and over agreed and contested items
-    alike. Our prediction that it would sit on the commitment boundary is refuted.
-11. **The LLM needs the decision rule more.** Logit adjustment adds +0.062 per Qwen
-    model (+0.005 for DeBERTa): raw Qwen rarely predicts `General`.
-
----
+1. **The metric rewards landing among the acceptable labels and naming every class.** If every
+   prediction is acceptable, macro-F1 equals the number of classes ever predicted divided by 9.
+2. **The difficulty is mostly attribution.** 69% of training rows share their answer with another
+   sub-question, so the model must find which part of a long answer responds to which question.
+3. **Undertraining can pass for "this idea doesn't work".** The full-question input looked worse at
+   8 epochs; at 16 it gives the best DeBERTa model on 9 of 10 seeds.
+4. **Better training and the decision rule fix the same thing,** the pull towards frequent classes.
+5. **One set of 5 seeds cannot rank systems on 308 items.** The same system scored 0.438 and 0.356
+   on two seed sets, so every system claim uses 10 seeds.
+6. **The encoder's gap is largely knowledge.** The 8B backbone wins on all 10 seeds. The gain is
+   spread over 7 of 9 classes and is largest on the Non-Reply types. It does not sit on the
+   commitment boundary, as we had predicted.
+7. **The LLM needs the decision rule more.** Logit adjustment adds +0.062 per Qwen model against
+   +0.005 for DeBERTa, because raw Qwen rarely predicts General.
 
 ## Reproducing
 
-- Environment: Python 3.12, PyTorch 2.11, `transformers` 5.x. No package install;
-  scripts run from the repo root, e.g. `python clarity/analyze.py --run-dir …`.
-- Launch or resume an experiment: `bash clarity/start.sh E11` (tmux, resumable;
-  `clarity/README.md` §5).
-- Every number in the scorer report: `python clarity/verify_scorer_geometry.py`
-  (CPU, seconds).
-- Trained runs are not in git. They are on the team's Hugging Face repo `siddarthg44/clarity-semeval26`,
-  under `<config>/seed<k>/`: probabilities, metrics and LoRA adapters. **Note:** the repo is
-  currently **public**.
-- LLM runs (E13): see [`JARVISLABS_PORTING_GUIDE.md`](JARVISLABS_PORTING_GUIDE.md) and
-  `clarity/README.md` §5. Analyses: `python clarity/e13_analysis.py`,
-  `python clarity/e13_figures.py`.
-- The report's data figure and worked example: `python clarity/paper_figures.py` and
-  `python clarity/paper_example.py` (CPU; need the `dev_probs.npy` files from the HF repo in
-  `clarity/runs/`). Build the report with `bash paper/build.sh`.
-- API keys go in `clarity/.env` (template: `clarity/.env.example`); never commit it.
+- Python 3.12, PyTorch 2.11, `transformers` 5.x, `peft` 0.20; scripts run from the repository root.
+- All analyses run on CPU from the per-seed probabilities on the Hugging Face repo (download snippet
+  in `clarity/README.md` §5): `python clarity/e11_replication.py`, `python clarity/e13_analysis.py`,
+  `python clarity/qualitative_examples.py`.
+- The report: `python clarity/paper_figures.py`, `python clarity/paper_example.py`,
+  `python clarity/taxonomy_counts.py`, then `bash paper/build.sh`.
+- Training: `clarity/README.md` §5 (encoder) and `JARVISLABS_PORTING_GUIDE.md` (8B classifier).
+- API keys go in `clarity/.env` (template `clarity/.env.example`), which is gitignored.

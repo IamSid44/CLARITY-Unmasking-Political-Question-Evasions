@@ -1,6 +1,0 @@
-# GPU 1 -- moved from GPU 0 at 18:2x on 2026-09-25 (lab-mates needed GPU 0); finished seeds are skipped
-E9_hier 0
-E9_hier 1
-E9_hier 2
-E9_hier 3
-E9_hier 4

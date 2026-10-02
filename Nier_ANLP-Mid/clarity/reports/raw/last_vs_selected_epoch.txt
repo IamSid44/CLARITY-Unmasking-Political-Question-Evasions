@@ -1,4 +1,0 @@
-dev S2 / S1 of the checkpoint chosen on the train slice vs simply the last epoch (from the training logs)
-
-full question, 16 ep   last - selected:  S2 +0.011 ± 0.020 (7/10 up)   S1 -0.002 ± 0.024 (6/10 up)
-baseline input, 16 ep  last - selected:  S2 +0.012 ± 0.022 (6/10 up)   S1 -0.002 ± 0.013 (5/10 up)

@@ -1,0 +1,99 @@
+dev items 308; in-set: DeBERTa system 165, Qwen system 194
+Qwen fixes 65 items and breaks 36 (net +29)
+
+class in reference set  items  fixed  broken
+Explicit                  115     15      13
+Implicit                   99     20      16
+Dodging                    96     22      15
+General                   113     29      12
+Deflection                 51      9       5
+Partial/half-answer        14      4       2
+Declining to answer        17      5       1
+Claims ignorance           15      5       0
+Clarification               4      1       0
+
+DeBERTa system: most frequent error pairs (reference label -> prediction)
+  General              -> Implicit             23
+  Implicit             -> Explicit             20
+  Explicit             -> Implicit             17
+  Dodging              -> General              14
+  General              -> Dodging              14
+  General              -> Explicit             12
+  predicted counts: Explicit 94, Implicit 67, Dodging 48, General 35, Deflection 32, Partial/half-answer 1, Declining to answer 13, Claims ignorance 13, Clarification 5
+
+Qwen system: most frequent error pairs (reference label -> prediction)
+  Dodging              -> Implicit             17
+  General              -> Implicit             16
+  Implicit             -> Explicit             14
+  General              -> Deflection           12
+  Dodging              -> Deflection           11
+  Implicit             -> Dodging              9
+  predicted counts: Explicit 86, Implicit 62, Dodging 54, General 30, Deflection 42, Partial/half-answer 4, Declining to answer 13, Claims ignorance 10, Clarification 7
+
+=== FIXED by Qwen: per class, the item with the shortest answer
+[Explicit] (15 items)
+  dev row 60: Q:  Request for permission to ask another question on veterans.
+    A (109 chars): Go ahead—he hasn't asked his question yet. I rudely interrupted him.The Presidency/Cooperation With Congress/
+    annotators: Explicit, General, Explicit; DeBERTa: Dodging; Qwen: Explicit
+[Implicit] (20 items)
+  dev row 22: Q: . What are the odds for a guest-worker provision?
+    A (665 chars): Well, that's got to be an integral part of a comprehensive plan. When you're talking comprehensive immigration reform, one part of it is a guest-worker program, where people can come on a temporary basis to do jobs Americans are not doing. I've always felt like that would be an important aspect of securing the border. In other words, if somebody is not trying to sneak in in the first place, it mak...
+    annotators: Implicit, General, Implicit; DeBERTa: Dodging; Qwen: General
+[Dodging] (22 items)
+  dev row 56: Q:  Why wouldn't you be frustrated, sir, about what's happening?
+    A (106 chars): I'm not—I do remember the meeting; I don't remember being surprised. I'm not sure what they meant by that.
+    annotators: Claims ignorance, Claims ignorance, Dodging; DeBERTa: Declining to answer; Qwen: Dodging
+[General] (29 items)
+  dev row 60: Q:  Request for permission to ask another question on veterans.
+    A (109 chars): Go ahead—he hasn't asked his question yet. I rudely interrupted him.The Presidency/Cooperation With Congress/
+    annotators: Explicit, General, Explicit; DeBERTa: Dodging; Qwen: Explicit
+[Deflection] (9 items)
+  dev row 240: Q: The sufficiency of the Fed's half-point rate cut to stave off recession
+    A (579 chars): Roger, I do not comment on the decisions made by the Fed. I will comment on Ben Bernanke; I think he's doing a fine job. The White House and the Congress are responsible for fiscal policy. The worst decision the Congress could make would be to raise taxes during this period. We don't need to raise taxes in order to fund budget priorities. We have submitted a budget that shows we can get to balance...
+    annotators: Deflection, Declining to answer, Declining to answer; DeBERTa: Claims ignorance; Qwen: Declining to answer
+[Partial/half-answer] (4 items)
+  dev row 261: Q: How do you feel about a lot of the foreign-owned companies buying out U.S. tech companies, especially those that have military contracts?
+    A (2424 chars): We have laws that prevent sensitive technologies from being transferred as a result of sale and/or merger. And we watch that very carefully.On the broader scale, I have no problem with foreign capital buying U.S. companies; nor do I have a problem with U.S. companies buying foreign companies. That's what free trade is all about. As a matter of fact, there are workers working here in Illinois becau...
+    annotators: Partial/half-answer, General, Explicit; DeBERTa: Implicit; Qwen: Explicit
+[Declining to answer] (5 items)
+  dev row 94: Q: Can you comment about your concerns that come out of it at all, about for the region?
+    A (177 chars): No. Saying I'm not going to comment on the matter means I'm not going to comment on the matter. You're welcome to ask another question, if you'd like to, on a different subject.
+    annotators: Declining to answer, Declining to answer, Declining to answer; DeBERTa: Claims ignorance; Qwen: Declining to answer
+[Claims ignorance] (5 items)
+  dev row 56: Q:  Why wouldn't you be frustrated, sir, about what's happening?
+    A (106 chars): I'm not—I do remember the meeting; I don't remember being surprised. I'm not sure what they meant by that.
+    annotators: Claims ignorance, Claims ignorance, Dodging; DeBERTa: Declining to answer; Qwen: Dodging
+[Clarification] (1 items)
+  dev row 300: Q:  Previous conversations with Prime Minister Maliki: Did you feel confident that he shares your view on Iraq?
+    A (8 chars): On Iran?
+    annotators: Clarification, Clarification, Clarification; DeBERTa: Dodging; Qwen: Clarification
+
+=== BROKEN by Qwen: per class, the item with the shortest answer
+[Explicit] (13 items)
+  dev row 51: Q: How do you feel about Plan B in general?
+    A (194 chars): I believe that Plan B ought to be—ought to require a prescription for minors; that's what I believe. And I support Andy's decision. The President.Thanks for letting me come by the new digs here.
+    annotators: Explicit, Explicit, Explicit; DeBERTa: Explicit; Qwen: Dodging
+[Implicit] (16 items)
+  dev row 24: Q: What is the hook to get Hizballah to accept a cease-fire, stop shooting, and stop kidnapping soldiers from across the border of another country?
+    A (341 chars): Yes, I would hope it would be international pressure on not only Hizballah, the group of Hizballah within Lebanon, but also its sponsors. And that's the whole purpose of the United States working with allies and friends, is to send a clear message that sponsoring terror is unacceptable. It's the great challenge of the 21st century, really.
+    annotators: Explicit, Implicit, Implicit; DeBERTa: Implicit; Qwen: General
+[Dodging] (15 items)
+  dev row 254: Q: Do you see a risk of triggering a wider war?
+    A (49 chars): I thought you were going to ask me about the pig.
+    annotators: Dodging, Dodging, Dodging; DeBERTa: Dodging; Qwen: Clarification
+[General] (12 items)
+  dev row 161: Q: Why shouldn't we see the cease-fire as one that essentially is falling apart?
+    A (471 chars): Yes. No, listen—all the more reason why we need to help our friends and allies get the forces necessary to help the Lebanese forces keep the cessation of hostilities in place, intact. And that's why we're working with friends, with allies, with Security Council members, to make sure the force that is committed is robust and the rules of engagement are clear. And so it's an ongoing series of conver...
+    annotators: Implicit, General, General; DeBERTa: General; Qwen: Deflection
+[Deflection] (5 items)
+  dev row 43: Q: Other financial steps the President is prepared to take if the rate cut is deemed insufficient
+    A (579 chars): Roger, I do not comment on the decisions made by the Fed. I will comment on Ben Bernanke; I think he's doing a fine job. The White House and the Congress are responsible for fiscal policy. The worst decision the Congress could make would be to raise taxes during this period. We don't need to raise taxes in order to fund budget priorities. We have submitted a budget that shows we can get to balance...
+    annotators: Deflection, Dodging, Dodging; DeBERTa: Dodging; Qwen: Declining to answer
+[Partial/half-answer] (2 items)
+  dev row 64: Q: Will the President pledge to the family of Corporal Pat Tillman that the government and administration will finally get to the bottom of his death?
+    A (535 chars): Well, first of all, I can understand why 's family, you know, has got significant emotions, because a man they loved and respected was killed while he was serving his country. I always admired the fact that a person who was relatively comfortable in life would be willing to take off one uniform and put on another to defend America. And the best way to honor that commitment of his is to find out th...
+    annotators: Explicit, Partial/half-answer, Implicit; DeBERTa: Explicit; Qwen: General
+[Declining to answer] (1 items)
+  dev row 131: Q: How do you respond to his charges?
+    A (2912 chars): You know, look, Caren, I've watched all this finger-pointing and naming of names and all that stuff. Our objective is to secure the country. And we've had investigations; we had the 9/11 Commission; we had the look back this; we've had the look back that. The American people need to know that we spend all our time doing everything that we can to protect them. So I'm not going to comment on other c...
+    annotators: Dodging, General, Declining to answer; DeBERTa: Declining to answer; Qwen: Deflection

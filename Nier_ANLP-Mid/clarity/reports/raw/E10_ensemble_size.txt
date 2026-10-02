@@ -1,8 +1,0 @@
-Ensemble + logit adjustment vs ensemble size (mean over all seed subsets of that size; tau by nested CV, 5 splits):
-  L0_large_base     k=1: 0.361  k=2: 0.398  k=3: 0.415  k=4: 0.437  k=5: 0.449
-  E10_base_16ep     k=1: 0.378  k=2: 0.405  k=3: 0.406  k=4: 0.406  k=5: 0.398
-  E10_fullq_16ep    k=1: 0.404  k=2: 0.430  k=3: 0.427  k=4: 0.426  k=5: 0.471
-
-Exploratory (chosen after seeing dev, so not a result): mixed-input ensembles
-  E10_fullq_16ep + E10_base_16ep (10 models): 0.498
-  E10_fullq_16ep + L0_large_base (10 models): 0.483

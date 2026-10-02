@@ -1,2 +1,0 @@
-# GPU 1 slice, lane b -- seeds 1 done; 3 moved to GPU 0
-E8b_fullq_ce 1
