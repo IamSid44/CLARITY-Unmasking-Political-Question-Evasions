@@ -39,7 +39,7 @@
 | 14 | LLM teacher pilot | planned, Phase C | — |
 | 15 | cascade / deferral curve | planned, Phase B; groundwork done (confidence and top-k analysis) | RESULTS §6 |
 | 16 | compression and latency | planned, Phase E | — |
-| — | Qwen3-8B LoRA classifier | built and smoke-tested (CPU, Qwen3-0.6B, including resume); GPU run scheduled | `clarity/llm_classifier.py`, `jarvis_setup.sh`, `jarvis_drive.sh` |
+| — | Qwen3-8B LoRA classifier | **3-seed screen done** (2026-10-02): dev S2 0.462 ± 0.080, S1 0.688 ± 0.040; +0.081 / +0.068 over DeBERTa, same seeds, 3/3 up | RESULTS §9; `clarity/reports/raw/E13_Q8_fullq_lora_*.txt` |
 
 ## Known issues
 

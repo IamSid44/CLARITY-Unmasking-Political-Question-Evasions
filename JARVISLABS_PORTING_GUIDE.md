@@ -156,7 +156,7 @@ Pass these as environment variables to `jarvis_drive.sh all` (or `start`):
 | `SEEDS` | `0 1 2` | `SEEDS="3 4 5 6 7 8 9"` to extend after a positive screen |
 | `EXTRA_ARGS` | none | `EXTRA_ARGS="--batch-size 8 --grad-accum 2"` if the pilot shows spare memory (same effective batch) |
 | `MAX_TOTAL_HOURS` | 5 | the pilot's abort threshold for all seeds together |
-| `NAME` | `Q8_fullq_lora` | use a new name for any changed configuration, so earlier results stay untouched |
+| `RUN_NAME` (sets NAME) | `Q8_fullq_lora` | use a new name for any changed configuration, so earlier results stay untouched |
 
 ## Cost
 

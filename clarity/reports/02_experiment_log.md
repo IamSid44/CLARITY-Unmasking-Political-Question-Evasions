@@ -16,7 +16,7 @@ over seeds. Raw outputs behind the headline tables are in `reports/raw/`.
 | Backbone throughout | `microsoft/deberta-v3-large` (435M parameters) |
 | Final system (E11, by a rule fixed in advance) | full question + 16 epochs, **10-seed** ensemble + logit adjustment: dev S2 **0.405** (0.412 over CV splits), dev S1 **0.648**; the 10-seed baseline system scores 0.428 / 0.601 — not distinguishable on S2 |
 | Latest | E12: training on all of train is the one variant that helps (S2 +0.029 per model, 4/5 seeds; 5-seed system 0.489); the hierarchy of specialist encoders, boundary experts and model soups do not |
-| Running | nothing yet. E13 (Qwen3-8B LoRA on JarvisLabs) is registered and ready to launch |
+| Running | nothing. E13 (Qwen3-8B LoRA, 3-seed screen, JarvisLabs, 2026-10-02) is done and passes the screen: single-model dev S2 0.462 ± 0.080, +0.081 over DeBERTa on the same seeds (3/3 up). Seeds 3–9 are next |
 
 ---
 
@@ -43,7 +43,7 @@ system takes.
 | E12b | hierarchy: Non-Reply gate + branch specialist encoders | 0.345 *(3 seeds)* | 0.608 | 0.390 *(3 seeds)* | negative; specialists alone level on 5 seeds |
 | E12c | boundary experts for the three most-confused pairs (3 seeds) | 0.383 | 0.615 | | no effect |
 | E12d | model soup of 10 trained models | 0.267 *(uniform)* | 0.471 | | negative |
-| E13 | **Qwen3-8B-Base + LoRA** instead of DeBERTa (same input, rows, slice; 3 seeds) | *planned* | | | registered 2026-10-02; runs on JarvisLabs |
+| E13 | **Qwen3-8B-Base + LoRA** instead of DeBERTa (same input, rows, slice; 3 seeds) | **0.462 ± 0.080** *(3 seeds)* | **0.688 ± 0.040** | | **passes the screen**: S2 +0.081 over E10 on the same seeds (3/3 up), S1 +0.068; 10 seeds next |
 | — | ChulaNLP's fine-tuned DeBERTa-large (published; checkpoint chosen on dev) | 0.46 | 0.65 | | for reference |
 
 **The three main systems at 10 seeds (E11)** — the numbers to quote. Single models:
@@ -1683,6 +1683,115 @@ interrupted epoch resumed from its checkpoint. Outputs follow `encoder.py`'s lay
 
 **Cost guard.** A 20-step timing pilot aborts the run (and pauses the instance) if the 3 seeds
 are projected over 5 hours. Estimated cost ₹400–650 of the ~₹5,880 credit.
+
+### E13 results *(run 2026-10-02, 03:24–04:28 IST)*
+
+Sources: `raw/E13_Q8_fullq_lora_summary.txt` (per seed and per epoch, the pipeline log, and an
+independent recomputation of every number from the saved probabilities, which matched exactly)
+and `raw/E13_Q8_fullq_lora_analysis.txt` (`analyze.py`). Outputs: `clarity/runs/Q8_fullq_lora/`.
+
+| seed | selected epoch | slice F1 | dev S2 | dev S1 | E10_fullq_16ep S2 / S1 | paired Δ S2 / S1 |
+|---|---|---|---|---|---|---|
+| 0 | 2 | 0.459 | 0.405 | 0.647 | 0.344 / 0.591 | +0.061 / +0.056 |
+| 1 | 2 | 0.444 | 0.426 | 0.687 | 0.370 / 0.627 | +0.056 / +0.060 |
+| 2 | 2 | 0.432 | 0.554 | 0.728 | 0.428 / 0.640 | +0.126 / +0.088 |
+| **mean** | | | **0.462 ± 0.080** | **0.688 ± 0.040** | 0.381 / 0.619 | **+0.081 / +0.068** |
+
+**Against the predictions:**
+
+1. **Screening: passed.** S2 +0.081 with 3 of 3 seeds up (bar: +0.015, 2 of 3). S1 is also up on
+   all three seeds.
+2. **Size: S2 inside the predicted range, S1 above it.** S2 mean 0.462 (predicted 0.43–0.50). S1
+   +0.068 (predicted +0.02 to +0.05). This is what the knowledge explanation predicted. Two
+   cautions:
+   - three seeds with a spread of 0.080: the median seed is 0.426, and seed 2 alone reaches 0.554;
+   - the gain is per single model. No system claim is made until 10 seeds (E11 rule).
+3. **Where: not tested yet.** The comparison needs E10_fullq_16ep's dev probabilities for seeds
+   0–2. They are on the lab server and the HF repo, not on the machine that received this run.
+   Per class, Qwen alone (mean of 3 seeds):
+   - Explicit 0.724, Implicit 0.459, Dodging 0.550, General 0.319, Deflection 0.393;
+   - Declining 0.539, Claims ignorance 0.659, Clarification 0.512 ± 0.423;
+   - **Partial/half-answer 0.000 on every seed** (5 dev items).
+4. **Fit: held in part.**
+   - The slice selected epoch 2 on every seed, which is inside "epoch 1 or 2".
+   - Training loss ended below 1.0 on only 1 of 3 seeds (1.103, 1.062, 0.979).
+
+**What else the run shows:**
+
+- **Three epochs may be too few.** The slice F1 rose at every epoch on every seed, and the
+  selected epoch is always the last one. This is the pattern E8b → E10 showed for the encoder:
+  undertraining can look like a smaller effect than the real one. A longer schedule is a separate
+  experiment (one change: epochs, still selected on the slice).
+- **Coverage and in-set rate.** It named 9, 8 and 8 classes on dev. Its in-set rate was
+  0.604 ± 0.027 and its coverage 0.926 (`analysis` file).
+- **Cost of the run.** 21 minutes per seed, with a peak of 19.3 GiB of GPU memory.
+
+**Deviations from the registration.** None of these changes the experiment.
+
+- **Hardware.** A JarvisLabs VM with 1× RTX PRO 6000 Blackwell 96 GB, because the A100 80GB was
+  not offered for VMs. It is the same GPU family as the lab server.
+- **How the weights arrived.** A network fault on the VM (path-MTU black hole) stalled the
+  Hugging Face download. After the fix, the Qwen3-8B-Base shards (revision `49e3418`) were fetched
+  with curl into the HF cache. Each was checked against its safetensors header. They are the same
+  files `snapshot_download` fetches.
+- **A setup-only restart.** The first launch took the run name "Eve" from a WSL environment
+  variable. It was restarted during setup, before any training.
+
+**Next, per the registration:** extend to seeds 3–9 and compare 10-seed systems as in E11. At
+the measured 21 minutes per seed, that is about 2.5 h of GPU, roughly ₹550–650 including GST and
+setup (an estimate). The epoch question above is a separate, later experiment.
+
+---
+
+## E13x, E13b, E13c — 10 seeds, a longer schedule, all of train *(registered 2026-10-02, 11:20 IST)*
+
+*Written before any of these runs started.* Three runs go in parallel on four JarvisLabs VMs
+(1× RTX PRO 6000 each), launched with `JPROFILE=<a|b|c|d> bash jarvis_drive.sh all`.
+
+**Changes common to all three, none of which changes the model:**
+- **Gradient checkpointing off.** The computation is the same; it is faster, using more memory.
+  The pilot now measures peak memory on the longest micro-batch first.
+- **W&B logging:** per step and per epoch, project `clarity-semeval26`, grouped by run name.
+- **Every epoch's LoRA adapter is kept**, and each finished seed is uploaded to the HF repo
+  under `<run name>/seed<k>/`.
+
+**E13x: E13 extended to seeds 3–9 (`Q8_fullq_lora`, VM a).**
+- **What:** the E13 configuration on seeds 3–9, exactly as registered for A2.
+- **Comparison:** paired with E10_fullq_16ep on seeds 3–4 and E11_fullq_16ep on seeds 5–9.
+- **Systems:** 10-seed ensembles with logit adjustment, scored by nested CV as in E11.
+- **Predictions:**
+  - the 10-seed single-model mean regresses from 0.462 towards 0.42–0.48;
+  - Qwen is above DeBERTa on at least 7 of 10 seeds;
+  - the 10-seed Qwen system beats DeBERTa's 0.405 by at least +0.03.
+- **If it fails:** a 10-seed system at or below 0.435 would mean the 3-seed gain was mostly seed
+  luck at the system level.
+
+**E13b: 12 epochs instead of 3 (`Q8_fullq_lora_12ep`, seeds 0–2, VMs b and c).**
+- **One change:** epochs 3 → 12. The cosine schedule stretches to 12 epochs, and the epoch is
+  still chosen on the train slice.
+- **Why:** in E13, the slice F1 rose at every epoch on every seed, and training loss ended at about
+  1.0. But under cosine decay the last epoch is favoured by the schedule itself, so a longer
+  schedule is the only real test.
+- **Hypotheses:**
+  - **H1, undertrained:** the slice selects an epoch between 4 and 9. The mean slice F1 at the
+    selected epoch is at least E13's 0.445 + 0.015 (2 of 3 seeds up), and dev S2 rises paired
+    with E13.
+  - **H0, length is not the limit:** the slice F1 stays within ±0.015 of 0.445, and the extra
+    epochs overfit (training loss near 0, slice F1 falling late).
+- **Decision rule, on the slice only:** adopt the longer schedule for future Qwen runs if H1's
+  slice criterion holds. Dev is reported but decides nothing.
+
+**E13c: all of train, last epoch (`Q8_alldata`, seeds 0–2, VM d).**
+- **One change from E13:** train on all 3,448 rows (+345) and keep the last of 3 epochs. E13
+  selected the last epoch on every seed, so the selection-rule change is nominal.
+- **Why:** this is E12a's recipe, the one encoder change that helped (+0.029 S2 per model, 4/5
+  seeds).
+- **Prediction:** S2 +0.01 to +0.03 per seed, paired with E13.
+- **Screening bar:** +0.015 with at least 2 of 3 seeds up. It is independent of E13b, because the
+  epoch count stays at 3.
+
+**Cost guard:** each VM's pilot aborts and pauses if its seeds are projected over the
+`MAX_TOTAL_HOURS` limit. The estimate is about ₹1,500–1,700 for all four VMs.
 
 ---
 

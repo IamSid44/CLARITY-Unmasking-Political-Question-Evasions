@@ -20,7 +20,7 @@ credit. Cloud runs use a timing pilot, a projected-cost cap and automatic pause.
 
 | step | what | gate |
 |---|---|---|
-| A1 | **Qwen3-8B-Base + LoRA (r=16, all linear layers) as a 9-way classifier**, 3 epochs. Same rows, train slice, input and selection rule as DeBERTa E10_fullq_16ep. Seeds 0–2, 1× A100 80GB. Code: `clarity/llm_classifier.py`; runner: `jarvis_setup.sh` / `jarvis_drive.sh`. Estimated ₹400–650. | ≥ +0.015 S2 over DeBERTa, same seeds, ≥ 2/3 up → A2 |
+| A1 | **Qwen3-8B-Base + LoRA (r=16, all linear layers) as a 9-way classifier**, 3 epochs. Same rows, train slice, input and selection rule as DeBERTa E10_fullq_16ep. Seeds 0–2. Code: `clarity/llm_classifier.py`; runner: `jarvis_setup.sh` / `jarvis_drive.sh`. **Done 2026-10-02** on 1× RTX PRO 6000 (JarvisLabs VM), 21 min per seed: S2 0.462 ± 0.080, +0.081 over DeBERTa (3/3 up); S1 +0.068 (RESULTS §9). | ≥ +0.015 S2 over DeBERTa, same seeds, ≥ 2/3 up → A2. **Passed** |
 | A2 | Seeds 3–9, then the 10-seed system with LA, compared with DeBERTa's 10-seed system | system claim at 10 seeds |
 | A3 | If A1 passes: one smaller point on the curve (Qwen3.5-4B or Gemma 4 E4B) | — |
 

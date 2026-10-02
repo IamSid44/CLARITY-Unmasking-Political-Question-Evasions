@@ -90,7 +90,7 @@ class Tracker:
             mode = os.environ.get("WANDB_MODE") or (
                 "online" if os.environ.get("WANDB_API_KEY") else "offline"
             )
-            self.run = wandb.init(
+            kw = dict(
                 project=os.environ.get("WANDB_PROJECT", DEFAULT_PROJECT),
                 entity=os.environ.get("WANDB_ENTITY"),
                 name=f"{name}-" + (f"s{seed}" if str(seed).isdigit() else str(seed)),
@@ -98,10 +98,23 @@ class Tracker:
                 job_type=job_type,
                 config=config,
                 dir=str(ROOT),
-                mode=mode,
                 id=run_id,
                 resume="allow" if run_id else None,
             )
+            try:
+                self.run = wandb.init(mode=mode, **kw)
+            except Exception as e:
+                if mode != "online":
+                    raise
+                # A rejected key or no network must not cost the metrics: log to disk instead,
+                # then `wandb sync clarity/wandb/offline-run-*` once the key or network works.
+                print(f"[wandb] online init failed ({type(e).__name__}: {e}); logging offline")
+                mode = "offline"
+                # the failed attempt keeps its id reserved in this process: start a fresh one
+                import secrets
+
+                kw.update(id=secrets.token_hex(4), resume=None)
+                self.run = wandb.init(mode=mode, reinit="create_new", **kw)
             print(f"[wandb] {mode} run {self.run.name} (group={group})")
         except Exception as e:
             print(f"[wandb] disabled for this run: {type(e).__name__}: {e}")

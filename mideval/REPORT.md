@@ -176,9 +176,13 @@ Each step has a go/no-go gate. Full plan in [`PLAN_REMAINING.md`](PLAN_REMAINING
 1. **Is the gap knowledge?**
    - Qwen3-8B fine-tuned with LoRA as a single-pass classifier. Same input, rows, train slice and
      selection rule as the best DeBERTa model; only the backbone changes.
-   - Set up and tested end to end at small scale. The 3-seed screening run on one A100 80GB is
-     scheduled for 2026-10-02. **Results: TBD.**
-   - *Gate:* at least +0.015 over DeBERTa with 2 of 3 seeds up, then 10 seeds.
+   - **Done (3-seed screen, 2026-10-02, one RTX PRO 6000 on JarvisLabs, 21 min per seed).**
+     Dev S2 0.462 ± 0.080 and S1 0.688 ± 0.040, against DeBERTa's 0.381 / 0.619 on the same seeds.
+     That is S2 +0.081 and S1 +0.068, with all 3 seeds up on both. S2 is inside the
+     pre-registered range of 0.43–0.50. Source: `RESULTS.md` §9.
+   - *Gate:* at least +0.015 over DeBERTa with 2 of 3 seeds up, then 10 seeds. **Passed.**
+   - Next (planned): seeds 3–9 for a 10-seed system comparison. Then a longer schedule: the best
+     epoch was the last of 3 on every seed.
 2. **Cascade.** Keep confident items on the cheap model. Send the uncertain ones, with their top-3
    or a calibrated candidate set, to an open LLM given label definitions and boundary guidance.
    Sweep the deferral rate to trace accuracy against calls per item, with TeleAI's point on the

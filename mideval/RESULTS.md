@@ -142,6 +142,26 @@ Per-class F1 change on the baseline:
 
 ## 9. Qwen3-8B LoRA classifier
 
-**Planned; results TBD.** Configuration: `JARVISLABS_PORTING_GUIDE.md`. When the run finishes,
-its outputs land in `clarity/runs/Q8_fullq_lora/` and its summary in
-`clarity/logs/jarvis/summary.txt`.
+**Done: 3-seed screen, 2026-10-02.** The setup is identical to E10_fullq_16ep except the
+backbone: Qwen3-8B-Base with LoRA r=16, 3 epochs, epoch chosen on the train slice. Single models
+on dev, paired by seed with E10_fullq_16ep.
+
+| seed | dev S2 | dev S1 | DeBERTa S2 / S1 | paired Δ S2 / S1 |
+|---|---|---|---|---|
+| 0 | 0.405 | 0.647 | 0.344 / 0.591 | +0.061 / +0.056 |
+| 1 | 0.426 | 0.687 | 0.370 / 0.627 | +0.056 / +0.060 |
+| 2 | 0.554 | 0.728 | 0.428 / 0.640 | +0.126 / +0.088 |
+| **mean** | **0.462 ± 0.080** | **0.688 ± 0.040** | 0.381 / 0.619 | **+0.081 / +0.068** |
+
+Sources:
+- `clarity/reports/raw/E13_Q8_fullq_lora_summary.txt`: per seed and per epoch, with an
+  independent recomputation from the saved probabilities;
+- `clarity/reports/raw/E13_Q8_fullq_lora_analysis.txt`: per class;
+- the experiment log, §E13 results.
+
+How to read this:
+- **The screening bar (+0.015, 2 of 3 seeds up) is passed.** S2 lands inside the pre-registered
+  0.43–0.50, and S1 is above its predicted +0.02 to +0.05.
+- **These are three single models, not a system.** The seed spread is 0.080. A system claim
+  waits for 10 seeds.
+- The selected epoch was the last one on every seed, so 3 epochs may undertrain.

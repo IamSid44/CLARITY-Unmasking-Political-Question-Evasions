@@ -1,0 +1,72 @@
+E13 (Q8_fullq_lora): Qwen3-8B-Base + LoRA, seeds 0-2, JarvisLabs VM, 1x RTX PRO 6000 Blackwell 96 GB.
+Copied from the run's outputs on 2026-10-02 (clarity/logs/jarvis/, clarity/runs/Q8_fullq_lora/; both gitignored).
+
+== summary.txt (written on the instance by jarvis_setup.sh summary)
+Q8_fullq_lora: single models on dev (multi-reference S2, S1), epoch chosen on the train slice
+seed epoch slice F1  dev S2  dev S1   DeBERTa S2/S1   per-epoch dev S2
+   0     2    0.459   0.405   0.647   0.344/0.591     0.162 0.382 0.405
+   1     2    0.444   0.426   0.687   0.370/0.627     0.275 0.339 0.426
+   2     2    0.432   0.554   0.728   0.428/0.640     0.344 0.425 0.554
+
+mean S2 0.462 ± 0.080   S1 0.688 ± 0.040
+paired vs DeBERTa (same seeds): S2 +0.081 (3/3 up), S1 +0.068 (3/3 up)
+screening bar (experiment log, E12): extend to more seeds if >= +0.015 with >= 2 of 3 seeds up
+wall 21 min per seed; peak VRAM 19.3 GiB
+
+== per epoch, from seed*/metrics.json (epoch selected on the 345-row train slice; dev never used)
+seed epoch train loss slice F1  dev S2  dev S1 in-set named
+   0     0      2.322    0.208   0.162   0.489  0.399     5
+   0     1      1.504    0.392   0.382   0.633  0.594     7
+   0     2      1.103    0.459   0.405   0.647  0.597     9 <- selected
+   1     0      2.032    0.252   0.275   0.593  0.565     6
+   1     1      1.418    0.317   0.339   0.552  0.601     8
+   1     2      1.062    0.444   0.426   0.687  0.581     8 <- selected
+   2     0      2.698    0.289   0.344   0.610  0.562     7
+   2     1      1.395    0.346   0.425   0.724  0.578     8
+   2     2      0.979    0.432   0.554   0.728  0.633     8 <- selected
+
+== independent recomputation from the saved probabilities (scratch check, 2026-10-02)
+dev rows 308 mask (308, 9) train rows 3448
+seed0: S2 0.4053 (metrics 0.4053)  S1 0.6475 (metrics 0.6475)  slice F1 0.4595 (metrics 0.4595)
+   shapes dev (308, 9) val (345, 9) test (237, 9); rows sum to 1: True; finite: True
+   selected epoch 2; slice F1 per epoch [0.208, 0.3923, 0.4595]; argmax = 2; dev_probs == ep2: True; slice == mideval split: True
+   classes predicted on dev: 9/9; in-set rate 0.597
+seed1: S2 0.4259 (metrics 0.4259)  S1 0.6874 (metrics 0.6874)  slice F1 0.4440 (metrics 0.4440)
+   shapes dev (308, 9) val (345, 9) test (237, 9); rows sum to 1: True; finite: True
+   selected epoch 2; slice F1 per epoch [0.2523, 0.317, 0.444]; argmax = 2; dev_probs == ep2: True; slice == mideval split: True
+   classes predicted on dev: 8/9; in-set rate 0.581
+seed2: S2 0.5536 (metrics 0.5536)  S1 0.7285 (metrics 0.7285)  slice F1 0.4315 (metrics 0.4315)
+   shapes dev (308, 9) val (345, 9) test (237, 9); rows sum to 1: True; finite: True
+   selected epoch 2; slice F1 per epoch [0.289, 0.3464, 0.4315]; argmax = 2; dev_probs == ep2: True; slice == mideval split: True
+   classes predicted on dev: 8/9; in-set rate 0.633
+ALL CHECKS PASS
+
+== pipeline.log (instance clock is UTC; IST = UTC + 5:30)
+2026-10-01 21:22:26 pipeline: start (NAME=Eve SEEDS='0 1 2' MODEL=Qwen/Qwen3-8B-Base EXTRA_ARGS='')
+2026-10-01 21:22:26 setup: start
+2026-10-01 21:23:27 setup: torch 2.11.0+cu128 | NVIDIA RTX PRO 6000 Blackwell Server Edition 95 GiB | bf16 True
+2026-10-01 21:23:27 setup: downloading Qwen/Qwen3-8B-Base and Qwen/Qwen3-0.6B-Base to /home/clarity_llm/hf
+2026-10-01 21:24:21 pipeline: start (NAME=Q8_fullq_lora SEEDS='0 1 2' MODEL=Qwen/Qwen3-8B-Base EXTRA_ARGS='')
+2026-10-01 21:24:21 setup: start
+2026-10-01 21:24:23 setup: torch 2.11.0+cu128 | NVIDIA RTX PRO 6000 Blackwell Server Edition 95 GiB | bf16 True
+2026-10-01 21:24:23 setup: downloading Qwen/Qwen3-8B-Base and Qwen/Qwen3-0.6B-Base to /home/clarity_llm/hf
+2026-10-01 21:52:39 pipeline: start (NAME=Q8_fullq_lora SEEDS='0 1 2' MODEL=Qwen/Qwen3-8B-Base EXTRA_ARGS='')
+2026-10-01 21:52:39 setup: start
+2026-10-01 21:52:45 setup: torch 2.11.0+cu128 | NVIDIA RTX PRO 6000 Blackwell Server Edition 95 GiB | bf16 True
+2026-10-01 21:52:45 setup: downloading Qwen/Qwen3-8B-Base and Qwen/Qwen3-0.6B-Base to /home/clarity_llm/hf
+2026-10-01 21:52:45 setup: done (28G of models; disk free 47G)
+2026-10-01 21:52:46 auto-pause ON: key valid, machine 523670 found
+2026-10-01 21:52:46 smoke: start (Qwen/Qwen3-0.6B-Base, 64 rows, 2 epochs, stop after epoch 0, then resume)
+2026-10-01 21:53:13 smoke: passed (0.1000 (should be << 1))
+2026-10-01 21:53:13 pilot: 20 optimizer steps of Qwen/Qwen3-8B-Base
+2026-10-01 21:54:07 pilot: 2.11 s per optimizer step; 194 steps per epoch -> 6.8 min per epoch of training, ~20 min for 3 epochs (+ ~3-5 min of evaluation per epoch); peak VRAM 17.6 GiB
+2026-10-01 21:54:07 pilot: projected 1.9 h for 3 seeds x 3 epochs (limit MAX_TOTAL_HOURS=5)
+2026-10-01 21:54:07 train: seed 0 attempt 1
+2026-10-01 22:15:26 train: seed 0 done: [done] Q8_fullq_lora seed0: epoch 2 selected; dev S2 0.40526233308915827, S1 0.6474816785697616; 21 min
+2026-10-01 22:15:26 train: seed 1 attempt 1
+2026-10-01 22:36:43 train: seed 1 done: [done] Q8_fullq_lora seed1: epoch 2 selected; dev S2 0.42590692011164216, S1 0.6873863675345614; 21 min
+2026-10-01 22:36:43 train: seed 2 attempt 1
+2026-10-01 22:57:59 train: seed 2 done: [done] Q8_fullq_lora seed2: epoch 2 selected; dev S2 0.5535706486379627, S1 0.7284639645399139; 21 min
+2026-10-01 22:58:15 package: 363K results, 464M adapters in /home/clarity_llm
+2026-10-01 22:58:15 pipeline: ALL DONE
+2026-10-01 22:58:15 pausing instance 523670 (finished) in 1800 s -- Ctrl-C in tmux to keep it running

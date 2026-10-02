@@ -15,15 +15,17 @@ comparison is one change:
 
 Outputs match encoder.py, so analyze.py / decide.py / mideval_analysis.py read them
 unchanged:  <outroot>/<name>/seed<k>/{dev,val,test}_probs.npy, val_index.npy,
-config.json, metrics.json  (+ epochs/ per-epoch probabilities, adapter_best/).
+config.json, metrics.json  (+ epochs/ per-epoch probabilities and adapters, adapter_best/).
 
     # timing and memory pilot: N optimizer steps on real batches, then exit
     python clarity/llm_classifier.py --name Q8_pilot --seed 0 --pilot-steps 20
     # a full run (resumes from its last finished epoch if interrupted)
     python clarity/llm_classifier.py --name Q8_fullq_lora --seed 0
 
-Needs: torch, transformers, peft, pandas, pyarrow, numpy (no wandb, no HF login:
-the Qwen3 base models are Apache-2.0 and ungated).
+Needs: torch, transformers, peft, pandas, pyarrow, numpy. With --track, also wandb and
+python-dotenv: per-step and per-epoch metrics go to W&B through tracking.py (keys from
+clarity/.env; offline if the key is missing or rejected). The Hugging Face upload of a
+finished seed is done by the runner (jarvis_setup.sh), not here, so it never holds the GPU.
 """
 
 from __future__ import annotations
@@ -83,6 +85,8 @@ class Cfg:
     pilot_steps: int = 0
     stop_after_epoch: int = -1   # testing the resume path only
     log_every: int = 20
+    track: bool = False          # W&B logging via tracking.py (off for smoke tests and pilots)
+    save_epoch_adapters: bool = True   # epochs/ep<k>_adapter/ for every epoch, not only the best
 
 
 # --------------------------------------------------------------------------
@@ -291,9 +295,28 @@ def run(cfg: Cfg, outroot: Path) -> None:
         history, best, start = st["history"], st["best"], st["epoch"] + 1
         print(f"[resume] continuing after epoch {st['epoch']}", flush=True)
 
+    tracker = None
+    if cfg.track and not cfg.pilot_steps:
+        from tracking import Tracker
+
+        tracker = Tracker(name=cfg.name, seed=cfg.seed, group=cfg.name, job_type="train",
+                          config={**asdict(cfg), "steps_per_epoch": steps_per_epoch, "n_train": len(X_tr)},
+                          state_dir=out)
+
     model.train()
     if cfg.device != "cpu":
         torch.cuda.reset_peak_memory_stats()
+    if cfg.pilot_steps and cfg.device != "cpu":
+        # Worst case first: the longest micro-batch, forward + backward, so the pilot's peak memory is
+        # an upper bound (a random sample of steps may miss the 1024-token batches).
+        longest = np.argsort(-len_tr)[: cfg.batch_size]
+        ids, att = collate([X_tr[j] for j in longest], pad, cfg.device)
+        with autocast(cfg):
+            logits = model(input_ids=ids, attention_mask=att).logits
+        F.cross_entropy(logits.float(), torch.as_tensor(y_tr[longest], device=cfg.device)).backward()
+        opt.zero_grad(set_to_none=True)
+        print(f"[pilot] longest micro-batch ({int(att.sum())} tokens): peak VRAM "
+              f"{torch.cuda.max_memory_allocated() / 1024**3:.1f} GiB", flush=True)
     for epoch in range(start, cfg.epochs):
         rng = np.random.default_rng(cfg.seed * 1000 + epoch)   # data order is a function of (seed, epoch)
         batches = batches_by_length(len_tr, cfg.batch_size, rng)
@@ -307,12 +330,17 @@ def run(cfg: Cfg, outroot: Path) -> None:
             (loss / cfg.grad_accum).backward()
             running, nb, tok_seen = running + loss.item(), nb + 1, tok_seen + int(att.sum())
             if (i + 1) % cfg.grad_accum == 0 or i + 1 == len(batches):
-                torch.nn.utils.clip_grad_norm_(trainable, 1.0)
+                gnorm = float(torch.nn.utils.clip_grad_norm_(trainable, 1.0))
                 opt.step()
                 sched.step()
                 opt.zero_grad(set_to_none=True)
                 step += 1
                 el = time.time() - te0
+                if tracker is not None and step % cfg.log_every == 0:
+                    tracker.log({"train/loss_epoch_mean": running / nb, "train/lr": sched.get_last_lr()[0],
+                                 "train/grad_norm": gnorm, "train/tokens_per_s": tok_seen / el,
+                                 "train/epoch": epoch + step / steps_per_epoch},
+                                step=epoch * steps_per_epoch + step)
                 if step % cfg.log_every == 0 or (cfg.pilot_steps and step % 5 == 0):
                     print(f"  ep{epoch} step {step}/{steps_per_epoch} loss {running / nb:.4f} "
                           f"{tok_seen / el:.0f} tok/s  epoch ETA {el / step * (steps_per_epoch - step) / 60:.1f} min",
@@ -345,10 +373,17 @@ def run(cfg: Cfg, outroot: Path) -> None:
               f"devS2={row.get('dev_subtask2_macro_f1', float('nan')):.4f} "
               f"devS1={row.get('dev_subtask1_macro_f1', float('nan')):.4f} ({row['minutes']:.1f}m)", flush=True)
 
+        if tracker is not None:
+            tracker.log({f"epoch/{k}": v for k, v in row.items()}
+                        | {"epoch/peak_vram_gb": torch.cuda.max_memory_allocated() / 1024**3 if cfg.device != "cpu" else 0.0},
+                        step=(epoch + 1) * steps_per_epoch)
+
         ep_dir = out / "epochs"
         ep_dir.mkdir(exist_ok=True)
         for nm, p in (("dev", p_dev), ("val", p_va), ("test", p_te)):
             np.save(ep_dir / f"ep{epoch}_{nm}_probs.npy", p)
+        if cfg.save_epoch_adapters:
+            model.save_pretrained(ep_dir / f"ep{epoch}_adapter")
         if cfg.select == "last" or val_f1 > best["val_macro_f1"]:
             best = dict(row)
             model.save_pretrained(out / "adapter_best")
@@ -376,6 +411,12 @@ def run(cfg: Cfg, outroot: Path) -> None:
     }
     (out / "metrics.json").write_text(json.dumps(result, indent=2))
     resume.unlink(missing_ok=True)
+    if tracker is not None:
+        tracker.summary({"selected_epoch": e, "val_macro_f1": best["val_macro_f1"],
+                         "dev_subtask2_macro_f1": result["dev_subtask2_macro_f1"],
+                         "dev_subtask1_macro_f1": result["dev_subtask1_macro_f1"],
+                         "peak_vram_gb": result["peak_vram_gb"] or 0.0, "wall_minutes": result["wall_minutes"]})
+        tracker.finish()
     print(f"[done] {cfg.name} seed{cfg.seed}: epoch {e} selected; dev S2 {result['dev_subtask2_macro_f1']}, "
           f"S1 {result['dev_subtask1_macro_f1']}; {result['wall_minutes']:.0f} min", flush=True)
 

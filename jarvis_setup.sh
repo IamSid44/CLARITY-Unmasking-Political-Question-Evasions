@@ -53,6 +53,8 @@ SELF=$(readlink -f "$0")
 export HF_HOME=$BASE/hf
 export TOKENIZERS_PARALLELISM=false
 export PYTHONUNBUFFERED=1
+export HF_HUB_DISABLE_XET=1       # Xet transfers stalled on the lab server and on the JarvisLabs VM
+export PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True   # less fragmentation without grad checkpointing
 
 stage() { mkdir -p "$LOGS"; echo "$(date '+%F %T') $*" | tee -a "$LOGS/pipeline.log"; }
 die()   { stage "FAILED: $*"; maybe_pause "failure"; exit 1; }
@@ -65,7 +67,7 @@ bundle() {
   [ -f mideval/splits/train_internal_val_index.json ] || { echo "missing mideval/splits (run clarity/mideval_analysis.py)"; exit 2; }
   tar czf jarvis_bundle.tgz --exclude='__pycache__' \
     jarvis_setup.sh JARVISLABS_PORTING_GUIDE.md \
-    clarity/llm_classifier.py clarity/qevasion \
+    clarity/llm_classifier.py clarity/tracking.py clarity/qevasion \
     clarity/data/cache/train.parquet clarity/data/cache/dev.parquet clarity/data/clarity_task_evaluation_dataset.csv \
     mideval/splits/train_internal_val_index.json
   ls -lh jarvis_bundle.tgz && tar tzf jarvis_bundle.tgz
@@ -121,6 +123,16 @@ setup() {
   [ -f "$CODE/clarity/llm_classifier.py" ] || die "no code in $CODE -- extract jarvis_bundle.tgz there first"
   mkdir -p "$LOGS" "$RUNS" "$HF_HOME"
   {
+    # Some JarvisLabs VMs silently drop full 1500-byte packets (path MTU ~1480), so large downloads
+    # stall with SSL/read timeouts (seen 2026-10-02). Probe, and lower the MTU if needed.
+    SUDO=""; [ "$(id -u)" -eq 0 ] || SUDO=sudo
+    if ! ping -c 2 -W 2 -M do -s 1472 1.1.1.1 >/dev/null 2>&1 && ping -c 2 -W 2 -M do -s 1400 1.1.1.1 >/dev/null 2>&1; then
+      dev=$(ip route show default | awk '{print $5; exit}')
+      $SUDO ip link set dev "$dev" mtu 1450 && $SUDO sysctl -q -w net.ipv4.tcp_mtu_probing=1 && echo "MTU of $dev lowered to 1450"
+    fi
+    # IPv6 was also broken there (connections hung): fall back to IPv4 if it does not work
+    curl -6 -s -o /dev/null --max-time 8 https://huggingface.co || {
+      $SUDO sysctl -q -w net.ipv6.conf.all.disable_ipv6=1 net.ipv6.conf.default.disable_ipv6=1 && echo "IPv6 disabled"; }
     command -v tmux >/dev/null && command -v curl >/dev/null || {
       SUDO=""; [ "$(id -u)" -eq 0 ] || SUDO=sudo
       $SUDO apt-get update -qq && $SUDO apt-get install -y -qq tmux curl >/dev/null; }
@@ -137,7 +149,7 @@ setup() {
     "$PY" -c "import torch" 2>/dev/null || uv pip install --python "$PY" "$TORCH" --index-url "https://download.pytorch.org/whl/$CU"
     # the versions the smoke test passed with on the lab server (2026-10-02)
     uv pip install --python "$PY" "transformers==5.17.0" "peft==0.20.0" "accelerate==1.15.0" \
-      "numpy==2.5.2" "pandas==3.0.5" "pyarrow==25.0.1" "huggingface_hub>=1.28" jarvislabs
+      "numpy==2.5.2" "pandas==3.0.5" "pyarrow==25.0.1" "huggingface_hub>=1.28" jarvislabs wandb python-dotenv
   } > "$LOGS/setup.log" 2>&1 || die "install failed (logs/setup.log)"
 
   "$PY" - >> "$LOGS/setup.log" 2>&1 <<'EOF' || die "GPU check failed (logs/setup.log)"
@@ -174,17 +186,19 @@ smoke() {
 }
 
 pilot() {
-  stage "pilot: 20 optimizer steps of $MODEL"
+  local plog="$LOGS/pilot_$NAME.log"
+  stage "pilot: 20 optimizer steps of $MODEL ($NAME, EXTRA_ARGS='$EXTRA_ARGS')"
   llm --name PILOT --seed 0 --model "$MODEL" --pilot-steps 20 --outroot "$BASE/pilot" $EXTRA_ARGS \
-    > "$LOGS/pilot.log" 2>&1 || die "pilot failed (logs/pilot.log) -- often out of memory: try EXTRA_ARGS='--batch-size 2 --grad-accum 8'"
+    > "$plog" 2>&1 || die "pilot failed (logs/pilot_$NAME.log) -- often out of memory: try EXTRA_ARGS='--batch-size 2 --grad-accum 8'"
+  grep '^\[pilot\] longest' "$plog" | sed 's/^\[pilot\] /pilot: /' | while read -r l; do stage "$l"; done
   local line min_ep epochs n hours
-  line=$(grep '^\[pilot\]' "$LOGS/pilot.log") || die "pilot printed no timing"
+  line=$(grep '^\[pilot\] [0-9]' "$plog") || die "pilot printed no timing"
   stage "pilot: ${line#\[pilot\] }"
   min_ep=$(echo "$line" | sed -E 's/.*-> ([0-9.]+) min per epoch.*/\1/')
   epochs=$(echo " $EXTRA_ARGS " | sed -nE 's/.* --epochs ([0-9]+) .*/\1/p'); epochs=${epochs:-3}
   n=$(echo $SEEDS | wc -w)
-  # + ~5 min per epoch of evaluation (val + dev + test) and ~3 min of loading per seed
-  hours=$(awk -v m="$min_ep" -v e="$epochs" -v n="$n" 'BEGIN{printf "%.1f", n*(e*(m+5)+3)/60}')
+  # + ~1 min per epoch of evaluation and adapter saving (E13 measured 0.5) and ~3 min of loading per seed
+  hours=$(awk -v m="$min_ep" -v e="$epochs" -v n="$n" 'BEGIN{printf "%.1f", n*(e*(m+1)+3)/60}')
   stage "pilot: projected $hours h for $n seeds x $epochs epochs (limit MAX_TOTAL_HOURS=$MAX_TOTAL_HOURS)"
   awk -v h="$hours" -v lim="$MAX_TOTAL_HOURS" 'BEGIN{exit !(h>lim)}' && die "projected time over the limit"
   return 0
@@ -195,13 +209,34 @@ train() {
     if [ -f "$RUNS/$NAME/seed$s/metrics.json" ]; then stage "train: seed $s already finished"; continue; fi
     for attempt in 1 2; do
       stage "train: seed $s attempt $attempt"
-      if llm --name "$NAME" --seed "$s" --model "$MODEL" --outroot "$RUNS" $EXTRA_ARGS >> "$LOGS/${NAME}_seed$s.log" 2>&1; then
-        stage "train: seed $s done: $(grep '^\[done\]' "$LOGS/${NAME}_seed$s.log" | tail -1)"; break
+      if llm --name "$NAME" --seed "$s" --model "$MODEL" --outroot "$RUNS" --track $EXTRA_ARGS >> "$LOGS/${NAME}_seed$s.log" 2>&1; then
+        stage "train: seed $s done: $(grep '^\[done\]' "$LOGS/${NAME}_seed$s.log" | tail -1)"
+        hf_push_bg "$RUNS/$NAME/seed$s"; break
       fi
       [ "$attempt" = 2 ] && die "seed $s failed twice (logs/${NAME}_seed$s.log)"
       stage "train: seed $s failed; retrying from its last finished epoch"
     done
   done
+}
+
+# Hugging Face: each finished seed is uploaded in the background (the GPU moves on to the next
+# seed), one upload at a time under a lock; hf_flush, before the pause, pushes anything still
+# missing. tracking.py reads HF_TOKEN / HF_REPO_ID from code/clarity/.env (copied by jarvis_drive.sh).
+HF_LOCK=$LOGS/.hf.lock
+hf_push_bg() {
+  [ -f "$CODE/clarity/.env" ] || { stage "hf: no clarity/.env on the instance -- upload skipped"; return 0; }
+  ( flock -w 14400 "$HF_LOCK" timeout 3600 "$PY" "$CODE/clarity/tracking.py" push "$1" >> "$LOGS/hf_uploads.log" 2>&1 & )
+}
+hf_flush() {
+  [ -f "$CODE/clarity/.env" ] || return 0
+  local d n_up n_all
+  for d in "$RUNS/$NAME"/seed*; do
+    [ -f "$d/metrics.json" ] || continue
+    flock -w 7200 "$HF_LOCK" bash -c "[ -f '$d/.hf_pushed' ] || timeout 3600 '$PY' '$CODE/clarity/tracking.py' push '$d'" \
+      >> "$LOGS/hf_uploads.log" 2>&1
+  done
+  n_up=$(ls "$RUNS/$NAME"/seed*/.hf_pushed 2>/dev/null | wc -l); n_all=$(ls "$RUNS/$NAME"/seed*/metrics.json 2>/dev/null | wc -l)
+  stage "hf: $n_up of $n_all seed folders of $NAME on the Hub (logs/hf_uploads.log)"
 }
 
 summary() {
@@ -237,7 +272,7 @@ EOF
 
 package() {
   cd "$BASE" || exit 1
-  tar czf "results_$NAME.tgz" --exclude='resume.pt' --exclude='adapter_best' "runs/$NAME" logs
+  tar czf "results_$NAME.tgz" --exclude='resume.pt' --exclude='adapter_best' --exclude='ep*_adapter' "runs/$NAME" logs
   tar czf "adapters_$NAME.tgz" runs/"$NAME"/seed*/adapter_best 2>/dev/null || true
   stage "package: $(ls -lh results_"$NAME".tgz | awk '{print $5}') results, $(ls -lh adapters_"$NAME".tgz 2>/dev/null | awk '{print $5}') adapters in $BASE"
   load_keys
@@ -268,8 +303,9 @@ pipeline() {
   [ -x "$PY" ] && [ -f "$LOGS/.setup_done" ] || { setup && touch "$LOGS/.setup_done"; }
   check_pause_keys
   [ -f "$LOGS/.smoke_done" ] || { smoke && touch "$LOGS/.smoke_done"; }
-  [ -f "$LOGS/.pilot_done" ] || { pilot && touch "$LOGS/.pilot_done"; }
+  [ -f "$LOGS/.pilot_done_$NAME" ] || { pilot && touch "$LOGS/.pilot_done_$NAME"; }
   train
+  hf_flush
   summary
   package
   stage "pipeline: ALL DONE"

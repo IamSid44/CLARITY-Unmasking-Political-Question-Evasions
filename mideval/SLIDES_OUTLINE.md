@@ -41,7 +41,7 @@
   acceptable label is in the top 3 for 94% of items.
 
 **8. Second half: knowledge or label meaning?**
-- A. Qwen3-8B LoRA single-pass classifier, the same protocol (set up; results TBD).
+- A. Qwen3-8B LoRA single-pass classifier, the same protocol. **Done (3 seeds):** dev S2 0.462 ± 0.080 vs DeBERTa 0.381 on the same seeds (+0.081, 3/3 up); S1 0.688 vs 0.619. Passes the screen; 10 seeds next.
 - B. Cascade: the LLM sees only uncertain items and their candidates; the curve of accuracy against calls per item.
 - C. One-time teacher distilled into the single-pass student.
 - D. Measured cost per million items.

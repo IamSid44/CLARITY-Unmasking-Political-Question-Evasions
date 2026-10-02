@@ -8,6 +8,10 @@
 #                                                  the SSH command from the instance page, e.g.
 #                                                  "ssh -p 11014 root@ssh.jarvislabs.net"; tests the connection
 #   bash jarvis_drive.sh all                       push + start + watch (the overnight command)
+#   bash jarvis_drive.sh create | resume           create a new VM (GPU_TYPE, 100 GB) or resume this profile's
+#                                                  paused VM through the JarvisLabs API, then connect to it
+#   Several VMs at once: prefix any command with JPROFILE=<name> (own host, machine id, logs, watcher),
+#   e.g.  JPROFILE=b RUN_NAME=Q8_fullq_lora_12ep SEEDS="0 1" EXTRA_ARGS="--epochs 12" bash jarvis_drive.sh all
 #
 #   push     build jarvis_bundle.tgz here, copy it to the instance, unpack into /home/clarity_llm/code
 #   start    run `jarvis_setup.sh all` on the instance, inside ITS tmux session (survives disconnects)
@@ -26,15 +30,20 @@ set -uo pipefail
 REPO=$(cd "$(dirname "$(readlink -f "$0")")" && pwd)
 CFG=$HOME/.config/clarity_jarvis
 KEYS=$CFG/keys.env
-HOSTCFG=$CFG/host.env
+# One profile per VM, so several VMs can run side by side: JPROFILE=b bash jarvis_drive.sh ...
+# Each profile has its own host + machine id, local log folder and watcher session.
+PROFILE=${JPROFILE:-}
+HOSTCFG=$CFG/host${PROFILE:+_$PROFILE}.env
+GPU_TYPE=${GPU_TYPE:-RTX-PRO6000}
 SSHKEY=$HOME/.ssh/jarvis_ed25519
-NAME=${NAME:-Q8_fullq_lora}
+NAME=${RUN_NAME:-Q8_fullq_lora}   # not NAME: WSL exports NAME=<hostname>
 SEEDS=${SEEDS:-"0 1 2"}
 EXTRA_ARGS=${EXTRA_ARGS:-}
 MAX_TOTAL_HOURS=${MAX_TOTAL_HOURS:-5}
 INTERVAL=${INTERVAL:-300}
 RBASE=${RBASE:-/home/clarity_llm}
-LOCAL_LOGS=$REPO/clarity/logs/jarvis
+LOCAL_LOGS=$REPO/clarity/logs/jarvis${PROFILE:+/$PROFILE}
+WATCH=jarvis-watch${PROFILE:+-$PROFILE}
 LOCAL_RUNS=$REPO/clarity/runs
 UVX=${UVX:-$(command -v uvx || echo "$HOME/.local/bin/uvx")}
 
@@ -58,14 +67,16 @@ pause_now() {
     "from jarvislabs import Client; print('pause:', Client().instances.pause($JL_MACHINE_ID))" 2>&1 | tee -a "$LOCAL_LOGS/drive.log"
 }
 
-sync_once() {   # $1 = "final" also brings the adapters and the packaged tarballs
+sync_once() {   # $1 = "final": same files, plus the packaged results tarball
+  # Every run folder on the instance, without LoRA weights (adapter_best, epochs/ep*_adapter): those go
+  # to the Hugging Face repo from the instance, and would be GBs in this OneDrive-synced clone.
   local stage; stage=$(mktemp -d)
-  local extra="--exclude=adapter_best"; [ "${1:-}" = final ] && extra=""
-  if R "cd $RBASE && tar cf - --exclude=resume.pt --exclude=resume.tmp $extra logs runs/$NAME \
-          \$(ls results_$NAME.tgz adapters_$NAME.tgz 2>/dev/null)" 2>/dev/null | tar xf - -C "$stage" 2>/dev/null; then
+  if R "cd $RBASE && mkdir -p runs logs && tar cf - --exclude=resume.pt --exclude=resume.tmp --exclude=adapter_best \
+          --exclude='ep*_adapter' --exclude=wandb logs runs \$(ls results_*.tgz 2>/dev/null)" 2>/dev/null \
+       | tar xf - -C "$stage" 2>/dev/null; then
     [ -d "$stage/logs" ] || { rm -rf "$stage"; return 1; }
     cp -r "$stage/logs/." "$LOCAL_LOGS/"
-    [ -d "$stage/runs/$NAME" ] && mkdir -p "$LOCAL_RUNS/$NAME" && cp -r "$stage/runs/$NAME/." "$LOCAL_RUNS/$NAME/"
+    [ -d "$stage/runs" ] && mkdir -p "$LOCAL_RUNS" && cp -r "$stage/runs/." "$LOCAL_RUNS/"
     ls "$stage"/*.tgz >/dev/null 2>&1 && cp "$stage"/*.tgz "$LOCAL_LOGS/"
     rm -rf "$stage"; return 0
   fi
@@ -94,22 +105,49 @@ connect)
   port=$(echo "$cmd" | sed -nE 's/.*-p[ ]*([0-9]+).*/\1/p'); port=${port:-22}
   dest=$(echo "$cmd" | grep -oE '[A-Za-z0-9._-]+@[A-Za-z0-9._-]+' | head -1)
   [ -n "$dest" ] || { echo "could not find user@host in: $cmd"; exit 2; }
-  printf 'JUSER=%s\nJHOST=%s\nJPORT=%s\n' "${dest%@*}" "${dest#*@}" "$port" > "$HOSTCFG"
-  touch "$KEYS"; grep -v '^JL_MACHINE_ID=' "$KEYS" > "$KEYS.tmp"; mv "$KEYS.tmp" "$KEYS"
-  echo "JL_MACHINE_ID=$mid" >> "$KEYS"; chmod 600 "$KEYS" "$HOSTCFG"
+  printf 'JUSER=%s\nJHOST=%s\nJPORT=%s\nJL_MACHINE_ID=%s\n' "${dest%@*}" "${dest#*@}" "$port" "$mid" > "$HOSTCFG"
+  chmod 600 "$HOSTCFG"
   load
-  note "connect: $JUSER@$JHOST port $JPORT, machine $mid"
+  note "connect: ${PROFILE:-default} -> $JUSER@$JHOST port $JPORT, machine $mid"
+  ssh-keygen -R "$JHOST" >/dev/null 2>&1   # dynamic IPs are reused by other VMs: drop a stale host key
+  for i in $(seq 1 18); do R true 2>/dev/null && break; sleep 10; done   # a new VM needs a minute for SSH
   R 'echo "connected to $(hostname)"; nvidia-smi --query-gpu=name,memory.total,driver_version --format=csv,noheader; df -h /home | tail -1' \
     || { echo "SSH failed. Is $SSHKEY.pub (bash jarvis_drive.sh keygen) added to JarvisLabs, and was the instance created after adding it?"; exit 1; }
+  ;;
+
+create|resume)
+  # create: a new VM (GPU_TYPE, 100 GB) for this profile; resume: the profile's paused VM (new IP)
+  load; need_uv
+  [ -n "${JL_API_KEY:-}" ] || { echo "run: bash jarvis_drive.sh keys"; exit 2; }
+  [ "$1" = resume ] && [ -z "${JL_MACHINE_ID:-}" ] && { echo "no machine id for profile ${PROFILE:-default}"; exit 2; }
+  out=$(JL_API_KEY=$JL_API_KEY ACTION=$1 MID=${JL_MACHINE_ID:-0} GPU=$GPU_TYPE LABEL="clarity-${PROFILE:-a}" \
+    "$UVX" --quiet --from jarvislabs python -c '
+import os
+from jarvislabs import Client
+c = Client()
+if os.environ["ACTION"] == "create":
+    i = c.instances.create(gpu_type=os.environ["GPU"], template="vm", storage=100, name=os.environ["LABEL"])
+else:
+    i = c.instances.resume(int(os.environ["MID"]))
+print("RESULT", i.machine_id, i.status, "|", i.ssh_command)') || { note "$1 failed: $out"; exit 1; }
+  line=$(echo "$out" | grep '^RESULT') || { note "$1: unexpected reply: $out"; exit 1; }
+  mid=$(echo "$line" | awk '{print $2}'); sshcmd=${line#*| }
+  note "$1: machine $mid ($(echo "$line" | awk '{print $3}')) -- $sshcmd"
+  bash "$0" connect "$sshcmd" "$mid"
   ;;
 
 push)
   need_host
   (cd "$REPO" && bash jarvis_setup.sh bundle >/dev/null) || { note "bundle failed"; exit 1; }
-  R "mkdir -p $RBASE/code" \
+  # containers log in as root; VMs as a regular user (ubuntu) who needs sudo to create $RBASE under /home
+  R "mkdir -p $RBASE/code 2>/dev/null || { sudo mkdir -p $RBASE && sudo chown \$(id -u):\$(id -g) $RBASE && mkdir -p $RBASE/code; }" \
     && scp -i "$SSHKEY" -P "$JPORT" -o StrictHostKeyChecking=accept-new -q "$REPO/jarvis_bundle.tgz" "$JUSER@$JHOST:$RBASE/jarvis_bundle.tgz" \
     && R "tar xzf $RBASE/jarvis_bundle.tgz -C $RBASE/code && ls $RBASE/code/clarity" \
     && note "push: bundle unpacked into $RBASE/code" || { note "push failed"; exit 1; }
+  # W&B and Hugging Face keys travel separately from the bundle, owner-readable only
+  if [ -f "$REPO/clarity/.env" ]; then
+    R "umask 077; cat > $RBASE/code/clarity/.env" < "$REPO/clarity/.env" && note "push: clarity/.env copied (mode 600)"
+  fi
   ;;
 
 start)
@@ -123,9 +161,9 @@ start)
 watch)
   need_host
   if [ "${2:-}" != _inner ]; then
-    tmux has-session -t jarvis-watch 2>/dev/null && { echo "already watching: tmux attach -t jarvis-watch"; exit 0; }
-    tmux new-session -d -s jarvis-watch "NAME='$NAME' bash '$REPO/jarvis_drive.sh' watch _inner; exec bash"
-    echo "watching in local tmux session 'jarvis-watch' (tail -f $LOCAL_LOGS/drive.log)"; exit 0
+    tmux has-session -t "$WATCH" 2>/dev/null && { echo "already watching: tmux attach -t $WATCH"; exit 0; }
+    tmux new-session -d -s "$WATCH" "JPROFILE='$PROFILE' RUN_NAME='$NAME' bash '$REPO/jarvis_drive.sh' watch _inner; exec bash"
+    echo "watching in local tmux session '$WATCH' (tail -f $LOCAL_LOGS/drive.log)"; exit 0
   fi
   note "watch: every $INTERVAL s"
   fails=0
@@ -136,7 +174,7 @@ watch)
       note "watch: ${last:-no pipeline log yet}"
       case "$last" in
         *"ALL DONE"*|*"pausing instance"*"finished"*)
-          sync_once final && note "watch: final results copied to clarity/runs/$NAME and $LOCAL_LOGS"
+          sync_once final && note "watch: final results copied to clarity/runs/ and $LOCAL_LOGS"
           pause_now; note "watch: finished"; break ;;
         *FAILED*|*"pausing instance"*"failure"*)
           sync_once final; note "watch: the pipeline FAILED -- see $LOCAL_LOGS"; pause_now; break ;;
@@ -154,5 +192,5 @@ sync) need_host; sync_once final && note "sync: copied" ;;
 status) need_host; R "bash $RBASE/code/jarvis_setup.sh status" ;;
 pause)  pause_now ;;
 ssh)    need_host; ssh -i "$SSHKEY" -p "$JPORT" "$JUSER@$JHOST" ;;
-*) sed -n '2,26p' "$0"; exit 2 ;;
+*) sed -n '2,30p' "$0"; exit 2 ;;
 esac
