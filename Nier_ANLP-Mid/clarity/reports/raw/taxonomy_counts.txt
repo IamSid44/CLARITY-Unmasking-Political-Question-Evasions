@@ -1,0 +1,11 @@
+train rows 3448, dev items 308
+label                  clarity           train n  train %  dev ref sets
+Explicit               Clear Reply          1052    30.5%           115
+Implicit               Ambivalent            488    14.2%            99
+Dodging                Ambivalent            706    20.5%            96
+General                Ambivalent            386    11.2%           113
+Deflection             Ambivalent            381    11.0%            51
+Partial/half-answer    Ambivalent             79     2.3%            14
+Declining to answer    Clear Non-Reply       145     4.2%            17
+Claims ignorance       Clear Non-Reply       119     3.5%            15
+Clarification          Clear Non-Reply        92     2.7%             4

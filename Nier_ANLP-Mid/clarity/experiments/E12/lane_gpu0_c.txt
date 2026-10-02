@@ -1,0 +1,27 @@
+# GPU 0, lane c -- restarted 01:50 on 2026-09-29. First the E12b extension decided by the screening
+# rule (specialists passed on 3 seeds: +0.018 on S2+rule and S1, 2/3 up), then the shared list.
+E12b_other6 3 --task other6
+E12b_nr3 3 --task nr3
+E12b_other6 4 --task other6
+E12b_nr3 4 --task nr3
+E12b_gate 0 --task gate
+E12b_other6 0 --task other6
+E12b_nr3 0 --task nr3
+E12a_alldata 0 --val-frac 0 --select last
+E12b_gate 1 --task gate
+E12b_other6 1 --task other6
+E12b_nr3 1 --task nr3
+E12a_alldata 1 --val-frac 0 --select last
+E12b_gate 2 --task gate
+E12b_other6 2 --task other6
+E12b_nr3 2 --task nr3
+E12a_alldata 2 --val-frac 0 --select last
+E12c_pair_impl_dodg 0 --task pair:Implicit,Dodging
+E12c_pair_expl_impl 0 --task pair:Explicit,Implicit
+E12c_pair_gen_defl 0 --task pair:General,Deflection
+E12c_pair_impl_dodg 1 --task pair:Implicit,Dodging
+E12c_pair_expl_impl 1 --task pair:Explicit,Implicit
+E12c_pair_gen_defl 1 --task pair:General,Deflection
+E12c_pair_impl_dodg 2 --task pair:Implicit,Dodging
+E12c_pair_expl_impl 2 --task pair:Explicit,Implicit
+E12c_pair_gen_defl 2 --task pair:General,Deflection

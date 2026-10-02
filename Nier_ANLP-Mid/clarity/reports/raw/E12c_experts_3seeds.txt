@@ -1,0 +1,8 @@
+'flat + boundary experts' vs flat (E10_fullq_16ep), seeds [0, 1, 2]
+
+                                 S2    S2+rule         S1     CNR F1  NR recall
+flat, per-seed mean           0.381      0.401      0.619      0.525      0.431
+flat + boundary experts, mean      0.383      0.397      0.615      0.525      0.431
+difference, paired       +0.002 1/3 -0.004 1/3 -0.004 0/3 +0.000 0/3 +0.000 0/3
+flat, 3-seed ensemble         0.410      0.418      0.643      0.512      0.412
+flat + boundary experts, 3-seed ensemble      0.398      0.441      0.615      0.512      0.412

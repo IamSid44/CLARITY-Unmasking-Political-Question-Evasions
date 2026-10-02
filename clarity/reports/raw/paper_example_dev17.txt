@@ -1,0 +1,28 @@
+dev row 17
+  sub-question : Would you campaign against Senator Joe Lieberman on Iraq?
+  full question: Q. And would you campaign against Senator Joe Lieberman, whose Republican candidate may support you, but he supports you too, on Iraq?
+  answer       : I'm going to stay out of Connecticut. []
+  annotators   : Dodging, Dodging, Implicit
+  reference set: Implicit, Dodging
+  gold clarity : Ambivalent
+
+DeBERTa-v3-large (full question, 16 ep): 10-seed system S2 = 0.405 (reproduces the paper)
+  ensemble argmax: General
+  tau for this item's CV fold: 0.70
+  label                   mean p  after LA  train prior
+  General                  0.373     0.373        0.112
+  Implicit                 0.282     0.240        0.142
+  Deflection               0.205     0.207        0.110
+  Dodging                  0.063     0.041        0.205
+  system prediction: S2 General -> S1 Ambivalent; in reference set: False
+
+Qwen3-8B-Base + LoRA (3 ep): 10-seed system S2 = 0.543 (reproduces the paper)
+  ensemble argmax: Dodging
+  tau for this item's CV fold: 0.85
+  label                   mean p  after LA  train prior
+  Dodging                  0.327     0.170        0.205
+  Implicit                 0.189     0.135        0.142
+  Declining to answer      0.170     0.340        0.042
+  General                  0.105     0.091        0.112
+  system prediction: S2 Declining to answer -> S1 Clear Non-Reply; in reference set: False
+

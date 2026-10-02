@@ -1,0 +1,26 @@
+Design data: the fixed 10% train slice (n=345), 10-seed full-question ensemble, argmax.
+
+Confusion (rows = gold, cols = predicted):
+             Explicit  Implicit   Dodging   General Deflectio Partial/h Declining Claims ig Clarifica
+Explicit           77        12         7         3         4         0         0         2         0
+Implicit           13        16        11         4         5         0         0         0         0
+Dodging             8        13        39         4         5         0         2         0         0
+General             8        10        11         4         5         0         0         1         0
+Deflectio           7         3         6         8        12         0         0         2         0
+Partial/h           0         3         1         2         0         0         2         0         0
+Declining           0         1         5         0         0         0         7         1         0
+Claims ig           1         1         2         2         0         0         0         6         0
+Clarifica           0         0         2         1         0         0         0         1         5
+
+Non-Reply block: gold 35, predicted 29, precision 0.69, recall 0.57
+Errors: 179 of 345. Crossing the NR/OTHER line: 24; inside NR: 2; inside OTHER: 153
+
+Agglomerative merge order (most-confused classes first):
+  0.204  ['Implicit'] + ['Dodging']
+  0.169  ['General'] + ['Deflectio']
+  0.140  ['Explicit'] + ['Implicit', 'Dodging']
+  0.128  ['Explicit', 'Implicit', 'Dodging'] + ['General', 'Deflectio']
+  0.125  ['Partial/h'] + ['Declining']
+  0.060  ['Explicit', 'Implicit', 'Dodging', 'General', 'Deflectio'] + ['Partial/h', 'Declining']
+  0.056  ['Claims ig'] + ['Clarifica']
+  0.036  ['Explicit', 'Implicit', 'Dodging', 'General', 'Deflectio', 'Partial/h', 'Declining'] + ['Claims ig', 'Clarifica']

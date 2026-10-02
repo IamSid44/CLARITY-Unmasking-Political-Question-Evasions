@@ -1,58 +1,52 @@
-# `paper/` — the report in ACL format
+# `paper/` — the mid-evaluation report in ACL format
 
 The project written up as an ACL long paper, built on the **official ACL template**
-([acl-org/acl-style-files](https://github.com/acl-org/acl-style-files), commit `d5adc82`, 2026-06-29).
-`acl.sty` and `acl_natbib.bst` are unmodified copies (md5-checked). `acl_latex_template.tex` is the
-template as downloaded, kept for reference. The paper uses the template's `final` option, so it is
-non-anonymous, with no line numbers.
-
-## Two versions, one text
-| file | figures | built by |
-|---|---|---|
-| `main.tex` → `main.pdf` (**version 1**) | the original PNG renders: `figures/per_seed_progression.png`, `figures/e13_qwen_vs_deberta.png` (from `clarity/mideval_figures.py`, `clarity/e13_figures.py`) | `bash paper/build.sh` |
-| `main_v2.tex` → `main_v2.pdf` (**version 2**) | publication figures redrawn by `clarity/paper_figures.py`: vector PDF, serif type, error bars (`figures/v2/`) | `bash paper/build.sh main_v2` |
-
-- **The text is shared.** Both versions input the same `sections/*.tex`.
-- **Only the figure blocks differ.** They live in `figs_v1.tex` and `figs_v2.tex`, as the macros
-  `\FigureEncSeeds` and `\FigureLLM`.
-- **The numbers in both versions' figures are identical:** dev macro-F1 from the saved per-seed
-  probabilities, with systems scored by nested CV.
+([acl-org/acl-style-files](https://github.com/acl-org/acl-style-files), commit `d5adc82`).
+`acl.sty` and `acl_natbib.bst` are unmodified copies. The paper uses the template's `final`
+option, so it is non-anonymous, with no line numbers.
 
 ## Layout
 ```
-main.tex, main_v2.tex      preamble (official template packages + amsmath, amssymb, booktabs), title, authors, section order
-figs_v1.tex, figs_v2.tex   the two figures of each version
-sections/                  one file per section: abstract, 01_introduction ... 07_conclusion, limitations, ethics, appendix_*
-references.bib             verified entries only (checked against the PDFs in Materials/ or the venue record)
-figures/, figures/v2/      figure files
+main.tex                   preamble (template packages + amsmath, amssymb, booktabs, xurl, tikz), title, authors, section order
+figs.tex                   the four figures, as macros (\FigureArch, \FigureEncSeeds, \FigureLLM, \FigureExample)
+sections/                  abstract, 01_introduction ... 07_conclusion, limitations, ethics, appendix
+references.bib             verified entries only (checked against the papers or their ACL Anthology record)
+figures/fig_architecture.tex   Figure 1, the system diagram (TikZ, monochrome)
+figures/fig_deberta_seeds.pdf, fig_qwen_vs_deberta.pdf   Figures 2 and 3 (vector; clarity/paper_figures.py)
 build.sh                   pdflatex -> bibtex -> pdflatex x2 + log summary (undefined refs/citations, overfull boxes, floats)
-check_section.sh           compiles one or more sections in isolation (used while sections were written in parallel)
-validate_pdf.sh            A4 page size, fonts embedded, no Type 3 fonts; renders every page to qa/<name>/ (needs poppler)
+validate_pdf.sh            A4 page size, fonts embedded, no Type 3 fonts; renders every page to qa/ (needs poppler)
 ```
+
+Table 1 comes from `clarity/taxonomy_counts.py` (`clarity/reports/raw/taxonomy_counts.txt`); the worked example (Figure 4) comes from `clarity/paper_example.py`, which writes
+`clarity/reports/raw/paper_example_dev17.txt`.
+
+## Overleaf
+Upload this folder's `.tex`, `.sty`, `.bst`, `.bib` files, `sections/` and `figures/` (or the
+`paper/` folder of the submission package as a zip: New Project → Upload Project). Set the
+compiler to **pdfLaTeX** and the main document to `main.tex`. No shell-escape is needed.
 
 ## Which source documents each section rests on
 | section | evidence |
 |---|---|
-| §2 Task, Data and Evaluation | `clarity/reports/01_scorer_geometry.md`, `mideval/analysis/mideval_analysis.txt`, `clarity/decide.py` |
-| §3 Related Work | the papers in `Materials/Proposal_Implementation_Material/Papers_References/` |
-| §4 The Encoder Track, App. A | `clarity/README.md`, the experiment log E0–E12, `clarity/reports/raw/E11_replication.txt`, `mideval/RESULTS.md` §1–8 |
-| §5 The 8B LLM classifier, App. B | `clarity/llm_classifier.py`, `JARVISLABS_PORTING_GUIDE.md`, `clarity/reports/raw/E13_*.txt`, `mideval/RESULTS.md` §9 |
-| §6 Analysis | `mideval/RESULTS.md` §6–9, `mideval/analysis/`, `raw/E13_final_analysis.txt` §D–E, `raw/E13_Q8_topk_confidence.txt` |
-| Abstract, §1, §7, Limitations, Ethics, App. C | all of the above; `README.md`, `CONTEXT.md` |
+| §2 Problem Statement, Data and Evaluation | `clarity/reports/raw/taxonomy_counts.txt`, `clarity/reports/01_scorer_geometry.md`, `clarity/reports/raw/mideval/mideval_analysis.txt`, `clarity/decide.py` |
+| §3 Related Work | the cited papers (ACL Anthology records) |
+| §4 The Encoder Track | `clarity/README.md`, the experiment log E0–E12, `clarity/reports/raw/E11_replication.txt`, `clarity/reports/04_results_sources.md` §1–8 |
+| §5 The 8B LLM classifier | `clarity/llm_classifier.py`, `clarity/reports/raw/E13_*.txt`, `clarity/reports/04_results_sources.md` §9 |
+| §6 Analysis | `clarity/reports/04_results_sources.md` §6–9, `clarity/reports/raw/mideval/`, `raw/E13_final_analysis.txt` §D–E, `raw/E13_Q8_topk_confidence.txt`, `raw/paper_example_dev17.txt` |
+| §7 Plan, App. A | the experiment log; `clarity/reports/raw/E13_pilots_and_timing.txt` |
 
 Every number in the paper traces to one of these files. All scores are on the dev set (test labels
 were never released).
 
 ## Build and check
 ```bash
-bash paper/build.sh            # version 1
-bash paper/build.sh main_v2    # version 2
-POPPLER=<poppler bin dir> bash paper/validate_pdf.sh main_v2
-python clarity/paper_figures.py   # regenerate figures/v2 (needs clarity/runs/ from the HF repo; CPU)
+bash paper/build.sh
+POPPLER=<poppler bin dir> bash paper/validate_pdf.sh
+python clarity/paper_figures.py    # regenerate figures/fig_qwen_vs_deberta.pdf (needs clarity/runs/ from the HF repo; CPU)
+python clarity/paper_example.py    # the worked example's numbers
 ```
-Tested with MiKTeX 25.12 (pdfTeX 1.40.28) on Windows; any TeX Live 2023+ works.
 
-**Status (2026-10-02):** both versions compile with no errors, no undefined citations or
-references, and no overfull boxes. Both are A4 with all fonts embedded and none of Type 3. The
-main text ends on page 8, followed by Limitations, Ethical Considerations, Acknowledgments,
-References and Appendices A–C.
+**Status (2026-10-02):** compiles with no errors, no undefined citations or references and no
+overfull boxes; A4, all fonts embedded, 16 references. The main text ends on page 7; with
+Limitations, Ethics and Acknowledgments the content fills about 7.5 pages, the references follow,
+and the appendix is one page (page 10).

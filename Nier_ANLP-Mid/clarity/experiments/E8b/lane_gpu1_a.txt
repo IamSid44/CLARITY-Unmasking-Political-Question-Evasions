@@ -1,0 +1,3 @@
+# Our GPU-1 MIG slice. Re-planned 22:3x on 2026-09-25 when GPU 0 became available again.
+E8b_fullq_ce 4
+E8b_fullq_ce 0

@@ -1,0 +1,83 @@
+% Appendix (one page): training settings of both classifiers, compute and reproducibility.
+% Sources: clarity/encoder.py, clarity/llm_classifier.py, clarity/decide.py, clarity/experiments/*/common.args,
+% clarity/reports/raw/E13_pilots_and_timing.txt.
+% Cells start with \raggedright and rows end with \tabularnewline (no array package needed).
+\section{Implementation Details}
+\label{sec:app}
+
+\paragraph{Encoder.}
+Table~\ref{tab:app-enc-hparams} lists the DeBERTa settings; baseline and final models differ only in the input and the number of epochs.
+One detail mattered: \texttt{transformers}~5.x loads a checkpoint in its stored dtype, and DeBERTa-v3's published weights are fp16, in which its attention overflows; the model then trained smoothly to the label prior and predicted Explicit for every item, so we load the weights in fp32 explicitly.
+
+\begin{table}[h]
+\centering
+\footnotesize
+\begin{tabular}{@{}lp{0.64\columnwidth}@{}}
+\toprule
+Setting & Value \tabularnewline
+\midrule
+Backbone & \raggedright \texttt{microsoft/deberta-v3-large}, all weights trained \tabularnewline
+Head & \raggedright \texttt{[CLS]} $\to$ dense + tanh $\to$ dropout 0.1 $\to$ linear (9) \tabularnewline
+Input, baseline & \raggedright sub-question (${\le}96$ tokens) [SEP] answer; 512 tokens \tabularnewline
+Input, final & \raggedright ``Sub-question: \ldots{} Full question: \ldots'' (${\le}256$ tokens) [SEP] answer; 1,024 tokens \tabularnewline
+Truncation & \raggedright answer cut from the right \tabularnewline
+Loss & \raggedright cross-entropy, no smoothing, no class weights \tabularnewline
+Optimiser & \raggedright AdamW, $\beta=(0.9, 0.98)$, $\epsilon=10^{-6}$, weight decay 0.01 (none on biases and LayerNorm) \tabularnewline
+Learning rate & \raggedright $10^{-5}\times0.95^{k}$ for a layer $k$ levels below the head; head and pooler $10^{-4}$ \tabularnewline
+Schedule & \raggedright cosine, warm-up 10\% of steps \tabularnewline
+Batch & \raggedright 16, no accumulation; gradient-norm clipping 1.0 \tabularnewline
+Epochs & \raggedright 8 (baseline) or 16 \tabularnewline
+Precision & \raggedright fp32 weights, bf16 autocast; gradient checkpointing \tabularnewline
+Epoch selection & \raggedright best macro-F1 on the 345-row train slice; last epoch for all-of-train runs \tabularnewline
+Seeds & \raggedright 0--9 (all of train: 0--4) \tabularnewline
+Logit adjustment & \raggedright $\tau\in[-1,2]$, 61-point grid; prior = train label frequencies; 5-fold nested CV on dev \tabularnewline
+Hardware & \raggedright one shared RTX PRO 6000 (96\,GB); peak memory about 9\,GB at 512 tokens, 15--17\,GB at 1,024 \tabularnewline
+\bottomrule
+\end{tabular}
+\caption{DeBERTa-v3-large training and decision settings.}
+\label{tab:app-enc-hparams}
+\end{table}
+
+\paragraph{LLM classifier.}
+Table~\ref{tab:app-llm-hparams} lists the Qwen3-8B-Base settings; everything not listed matches the final encoder configuration.
+Each run used one NVIDIA RTX PRO 6000 (96\,GB) on a rented virtual machine.
+A 3-epoch seed took 15--21\,min and a 12-epoch seed about 59\,min; the ten-seed round cost INR~1,518.79 of GPU time.
+
+\begin{table}[h]
+\centering
+\small
+\begin{tabular}{@{}ll@{}}
+\toprule
+Setting & Value \\
+\midrule
+Backbone & Qwen3-8B-Base, bf16 \\
+Adapter & LoRA, $r=16$, $\alpha=32$, dropout 0.05 \\
+LoRA targets & \texttt{q,k,v,o,gate,up,down\_proj} \\
+Head & new 9-way linear, last non-pad token, \\
+     & trained in full \\
+Precision & fp32 trainable weights, bf16 autocast \\
+Optimizer & AdamW, lr $10^{-4}$, weight decay 0 \\
+Gradient clipping & norm 1.0 \\
+Schedule & cosine, linear warmup 5\% of steps \\
+Epochs & 3 (12 in the follow-up) \\
+Batch & 4 $\times$ 4 accumulation = 16 \\
+Steps per epoch & 194 (3,103 training rows) \\
+Loss & cross-entropy, unweighted \\
+Input & question part $\le$ 256 tokens; \\
+      & total $\le$ 1,024 incl.\ closing question \\
+Batching & length-sorted within chunks of 50 \\
+         & batches; order fixed by (seed, epoch) \\
+Epoch selection & best macro-F1 on the 345-row slice \\
+                & (all-of-train runs: last epoch) \\
+Padding check & abort if relative logit difference $>0.2$ \\
+Seeds & 0--9 (12 epochs: 0--2) \\
+\bottomrule
+\end{tabular}
+\caption{Hyperparameters of the LLM classifier.}
+\label{tab:app-llm-hparams}
+\end{table}
+
+\paragraph{Code and records.}
+Code, experiment definitions, the experiment log with every pre-registered hypothesis, and the raw analysis outputs behind every number are at \url{https://github.com/IamSid44/CLARITY-Unmasking-Political-Question-Evasions}.
+Per-seed probabilities, metrics and LoRA adapters are at \url{https://huggingface.co/siddarthg44/clarity-semeval26}, and training curves at \url{https://wandb.ai/iamsid44-iiit-hyderabad/clarity-semeval26}.
+Software: Python~3.12, PyTorch~2.11, Transformers~5.17, PEFT~0.20.

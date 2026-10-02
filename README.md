@@ -17,6 +17,15 @@ clarity levels (Subtask 1).
 | ChulaNLP (2nd place), fine-tuned DeBERTa-large | 0.46 | 0.65 |
 | TeleAI (1st place), DeepSeek-V3 multi-stage pipeline | 0.617 | 0.812 |
 
+## Links
+
+| | |
+|---|---|
+| Code (this repository) | https://github.com/IamSid44/CLARITY-Unmasking-Political-Question-Evasions |
+| Trained runs (Hugging Face) | https://huggingface.co/siddarthg44/clarity-semeval26 — per-seed probabilities, metrics and LoRA adapters, as `<config>/seed<k>/` |
+| Training curves (Weights & Biases) | https://wandb.ai/iamsid44-iiit-hyderabad/clarity-semeval26 — runs `<config>-s<seed>`, grouped by config |
+| Mid-evaluation report | [`paper/main.pdf`](paper/main.pdf) (ACL format; source in [`paper/`](paper/README.md)) |
+
 All numbers are on the 308-item **dev** set. Codabench has closed and the test labels
 were never released, so dev is the only common ground for comparison; see
 [`clarity/reports/02_experiment_log.md`](clarity/reports/02_experiment_log.md) §E7
@@ -35,9 +44,9 @@ for what these comparisons can and cannot show.
   - 12 epochs instead of 3 is adopted by the train-slice rule (3-seed screen);
   - training on all of train gives a small gain that isn't distinguishable from zero.
 - **Next: the label-meaning test.** A cascade sends only uncertain items to a larger LLM with
-  label definitions and boundary examples, giving an accuracy-vs-cost curve.
-  [`mideval/`](mideval/REPORT.md) is the mid-evaluation package.
-- **Nothing is running, and no VMs exist.** See [`CONTEXT.md`](CONTEXT.md).
+  label definitions and boundary examples, giving an accuracy-vs-cost curve. The dated plan to the
+  final evaluation (31 October 2026) is §7 of the report.
+- **Nothing is running, and no VMs exist.**
 
 ---
 
@@ -45,15 +54,15 @@ for what these comparisons can and cannot show.
 
 ```
 .
-├── CONTEXT.md         handover: current state, what to do next, rules, environment (read first)
-├── CLAUDE.md          standing instructions for Claude Code sessions
 ├── clarity/           the system: code, experiment definitions, reports, packaged predictions
 │   ├── README.md          start here
 │   ├── llm_classifier.py  E13: decoder LLM + LoRA as a 9-way classifier
 │   ├── e13_analysis.py    E13 analyses (paired seeds, systems, 2-annotator, per class)
-│   └── reports/           the scorer analysis, the experiment log, the research narrative
-├── mideval/           mid-evaluation package: REPORT, RESULTS (every number + source), slides
-├── paper/            the report as an ACL-format paper (official ACL template; main.tex, sections/, build.sh)
+│   ├── paper_example.py   the worked example in the report (one dev item through both systems)
+│   └── reports/           the scorer analysis, the experiment log, the research narrative,
+│                            every number with its source (04_results_sources.md), raw outputs (raw/)
+├── paper/             the mid-evaluation report, ACL format (official template; main.tex, sections/, build.sh)
+├── Nier_ANLP-Mid/     the mid-evaluation submission package (built by build_mid_submission.sh)
 ├── jarvis_drive.sh    launch machine: VMs on JarvisLabs (create/resume, push, start, watch, pause)
 ├── jarvis_setup.sh    on each VM: environment, model, smoke, pilot, training, HF upload, pause
 ├── JARVISLABS_PORTING_GUIDE.md   how to run the LLM experiments on JarvisLabs
@@ -104,11 +113,10 @@ For someone new to the project, about an hour in total:
    - **E11 results** — the replication on new seeds, judged against hypotheses
      fixed in advance, and how the final system was chosen;
    - **E13, E13x/b/c** — the 8B classifier, pre-registered, with its 10-seed results.
-4. **The mid-evaluation package** — [`mideval/REPORT.md`](mideval/REPORT.md) (10 min).
-5. **The paper** — the same work written up in ACL format (official template), in two versions
-   with identical text: [`paper/main_v2.pdf`](paper/main_v2.pdf) (publication figures from
-   `clarity/paper_figures.py`) and [`paper/main.pdf`](paper/main.pdf) (original figures). See
-   [`paper/README.md`](paper/README.md) for building and the ACL checks.
+4. **The report** — the mid-evaluation write-up in ACL format (official template):
+   [`paper/main.pdf`](paper/main.pdf). See [`paper/README.md`](paper/README.md) for building and
+   the ACL checks; every number in it has its source in
+   [`clarity/reports/04_results_sources.md`](clarity/reports/04_results_sources.md).
 
 To run anything: `clarity/README.md` §5.
 
@@ -164,6 +172,9 @@ To run anything: `clarity/README.md` §5.
   under `<config>/seed<k>/`: probabilities, metrics and LoRA adapters. **Note:** the repo is
   currently **public**.
 - LLM runs (E13): see [`JARVISLABS_PORTING_GUIDE.md`](JARVISLABS_PORTING_GUIDE.md) and
-  `mideval/REPRODUCE.md`. Analyses: `python clarity/e13_analysis.py`,
+  `clarity/README.md` §5. Analyses: `python clarity/e13_analysis.py`,
   `python clarity/e13_figures.py`.
+- The report's data figure and worked example: `python clarity/paper_figures.py` and
+  `python clarity/paper_example.py` (CPU; need the `dev_probs.npy` files from the HF repo in
+  `clarity/runs/`). Build the report with `bash paper/build.sh`.
 - API keys go in `clarity/.env` (template: `clarity/.env.example`); never commit it.

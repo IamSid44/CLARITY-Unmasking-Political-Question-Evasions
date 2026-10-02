@@ -1,0 +1,2 @@
+# GPU 1, lane a
+E8_fullq_bal_focal 0

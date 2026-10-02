@@ -1,0 +1,24 @@
+E13 (Q8_fullq_lora) seeds 0-2: top-k coverage, confidence vs correctness, prediction counts. Exploratory; dev not used for any choice. Written by: python clarity/e13_topk.py
+dev: acceptable label within top-k (mean over 3 seeds)
+  k=1: 0.604
+  k=2: 0.831
+  k=3: 0.931
+  k=5: 0.991
+train slice (one label): gold within top-k
+  k=1: 0.534
+  k=2: 0.672
+  k=3: 0.801
+  k=5: 0.939
+dev in-set rate by confidence fifth (least -> most confident), mean over seeds
+  0.40  0.48  0.56  0.70  0.87
+3-seed probability average, argmax S2: 0.4695 (singles [0.405, 0.426, 0.554])
+3-seed probability average, argmax: how often each class is predicted vs how many dev reference sets contain it:
+  Explicit               predicted 111  in reference sets 115
+  Implicit               predicted  52  in reference sets  99
+  Dodging                predicted  72  in reference sets  96
+  General                predicted  24  in reference sets 113
+  Deflection             predicted  32  in reference sets  51
+  Partial/half-answer    predicted   0  in reference sets  14
+  Declining to answer    predicted   7  in reference sets  17
+  Claims ignorance       predicted   7  in reference sets  15
+  Clarification          predicted   3  in reference sets   4

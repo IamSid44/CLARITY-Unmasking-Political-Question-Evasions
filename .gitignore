@@ -5,3 +5,7 @@ __pycache__/
 *.egg-info/
 archive/
 jarvis_bundle.tgz
+
+# mid-evaluation submission archives (rebuilt by build_mid_submission.sh)
+Nier_ANLP-Mid.zip
+paper-overleaf.zip

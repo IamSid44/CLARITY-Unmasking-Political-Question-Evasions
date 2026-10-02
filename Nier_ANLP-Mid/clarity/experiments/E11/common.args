@@ -1,0 +1,16 @@
+# E11 -- replication on seeds 5-9 of the three systems that matter (E0, E10_base_16ep,
+# E10_fullq_16ep), plus the final system. Every setting identical to the originals;
+# input, context and epochs are on each lane line. Plan: reports/02_experiment_log.md §E11.
+
+# unchanged from E0 / E10
+--model microsoft/deberta-v3-large
+--batch-size 16
+--lr 1e-5
+--head-lr 1e-4
+--llrd 0.95
+--loss ce
+
+# operational (1024-token runs ~15-17 GB; 512-token ~9 GB)
+--max-vram-gb 18
+--save-model
+--push-to-hub

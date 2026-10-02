@@ -1,7 +1,6 @@
 #!/usr/bin/env bash
-# Build one version of the paper (MiKTeX or TeX Live): pdflatex -> bibtex -> pdflatex x2, then a log summary.
-#   bash paper/build.sh            -> main.pdf     (version 1: original figures)
-#   bash paper/build.sh main_v2    -> main_v2.pdf  (version 2: figures from clarity/paper_figures.py)
+# Build the paper (MiKTeX or TeX Live): pdflatex -> bibtex -> pdflatex x2, then a log summary.
+#   bash paper/build.sh            -> paper/main.pdf
 set -u
 cd "$(dirname "$0")"
 J=${1:-main}

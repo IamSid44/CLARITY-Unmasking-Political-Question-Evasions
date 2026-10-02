@@ -1,0 +1,8 @@
+# GPU 0 (shared with a lab-mate), lane a. Re-planned 01:58 on 2026-09-26.
+# Both GPU-0 lanes and the slice lane list the full-question seeds; each run is
+# locked while it trains, so the lanes share them out (run_queue.sh header).
+E10_fullq_16ep 0 --input full --max-len 1024 --a-budget 256
+E10_fullq_16ep 1 --input full --max-len 1024 --a-budget 256
+E10_fullq_16ep 2 --input full --max-len 1024 --a-budget 256
+E10_fullq_16ep 3 --input full --max-len 1024 --a-budget 256
+E10_fullq_16ep 4 --input full --max-len 1024 --a-budget 256

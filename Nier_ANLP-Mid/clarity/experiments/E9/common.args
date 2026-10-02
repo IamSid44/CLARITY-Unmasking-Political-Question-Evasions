@@ -1,0 +1,24 @@
+# E9 -- a trained hierarchical classifier over the official clarity levels.
+# Identical to E0 in every respect except the output head:
+#   p(leaf) = p(level) * p(leaf | level), trained with cross-entropy on log p(leaf),
+#   which is exactly -log p(level) - log p(leaf | level).
+# E9 vs E0 isolates the hierarchy.
+
+# unchanged from E0
+--model microsoft/deberta-v3-large
+--epochs 8
+--batch-size 16
+--lr 1e-5
+--head-lr 1e-4
+--llrd 0.95
+--loss ce
+--input qa
+--max-len 512
+
+# changed from E0: the output head
+--head hsoft
+
+# operational (512-token E0 runs peaked at ~9 GB)
+--max-vram-gb 12
+--save-model
+--push-to-hub

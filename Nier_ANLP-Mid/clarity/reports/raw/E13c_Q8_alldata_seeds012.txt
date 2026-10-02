@@ -1,0 +1,28 @@
+E13c (Q8_alldata): all of train, last of 3 epochs, seeds 0-2 (lane d, 2026-10-02 11:19-12:08 IST).
+
+== summary.txt (instance)
+Q8_alldata: single models on dev (multi-reference S2, S1), epoch chosen on the train slice
+seed epoch slice F1  dev S2  dev S1   DeBERTa S2/S1   per-epoch dev S2
+   0     2      nan   0.520   0.717   0.344/0.591     0.160 0.386 0.520
+   1     2      nan   0.443   0.689   0.370/0.627     0.329 0.459 0.443
+   2     2      nan   0.538   0.758   0.428/0.640     0.340 0.337 0.538
+
+mean S2 0.500 ± 0.050   S1 0.721 ± 0.035
+paired vs DeBERTa (same seeds): S2 +0.120 (3/3 up), S1 +0.102 (3/3 up)
+screening bar (experiment log, E12): extend to more seeds if >= +0.015 with >= 2 of 3 seeds up
+wall 16 min per seed; peak VRAM 53.4 GiB
+
+== pipeline.log
+2026-10-02 05:49:34 pilot: 20 optimizer steps of Qwen/Qwen3-8B-Base (Q8_alldata, EXTRA_ARGS='--val-frac 0 --select last --no-grad-checkpoint')
+2026-10-02 05:50:15 pilot: longest micro-batch (4096 tokens): peak VRAM 50.4 GiB
+2026-10-02 05:50:15 pilot: 1.45 s per optimizer step; 216 steps per epoch -> 5.2 min per epoch of training, ~16 min for 3 epochs (+ ~3-5 min of evaluation per epoch); peak VRAM 53.4 GiB
+2026-10-02 05:50:15 pilot: projected 1.1 h for 3 seeds x 3 epochs (limit MAX_TOTAL_HOURS=3)
+2026-10-02 05:50:15 train: seed 0 attempt 1
+2026-10-02 06:05:59 train: seed 0 done: [done] Q8_alldata seed0: epoch 2 selected; dev S2 0.5199242404900377, S1 0.716693960206042; 16 min
+2026-10-02 06:05:59 train: seed 1 attempt 1
+2026-10-02 06:22:03 train: seed 1 done: [done] Q8_alldata seed1: epoch 2 selected; dev S2 0.4431754106981108, S1 0.6890966863607083; 16 min
+2026-10-02 06:22:03 train: seed 2 attempt 1
+2026-10-02 06:37:55 train: seed 2 done: [done] Q8_alldata seed2: epoch 2 selected; dev S2 0.5378641965629734, S1 0.7583468486480963; 16 min
+2026-10-02 06:38:13 hf: 3 of 3 seed folders of Q8_alldata on the Hub (logs/hf_uploads.log)
+2026-10-02 06:38:29 pipeline: ALL DONE
+2026-10-02 06:42:25 train: seed 3 attempt 1

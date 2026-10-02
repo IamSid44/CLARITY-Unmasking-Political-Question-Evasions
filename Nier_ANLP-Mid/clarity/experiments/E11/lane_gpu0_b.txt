@@ -1,0 +1,18 @@
+# GPU 0, lane b -- added 22:10 on 2026-09-27 (user's OK) to take a larger share of GPU 0,
+# which a lab-mate's three jobs now share. 512-token runs first (~9 GB peak, leaving the
+# neighbours headroom); full-question seeds last, started only if 18 GB is free.
+E11_base_16ep 5 --input qa --max-len 512 --epochs 16
+E11_base_16ep 6 --input qa --max-len 512 --epochs 16
+E11_base_16ep 7 --input qa --max-len 512 --epochs 16
+E11_base_16ep 8 --input qa --max-len 512 --epochs 16
+E11_base_16ep 9 --input qa --max-len 512 --epochs 16
+E11_base_8ep 5 --input qa --max-len 512 --epochs 8
+E11_base_8ep 6 --input qa --max-len 512 --epochs 8
+E11_base_8ep 7 --input qa --max-len 512 --epochs 8
+E11_base_8ep 8 --input qa --max-len 512 --epochs 8
+E11_base_8ep 9 --input qa --max-len 512 --epochs 8
+E11_fullq_16ep 6 --input full --max-len 1024 --a-budget 256 --epochs 16
+E11_fullq_16ep 7 --input full --max-len 1024 --a-budget 256 --epochs 16
+E11_fullq_16ep 8 --input full --max-len 1024 --a-budget 256 --epochs 16
+E11_fullq_16ep 9 --input full --max-len 1024 --a-budget 256 --epochs 16
+E11_fullq_16ep 5 --input full --max-len 1024 --a-budget 256 --epochs 16

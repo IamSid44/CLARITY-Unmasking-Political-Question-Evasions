@@ -1,0 +1,14 @@
+Final system = 5-seed ensemble + logit adjustment, tau fitted by 5-fold nested CV on dev.
+
+1) Sensitivity to the CV fold split (10 different splits):
+   L0_large_base    split 0: 0.438   over 10 splits: 0.446  (min 0.424, max 0.454)
+   E10_base_16ep    split 0: 0.402   over 10 splits: 0.403  (min 0.377, max 0.428)
+   E10_fullq_16ep   split 0: 0.478   over 10 splits: 0.472  (min 0.449, max 0.479)
+   E8b_fullq_ce     split 0: 0.343   over 10 splits: 0.345  (min 0.340, max 0.355)
+
+2) Paired bootstrap over dev items (held-out predictions from split 0; 2,000 resamples):
+   E10_fullq_16ep - L0_large_base: +0.042  95% [-0.049, +0.133]  P(<=0) = 0.188
+   E10_fullq_16ep - E10_base_16ep: +0.075  95% [+0.001, +0.148]  P(<=0) = 0.025
+   E10_base_16ep - L0_large_base: -0.033  95% [-0.094, +0.026]  P(<=0) = 0.858
+
+   (Seeds are held fixed, so these intervals understate the uncertainty from training randomness.)

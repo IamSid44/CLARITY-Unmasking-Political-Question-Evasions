@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # ACL compliance checks on a built PDF: page size (A4), fonts embedded, no Type 3 fonts, page count,
 # and PNG renders of every page for visual inspection (paper/qa/<name>/page-*.png).
-#   bash paper/validate_pdf.sh [main|main_v2]
+#   bash paper/validate_pdf.sh
 # Needs poppler (pdfinfo, pdffonts, pdftoppm) on PATH or in $POPPLER (its bin directory).
 set -u
 cd "$(dirname "$0")"
