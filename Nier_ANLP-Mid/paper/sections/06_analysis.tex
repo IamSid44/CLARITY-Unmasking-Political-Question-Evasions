@@ -1,40 +1,41 @@
 \section{Analysis}\label{sec:analysis}
 
-The error analysis uses the final DeBERTa system's 10-seed ensemble with argmax; the
-comparison uses the paired 10-seed runs of \S\ref{sec:llm}. All figures are on dev.
+We analyse the final DeBERTa 10-seed ensemble (argmax) and compare it with the paired
+Qwen runs of \S\ref{sec:llm}, all on dev.
 
 \paragraph{The model, not label noise, fails.}
-Of the ensemble's 308 predictions, 137 (44.5\%) fell outside the item's reference set,
-and 53 of these were on items where all three annotators agreed. Annotator disagreement
-is real and informative \citep{uma2021learning}, but it does not account for the gap:
-scored as the test set is scored, each annotator against the other two reaches
-0.643--0.766 on \Stwo{} (mean 0.684), while the ensemble reaches 0.380--0.381.
+Of the ensemble's 308 predictions, 137 (44.5\%) fell outside the item's reference set, and
+53 of these were on items where all three annotators agreed. Annotator disagreement is real
+and informative \citep{uma2021learning}, but it does not explain the gap. Scored the way
+the test set is scored, each annotator against the other two reaches 0.643--0.766 on \Stwo{}
+(mean 0.684), while the ensemble reaches 0.380--0.381.
 
 \paragraph{Commitment, not only topic.}
 The largest error pairs (reference $\rightarrow$ prediction) are Implicit $\rightarrow$
-Explicit (25), General $\rightarrow$ Implicit (20) and General $\rightarrow$ Explicit
-(20): they concern how committed an answer is rather than whether it stays on topic.
-Length also matters: the 20 inputs still cut at 1,024 tokens are in-set only 20\% of the
-time (0.580 for the rest), and the shorter half of dev scores 0.400 on \Stwo{} against
-0.283 for the longer half.
+Explicit (25), General $\rightarrow$ Implicit (20) and General $\rightarrow$ Explicit (20).
+All three concern how committed an answer is, more than whether it stays on topic. Length
+matters too. The 20 inputs that are still cut at 1,024 tokens land in-set only 20\% of the
+time (0.580 for the rest), and the shorter half of dev scores 0.400 on \Stwo{} against 0.283
+for the longer half.
 
 \FigureExample
-A typical error shows the knowledge an answer can depend on (Figure~\ref{fig:example}):
-asked whether he would campaign against Senator Lieberman, the speaker replied \emph{``I'm
-going to stay out of Connecticut.''} Recognising a near-answer requires knowing that
-Lieberman is a senator from Connecticut (our inference); errors of this kind motivated the
+A typical error shows how much an answer can depend on world knowledge
+(Figure~\ref{fig:example}). Asked whether he would campaign against Senator Lieberman, the
+speaker replied \emph{``I'm going to stay out of Connecticut.''} Seeing this as a near-answer
+requires knowing that Lieberman is a senator from Connecticut, which is our reading of the
+item rather than something we measured, and errors of this kind are what led us to the
 knowledge hypothesis. Qwen ranks Dodging first, but logit adjustment then picks the rarer
-Declining to answer: the prior correction that raises macro-F1 over the set can cost an
-individual item.
+Declining to answer. A prior correction that raises macro-F1 over the whole set can still
+cost an individual item.
 
 \paragraph{Where the 8B classifier gains.}
-Table~\ref{tab:analysis-classes} refutes our registered prediction. Per-class F1 rises in
-7 of 9 classes, most in Claims ignorance (+0.403), Declining (+0.220), Dodging (+0.103) and
-Deflection (+0.089), while the commitment classes move least (General +0.059, Explicit
-+0.057, Implicit +0.040). Partial/half-answer is never predicted by either model. The
-in-set rate rises on unanimous items (+0.076) as much as on contested ones (+0.105,
-+0.048). The largest gains are on the Non-Reply classes, which turn on recognising what
-kind of statement an answer is; General remains the weakest frequent class (F1 0.322).
+Table~\ref{tab:analysis-classes} shows that our registered prediction was wrong. Per-class
+F1 rises in 7 of the 9 classes, most in Claims ignorance (+0.403), Declining (+0.220),
+Dodging (+0.103) and Deflection (+0.089). The commitment classes move least (General +0.059,
+Explicit +0.057, Implicit +0.040), and neither model ever predicts Partial/half-answer. The
+in-set rate rises on unanimous items (+0.076) about as much as on contested ones (+0.105 and
++0.048). The biggest gains are on the Non-Reply classes, which depend on recognising what
+kind of statement an answer is, while General stays the weakest frequent class (F1 0.322).
 
 \begin{table}[t]
 \centering
@@ -60,18 +61,18 @@ two ($n=150$)   & 0.493 & 0.598 & +0.105 \\
 three ($n=33$)  & 0.688 & 0.736 & +0.048 \\
 \bottomrule
 \end{tabular}
-\caption{Where the backbone gain falls: single models, mean over the same 10 seeds, dev
-\Stwo{}. The registered prediction (a gain concentrated on the commitment boundary and on
-agreed items) is refuted.}
+\caption{Where the backbone gain falls, for single models averaged over the same 10 seeds
+(dev \Stwo{}). The registered prediction, a gain concentrated on the commitment boundary and
+on agreed items, does not hold.}
 \label{tab:analysis-classes}
 \end{table}
 
 \paragraph{Ranking and the decision rule.}
-Both models rank better than they decide. For Qwen (seeds 0--2), an acceptable label is
-the top prediction for 60.4\% of items and in the top three for 93.1\%, and the in-set rate
-rises from 0.40 to 0.87 across fifths of dev from least to most confident; most remaining
-errors are a choice among a few candidates the model already ranks highly. Raw Qwen is
-skewed towards frequent classes: on seeds 0--2 it predicted General for only 24 items,
-although General is in 113 reference sets. Logit adjustment corrects this, adding +0.062
-per Qwen model (0.476 to 0.538) against +0.005 for DeBERTa. A Qwen + DeBERTa probability
-mix, fitted inside the nested CV, adds nothing (0.543 against 0.549 for Qwen alone).
+Both models rank better than they decide. For Qwen (seeds 0--2), an acceptable label is the
+top prediction for 60.4\% of items and in the top three for 93.1\%, and the in-set rate rises
+from 0.40 to 0.87 across fifths of dev from least to most confident, so most remaining errors
+are a choice among a few candidates the model already ranks highly. Raw Qwen leans towards frequent classes. On seeds 0--2 it predicted General
+for only 24 items, although General is in 113 reference sets. Logit adjustment corrects
+this, adding +0.062 per Qwen model (0.476 to 0.538) against +0.005 for DeBERTa. Mixing Qwen
+and DeBERTa probabilities, with the weight fitted inside the nested CV, adds nothing (0.543
+against 0.549 for Qwen alone).

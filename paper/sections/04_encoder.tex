@@ -3,16 +3,17 @@
 
 \paragraph{Model and training.}
 We fine-tuned all 435M parameters of DeBERTa-v3-large \citep{he2023debertav3} as a
-9-way classifier: the \texttt{[CLS]} state passes through a dense tanh pooler and a new
-linear layer over the nine labels. The baseline input pairs the sub-question (at most
+9-way classifier, with the \texttt{[CLS]} state passed through a dense tanh pooler and a
+new linear layer over the nine labels. The baseline input pairs the sub-question (at most
 96 tokens) with the answer, cut from the right at 512 tokens. The final input puts
 ``Sub-question: \ldots{} Full question: \ldots'' first, with up to 256 tokens, and raises
-the context to 1,024 tokens: 69\% of training rows share their answer with another
-sub-question, and a model that cannot see the other sub-questions cannot tell which part
-of the answer responds to which. Training used plain cross-entropy, AdamW at $10^{-5}$
-with layer-wise decay 0.95, a cosine schedule and batch size 16 (Appendix~\ref{sec:app});
-the epoch was chosen on the train slice. A seed fixes the head initialisation and data
-order, so seeds 0--9 are paired across configurations.
+the context to 1,024 tokens. We added the full question because 69\% of training rows
+share their answer with another sub-question, and a model that cannot see the other
+sub-questions has no way to tell which part of the answer responds to which. Training
+used plain cross-entropy, AdamW at $10^{-5}$ with layer-wise decay 0.95, a cosine schedule
+and batch size 16 (Appendix~\ref{sec:app}), and the epoch was chosen on the train slice.
+A seed fixes the head initialisation and the data order, so seeds 0--9 are paired across
+configurations.
 
 \begin{table}[t]
 \centering
@@ -31,59 +32,57 @@ Baseline, 8 ep. & \pmsd{0.315}{0.040} & \pmsd{0.576}{0.030} & 0.428 & 0.601 \\
 All of train$^{\dagger}$ & \pmsd{0.416}{0.020} & \pmsd{0.614}{0.016} & 0.489 & -- \\
 \bottomrule
 \end{tabular}
-\caption{DeBERTa-v3-large on dev. Single model: mean\,$\pm$\,sd over seeds 0--9.
-System: 10-seed mean probability with logit adjustment ($\tau$ by nested CV). Rows 2--3
-each add one change; row 3 is the final system. $^{\dagger}$All of train, last epoch,
-seeds 0--4 only (a 5-seed system, not comparable).}
+\caption{DeBERTa-v3-large on dev. Single model is the mean\,$\pm$\,sd over seeds 0--9.
+System is the 10-seed mean probability with logit adjustment ($\tau$ by nested CV). Rows 2
+and 3 each add one change, and row 3 is the final system. $^{\dagger}$All of train, last
+epoch, seeds 0--4 only, so its system is a 5-seed number and not comparable.}
 \label{tab:enc-main}
 \end{table}
 
 \paragraph{What improved the model.}
 Two changes improved single models (Table~\ref{tab:enc-main},
 Figure~\ref{fig:enc-seeds}). Training for 16 epochs instead of 8 raised \Stwo{} by
-+0.047 ($t=3.4$, 9/10 seeds up) and \Sone{} by +0.026 ($t=2.7$, 8/10). Adding the full
-question gave a further +0.022 \Stwo{} ($t=2.0$, 7/10) and +0.012 \Sone{} ($t=1.3$,
-6/10); together, +0.069 \Stwo{} and +0.038 \Sone{}, each on 9 of 10 seeds. Most of the
-gain comes from longer training, which also lifted the classes the baseline handled
-worst: General rose from 0.119 to 0.295 per model (seeds 0--4).
++0.047 ($t=3.4$, 9 of 10 seeds up) and \Sone{} by +0.026 ($t=2.7$, 8 of 10). Adding the
+full question gave a further +0.022 on \Stwo{} ($t=2.0$, 7 of 10) and +0.012 on \Sone{}
+($t=1.3$, 6 of 10). Together the two changes add +0.069 on \Stwo{} and +0.038 on \Sone{},
+each on 9 of 10 seeds. Most of the gain came from longer training, which also helped the
+classes the baseline handled worst. General, for example, rose from 0.119 to 0.295 per
+model (seeds 0--4).
 
 \FigureEncSeeds
 
-Undertraining at first looked like a negative result. The full question at 8 epochs
+At first, undertraining looked like a negative result. With 8 epochs the full question
 scored below the baseline (\pmsd{0.282}{0.043} against \pmsd{0.337}{0.044}, seeds 0--4),
-but its final training loss (1.32--1.50, against 0.57--1.09) showed that it had not
-finished fitting: its seeds were less confident (mean top probability 0.445 against
-0.594) and leaned on the class prior. At 16 epochs the same input gave the best single
-model, so every run now reports its final training loss and selected epoch next to its
-scores.
+but its final training loss (1.32--1.50, against 0.57--1.09) showed it had not finished
+fitting. Its seeds were less confident (mean top probability 0.445 against 0.594) and
+leaned on the class prior, and at 16 epochs the same input gave the best single model.
 
 \paragraph{From model to system.}
 Better single models did not give a better \Stwo{} system. Logit adjustment lifted the
-baseline ensemble by +0.109 (to 0.428) and the final ensemble not at all (0.409 to
-0.405); the \Stwo{} difference of $-$0.022 between the two systems has a 95\% bootstrap
+baseline ensemble by +0.109 (to 0.428) but did nothing for the final ensemble (0.409 to
+0.405). The \Stwo{} difference of $-$0.022 between the two systems has a 95\% bootstrap
 interval of [$-$0.101, +0.061], while on \Sone{} the final system is ahead (0.648 against
-0.601). Our reading (inferred, not tested) is that longer training and logit adjustment
-correct the same fault, the pull towards frequent classes. Five-seed systems are
-unreliable on 308 items: the baseline system scored 0.438 on seeds 0--4 and 0.356 on
-seeds 5--9, a spread larger than most effects we wanted to measure, so all system claims
-use ten seeds. Training on all of train for 16 epochs and keeping the last epoch gained
-+0.029 \Stwo{} per model on seeds 0--4 (4/5 up) and lost 0.017 \Sone{}; as a 5-seed
-result it is not a ranking.
+0.601). We think, although we have not tested it, that longer training and logit
+adjustment fix the same fault, the pull towards frequent classes. We also learnt that
+five-seed systems are unreliable on 308 items. The baseline system scored 0.438 on seeds
+0--4 and 0.356 on seeds 5--9, a spread larger than most of the effects we wanted to
+measure, so all our system claims use ten seeds. Training on all of train for 16 epochs
+and keeping the last epoch gained +0.029 on \Stwo{} per model on seeds 0--4 (4 of 5 up)
+and lost 0.017 on \Sone{}, which with five seeds is not enough to rank it.
 
 \paragraph{What did not help.}
 Seven further ideas, each tested against a named control, left the system where it was.
-A second encoder that re-ranked the baseline's top-3 labels from their definitions scored
-0.354 against 0.365 for the ensemble it re-ranked: learning what each label means from
-3,448 examples is harder than classifying them. Balanced Softmax with focal loss
-\citep{ren2020balanced,lin2017focal} over-corrected towards rare classes (Explicit F1
-fell from 0.679 to 0.319) and used up the gain that logit adjustment would have given.
-Three hierarchy designs (routing through the clarity level, a factorised head, and a
-Non-Reply gate with branch specialists) did not beat the flat softmax, which already
-scores all nine labels jointly, and boundary experts for the three most-confused pairs
-changed \Stwo{} by +0.002, because they seldom overturn a decision the flat model makes
-from the same input. A uniform model soup of the ten models scored 0.267, because seeds
-that differ in head initialisation and data order do not average; nine per-class
-decision weights overfit 308 items, and an ensemble mixing both inputs scored 0.403
-against 0.405. Encoders or
-rules trained on the same 3,448 examples did not move the system; \S\ref{sec:llm} tests
-the backbone itself.
+A second encoder that re-ranked the baseline's top three labels using their definitions
+scored 0.354 against 0.365 for the ensemble it re-ranked, which suggests that learning
+what each label means from 3,448 examples is harder than classifying them. Balanced
+Softmax with focal loss \citep{ren2020balanced,lin2017focal} over-corrected towards rare
+classes (Explicit F1 fell from 0.679 to 0.319) and used up the gain that logit adjustment
+would otherwise have given. Three hierarchy designs (routing through the clarity level, a
+factorised head, and a Non-Reply gate with branch specialists) did not beat the flat
+softmax, which already scores all nine labels jointly. Boundary experts for the three
+most-confused pairs changed \Stwo{} by only +0.002, because they rarely overturn a decision
+the flat model makes from the same input. A uniform soup of the ten models scored 0.267,
+since seeds with different head initialisation and data order do not average well. Nine
+per-class decision weights overfit the 308 items, and an ensemble mixing both inputs scored
+0.403 against 0.405. Since nothing trained on the same 3,448 examples moved the system,
+\S\ref{sec:llm} tests the backbone itself.

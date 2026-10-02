@@ -6,7 +6,7 @@
 \begin{figure}[t]
 \centering
 \includegraphics[width=\columnwidth]{figures/fig_deberta_seeds.pdf}
-\caption{Single DeBERTa-v3-large models on dev for the three configurations: (a)~\Stwo{} multi-reference macro-F1, (b)~\Sone{} macro-F1. Open circles joined by thin lines are individual seeds, paired across configurations; filled squares are the mean over the 10 seeds, with error bars of $\pm 1$ standard deviation.}
+\caption{Single DeBERTa-v3-large models on dev for the three configurations: (a)~\Stwo{} multi-reference macro-F1, (b)~\Sone{} macro-F1. Open circles joined by thin lines are individual seeds, paired across configurations, and filled squares are the mean over the 10 seeds, with error bars of $\pm 1$ standard deviation.}
 \label{fig:enc-seeds}
 \end{figure}}
 
@@ -14,7 +14,7 @@
 \begin{figure*}[t]
 \centering
 \includegraphics[width=\textwidth]{figures/fig_qwen_vs_deberta.pdf}
-\caption{Dev \Stwo{} multi-reference macro-F1 of the DeBERTa-v3-large baseline, DeBERTa with the full question and 16 epochs, Qwen3-8B-Base with LoRA on the same input (3 epochs), and Qwen trained on all of train. (a)~Single models on 10 paired seeds: open circles joined by thin lines are individual seeds; filled squares are means with $\pm 1$ standard deviation. (b)~The corresponding 10-seed systems (ensemble + logit adjustment, $\tau$ by nested CV; bar height is the mean over 10 CV splits), with published dev results as horizontal lines: TeleAI's multi-call pipeline (0.617) and fine-tuned Qwen2.5-7B (0.495) \citep{shi-etal-2026-teleai}, ChulaNLP's DeBERTa top-5 + Kimi-K2 pipeline (0.52) \citep{peerachaidecho-rutherford-2026-chulanlp}, and a human annotator scored against the other two (0.684).}
+\caption{Dev \Stwo{} multi-reference macro-F1 of the DeBERTa-v3-large baseline, DeBERTa with the full question and 16 epochs, Qwen3-8B-Base with LoRA on the same input (3 epochs), and Qwen trained on all of train. (a)~Single models on 10 paired seeds: open circles joined by thin lines are individual seeds, and filled squares are means with $\pm 1$ standard deviation. (b)~The corresponding 10-seed systems (ensemble + logit adjustment, $\tau$ by nested CV, bar height the mean over 10 CV splits), with published dev results as horizontal lines: TeleAI's multi-call pipeline (0.617) and fine-tuned Qwen2.5-7B (0.495) \citep{shi-etal-2026-teleai}, ChulaNLP's DeBERTa top-5 + Kimi-K2 pipeline (0.52) \citep{peerachaidecho-rutherford-2026-chulanlp}, and a human annotator scored against the other two (0.684).}
 \label{fig:llm}
 \end{figure*}}
 
@@ -22,7 +22,7 @@
 \begin{figure*}[t]
 \centering
 \input{figures/fig_architecture}
-\caption{The classification system. One backbone (DeBERTa-v3-large, fully fine-tuned, or Qwen3-8B-Base with LoRA) reads the sub-question, the journalist's full question and the answer, and a new linear head gives a distribution over the nine evasion types. A system averages ten seeds and applies logit adjustment, which divides by the train class prior $\pi_c$ raised to $\tau$; the Subtask~1 clarity level follows from the Subtask~2 label through the fixed taxonomy.}
+\caption{The classification system. One backbone (DeBERTa-v3-large, fully fine-tuned, or Qwen3-8B-Base with LoRA) reads the sub-question, the journalist's full question and the answer, and a new linear head gives a distribution over the nine evasion types. A system averages ten seeds and applies logit adjustment, which divides by the train class prior $\pi_c$ raised to $\tau$. The Subtask~1 clarity level follows from the Subtask~2 label through the fixed taxonomy.}
 \label{fig:arch}
 \end{figure*}}
 
@@ -57,3 +57,11 @@ $\tau$ (item's fold) & 0.70 & 0.85 \\
 \caption{One dev item through both 10-seed systems ($\checkmark$: in the reference set, or for \Sone{} the gold level). The item was fixed in advance as the error discussed in \S\ref{sec:analysis}. Qwen ranks an acceptable label first, but logit adjustment divides by the train prior (0.205 for Dodging, 0.042 for Declining to answer) and moves the decision to the rarer class.}
 \label{fig:example}
 \end{figure}}
+
+\newcommand{\FigurePlan}{%
+\begin{figure*}[t]
+\centering
+\input{figures/fig_plan}
+\caption{The planned system for the final evaluation (dashed boxes are new modules, none run yet, see \S\ref{sec:conclusion}). LLM calls per item equal $\delta$, against 1.94 for the winning system \citep{shi-etal-2026-teleai}.}
+\label{fig:plan}
+\end{figure*}}

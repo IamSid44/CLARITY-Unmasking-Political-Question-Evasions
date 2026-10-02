@@ -6,8 +6,8 @@
 \label{sec:app}
 
 \paragraph{Encoder.}
-Table~\ref{tab:app-enc-hparams} lists the DeBERTa settings; baseline and final models differ only in the input and the number of epochs.
-One detail mattered: \texttt{transformers}~5.x loads a checkpoint in its stored dtype, and DeBERTa-v3's published weights are fp16, in which its attention overflows; the model then trained smoothly to the label prior and predicted Explicit for every item, so we load the weights in fp32 explicitly.
+Table~\ref{tab:app-enc-hparams} lists the DeBERTa settings. Baseline and final models differ only in the input and the number of epochs.
+One detail mattered: \texttt{transformers}~5.x loads a checkpoint in its stored dtype, and DeBERTa-v3's published weights are fp16, in which its attention overflows. The model then trained smoothly to the label prior and predicted Explicit for every item, so we load the weights in fp32 explicitly.
 
 \begin{table}[h]
 \centering
@@ -18,20 +18,20 @@ Setting & Value \tabularnewline
 \midrule
 Backbone & \raggedright \texttt{microsoft/deberta-v3-large}, all weights trained \tabularnewline
 Head & \raggedright \texttt{[CLS]} $\to$ dense + tanh $\to$ dropout 0.1 $\to$ linear (9) \tabularnewline
-Input, baseline & \raggedright sub-question (${\le}96$ tokens) [SEP] answer; 512 tokens \tabularnewline
-Input, final & \raggedright ``Sub-question: \ldots{} Full question: \ldots'' (${\le}256$ tokens) [SEP] answer; 1,024 tokens \tabularnewline
+Input, baseline & \raggedright sub-question (${\le}96$ tokens) [SEP] answer, 512 tokens \tabularnewline
+Input, final & \raggedright ``Sub-question: \ldots{} Full question: \ldots'' (${\le}256$ tokens) [SEP] answer, 1,024 tokens \tabularnewline
 Truncation & \raggedright answer cut from the right \tabularnewline
 Loss & \raggedright cross-entropy, no smoothing, no class weights \tabularnewline
 Optimiser & \raggedright AdamW, $\beta=(0.9, 0.98)$, $\epsilon=10^{-6}$, weight decay 0.01 (none on biases and LayerNorm) \tabularnewline
-Learning rate & \raggedright $10^{-5}\times0.95^{k}$ for a layer $k$ levels below the head; head and pooler $10^{-4}$ \tabularnewline
+Learning rate & \raggedright $10^{-5}\times0.95^{k}$ for a layer $k$ levels below the head, head and pooler $10^{-4}$ \tabularnewline
 Schedule & \raggedright cosine, warm-up 10\% of steps \tabularnewline
-Batch & \raggedright 16, no accumulation; gradient-norm clipping 1.0 \tabularnewline
+Batch & \raggedright 16, no accumulation, gradient-norm clipping 1.0 \tabularnewline
 Epochs & \raggedright 8 (baseline) or 16 \tabularnewline
-Precision & \raggedright fp32 weights, bf16 autocast; gradient checkpointing \tabularnewline
-Epoch selection & \raggedright best macro-F1 on the 345-row train slice; last epoch for all-of-train runs \tabularnewline
+Precision & \raggedright fp32 weights, bf16 autocast, gradient checkpointing \tabularnewline
+Epoch selection & \raggedright best macro-F1 on the 345-row train slice (last epoch for all-of-train runs) \tabularnewline
 Seeds & \raggedright 0--9 (all of train: 0--4) \tabularnewline
-Logit adjustment & \raggedright $\tau\in[-1,2]$, 61-point grid; prior = train label frequencies; 5-fold nested CV on dev \tabularnewline
-Hardware & \raggedright one shared RTX PRO 6000 (96\,GB); peak memory about 9\,GB at 512 tokens, 15--17\,GB at 1,024 \tabularnewline
+Logit adjustment & \raggedright $\tau\in[-1,2]$, 61-point grid, prior = train label frequencies, 5-fold nested CV on dev \tabularnewline
+Hardware & \raggedright one shared RTX PRO 6000 (96\,GB), peak memory about 9\,GB at 512 tokens, 15--17\,GB at 1,024 \tabularnewline
 \bottomrule
 \end{tabular}
 \caption{DeBERTa-v3-large training and decision settings.}
@@ -39,9 +39,9 @@ Hardware & \raggedright one shared RTX PRO 6000 (96\,GB); peak memory about 9\,G
 \end{table}
 
 \paragraph{LLM classifier.}
-Table~\ref{tab:app-llm-hparams} lists the Qwen3-8B-Base settings; everything not listed matches the final encoder configuration.
+Table~\ref{tab:app-llm-hparams} lists the Qwen3-8B-Base settings, and everything not listed matches the final encoder configuration.
 Each run used one NVIDIA RTX PRO 6000 (96\,GB) on a rented virtual machine.
-A 3-epoch seed took 15--21\,min and a 12-epoch seed about 59\,min; the ten-seed round cost INR~1,518.79 of GPU time.
+A 3-epoch seed took 15--21\,min and a 12-epoch seed about 59\,min, and the ten-seed round cost INR~1,518.79 of GPU time.
 
 \begin{table}[h]
 \centering
@@ -63,10 +63,10 @@ Epochs & 3 (12 in the follow-up) \\
 Batch & 4 $\times$ 4 accumulation = 16 \\
 Steps per epoch & 194 (3,103 training rows) \\
 Loss & cross-entropy, unweighted \\
-Input & question part $\le$ 256 tokens; \\
+Input & question part $\le$ 256 tokens, \\
       & total $\le$ 1,024 incl.\ closing question \\
 Batching & length-sorted within chunks of 50 \\
-         & batches; order fixed by (seed, epoch) \\
+         & batches, order fixed by (seed, epoch) \\
 Epoch selection & best macro-F1 on the 345-row slice \\
                 & (all-of-train runs: last epoch) \\
 Padding check & abort if relative logit difference $>0.2$ \\

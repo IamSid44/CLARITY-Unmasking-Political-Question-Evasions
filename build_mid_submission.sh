@@ -19,7 +19,7 @@ cp paper/main.pdf "$OUT/Nier_ANLP-Mid-Report.pdf"
 mkdir -p "$OUT/paper/sections" "$OUT/paper/figures"
 cp paper/main.tex paper/figs.tex paper/acl.sty paper/acl_natbib.bst paper/references.bib "$OUT/paper/"
 cp paper/sections/*.tex "$OUT/paper/sections/"
-cp paper/figures/fig_architecture.tex paper/figures/fig_qwen_vs_deberta.pdf paper/figures/fig_deberta_seeds.pdf "$OUT/paper/figures/"
+cp paper/figures/fig_architecture.tex paper/figures/fig_plan.tex paper/figures/fig_qwen_vs_deberta.pdf paper/figures/fig_deberta_seeds.pdf "$OUT/paper/figures/"
 
 # 2. code and records: every tracked or new (not ignored) file under clarity/, minus the data cache
 git ls-files --cached --others --exclude-standard clarity \

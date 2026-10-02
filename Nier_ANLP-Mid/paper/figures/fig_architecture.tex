@@ -53,8 +53,8 @@
 % Training and decision notes
 \path let \p1=(in.west), \p2=(head.east), \p3=(bb.south) in
   node[band, anchor=north, text width=\x2-\x1-5pt] at ({(\x1+\x2)/2}, \y3-2mm) (train) {%
-  \textit{Training, per seed:} 3{,}103 train rows, cross-entropy; epoch chosen on the 345-row train slice};
+  \textit{Training, per seed:} 3{,}103 train rows, cross-entropy, epoch chosen on the 345-row train slice};
 \path let \p1=(ens.west), \p2=(s1.east), \p3=(train.north) in
   node[band, anchor=north, text width=\x2-\x1-5pt] at ({(\x1+\x2)/2}, \y3) (dec) {%
-  \textit{Decision:} $\pi_c$ is the class prior on train; $\tau$, fitted by nested CV, is the only parameter fitted on dev};
+  \textit{Decision:} $\pi_c$ is the class prior on train, and $\tau$ (nested CV) is the only parameter fitted on dev};
 \end{tikzpicture}

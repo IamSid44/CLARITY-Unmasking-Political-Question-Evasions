@@ -1,0 +1,40 @@
+% Planned system for the final evaluation (TikZ, monochrome, same style as fig_architecture.tex).
+% Input by \FigurePlan in figs.tex. Everything in this figure is planned, not run.
+% Row 1: input -> M1 -> M2 -> output.  Row 2: M4 (left, under M1) and M3 (right, under M2).
+\begin{tikzpicture}[
+  font=\footnotesize,
+  box/.style={draw, rounded corners=1.5pt, align=center, inner xsep=3pt, inner ysep=3pt},
+  plan/.style={box, dashed},
+  arr/.style={-{Stealth[length=4pt]}, thin},
+  lab/.style={font=\footnotesize, inner sep=1.5pt},
+]
+% Row 1
+\node[box, fill=black!6] (in) {\textbf{Input}\\[1pt] $q$, $Q$, $a$};
+\node[plan, right=3.5mm of in] (m1) {\textbf{M1}\enspace Candidate generator\\[1pt]
+  {\footnotesize Qwen3-8B + LoRA, $K$ seeds, logit adjustment}\\[1pt]
+  {\footnotesize $\bar p(c \mid x)$, candidate set $C(x)$, uncertainty $u(x)$}};
+\node[plan, right=5mm of m1] (m2) {\textbf{M2}\enspace Router\\[1pt]
+  {\footnotesize defer the fraction $\delta$}\\{\footnotesize with the highest $u(x)$}};
+\node[box, fill=black!6, right=18mm of m2] (out) {\textbf{Subtask 2}\\[1pt]{\footnotesize $\rightarrow$ Subtask 1}};
+
+% Row 2
+\node[plan, anchor=north west, text width=74mm] (m3) at ($(in.west |- m2.south)+(45mm,-6mm)$) {%
+  \centering\textbf{M3}\enspace LLM adjudicator\\[1pt]
+  {\footnotesize an open-weight LLM scores only the labels in $C(x)$,
+  given definitions, a confusion guide and boundary examples
+  retrieved from similar training items, fused with $\bar p$,
+  then logit adjustment}};
+\node[plan, anchor=north west, text width=36mm] (m4) at (in.west |- m3.north) {%
+  \centering\textbf{M4}\enspace Distillation\\[1pt]
+  {\footnotesize the adjudicator's decisions on train become
+  soft targets for M1, 4-bit inference}};
+
+% Arrows
+\draw[arr] (in) -- (m1);
+\draw[arr] (m1) -- (m2);
+\draw[arr] (m2) -- node[lab, above] {keep, $1-\delta$} (out);
+\draw[arr] (m2.south) -- node[lab, right] {defer, $\delta$} (m2.south |- m3.north);
+\draw[arr] (m3.east) -| (out.south);
+\draw[arr, densely dashed] (m3.west |- m4.east) -- (m4.east);
+\draw[arr, densely dashed] (m4.north -| m1.south west) ++(6mm,0) -- ($(m1.south west)+(6mm,0)$);
+\end{tikzpicture}

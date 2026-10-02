@@ -9,7 +9,7 @@ option, so it is non-anonymous, with no line numbers.
 ```
 main.tex                   preamble (template packages + amsmath, amssymb, booktabs, xurl, tikz), title, authors, section order
 figs.tex                   the four figures, as macros (\FigureArch, \FigureEncSeeds, \FigureLLM, \FigureExample)
-sections/                  abstract, 01_introduction ... 07_conclusion, limitations, ethics, appendix
+sections/                  abstract, 01_introduction ... 07_conclusion, limitations, appendix
 references.bib             verified entries only (checked against the papers or their ACL Anthology record)
 figures/fig_architecture.tex   Figure 1, the system diagram (TikZ, monochrome)
 figures/fig_deberta_seeds.pdf, fig_qwen_vs_deberta.pdf   Figures 2 and 3 (vector; clarity/paper_figures.py)
@@ -48,5 +48,5 @@ python clarity/paper_example.py    # the worked example's numbers
 
 **Status (2026-10-02):** compiles with no errors, no undefined citations or references and no
 overfull boxes; A4, all fonts embedded, 16 references. The main text ends on page 7; with
-Limitations, Ethics and Acknowledgments the content fills about 7.5 pages, the references follow,
+Limitations the content fills about 7.5 pages, the references follow,
 and the appendix is one page (page 10).

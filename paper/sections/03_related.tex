@@ -1,19 +1,26 @@
 \section{Related Work}\label{sec:related}
 
 \paragraph{Task and top systems.}
-\citet{thomas-etal-2024-never} introduced the clarity and evasion taxonomy over U.S.\ presidential interviews and found that predicting the nine-way label and mapping it up the hierarchy beat predicting clarity directly.
-In the shared task \citep{thomas-etal-2026-semeval}, the organisers' fine-tuned Llama-70B scored 0.82 (S1) and 0.57 (S2) on test; LLM prompting and hierarchical use of the taxonomy were most effective, and fine-tuned encoders levelled off near 0.50 on test S2.
-TeleAI \citep{shi-etal-2026-teleai} ranked first (test 0.89 S1, 0.68 S2) with three confidence-routed chain-of-thought stages on DeepSeek-V3 whose prompts include boundary examples mined from the training confusion matrix; it averages 1.94 calls per item and reaches 0.617 (S2) and 0.812 (S1) on dev, and in the same paper a directly fine-tuned Qwen2.5-7B reached 0.495 S2 on dev.
-ChulaNLP \citep{peerachaidecho-rutherford-2026-chulanlp}, second on S2, passed the top-five labels of a fine-tuned DeBERTa-large to few-shot Kimi-K2, scoring 0.52 S2 on dev against 0.46 for the encoder alone.
-As test labels are unreleased, we compare with these systems on dev.
+\citet{thomas-etal-2024-never} introduced the clarity and evasion taxonomy over U.S.\ presidential interviews.
+They found that predicting the nine-way label and mapping it up the hierarchy worked better than predicting clarity directly.
+In the shared task \citep{thomas-etal-2026-semeval}, the organisers' fine-tuned Llama-70B scored 0.82 (S1) and 0.57 (S2) on test.
+The organisers report that LLM prompting and hierarchical use of the taxonomy were the most effective strategies, and that fine-tuned encoders levelled off near 0.50 on test S2.
+TeleAI \citep{shi-etal-2026-teleai} ranked first (test 0.89 S1, 0.68 S2) with three confidence-routed chain-of-thought stages on DeepSeek-V3, whose prompts include boundary examples mined from the training confusion matrix.
+Their pipeline makes 1.94 calls per item on average and reaches 0.617 (S2) and 0.812 (S1) on dev.
+In the same paper, a directly fine-tuned Qwen2.5-7B reached 0.495 S2 on dev.
+ChulaNLP \citep{peerachaidecho-rutherford-2026-chulanlp}, second on S2, passed the top five labels of a fine-tuned DeBERTa-large to few-shot Kimi-K2 and scored 0.52 S2 on dev, against 0.46 for the encoder alone.
+Since the test labels were never released, we compare with these systems on dev.
 
 \paragraph{Other participating systems.}
-PFW \citep{tamsal-rusert-2026-pfw} averaged the logits of 50 DeBERTa models per architecture (5 folds $\times$ 10 seeds) and reached 0.76 (S1) and 0.50 (S2) on test; three post-hoc techniques that raised their out-of-fold scores lowered their test scores by 0.02--0.10, much as per-class decision weights overfit dev for us.
-SilkPeak \citep{tetakali-tetakali-2026-silkpeak} trained one DeBERTa-v3-large with joint clarity and evasion heads (0.76 S1 on test) and report it ahead of hierarchical bi-encoders and a LoRA-tuned LLaMA-3-8B.
-CLaC \citep{turk-etal-2026-clac} found prompted LLMs ahead of fine-tuned encoders (third on S2, 0.59); ttda704 \citep{tran-tan-dinh-2026-ttda704} found structured chain-of-thought prompting (0.515 S2) ahead of parameter-efficient fine-tuning of Qwen3 models; and Team Evaluators \citep{nuthakki-etal-2026-team} reached 0.54 S2 with LoRA-tuned open LLMs.
-Each of these systems changes several components at once; we change one at a time, asking what limits a fine-tuned encoder and how much of the gap to multi-call pipelines one fine-tuned LLM closes.
+PFW \citep{tamsal-rusert-2026-pfw} averaged the logits of 50 DeBERTa models per architecture (5 folds $\times$ 10 seeds) and reached 0.76 (S1) and 0.50 (S2) on test.
+Three post-hoc techniques that raised their out-of-fold scores lowered their test scores by 0.02--0.10, which mirrors how per-class decision weights overfit dev for us.
+SilkPeak \citep{tetakali-tetakali-2026-silkpeak} trained a single DeBERTa-v3-large with joint clarity and evasion heads (0.76 S1 on test) and found it ahead of hierarchical bi-encoders and a LoRA-tuned LLaMA-3-8B.
+CLaC \citep{turk-etal-2026-clac} found prompted LLMs ahead of fine-tuned encoders and placed third on S2 (0.59).
+ttda704 \citep{tran-tan-dinh-2026-ttda704} found structured chain-of-thought prompting (0.515 S2) ahead of parameter-efficient fine-tuning of Qwen3 models, and Team Evaluators \citep{nuthakki-etal-2026-team} reached 0.54 S2 with LoRA-tuned open LLMs.
+These systems change several components at once, whereas we change one at a time.
 
 \paragraph{Methods we build on.}
-Logit adjustment \citep{menon2021longtail} subtracts scaled log class priors from the logits after training; Balanced Softmax \citep{ren2020balanced} corrects the prior inside the loss, and focal loss \citep{lin2017focal} down-weights easy examples.
-Our multi-reference analysis treats annotator disagreement as signal \citep{uma2021learning}.
-Our encoder is DeBERTa-v3-large \citep{he2023debertav3}; our LLM classifier is Qwen3-8B-Base \citep{qwen3} fine-tuned with LoRA \citep{hu2022lora} as a single-pass classifier.
+Logit adjustment \citep{menon2021longtail} subtracts scaled log class priors from the logits after training.
+Balanced Softmax \citep{ren2020balanced} makes the same prior correction inside the loss, and focal loss \citep{lin2017focal} down-weights easy examples.
+Our analysis of multiple annotators treats their disagreement as signal \citep{uma2021learning}.
+Our encoder is DeBERTa-v3-large \citep{he2023debertav3}, and our LLM classifier is Qwen3-8B-Base \citep{qwen3} fine-tuned with LoRA \citep{hu2022lora} and used as a single-pass classifier.
