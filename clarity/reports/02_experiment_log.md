@@ -1689,6 +1689,8 @@ are projected over 5 hours. Estimated cost ₹400–650 of the ~₹5,880 credit.
 
 ### E13 results *(run 2026-10-02, 03:24–04:28 IST)*
 
+*The 3-seed screen. Superseded at 10 seeds by §E13x/b/c results below (S2 0.476 ± 0.043; system 0.543).*
+
 Sources: `raw/E13_Q8_fullq_lora_summary.txt` (per seed and per epoch, the pipeline log, and an
 independent recomputation of every number from the saved probabilities, which matched exactly)
 and `raw/E13_Q8_fullq_lora_analysis.txt` (`analyze.py`). Outputs: `clarity/runs/Q8_fullq_lora/`.

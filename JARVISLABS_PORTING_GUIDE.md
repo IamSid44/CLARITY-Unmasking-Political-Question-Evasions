@@ -1,5 +1,60 @@
 # Running the Qwen3-8B LoRA classifier on JarvisLabs
 
+> **Status (2026-10-02): done and working.** E13 (seeds 0–9), E13b (12 epochs, seeds 0–2) and
+> E13c (all of train, seeds 0–9) all ran with these scripts on JarvisLabs **VMs** with 1× RTX PRO
+> 6000 (96 GB, ₹179/h + GST). Four VMs ran in parallel, one per lane. Results are in
+> `clarity/reports/02_experiment_log.md` §E13–E13c and `mideval/RESULTS.md` §9.
+> **Read "What we learned on real VMs" below before the next launch.**
+
+## What we learned on real VMs (2026-10-02)
+
+| issue | symptom | fix (now in the scripts) |
+|---|---|---|
+| VMs log in as `ubuntu`, not root | `mkdir /home/clarity_llm` fails | `push` falls back to `sudo mkdir` + `chown` |
+| **Path-MTU black hole** on the VM network | large downloads stall at 0 MB/s with SSL/read timeouts; small requests work | `jarvis_setup.sh setup` probes with a 1472-byte do-not-fragment ping and sets the MTU to 1450 (+ `tcp_mtu_probing`). With it, HF downloads run at about 75 MB/s. **The setting resets on reboot (pause/resume)**: setup re-applies it, but on a resumed VM where setup is skipped, run `sudo ip link set dev enp1s0 mtu 1450` |
+| IPv6 broken on the VM | connections hang | setup disables IPv6 if `curl -6` fails |
+| Hugging Face Xet transfers stall | downloads/uploads hang | `HF_HUB_DISABLE_XET=1` everywhere |
+| WSL exports `NAME=<hostname>` | the run was named after the laptop | the run name is `RUN_NAME`, not `NAME` |
+| a dynamic IP is reused by another VM after pause | `Host key verification failed` | `connect` runs `ssh-keygen -R <ip>` first |
+| resuming a VM gives it a **new machine id and IP** | pause calls hit the old id | `resume` reconnects and stores the new id in the profile |
+| W&B entity `iamsid44` rejected | `entity not found during upsertBucket` | use the team entity `iamsid44-iiit-hyderabad` (in `clarity/.env`); online failure falls back to offline logging |
+
+**Measured on the RTX PRO 6000, without gradient checkpointing (`--no-grad-checkpoint`):**
+- 1.43 s per optimizer step, 4.6 min per epoch, peak 53 GiB;
+- a 3-epoch seed takes 15–16 min, a 12-epoch seed about 59 min;
+- with gradient checkpointing it is 2.11 s per step and 19 GiB.
+
+**Cost of the 2026-10-02 round:** ₹1,518.79, read from the API balance. Credit left: ₹4,029.30
+of ₹5,880.
+
+## Several VMs in parallel (lanes)
+
+Each lane is a profile, `JPROFILE=<name>`. A profile has its own host and machine id
+(`~/.config/clarity_jarvis/host_<name>.env`), local logs (`clarity/logs/jarvis/<name>/`) and
+watcher (`tmux jarvis-watch-<name>`). The JarvisLabs API key is shared
+(`~/.config/clarity_jarvis/keys.env`).
+
+```bash
+# from WSL (Ubuntu) on the laptop, repo root; the laptop must stay on for the watchers
+bash jarvis_drive.sh keys                         # once
+JPROFILE=b bash jarvis_drive.sh create            # new 1x RTX PRO 6000 VM, 100 GB (API); or: resume
+JPROFILE=b RUN_NAME=Q8_fullq_lora_12ep SEEDS="3 4" EXTRA_ARGS="--epochs 12 --no-grad-checkpoint"   MAX_TOTAL_HOURS=4 bash jarvis_drive.sh all       # push (+ clarity/.env, mode 600), start, watch
+JPROFILE=b bash jarvis_drive.sh status            # progress
+```
+
+On every VM, each finished seed is uploaded to `HF_REPO_ID/<RUN_NAME>/seed<k>/` in the
+background. All uploads are flushed before the pause. W&B logs per step and per epoch, grouped by
+`RUN_NAME`. The laptop receives logs and probabilities, but **not the adapters**: those are on HF.
+After a run, **destroy** the VMs on the website (or keep them paused at ₹1.30/h each for the
+disk).
+
+**Current profiles:** `a`–`d`, all **paused**. Their machine ids are in
+`~/.config/clarity_jarvis/host_<a|b|c|d>.env` on the laptop's WSL.
+
+---
+
+## Original guide (written before the first run; the A100 was not offered for VMs)
+
 This runs one experiment on JarvisLabs: **Qwen3-8B-Base, fine-tuned with LoRA as a 9-way
 classifier, 3 seeds, on one A100 80GB.** It is registered as **E13** in
 `clarity/reports/02_experiment_log.md`. Everything else (the mid-eval package and the CPU

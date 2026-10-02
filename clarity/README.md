@@ -1,4 +1,4 @@
-# `clarity/` — the fine-tuned encoder track
+# `clarity/` — the fine-tuned encoder track, and the 8B LLM classifier (E13)
 
 An end-to-end fine-tuned encoder for SemEval-2026 Task 6 (CLARITY), built up from
 the simplest system that could work and extended one measured step at a time.
@@ -9,11 +9,13 @@ track, which is now archived; the copies were checked to give identical results.
 
 | | |
 |---|---|
-| **Final system** | full question + 16 epochs, 10-seed DeBERTa-v3-large ensemble + logit adjustment: dev S2 **0.405**, dev S1 **0.648** (baseline system: 0.428 / 0.601) |
-| Best single model | full question + 16 epochs: 0.384 ± 0.030 dev S2, 0.614 ± 0.027 dev S1 over 10 seeds (baseline 0.315 / 0.576); better on 9 of 10 seeds |
+| **Best system (E13)** | Qwen3-8B-Base + LoRA (`llm_classifier.py`), same input and protocol, 10-seed ensemble + logit adjustment: dev S2 **0.543**, dev S1 **0.746** |
+| Best single model (E13) | Qwen3-8B LoRA: **0.476 ± 0.043** dev S2, **0.709 ± 0.031** dev S1 over 10 seeds; above DeBERTa on 10 of 10 seeds. 12 epochs adopted on the slice (3 seeds: 0.543 / 0.742) |
+| DeBERTa final system (E11) | full question + 16 epochs, 10-seed DeBERTa-v3-large ensemble + logit adjustment: dev S2 0.405, dev S1 0.648 (baseline system: 0.428 / 0.601) |
+| DeBERTa best single model | full question + 16 epochs: 0.384 ± 0.030 dev S2, 0.614 ± 0.027 dev S1 over 10 seeds (baseline 0.315 / 0.576); better on 9 of 10 seeds |
 | The story, in order | [`reports/02_experiment_log.md`](reports/02_experiment_log.md) |
-| Latest | **E12**: training on all of train (last epoch) is the one variant that helps — Subtask 2 +0.029 per model on 4 of 5 seeds, 5-seed system 0.489. The hierarchy of specialist encoders, boundary experts and model soups do not. See [`reports/03_research_narrative.md`](reports/03_research_narrative.md) |
-| Running | nothing |
+| Latest | **E13 (2026-10-02)**: the backbone swap is the largest gain in the project (+0.092 S2 / +0.095 S1 per model, 10/10 seeds; system +0.136). All of train: +0.017 per model, not distinguishable. See the log §E13–E13c and [`reports/03_research_narrative.md`](reports/03_research_narrative.md) §17 |
+| Running | nothing (JarvisLabs VMs paused; `../CONTEXT.md`) |
 
 ---
 
@@ -73,10 +75,13 @@ the only place systems can be compared.
 | TeleAI (1st), DeepSeek-V3 3-stage CoT pipeline | 0.617 | 0.812 |
 | ChulaNLP (2nd), RoBERTa top-5 → Kimi-K2 | 0.52 | 0.70 |
 | ChulaNLP, DeBERTa-large fine-tuned *(checkpoint chosen on dev)* | 0.46 | 0.65 |
+| **ours — Qwen3-8B LoRA, 10-seed ensemble + logit adjustment (E13)** | **0.543** | **0.746** |
+| ours — Qwen3-8B LoRA, all of train, 10-seed system (E13c) | 0.575 | 0.711 |
+| **ours — Qwen3-8B LoRA, single model (10 seeds)** | **0.476 ± 0.043** | **0.709 ± 0.031** |
 | ours — baseline system: 10-seed ensemble + logit adjustment | 0.428 | 0.601 |
 | TeleAI, DeepSeek-V3 asked directly for the label | 0.421 | 0.662 |
-| **ours — final system: full question, 16 epochs, 10-seed ensemble + logit adjustment** | **0.405** | **0.648** |
-| **ours — single model, full question, 16 epochs (10 seeds)** | **0.384 ± 0.030** | **0.614 ± 0.027** |
+| ours — DeBERTa final system: full question, 16 epochs, 10-seed ensemble + logit adjustment | 0.405 | 0.648 |
+| ours — DeBERTa single model, full question, 16 epochs (10 seeds) | 0.384 ± 0.030 | 0.614 ± 0.027 |
 | ours — single model, 16 epochs (10 seeds) | 0.362 ± 0.026 | 0.601 ± 0.016 |
 | ours — single model, baseline (10 seeds) | 0.315 ± 0.040 | 0.576 ± 0.030 |
 
@@ -192,7 +197,13 @@ no install step: scripts are run from the repo root (`python clarity/<script>.py
 
 Copy `.env.example` to `.env` and fill in the W&B and Hugging Face keys (`.env` is
 gitignored). Without keys, W&B logs offline and HF uploads are skipped; nothing
-fails.
+fails. Current values: `WANDB_ENTITY=iamsid44-iiit-hyderabad` (a team entity; the bare
+username is rejected), `WANDB_PROJECT=clarity-semeval26`,
+`HF_REPO_ID=siddarthg44/clarity-semeval26`.
+
+**LLM runs (E13) do not use `start.sh`.** They run on rented JarvisLabs GPUs through
+`../jarvis_drive.sh` (launch machine) and `../jarvis_setup.sh` (on each VM). See
+`../JARVISLABS_PORTING_GUIDE.md`.
 
 ### Experiments
 
@@ -278,6 +289,10 @@ clarity/
   compare_runs.py            one configuration against another: paired seeds, bootstrap,
                                per-length split, still-improving-at-the-end check
   e11_replication.py         E11's pre-registered analysis: seed sets, 10-seed systems, hypotheses
+  llm_classifier.py          E13: decoder LLM (Qwen3-8B-Base) + LoRA as a 9-way classifier; same rows,
+                               slice, input and selection as encoder.py; --track = W&B; per-epoch adapters
+  e13_analysis.py            E13 family: Qwen vs DeBERTa paired + systems, 12 epochs, all data, per class
+  e13_figures.py             mideval/figures/e13_qwen_vs_deberta.png
   decode_variants.py         alternative decision rules on trained models (gate, optimal transport, floor)
   hier_combine.py            E12: gate + specialists + boundary experts -> 9-way, the 2x2 ablation
   soup.py                    E12d: uniform and greedy weight-averaged model soups

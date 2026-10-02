@@ -1,4 +1,4 @@
-# 05 — The research narrative: from a first DeBERTa run to E12
+# 05 — The research narrative: from a first DeBERTa run to E13
 
 This document tells the story of the encoder track as a chain of reasoning. Each
 step covers five things: what in the data or the previous result **led to it**,
@@ -33,8 +33,9 @@ seeds. The full record, with raw outputs, is in
 14. [E10 — Training length](#14-e10--training-length)
 15. [E11 — Replication on new seeds](#15-e11--replication-on-new-seeds)
 16. [E12 — Data-driven variants](#16-e12--data-driven-variants)
-17. [Threads across the story](#17-threads-across-the-story)
-18. [Where it stands, and what comes next](#18-where-it-stands-and-what-comes-next)
+17. [E13 — Is the gap knowledge? An 8B LLM classifier](#17-e13--is-the-gap-knowledge-an-8b-llm-classifier)
+18. [Threads across the story](#18-threads-across-the-story)
+19. [Where it stands, and what comes next](#19-where-it-stands-and-what-comes-next)
 
 ---
 
@@ -1029,7 +1030,75 @@ for the same reason as the re-ranker.
 
 ---
 
-## 17. Threads across the story
+## 17. E13 — Is the gap knowledge? An 8B LLM classifier
+
+**What led here.** §16 closed the encoder-side options. The decision layer is saturated, and
+every attempt to choose better among the encoder's own top candidates failed. The mid-eval
+analysis added two facts:
+- 53 of the final ensemble's 137 errors are on items all three annotators agreed on;
+- a human annotator scored against the other two reaches 0.684, against the model's 0.38.
+
+So the gap is in the model. Two explanations remained: missing **knowledge** (world and language
+knowledge a 0.4B encoder lacks, as in the Lieberman example) or missing **label meaning** (what
+each type means, which 3,400 examples may not teach).
+
+**Hypothesis.** If knowledge is the gap, a much larger pretrained model fine-tuned under the same
+protocol scores clearly higher. The prediction was S2 0.43–0.50 per model, and that the gain
+would fall mostly on the commitment boundary (Explicit ↔ Implicit, General ↔ Implicit/Explicit)
+and on items annotators agreed on.
+
+**Setup. One change from the best DeBERTa model: the backbone.**
+- The model is Qwen3-8B-Base with LoRA (r = 16 on every linear layer) and a new 9-way head on the
+  last token, at lr 1e-4 for 3 epochs, the epoch chosen on the train slice.
+- Rows, slice, input text and budgets, loss and batch size are identical.
+- `clarity/llm_classifier.py`, on rented RTX PRO 6000 GPUs (JarvisLabs).
+- 10 seeds paired with DeBERTa's.
+- Two single-change follow-ups: **12 epochs** (E13b) and **all of train** (E13c).
+
+**Result.**
+
+| dev | Qwen3-8B LoRA | DeBERTa | Δ |
+|---|---|---|---|
+| single model S2 (10 seeds) | **0.476 ± 0.043** | 0.384 ± 0.030 | **+0.092, 10/10 seeds** |
+| single model S1 | **0.709 ± 0.031** | 0.614 ± 0.027 | **+0.095, 10/10** |
+| system (10-seed ensemble + LA, nested CV) S2 | **0.543** | 0.405 | +0.136 [+0.054, +0.224] |
+| system S1 | **0.746** | 0.648 | |
+| system on 2-annotator reference sets | 0.524 | 0.382 | |
+
+The follow-ups:
+- **E13b, 12 epochs (3 seeds):** the slice F1 rises by +0.084 on 3 of 3 seeds, and the best
+  epochs are 8–11. It is adopted by the registered rule. Dev S2 for those seeds is 0.543 ± 0.015.
+- **E13c, all of train (10 seeds):** +0.017 per model (6/10 seeds). The system's +0.028 has an
+  interval of [−0.026, +0.092].
+
+**Analysis.**
+- **Knowledge is a large part of the gap.**
+  - Every seed improves.
+  - The per-model gain exceeds everything the encoder track gained (+0.069).
+  - As a single pass, the system passes TeleAI's fine-tuned 7B (0.495) and ChulaNLP's
+    encoder + LLM cascade (0.52).
+- **The "where" prediction is refuted.**
+  - The gain is broad: 7 of 9 classes, largest in Claims ignorance (+0.40), Declining (+0.22),
+    Dodging (+0.10).
+  - It is similar on unanimous and contested items (in-set +0.076 and +0.105).
+  - What the bigger model brings is better recognition of what kind of statement the answer is,
+    not one sharpened boundary.
+- **Undertraining again** (the §13–14 lesson). Under a cosine schedule the last epoch is always
+  favoured, so "best epoch = last" proved nothing by itself. A 12-epoch run did: the slice keeps
+  improving to epochs 8–11, though training loss is near zero by then.
+- **The decision rule matters more, not less.** Raw Qwen leans on frequent classes: it predicts
+  General 24 times, though General is in 113 reference sets. Logit adjustment adds +0.062 per
+  model, against +0.005 for DeBERTa.
+- **All of train behaves as it did for DeBERTa** (E12a): a small per-model gain that the 3-seed
+  screen overstated (+0.039 there, +0.017 at 10 seeds).
+- **What did not move:** Partial is never predicted, and General stays at F1 0.32.
+- **The headroom is in choosing, now with a stronger chooser available.** An acceptable label is
+  in Qwen's top 3 for 93% of items. The least-confident fifth of items is right 40% of the time,
+  the most-confident fifth 87%.
+
+---
+
+## 18. Threads across the story
 
 Read as separate experiments, most of this track is a list of failures. Read as
 threads, the failures explain each other.
@@ -1098,7 +1167,25 @@ unreliable. The track's practices came from specific mistakes:
 
 ---
 
-## 18. Where it stands, and what comes next
+## 19. Where it stands, and what comes next
+
+**Status (2026-10-02, after E13).** The best single-pass model is the LoRA-tuned **Qwen3-8B
+classifier**:
+- single model: S2 0.476 ± 0.043, S1 0.709 ± 0.031 (10 seeds);
+- system: **S2 0.543, S1 0.746** (10-seed ensemble + logit adjustment).
+
+12 epochs are adopted for it, at 3 seeds so far. The DeBERTa track below remains the controlled
+baseline it was built to be.
+
+**Next steps, in order** (the full plan is in `mideval/PLAN_REMAINING.md`):
+1. **12 epochs at 10 seeds** → the new single-pass system. Then all of train with 12 epochs, as
+   its own test.
+2. **Cascade, the label-meaning test.** Uncertain items, with Qwen's top-k, go to a larger open
+   LLM with definitions, a confusion guide and boundary examples. Prompts are designed on the
+   train slice. We sweep the deferral rate to give an accuracy-vs-calls curve.
+3. **Distil** the cascade back into the single pass. **Measure** cost per million items.
+
+**The encoder-track summary that follows was written at the end of E12** and is kept as it was.
 
 **What reliably improved the model** (per seed, paired):
 

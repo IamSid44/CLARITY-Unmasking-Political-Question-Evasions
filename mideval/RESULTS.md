@@ -143,6 +143,7 @@ Per-class F1 change on the baseline:
 | a mixed-input ensemble beats a single-input one | 0.403 vs 0.405 | log §E11 |
 | a dedicated Non-Reply gate raises recall | recall −0.039 | log §E12b |
 | a model soup lands between one model and the ensemble | 0.267, below a single model | log §E12d |
+| the 8B classifier's gain falls mostly on the commitment boundary and on agreed items (E13 H3) | broad: 7 of 9 classes, largest in Claims ignorance +0.40 / Declining +0.22; in-set +0.076 unanimous vs +0.105 two-label | §9; log §E13x |
 
 ## 9. Qwen3-8B LoRA classifier (E13, done 2026-10-02)
 
