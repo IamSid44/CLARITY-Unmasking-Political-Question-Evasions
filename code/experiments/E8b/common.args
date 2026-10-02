@@ -1,0 +1,16 @@
+
+--model microsoft/deberta-v3-large
+--epochs 8
+--batch-size 16
+--lr 1e-5
+--head-lr 1e-4
+--llrd 0.95
+--loss ce
+
+--input full
+--max-len 1024
+--a-budget 256
+
+--max-vram-gb 16
+--save-model
+--push-to-hub

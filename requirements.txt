@@ -1,0 +1,14 @@
+torch>=2.4
+transformers>=4.51
+peft>=0.13
+accelerate
+numpy
+pandas
+pyarrow
+scikit-learn
+joblib
+threadpoolctl
+matplotlib
+huggingface_hub
+python-dotenv
+wandb

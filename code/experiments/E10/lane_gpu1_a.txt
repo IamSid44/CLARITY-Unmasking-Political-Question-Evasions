@@ -1,0 +1,10 @@
+E10_base_16ep 0 --input qa --max-len 512
+E10_base_16ep 1 --input qa --max-len 512
+E10_base_16ep 2 --input qa --max-len 512
+E10_base_16ep 3 --input qa --max-len 512
+E10_base_16ep 4 --input qa --max-len 512
+E10_fullq_16ep 4 --input full --max-len 1024 --a-budget 256
+E10_fullq_16ep 3 --input full --max-len 1024 --a-budget 256
+E10_fullq_16ep 2 --input full --max-len 1024 --a-budget 256
+E10_fullq_16ep 1 --input full --max-len 1024 --a-budget 256
+E10_fullq_16ep 0 --input full --max-len 1024 --a-budget 256

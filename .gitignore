@@ -1,13 +1,17 @@
-.DS_Store
 __pycache__/
 *.pyc
+.DS_Store
 .pytest_cache/
-*.egg-info/
-archive/
-jarvis_bundle.tgz
 
-# mid-evaluation submission archives (rebuilt by build_mid_submission.sh)
+runs/
+logs/
+wandb/
+data/cache/
+.env
+code/.env
+*.log
+*.tmp
+
+jarvis_bundle.tgz
 Nier_ANLP-Mid.zip
-paper-overleaf.zip
-Materials/
 Nier_ANLP-Mid/

@@ -1,0 +1,18 @@
+
+--model microsoft/deberta-v3-large
+--epochs 8
+--batch-size 16
+--lr 1e-5
+--head-lr 1e-4
+--llrd 0.95
+
+--input full
+--max-len 1024
+--a-budget 256
+
+--loss bal_focal
+--focal-gamma 2.0
+
+--max-vram-gb 14
+--save-model
+--push-to-hub
