@@ -1,7 +1,7 @@
 # Nier_ANLP — Mid-Evaluation Submission
 
-**HiGrEC: A Controlled Study of Structural Inductive Bias for Response Clarity Classification in
-Political Interviews.** SemEval-2026 Task 6 (CLARITY).
+**Knowledge over Structure: A Controlled Study of Response Clarity Classification in Political
+Interviews.** SemEval-2026 Task 6 (CLARITY).
 
 | Member | Roll number |
 |---|---|
