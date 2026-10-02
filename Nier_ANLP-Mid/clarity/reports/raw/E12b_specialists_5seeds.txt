@@ -1,8 +1,0 @@
-'flat gate + specialists' vs flat (E10_fullq_16ep), seeds [0, 1, 2, 3, 4]
-
-                                 S2    S2+rule         S1     CNR F1  NR recall
-flat, per-seed mean           0.386      0.404      0.631      0.524      0.412
-flat gate + specialists, mean      0.374      0.395      0.634      0.530      0.435
-difference, paired       -0.012 2/5 -0.009 2/5 +0.004 2/5 +0.006 2/5 +0.024 2/5
-flat, 5-seed ensemble         0.416      0.471      0.631      0.500      0.353
-flat gate + specialists, 5-seed ensemble      0.394      0.404      0.646      0.545      0.412

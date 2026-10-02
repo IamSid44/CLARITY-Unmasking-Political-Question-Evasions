@@ -53,3 +53,12 @@ Among published dev results (Figure~\ref{fig:llm}), the system lies above TeleAI
 In the 3-epoch runs the slice F1 rose at every epoch and the last epoch was always selected; under a cosine schedule this proves nothing, because the schedule itself favours the last epoch, so only a longer schedule tests undertraining.
 With 12 epochs (seeds 0--2) the slice selected epochs 9, 11 and 8 and the slice F1 rose by +0.084 on 3 of 3 seeds, so the rule registered in advance adopted the longer schedule; training loss fell to about 0.02 without the slice F1 declining, and dev \Stwo{} was \pmsd{0.543}{0.015} (reported only).
 Training on all 3,448 rows gave +0.017 per model (6 of 10 seeds up), but the system difference has a 95\% interval of [$-$0.026, +0.092] and \Sone{} fell from 0.746 to 0.711; as with the encoder, the 3-seed screen (+0.039) overstated the gain.
+
+\paragraph{Qualitative analysis: what the backbone changes.}
+Item by item, the Qwen system moves 65 dev items into the reference set and 36 out of it (194 in-set against 165).
+The clearest fixes are answers whose \emph{form} signals the type: Declining to answer (5 fixed, 1 lost), Claims ignorance (5, 0) and Clarification (1, 0).
+Asked whether he could comment on concerns for the region, the speaker replied \emph{``No. Saying I'm not going to comment on the matter means I'm not going to comment on the matter.''}; all three annotators chose Declining to answer, DeBERTa chose Claims ignorance and Qwen was right.
+The question asked back, \emph{``On Iran?''}, is a unanimous Clarification that DeBERTa called Dodging.
+Qwen's remaining errors keep the commitment pattern but move inside the Ambivalent branch: its most frequent error pairs (reference $\rightarrow$ prediction) are Dodging $\rightarrow$ Implicit (17), General $\rightarrow$ Implicit (16) and Implicit $\rightarrow$ Explicit (14), and it over-predicts Deflection (42 predictions against 32 for DeBERTa).
+Some losses are literal readings: \emph{``I thought you were going to ask me about the pig''}, in reply to a question about the risk of a wider war, is a unanimous Dodging that Qwen labels Clarification.
+(Examples are the shortest-answer item of each category, chosen by rule; the full listing is in the repository.)

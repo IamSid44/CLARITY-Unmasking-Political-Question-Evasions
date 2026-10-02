@@ -1,5 +1,0 @@
-# GPU 0 (shared with another user). Seed 2 finished here first; seeds 4 and 3 moved
-# here at 12:5x on 2026-09-25 so GPU 1 carries one run per lane (see E8 in the log).
-E8_fullq_bal_focal 2
-E8_fullq_bal_focal 4
-E8_fullq_bal_focal 3

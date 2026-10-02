@@ -15,5 +15,7 @@ The backbone change also changes the training recipe that a backbone requires (l
 We cannot rule out that the pretraining data of the 8B model contains the public interview transcripts the dataset is drawn from.
 Published comparison points come from other teams' papers and protocols and are not directly controlled.
 
-\paragraph{Coverage.}
-The rarest class (\emph{Partial/half-answer}, 14 development reference sets) is never predicted by any of our models, and the study covers one dataset in one language (English, U.S.\ presidential interviews).
+\paragraph{Use of the predictions.}
+The models classify the \emph{form} of an answer relative to a question, not its honesty or truth, and a label such as Dodging is not a verdict on a speaker.
+Annotators disagree on many items, and automated labels of political speech could be used to support one-sided narratives, so any use should report uncertainty and keep people in the loop.
+The data are public interview transcripts released for the shared task.

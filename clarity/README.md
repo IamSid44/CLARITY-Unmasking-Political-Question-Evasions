@@ -1,11 +1,10 @@
-# `clarity/` — the fine-tuned encoder track, and the 8B LLM classifier (E13)
+# `clarity/` — the classifiers, experiments and records
 
 An end-to-end fine-tuned encoder for SemEval-2026 Task 6 (CLARITY), built up from
 the simplest system that could work and extended one measured step at a time.
 
-It is self-contained. The data layer, label vocabulary and official-scorer replica
-it needs (`qevasion/`) were carried over from the team's earlier `higrec` analysis
-track, which is now archived; the copies were checked to give identical results.
+It is self-contained: `qevasion/` holds the data loader, the label vocabulary and a replica of
+the official scorer.
 
 | | |
 |---|---|
@@ -15,7 +14,6 @@ track, which is now archived; the copies were checked to give identical results.
 | DeBERTa best single model | full question + 16 epochs: 0.384 ± 0.030 dev S2, 0.614 ± 0.027 dev S1 over 10 seeds (baseline 0.315 / 0.576); better on 9 of 10 seeds |
 | The story, in order | [`reports/02_experiment_log.md`](reports/02_experiment_log.md) |
 | Latest | **E13 (2026-10-02)**: the backbone swap is the largest gain in the project (+0.092 S2 / +0.095 S1 per model, 10/10 seeds; system +0.136). All of train: +0.017 per model, not distinguishable. See the log §E13–E13c and [`reports/03_research_narrative.md`](reports/03_research_narrative.md) §17 |
-| Running | nothing (no VMs) |
 
 ---
 
@@ -120,9 +118,12 @@ Ablations that did **not** help, all documented:
 ## 3. How the system works
 
 ```
- sub-question + full question + answer ──► DeBERTa-v3-large ──► p(9 classes) ──► logit adjustment ──► leaf ──► clarity
-                                          (10 seeds, averaged)                   argmax p / prior^τ            (table)
+ sub-question + full question + answer ──► DeBERTa-v3-large (fine-tuned)  ──► p(9 classes) ──► logit adjustment ──► leaf ──► clarity
+                                        or Qwen3-8B-Base + LoRA (E13)      (10 seeds, averaged)  argmax p / prior^τ            (table)
 ```
+
+The 8B classifier (`llm_classifier.py`) keeps everything below except the backbone: LoRA rank 16 on
+all linear layers, a new 9-way head on the last token, learning rate 1e-4, 3 epochs.
 
 **The model** (`encoder.py`). Pretrained DeBERTa-v3-large, all 435M parameters
 fine-tuned, with a new 9-way classification head. The final system and the
@@ -192,87 +193,59 @@ Each is reproducible; the script or report is named.
 
 ## 5. Running it
 
-Environment: a Python 3.12 virtual environment (torch 2.11, transformers 5.x),
-no install step: scripts are run from the repo root (`python clarity/<script>.py`). Both GPUs may be used; lanes decide which (see Experiments).
+Python 3.12 with PyTorch 2.11 and `transformers` 5.x (`peft` 0.20 for the 8B classifier). There is
+no install step: scripts run from the repository root, e.g. `python clarity/analyze.py …`. The data
+are downloaded on first use from the public Hugging Face dataset `ailsntua/QEvasion` and cached in
+`data/cache/`.
 
 ### Credentials
 
-Copy `.env.example` to `.env` and fill in the W&B and Hugging Face keys (`.env` is
-gitignored). Without keys, W&B logs offline and HF uploads are skipped; nothing
-fails. Current values: `WANDB_ENTITY=iamsid44-iiit-hyderabad` (a team entity; the bare
-username is rejected), `WANDB_PROJECT=clarity-semeval26`,
-`HF_REPO_ID=siddarthg44/clarity-semeval26`.
+Copy `.env.example` to `.env` and fill in the W&B and Hugging Face keys (`.env` is gitignored).
+Without keys, W&B logs offline and Hugging Face uploads are skipped; nothing fails.
 
-**LLM runs (E13) do not use `start.sh`.** They run on rented JarvisLabs GPUs through
-`../jarvis_drive.sh` (launch machine) and `../jarvis_setup.sh` (on each VM). See
-`../JARVISLABS_PORTING_GUIDE.md`.
+### Trained runs
 
-### Experiments
+Every run's per-seed probabilities, metrics and selected weights are on the public Hugging Face repo
+[`siddarthg44/clarity-semeval26`](https://huggingface.co/siddarthg44/clarity-semeval26), as
+`<config>/seed<k>/`. All analyses run on CPU from the probabilities alone:
 
-Each experiment is a folder `experiments/<EXP>/`:
-
-```
-experiments/E8/
-  common.args          flags shared by every run (model, input, loss, schedule, ...)
-  lane_gpu1_a.txt      one line per run:  <run-name> <seed> [extra flags]
-  lane_gpu1_b.txt      several lanes can share a GPU; the GPU comes from the file name
-  lane_gpu0_a.txt      a line "@after <run-name> <seed> ..." makes the lane wait until
-                         those runs finish (queueing behind another experiment)
+```python
+from huggingface_hub import snapshot_download
+snapshot_download("siddarthg44/clarity-semeval26", local_dir="clarity/runs",
+                  allow_patterns=["*/seed*/*.npy", "*/seed*/*.json"])
 ```
 
-Lanes may list the same runs: each run is locked while it trains, so a lane skips
-whatever another lane holds, and the lanes share the work (E10 does this across
-two GPU-0 lanes and the GPU-1 slice).
+### Training a configuration
+
+Each encoder experiment is a folder `experiments/<EXP>/`: `common.args` holds the flags shared by
+every run, and each line of a `lane_*.txt` file is one run, `<run-name> <seed> [extra flags]`. One run
+is
 
 ```bash
-bash clarity/start.sh E8               # one tmux window per lane, session "clarity-E8"
-tmux attach -t clarity-E8              # watch; Ctrl-b n / p switch lanes; Ctrl-b d detaches
-tail -f clarity/logs/E8.log            # one line per event, all lanes
+python clarity/encoder.py --name E11_fullq_16ep --seed 5 \
+    $(grep -vE '^\s*(#|$)' clarity/experiments/E11/common.args | tr '\n' ' ') \
+    --input full --max-len 1024 --a-budget 256 --epochs 16
 ```
 
-Each lane runs its lines in order (`run_queue.sh`). When the last seed of a
-configuration finishes, whichever lane finished it writes the analysis
-(`reports/raw/<name>_analysis.txt`), the decision rules
-(`reports/raw/<name>_decision_rules.txt`) and a submission
-(`submissions/<name>_logitadj/`).
+An interrupted run resumes from its last finished epoch (`ckpt.py`). The 8B classifier
+(`llm_classifier.py`) was run on rented single-GPU machines with `../jarvis_drive.sh` and
+`../jarvis_setup.sh`; see `../JARVISLABS_PORTING_GUIDE.md`.
 
-**Giving a GPU back** (e.g. to lab-mates): stop the session
-(`tmux kill-session -t clarity-E8`), move lines out of that GPU's lane files, and run
-`start.sh E8` again. Finished runs are skipped and interrupted ones resume from their
-last epoch, so nothing is lost.
-
-It all survives restarts:
-
-| level | what happens after a crash or reboot |
-|---|---|
-| finished run (`metrics.json` exists) | skipped |
-| interrupted run (`resume.pt` exists) | continues from its last completed epoch — model, optimizer, scheduler, RNG and data order restored (`ckpt.py`) |
-| W&B | the resumed run continues the same W&B run |
-| HF upload | retried in the background until it succeeds |
-| GPU memory taken by another job | waits 10 min and retries, up to 2 h |
-
-After a reboot, the same `bash clarity/start.sh E8` resumes everything.
-The finished E0 + E6 pipeline can be re-run with `bash clarity/start.sh pipeline`.
-
-### Individual pieces
+### Analyses
 
 ```bash
-python clarity/encoder.py --name L0_large_base --seed 0 --epochs 8   # one baseline run
 python clarity/analyze.py --run-dir clarity/runs/L0_large_base       # per-class, both subtasks
-python clarity/decide.py  --run-dir clarity/runs/L0_large_base --drop-annotator  # decision rules
-python clarity/summarize.py --per-class                              # all configurations
-python clarity/peek.py clarity/runs/E8_fullq_bal_focal/seed0          # what a run predicts, per class
-python clarity/compare_runs.py L0_large_base E8b_fullq_ce             # paired seeds, bootstrap, length split, undertraining
-python clarity/verify_scorer_geometry.py                             # the scorer findings, CPU
+python clarity/decide.py  --run-dir clarity/runs/L0_large_base --drop-annotator  # decision rules, nested CV
+python clarity/compare_runs.py L0_large_base E8b_fullq_ce             # paired seeds, bootstrap, length split
+python clarity/e11_replication.py                                    # the 10-seed DeBERTa systems (E11)
+python clarity/e13_analysis.py                                       # Qwen vs DeBERTa (E13, E13x/b/c)
+python clarity/qualitative_examples.py                               # item-level comparison of the two systems
+python clarity/verify_scorer_geometry.py                             # the scorer findings
 python clarity/make_submission.py --source stage1 --run L0_large_base --logit-adjust
 ```
 
-### Submission format
-
-Codabench is closed, but the packager still enforces the format three participant
-repositories used: one zip per subtask, containing a single extensionless file named
-`prediction` with 237 lines in official row order, using full label names.
-Packaged submissions are in `submissions/`.
+Codabench is closed, but `make_submission.py` still enforces its format: one zip per subtask with a
+single extensionless file `prediction`, 237 lines in official row order, full label names.
 
 ---
 
@@ -281,48 +254,42 @@ Packaged submissions are in `submissions/`.
 ```
 clarity/
   README.md                  this file
-  encoder.py                 the classifier: fine-tune, predict dev + test; --fold for cross-fitting;
-                               --task for a sub-problem (gate, specialists, pair experts)
-  rerank.py                  the (negative-result) second-stage re-ranker
-  decide.py                  post-hoc decision rules R0–R3, nested CV, 2-annotator scoring
-  analyze.py                 per-class breakdown for both subtasks from saved probabilities
-  peek.py                    per-class predictions of a run, even mid-training (reads its checkpoint)
-  summarize.py               table across configurations, mean ± std, paired deltas
-  compare_runs.py            one configuration against another: paired seeds, bootstrap,
-                               per-length split, still-improving-at-the-end check
-  e11_replication.py         E11's pre-registered analysis: seed sets, 10-seed systems, hypotheses
-  llm_classifier.py          E13: decoder LLM (Qwen3-8B-Base) + LoRA as a 9-way classifier; same rows,
-                               slice, input and selection as encoder.py; --track = W&B; per-epoch adapters
-  e13_analysis.py            E13 family: Qwen vs DeBERTa paired + systems, 12 epochs, all data, per class
-  e13_figures.py             clarity/reports/figures/e13_qwen_vs_deberta.png
-  decode_variants.py         alternative decision rules on trained models (gate, optimal transport, floor)
-  hier_combine.py            E12: gate + specialists + boundary experts -> 9-way, the 2x2 ablation
-  soup.py                    E12d: uniform and greedy weight-averaged model soups
+  encoder.py                 the DeBERTa classifier: fine-tune, predict dev + test; --task for sub-problems
+                               (gate, specialists, pair experts)
+  llm_classifier.py          E13: Qwen3-8B-Base + LoRA as a 9-way classifier; same rows, slice, input and
+                               selection as encoder.py
+  decide.py                  decision rules (logit adjustment and alternatives), nested CV, 2-annotator scoring
+  analyze.py, summarize.py, peek.py, compare_runs.py    per-run and cross-run analysis
+  e11_replication.py         E11: the pre-registered 10-seed DeBERTa analysis
+  e13_analysis.py            E13 family: paired seeds, systems, 12 epochs, all of train, per class
+  qualitative_examples.py    the two systems item by item: fixes, losses, error pairs, rule-chosen examples
+  rerank.py                  E6: the second-stage re-ranker (negative result)
+  hier_combine.py            E12: gate + specialists + boundary experts -> 9-way
+  decode_variants.py         alternative decision rules on trained models
+  soup.py                    E12d: uniform and greedy model soups
+  mideval_analysis.py        the DeBERTa error analysis (reports/raw/mideval/, data/splits/)
+  paper_figures.py, paper_example.py, taxonomy_counts.py   the report's figures, worked example and Table 1
+  mideval_figures.py, e13_figures.py                      PNG versions of the figures (reports/figures/)
   verify_scorer_geometry.py  regenerates every number in reports/01
-  make_submission.py         builds Codabench zips and checks every format rule
-  tracking.py                W&B and HF Hub logging; never allowed to crash a run
-  ckpt.py                    atomic epoch-level resume checkpoints
-  start.sh                   launches an experiment (or the original pipeline) in tmux
-  run_queue.sh               runs one lane of an experiment on one GPU
-  run_pipeline.sh            the E0 + E6 pipeline, kept to reproduce those results
-  experiments/<EXP>/         experiment definitions: shared flags + lane files
+  make_submission.py         Codabench zips with every format rule checked
+  tracking.py, ckpt.py       W&B / Hugging Face logging; resumable epoch checkpoints
+  experiments/<EXP>/         experiment definitions: shared flags + one line per run
   qevasion/                  data loader, label vocabulary, official-scorer replica
   .env.example               template for API keys
   data/
-    cache/                   the organizers' train (3,448) and dev (308) splits, as parquet
     clarity_task_evaluation_dataset.csv   the 237 test items (row order matters)
+    splits/                  the fixed 345-row train slice and the dev halves used by the 2-fold checks
   reports/
-    01_scorer_geometry.md    what the metric rewards; corrects the earlier data audit
-    02_experiment_log.md     every experiment in order: why, what, result, takeaway
-    03_research_narrative.md the story: why each experiment was run, what came out, why it worked or failed
+    01_scorer_geometry.md    what the metric rewards
+    02_experiment_log.md     every experiment in order: hypothesis and prediction (written first), result
+    03_research_narrative.md the same work as a story: why each experiment, what came out, why
+    04_results_sources.md    every reported number with the file it comes from
     raw/                     unedited analysis outputs behind the tables
-  submissions/               packaged predictions for the baseline and the final system
-                               (ablations write theirs locally; not in git)
+    figures/                 PNG figures
+  submissions/               packaged predictions for the baseline and the final DeBERTa system
 ```
 
-Not in git (regenerable or large): `runs/` (probabilities and checkpoints; the
-checkpoints are also on the HF repo `siddarthg44/clarity-semeval26`, which is
-**public**, as checked on 2026-10-02, although `tracking.py` creates it as private), `logs/`, `wandb/`, `.env`.
+Not in git: `runs/` (on the Hugging Face repo), `logs/`, `wandb/`, `.env`, `data/cache/`.
 
 ---
 
@@ -331,10 +298,8 @@ checkpoints are also on the HF repo `siddarthg44/clarity-semeval26`, which is
 - The baseline is frozen once trained and never re-tuned to flatter a later change.
 - Single-model numbers are means ± std over paired seeds. A variant is screened on
   3 seeds (bar: +0.015 with at least 2 of 3 up) and extended only if it passes.
-  Every system claim uses 10 seeds (E11). Per-class F1 comes with its support.
+  Every system claim uses 10 seeds. Per-class F1 comes with its support.
 - Nothing is chosen on dev. The one fitted parameter (τ) is validated by nested
   cross-validation, and the held-out score is the one reported.
-- Code is not edited while a multi-seed run is in progress, so every seed of a
-  configuration runs the same code.
-- Mistakes that cost a rerun are recorded in the experiment log where they
-  happened.
+- Hypotheses and predictions are written in the experiment log before a run, and results are
+  reported against them, including failures.

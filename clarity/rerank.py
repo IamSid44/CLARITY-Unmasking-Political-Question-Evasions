@@ -99,8 +99,8 @@ from tracking import Tracker, load_env, push_async
 
 RUNS = Path(os.environ.get("CLARITY_RUNS", Path(__file__).resolve().parent / "runs"))
 
-# Paraphrased from the organizers' taxonomy table (Thomas et al., EMNLP 2024,
-# Materials/.../EMNLP_2024_Baseline.pdf). Written for this project; no competitor
+# Paraphrased from the organizers' taxonomy table (Thomas et al., Findings of
+# EMNLP 2024). Written for this project; no competitor
 # prompt text. Kept short on purpose: it shares a
 # 512-token window with the sub-question and the answer.
 LABEL_DESCRIPTIONS: dict[str, str] = {

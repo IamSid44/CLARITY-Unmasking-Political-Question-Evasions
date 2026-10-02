@@ -7,7 +7,7 @@ __pycache__/
 wandb/
 *.tmp
 # Submissions: only the baseline systems are kept in git. Ablations write their own
-# packaged predictions locally (run_queue.sh post-processing); their results are in
+# packaged predictions locally; their results are in
 # reports/raw/, and Codabench is closed.
 submissions/*
 !submissions/L0_large_base/

@@ -1,4 +1,0 @@
-baseline,dev S2 (3 ann),"dev S2 (2 ann, mean)",dev S1,in-set,classes named
-always majority (Explicit),0.06,0.055,0.136,0.373,1
-uniform random (mean of 20),0.129,0.116,0.299,0.196,9
-"TF-IDF + LR (class_weight=balanced, C=1.0)",0.257,0.243,0.445,0.351,8

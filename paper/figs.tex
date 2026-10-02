@@ -1,14 +1,5 @@
-% Figures. The sections call \FigureArch (text width, sec:intro), \FigureEncSeeds (column width, sec:encoder),
-% \FigureLLM (text width, sec:llm) and \FigureExample (column width, sec:analysis).
-% The two data-figure PDFs are drawn by clarity/paper_figures.py.
-
-\newcommand{\FigureEncSeeds}{%
-\begin{figure}[t]
-\centering
-\includegraphics[width=\columnwidth]{figures/fig_deberta_seeds.pdf}
-\caption{Single DeBERTa-v3-large models on dev for the three configurations: (a)~\Stwo{} multi-reference macro-F1, (b)~\Sone{} macro-F1. Open circles joined by thin lines are individual seeds, paired across configurations; filled squares are the mean over the 10 seeds, with error bars of $\pm 1$ standard deviation.}
-\label{fig:enc-seeds}
-\end{figure}}
+% Figures. The sections call \FigureArch (text width, sec:intro), \FigureLLM (text width, sec:llm)
+% and \FigureExample (column width, sec:analysis). fig_qwen_vs_deberta.pdf is drawn by clarity/paper_figures.py.
 
 \newcommand{\FigureLLM}{%
 \begin{figure*}[t]

@@ -1,9 +1,11 @@
 #!/usr/bin/env bash
 # Build the mid-evaluation submission package from the current tree:
-#   Nier_ANLP-Mid/              report PDF, the LaTeX source (= the Overleaf project), code, records
-#   Nier_ANLP-Mid.zip           the file to submit
-#   paper-overleaf.zip          just the LaTeX project, for Overleaf (New Project -> Upload Project)
+#   Nier_ANLP-Mid/        report PDF, README, and clarity/ (code, experiment definitions, records)
+#   Nier_ANLP-Mid.zip     the file to submit
+#   paper-overleaf.zip    the LaTeX project, for Overleaf (New Project -> Upload Project); not part of the submission
 # Nier_ANLP-Mid/README.md is written by hand and kept; everything else in the folder is rebuilt.
+# Left out on purpose: the LaTeX source, the GPU-provider launch scripts and guide, the raw VM run logs,
+# the data cache (downloaded on first use) and anything gitignored (runs/, logs/, .env).
 #   bash build_mid_submission.sh            (run from the repo root, after bash paper/build.sh)
 set -euo pipefail
 cd "$(dirname "$0")"
@@ -14,26 +16,35 @@ OUT=Nier_ANLP-Mid
 # fresh folder, keeping the hand-written README
 find "$OUT" -mindepth 1 -maxdepth 1 ! -name README.md -exec rm -rf {} +
 
-# 1. the report and its LaTeX source (single version, as compiled)
+# 1. the report
 cp paper/main.pdf "$OUT/Nier_ANLP-Mid-Report.pdf"
-mkdir -p "$OUT/paper/sections" "$OUT/paper/figures"
-cp paper/main.tex paper/figs.tex paper/acl.sty paper/acl_natbib.bst paper/references.bib "$OUT/paper/"
-cp paper/sections/*.tex "$OUT/paper/sections/"
-cp paper/figures/fig_architecture.tex paper/figures/fig_qwen_vs_deberta.pdf paper/figures/fig_deberta_seeds.pdf "$OUT/paper/figures/"
 
 # 2. code and records: every tracked or new (not ignored) file under clarity/, minus the data cache
+#    and the three raw logs written on the rented VMs (the analysis outputs they fed are kept)
 git ls-files --cached --others --exclude-standard clarity \
   | grep -v -e '__pycache__' -e '^clarity/data/cache/' \
+            -e '^clarity/reports/raw/E13_lane_summaries.txt$' \
+            -e '^clarity/reports/raw/E13_pilots_and_timing.txt$' \
+            -e '^clarity/reports/raw/E13_Q8_fullq_lora_summary.txt$' \
   | while IFS= read -r f; do [ -f "$f" ] && cp --parents "$f" "$OUT/"; done
-cp jarvis_drive.sh jarvis_setup.sh JARVISLABS_PORTING_GUIDE.md "$OUT/"
 
-# 3. scrub machine-specific paths from the copies (the repo itself is left unchanged)
-sed -i 's#^PY=/scratch/shlok/Temp/.venv/bin/python#PY=${PY:-python}#' "$OUT/clarity/run_pipeline.sh" "$OUT/clarity/run_queue.sh"
+# 3. adjust the copies (the repo itself is left unchanged): no machine-specific paths, and no pointers
+#    to files that are not in the package
 grep -rlZ '/scratch/shlok/Temp/CLARITY-Unmasking-Political-Question-Evasions/' "$OUT" \
   | xargs -0 -r sed -i 's#/scratch/shlok/Temp/CLARITY-Unmasking-Political-Question-Evasions/##g'
-sed -i 's#in this OneDrive-synced clone#in a local clone#' "$OUT/jarvis_drive.sh"
+python - "$OUT/clarity/README.md" <<'PY'
+import sys
+p = sys.argv[1]
+s = open(p, encoding="utf-8").read()
+old = ("(`llm_classifier.py`) was run on rented single-GPU machines with `../jarvis_drive.sh` and\n"
+       "`../jarvis_setup.sh`; see `../JARVISLABS_PORTING_GUIDE.md`.")
+new = ("(`llm_classifier.py`) was run on rented single-GPU machines; the launch scripts are in the\n"
+       "GitHub repository.")
+assert old in s, "clarity/README.md launch paragraph changed; update build_mid_submission.sh"
+open(p, "w", encoding="utf-8").write(s.replace(old, new))
+PY
 
-# 4. zips (python: available everywhere the scripts run)
+# 4. zips
 rm -f "$OUT.zip" paper-overleaf.zip
 python - "$OUT" <<'PY'
 import sys, zipfile, pathlib
@@ -42,10 +53,13 @@ with zipfile.ZipFile(f"{out}.zip", "w", zipfile.ZIP_DEFLATED) as z:
     for p in sorted(out.rglob("*")):
         if p.is_file():
             z.write(p, p.as_posix())
+paper = pathlib.Path("paper")
+files = ["main.tex", "figs.tex", "acl.sty", "acl_natbib.bst", "references.bib"]
+files += [f"sections/{p.name}" for p in sorted((paper / "sections").glob("*.tex"))]
+files += ["figures/fig_architecture.tex", "figures/fig_qwen_vs_deberta.pdf"]
 with zipfile.ZipFile("paper-overleaf.zip", "w", zipfile.ZIP_DEFLATED) as z:
-    for p in sorted((out / "paper").rglob("*")):
-        if p.is_file():
-            z.write(p, p.relative_to(out / "paper").as_posix())
+    for f in files:
+        z.write(paper / f, f)
 PY
 echo "== $OUT: $(find "$OUT" -type f | wc -l) files"
 ls -l "$OUT.zip" paper-overleaf.zip

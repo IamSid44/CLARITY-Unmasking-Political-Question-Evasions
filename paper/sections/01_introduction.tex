@@ -7,7 +7,7 @@ Politicians often answer the question they would have liked to be asked.
 
 The competition was won by multi-call large language model (LLM) pipelines \citep{shi-etal-2026-teleai,peerachaidecho-rutherford-2026-chulanlp}, while fine-tuned encoders stopped at about 0.50 macro-F1 on Subtask~2 regardless of scale or ensembling \citep{thomas-etal-2026-semeval}.
 A leaderboard does not say \emph{why} encoders stop there.
-The candidate explanations make different predictions: the labels may be too noisy to learn (then annotators would disagree where models fail), the decision rule may be wrong for the metric (then a better rule would help), the model may lack the knowledge needed to read an answer against its question (then a larger pretrained model would help under the same protocol), or the label meanings may not be learnable from 3,448 examples (then supplying definitions would help).
+The candidate explanations make different predictions: the labels may be too noisy to learn (then annotators would disagree where models fail), training may optimise something other than the metric, which weighs all nine classes equally and accepts any annotator's label (then a better decision rule would help), the model may lack the knowledge needed to read an answer against its question (then a larger pretrained model would help under the same protocol), or the label meanings may not be learnable from 3,448 examples (then supplying definitions would help).
 
 We test these explanations with a deliberately controlled single-pass classifier (Figure~\ref{fig:arch}): every change is made one at a time against a named control, on ten paired seeds, with predictions registered before each run and no choice made on the development set.
 Our contributions are:
