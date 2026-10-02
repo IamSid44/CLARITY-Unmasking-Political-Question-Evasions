@@ -1793,6 +1793,22 @@ setup (an estimate). The epoch question above is a separate, later experiment.
 **Cost guard:** each VM's pilot aborts and pauses if its seeds are projected over the
 `MAX_TOTAL_HOURS` limit. The estimate is about ₹1,500–1,700 for all four VMs.
 
+### E13c screen *(seeds 0–2, finished 12:08 IST)*
+
+Sources: `raw/E13c_Q8_alldata_seeds012.txt` and `e13_analysis.py` §C.
+
+| seed | E13c S2 | E13 S2 | Δ | E13c S1 | E13 S1 | Δ |
+|---|---|---|---|---|---|---|
+| 0 | 0.520 | 0.405 | +0.115 | 0.717 | 0.647 | +0.069 |
+| 1 | 0.443 | 0.426 | +0.017 | 0.689 | 0.687 | +0.002 |
+| 2 | 0.538 | 0.554 | −0.016 | 0.758 | 0.728 | +0.030 |
+| **mean** | **0.500 ± 0.050** | 0.462 | **+0.039** (2/3 up) | **0.721** | 0.688 | **+0.034** (3/3 up) |
+
+- **The screening bar is passed** (+0.015 with 2 of 3 seeds up). The S2 gain is noisy (t = 0.99),
+  as E12a's was.
+- **So, per the rule, it is extended to seeds 3–9**: VM d takes seeds 3–6 and VM c seeds 7–9,
+  with the same configuration. The pre-registered prediction stands: +0.01 to +0.03 per seed.
+
 ---
 
 ## Deferred
