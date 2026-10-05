@@ -6,7 +6,6 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
-import os
 import zipfile
 from collections import Counter
 from pathlib import Path
@@ -20,9 +19,8 @@ from qevasion.labels import (
     normalize_clarity,
     normalize_evasion,
 )
+from qevasion.paths import ROOT, RUNS
 
-ROOT = Path(__file__).resolve().parents[2]
-RUNS = Path(os.environ.get("CLARITY_RUNS", ROOT / "runs"))
 OUT = ROOT / "submissions"
 N_TEST = 237
 

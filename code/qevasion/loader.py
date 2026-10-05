@@ -20,6 +20,7 @@ from qevasion.labels import (
     multi_reference_mask,
     normalize_evasion,
 )
+from qevasion.paths import DATA_CACHE  # re-exported: callers use `from qevasion.loader import DATA_CACHE`
 
 __all__ = [
     "QEvasionSplits",
@@ -30,6 +31,9 @@ __all__ = [
     "build_text_pairs",
     "write_frozen_splits",
     "load_frozen_splits",
+    "SPLIT_SEED",
+    "stratified_val_index",
+    "stratified_fold_index",
 ]
 
 HF_REPO: Final[str] = "ailsntua/QEvasion"
@@ -68,7 +72,31 @@ class QEvasionSplits:
                 raise ValueError(f"dev split is missing `{col}`")
 
 
-DATA_CACHE: Final[Path] = Path(__file__).resolve().parents[2] / "data" / "cache"
+
+SPLIT_SEED: Final[int] = 12345
+"""Seed of every fixed partition of train (the 10% slice, the K folds); never change it."""
+
+
+def stratified_val_index(y: np.ndarray, frac: float, seed: int = SPLIT_SEED) -> np.ndarray:
+    """Stratified held-out index, identical for every run (the 345-row train slice at frac=0.1)."""
+    rng = np.random.default_rng(seed)
+    idx = []
+    for c in range(len(EVASION_LABELS)):
+        rows = np.where(y == c)[0]
+        rng.shuffle(rows)
+        idx.extend(rows[: max(1, int(round(len(rows) * frac)))])
+    return np.sort(np.asarray(idx))
+
+
+def stratified_fold_index(y: np.ndarray, n_folds: int, fold: int, seed: int = SPLIT_SEED) -> np.ndarray:
+    """Rows of fold `fold` under a stratified K-fold partition fixed by `seed`."""
+    rng = np.random.default_rng(seed)
+    assign = np.empty(len(y), dtype=np.int64)
+    for c in range(len(EVASION_LABELS)):
+        rows = np.where(y == c)[0]
+        rng.shuffle(rows)
+        assign[rows] = np.arange(len(rows)) % n_folds
+    return np.sort(np.where(assign == fold)[0])
 
 
 def load_qevasion(cache_dir: str | Path | None = DATA_CACHE) -> QEvasionSplits:

@@ -17,12 +17,11 @@ import torch
 import torch.nn.functional as F
 
 from qevasion.labels import EVASION_LABELS, N_EVASION, encode_clarity, encode_evasion, leaf_to_official_clarity
-from qevasion.loader import DATA_CACHE, dev_reference_mask, load_qevasion
+from qevasion.loader import (DATA_CACHE, SPLIT_SEED, dev_reference_mask, load_qevasion, stratified_fold_index,
+                             stratified_val_index)
+from qevasion.paths import RUNS, SPLITS, TEST_CSV
 from qevasion.scoring import macro_f1_single_label, score_subtask1, score_subtask2
 
-HERE = Path(__file__).resolve().parents[2]
-TEST_CSV = HERE / "data" / "clarity_task_evaluation_dataset.csv"
-SPLIT_SEED = 12345
 SUFFIX = "\n\nHow does the answer respond to the sub-question?"
 
 
@@ -45,6 +44,8 @@ class Cfg:
     lora_dropout: float = 0.05
     grad_checkpoint: bool = True
     val_frac: float = 0.1
+    fold: int = -1
+    n_folds: int = 5
     select: str = "best"
     dtype: str = "bf16"
     device: str = "cuda"
@@ -55,17 +56,6 @@ class Cfg:
     log_every: int = 20
     track: bool = False
     save_epoch_adapters: bool = True
-
-
-def stratified_val_index(y: np.ndarray, frac: float, seed: int) -> np.ndarray:
-    """Copy of encoder.stratified_val_index (kept here to avoid encoder.py's wandb/HF deps)."""
-    rng = np.random.default_rng(seed)
-    idx = []
-    for c in range(N_EVASION):
-        rows = np.where(y == c)[0]
-        rng.shuffle(rows)
-        idx.extend(rows[: max(1, int(round(len(rows) * frac)))])
-    return np.sort(np.asarray(idx))
 
 
 def encode_row(tok, q: str, iq: str, a: str, cfg: Cfg) -> list[int]:
@@ -176,9 +166,9 @@ def set_seed(seed: int) -> None:
 
 
 def run(cfg: Cfg, outroot: Path) -> None:
-    out = outroot / cfg.name / f"seed{cfg.seed}"
+    out = outroot / cfg.name / (f"fold{cfg.fold}" if cfg.fold >= 0 else f"seed{cfg.seed}")
     if (out / "metrics.json").exists() and not cfg.pilot_steps:
-        print(f"[{cfg.name} seed{cfg.seed}] already finished: {out / 'metrics.json'}")
+        print(f"[{cfg.name} {out.name}] already finished: {out / 'metrics.json'}")
         return
     out.mkdir(parents=True, exist_ok=True)
     set_seed(cfg.seed)
@@ -188,9 +178,23 @@ def run(cfg: Cfg, outroot: Path) -> None:
     train, dev = data.train, data.dev
     test = pd.read_csv(TEST_CSV)
     y = encode_evasion(train["evasion_label"].tolist())
-    val_idx = stratified_val_index(y, cfg.val_frac, SPLIT_SEED) if cfg.val_frac > 0 else np.array([], dtype=int)
-    ref = HERE / "data" / "splits" / "train_internal_val_index.json"
-    if cfg.val_frac == 0.1 and ref.exists():
+    if cfg.fold >= 0:
+        # Cross-fitting: fold k of all 3,448 rows is held out and its probabilities are the out-of-fold
+        # predictions (written as val_probs.npy). Choosing the epoch on that fold would leak, so the
+        # last epoch is kept. Same partition as encoder.py --fold (stratified, SPLIT_SEED).
+        if cfg.select != "last":
+            raise SystemExit("--fold needs --select last (selecting on the held-out fold would leak)")
+        val_idx = stratified_fold_index(y, cfg.n_folds, cfg.fold, SPLIT_SEED)
+        frozen = SPLITS / "train_5fold.json"
+        if cfg.n_folds == 5 and frozen.exists():
+            assert np.array_equal(val_idx, np.array(json.loads(frozen.read_text())["folds"][cfg.fold])), \
+                "fold differs from data/splits/train_5fold.json"
+    elif cfg.val_frac > 0:
+        val_idx = stratified_val_index(y, cfg.val_frac, SPLIT_SEED)
+    else:
+        val_idx = np.array([], dtype=int)
+    ref = SPLITS / "train_internal_val_index.json"
+    if cfg.fold < 0 and cfg.val_frac == 0.1 and ref.exists():
         assert np.array_equal(val_idx, np.array(json.loads(ref.read_text()))), "train slice differs from encoder runs"
     tr_idx = np.setdiff1d(np.arange(len(train)), val_idx)
     if cfg.limit_train:
@@ -243,7 +247,8 @@ def run(cfg: Cfg, outroot: Path) -> None:
     if cfg.track and not cfg.pilot_steps:
         from utils.tracking import Tracker
 
-        tracker = Tracker(name=cfg.name, seed=cfg.seed, group=cfg.name, job_type="train",
+        tracker = Tracker(name=cfg.name, seed=f"fold{cfg.fold}" if cfg.fold >= 0 else cfg.seed, group=cfg.name,
+                          job_type="fold" if cfg.fold >= 0 else "train",
                           config={**asdict(cfg), "steps_per_epoch": steps_per_epoch, "n_train": len(X_tr)},
                           state_dir=out)
 
@@ -310,7 +315,7 @@ def run(cfg: Cfg, outroot: Path) -> None:
                 "dev_classes_named": int(len(set(pred.tolist()))),
             })
         history.append(row)
-        print(f"[{cfg.name} seed{cfg.seed}] ep{epoch} loss={row['train_loss']:.4f} val={val_f1:.4f} "
+        print(f"[{cfg.name} {out.name}] ep{epoch} loss={row['train_loss']:.4f} val={val_f1:.4f} "
               f"devS2={row.get('dev_subtask2_macro_f1', float('nan')):.4f} "
               f"devS1={row.get('dev_subtask1_macro_f1', float('nan')):.4f} ({row['minutes']:.1f}m)", flush=True)
 
@@ -358,7 +363,7 @@ def run(cfg: Cfg, outroot: Path) -> None:
                          "dev_subtask1_macro_f1": result["dev_subtask1_macro_f1"],
                          "peak_vram_gb": result["peak_vram_gb"] or 0.0, "wall_minutes": result["wall_minutes"]})
         tracker.finish()
-    print(f"[done] {cfg.name} seed{cfg.seed}: epoch {e} selected; dev S2 {result['dev_subtask2_macro_f1']}, "
+    print(f"[done] {cfg.name} {out.name}: epoch {e} selected; dev S2 {result['dev_subtask2_macro_f1']}, "
           f"S1 {result['dev_subtask1_macro_f1']}; {result['wall_minutes']:.0f} min", flush=True)
 
 
@@ -369,7 +374,7 @@ def main() -> None:
             p.add_argument(f"--{f.replace('_', '-')}", action=argparse.BooleanOptionalAction, default=v)
         else:
             p.add_argument(f"--{f.replace('_', '-')}", type=type(v), default=v, required=(f == "name"))
-    p.add_argument("--outroot", default=str(HERE / "runs"))
+    p.add_argument("--outroot", default=str(RUNS))
     a = vars(p.parse_args())
     outroot = Path(a.pop("outroot"))
     run(Cfg(**a), outroot)

@@ -4,18 +4,16 @@
 from __future__ import annotations
 
 import json
-import os
-from pathlib import Path
 
 import numpy as np
 
-from decision_rules.decide import logit_adjust, make_rules, nested_cv
+from decision_rules.decide import make_rules, nested_cv
 from qevasion.labels import (EVASION_LABELS, N_EVASION, encode_clarity, encode_evasion,
                              leaf_to_official_clarity)
 from qevasion.loader import dev_reference_mask, load_qevasion
 from qevasion.scoring import score_subtask1, score_subtask2
+from qevasion.paths import RUNS
 
-RUNS = Path(os.environ.get("CLARITY_RUNS", Path(__file__).resolve().parents[2] / "runs"))
 FLAT = "E10_fullq_16ep"
 NR = [EVASION_LABELS.index(c) for c in ("Declining to answer", "Claims ignorance", "Clarification")]
 OT = [i for i in range(N_EVASION) if i not in NR]

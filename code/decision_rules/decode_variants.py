@@ -3,7 +3,6 @@
 
 from __future__ import annotations
 
-from pathlib import Path
 
 import numpy as np
 
@@ -11,8 +10,8 @@ from decision_rules.decide import load_probs, logit_adjust, nested_cv
 from qevasion.labels import EVASION_LABELS, N_EVASION, encode_evasion
 from qevasion.loader import dev_reference_mask, load_qevasion
 from qevasion.scoring import score_subtask2
+from qevasion.paths import RUNS
 
-RUNS = Path(__file__).resolve().parents[2] / "runs"
 sp = load_qevasion()
 GOLD = dev_reference_mask(sp.dev)
 y = encode_evasion(sp.train["evasion_label"].tolist())

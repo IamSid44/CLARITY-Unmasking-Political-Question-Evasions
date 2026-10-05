@@ -4,7 +4,6 @@
 from __future__ import annotations
 
 import itertools
-from pathlib import Path
 
 import numpy as np
 
@@ -14,8 +13,8 @@ from qevasion.labels import (N_EVASION, OFFICIAL_PARTITION_MAP, encode_clarity, 
 from decision_rules.decide import reference_masks
 from qevasion.loader import dev_reference_mask, load_qevasion
 from qevasion.scoring import score_subtask1, score_subtask2
+from qevasion.paths import RUNS
 
-RUNS = Path(__file__).resolve().parents[2] / "runs"
 SYSTEMS = {
     "base_8ep": ("L0_large_base", "E11_base_8ep"),
     "base_16ep": ("E10_base_16ep", "E11_base_16ep"),

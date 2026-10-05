@@ -1,0 +1,60 @@
+\section{Is the Gap Knowledge? An 8B LLM Classifier}\label{sec:llm}
+
+The encoder track and the error analysis (\S\ref{sec:analysis}) show that the model, and not label noise, is what fails.
+That leaves two explanations.
+The encoder may lack \emph{knowledge} that a 0.4B-parameter model never acquired, or it may lack \emph{label meaning}, which a classifier has to infer from about 3,400 examples.
+A larger pretrained classifier tests the first explanation with nothing else changed.
+Before any run we registered three predictions.
+The gain would pass the screening bar, the single-model \Stwo{} mean would lie in 0.43--0.50 with \Sone{} rising by +0.02 to +0.05, and the gain would fall mostly on the commitment boundary (Explicit $\leftrightarrow$ Implicit, General $\leftrightarrow$ Implicit/Explicit) and more on agreed than on contested items.
+
+\paragraph{One change: the backbone.}
+We took the best encoder configuration (sub-question, full question and answer, 16 epochs) and replaced DeBERTa-v3-large with Qwen3-8B-Base \citep{qwen3}.
+The model is adapted with LoRA \citep{hu2022lora} of rank 16 ($\alpha=32$, dropout 0.05) on all linear projections of the attention and feed-forward blocks, and a new 9-way linear head, trained in full, reads the hidden state of the last token (Figure~\ref{fig:arch}).
+The input text and token budgets are the encoder's, with one fixed closing question appended (``How does the answer respond to the sub-question?'') so that the token the head reads comes after the whole question and answer in every item.
+Every run first checks that an item's logits are the same alone and inside a right-padded batch, which guards against a head that reads a padding token.
+Training used AdamW at $10^{-4}$ for 3 epochs with an effective batch of 16, and the learning rate and epoch count change only because the backbone does.
+Everything else stays identical, namely the same 3,103 training rows, the same 345-row train slice (asserted identical in code), plain cross-entropy and the epoch with the best slice macro-F1.
+Seeds 0--9 are paired with the DeBERTa runs of the same seeds, and Appendix~\ref{sec:app} lists all hyperparameters and the compute.
+
+\begin{table*}[t]
+\centering
+\small
+\setlength{\tabcolsep}{5pt}
+\begin{tabular}{@{}lccccc@{}}
+\toprule
+Dev macro-F1 & Qwen3-8B + LoRA & DeBERTa-v3-large & $\Delta$ & Seeds up & 95\% CI \\
+\midrule
+Single model, \Stwo{}            & \pmsd{0.476}{0.043} & \pmsd{0.384}{0.030} & +0.092 & 10/10 & \\
+Single model, \Sone{}            & \pmsd{0.709}{0.031} & \pmsd{0.614}{0.027} & +0.095 & 10/10 & \\
+Single model + LA, \Stwo{}       & \pmsd{0.538}{0.043} & \pmsd{0.389}{0.019} & +0.149 & 10/10 & \\
+System, \Stwo{}                  & 0.543 (0.549) & 0.405 (0.412) & +0.136 & & [+0.054, +0.224] \\
+System, \Sone{}                  & 0.746 & 0.648 & +0.098 & & \\
+System, \Stwo{}, 2-annotator sets & 0.524 & 0.382 & +0.142 & & \\
+\midrule
+Follow-up (one change)           & Variant & Qwen, 3 epochs & $\Delta$ & Seeds up & 95\% CI \\
+\midrule
+12 epochs, single model, \Stwo{}$^{\ddagger}$ & \pmsd{0.543}{0.015} & \pmsd{0.462}{0.080} & +0.082$^{\dagger}$ & & \\
+All of train, single model, \Stwo{}          & \pmsd{0.492}{0.045} & \pmsd{0.476}{0.043} & +0.017 & 6/10 & \\
+All of train, system, \Stwo{}                & 0.575 (0.562) & 0.543 (0.549) & +0.028 & & [$-$0.026, +0.092] \\
+\bottomrule
+\end{tabular}
+\caption{The backbone swap (top) and two follow-ups (bottom) on dev. Single model is the mean\,$\pm$\,s.d.\ over seeds, and $\Delta$ the paired mean difference. LA is logit adjustment. System is the 10-seed ensemble with LA, $\tau$ chosen by nested CV (in parentheses, the mean over 10 CV splits). CIs are bootstraps over dev items, and the 2-annotator sets follow the test regime. $^{\ddagger}$Seeds 0--2. $^{\dagger}$Reported only, since the 12-epoch schedule was adopted on the train slice.}
+\label{tab:llm-main}
+\end{table*}
+
+\paragraph{Results at ten paired seeds.}
+The 3-seed screen passed the bar (+0.081 on \Stwo{}, 3 of 3 seeds up), so we extended the run to ten seeds (Table~\ref{tab:llm-main}).
+Per model, Qwen improves \Stwo{} by +0.092 ($t=7.12$) and \Sone{} by +0.095 ($t=8.48$) on all ten seeds, which is more than the whole encoder track gained (0.315 to 0.384).
+The system gain holds on the 2-annotator reference sets (0.524 against 0.382).
+All the registered predictions about size held, with the \Sone{} gain even exceeding its range, but the prediction about \emph{where} the gain falls turned out wrong (\S\ref{sec:analysis}).
+Among published dev results (Figure~\ref{fig:llm}), the system lies above TeleAI's fine-tuned Qwen2.5-7B (0.495) and ChulaNLP's pipeline (0.52) and below TeleAI's multi-call pipeline (0.617), though these come from other protocols.
+
+\FigureLLM
+
+\paragraph{Two single-change follow-ups.}
+In the 3-epoch runs the slice F1 rose at every epoch, and the last epoch was always the one selected.
+Under a cosine schedule this proves little, because the schedule itself favours the last epoch, so only a longer schedule can test for undertraining.
+With 12 epochs (seeds 0--2) the slice selected epochs 9, 11 and 8, and the slice F1 rose by +0.084 on all three seeds, so the rule we had registered adopted the longer schedule.
+Training loss fell to about 0.02 without the slice F1 declining, and dev \Stwo{} was \pmsd{0.543}{0.015}, which we report but did not use for the choice.
+Training on all 3,448 rows gave +0.017 per model (6 of 10 seeds up), but the system difference has a 95\% interval of [$-$0.026, +0.092], and \Sone{} fell from 0.746 to 0.711.
+As with the encoder, the 3-seed screen (+0.039) had overstated the gain.

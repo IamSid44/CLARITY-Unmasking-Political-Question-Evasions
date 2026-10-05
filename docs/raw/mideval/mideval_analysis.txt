@@ -52,13 +52,13 @@ TF-IDF (1-2 grams, 50k features) + logistic regression; C and class weighting ch
                 always majority (Explicit)           0.060                 0.055   0.136   0.373              1
                uniform random (mean of 20)           0.129                 0.116   0.299   0.196              9
 TF-IDF + LR (class_weight=balanced, C=1.0)           0.257                 0.243   0.445   0.351              8
-[B: 18.5 s wall, 16.1 s CPU]
+[B: 17.9 s wall, 19.5 s CPU]
 
 ==============================================================================
 C  frozen splits
 ==============================================================================
 train-internal slice: 345 rows, identical across all 45 9-way runs: True
-dev-A 153 items, dev-B 155 items, saved to mideval/splits/dev_A_B.json
+dev-A 153 items, dev-B 155 items, saved to data/splits/dev_A_B.json
 [C: 0.0 s wall, 0.1 s CPU]
 
 ==============================================================================
@@ -155,8 +155,8 @@ in-set rate by input length (DeBERTa tokens):
   full input > 1024 (cut)          n= 20  in-set 0.200
   shorter half of dev (test-like; test median input is 137 tokens)  n=154  S2 0.400  vs longer half 0.283
 
-10 triangle error examples written to mideval/analysis/error_examples.md
-[F: 4.7 s wall, 3.0 s CPU]
+10 triangle error examples written to docs/raw/mideval/error_examples.md
+[F: 4.4 s wall, 3.2 s CPU]
 
 ==============================================================================
 G  human ceiling and seed diversity
@@ -203,12 +203,12 @@ experiment log Step 0) and Deflection. Read the per-class line against them.
 [H: 0.0 s wall, 0.0 s CPU]
 
 ==============================================================================
-COMPUTE: total 24.1 s wall, 20.8 s CPU, GPU 0 s
+COMPUTE: total 23.3 s wall, 24.4 s CPU, GPU 0 s
   A  data facts and annotator statistics                            0.0 s wall     0.0 s CPU
-  B  trivial baselines                                             18.5 s wall    16.1 s CPU
+  B  trivial baselines                                             17.9 s wall    19.5 s CPU
   C  frozen splits                                                  0.0 s wall     0.1 s CPU
   D  main table                                                     0.5 s wall     1.2 s CPU
   E  bootstrap 95% intervals (1,000 resamples over dev items)       0.3 s wall     0.3 s CPU
-  F  error analysis: FINAL 10-seed ensemble, argmax (no dev tuning)    4.7 s wall     3.0 s CPU
+  F  error analysis: FINAL 10-seed ensemble, argmax (no dev tuning)    4.4 s wall     3.2 s CPU
   G  human ceiling and seed diversity                               0.0 s wall     0.0 s CPU
   H  the proposal's C4 prediction: does the decision rule gain on non-unanimous items?    0.0 s wall     0.0 s CPU

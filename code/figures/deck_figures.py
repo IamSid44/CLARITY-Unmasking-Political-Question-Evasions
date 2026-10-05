@@ -9,7 +9,6 @@ without the runs/ folder:
 
 from __future__ import annotations
 
-from pathlib import Path
 
 import matplotlib
 
@@ -18,8 +17,9 @@ import matplotlib.pyplot as plt
 import numpy as np
 from matplotlib.lines import Line2D
 
-ROOT = Path(__file__).resolve().parents[2]
-OUT = ROOT / "docs" / "figures" / "deck"
+from qevasion.paths import FIGURES, RAW
+
+OUT = FIGURES / "deck"
 
 # paper_figures.py's rcParams, scaled up so that a figure placed ~6 in wide on a slide reads at ~12 pt.
 plt.rcParams.update({
@@ -239,7 +239,7 @@ def per_class_gain() -> None:
 
 def confusion() -> None:
     """Final DeBERTa 10-seed ensemble, argmax, rows = majority gold (docs/raw/mideval/confusion_final.csv)."""
-    rows = np.genfromtxt(ROOT / "docs/raw/mideval/confusion_final.csv", delimiter=",", skip_header=1,
+    rows = np.genfromtxt(RAW / "mideval" / "confusion_final.csv", delimiter=",", skip_header=1,
                          usecols=range(1, 10), dtype=int)
     short = ["Explicit", "Implicit", "Dodging", "General", "Deflection", "Partial", "Declining", "Claims ign.", "Clarif."]
     fig, ax = plt.subplots(figsize=(5.6, 4.7))

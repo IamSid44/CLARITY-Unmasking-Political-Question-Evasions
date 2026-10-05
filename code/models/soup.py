@@ -7,7 +7,6 @@ import argparse
 import json
 import time
 from dataclasses import asdict
-from pathlib import Path
 
 import numpy as np
 import torch
@@ -20,7 +19,7 @@ from qevasion.labels import EVASION_LABELS, encode_clarity, encode_evasion, leaf
 from qevasion.loader import DATA_CACHE, dev_reference_mask, load_qevasion
 from qevasion.scoring import macro_f1_single_label, score_subtask1, score_subtask2
 
-RUNS = Path(__file__).resolve().parents[2] / "runs"
+from qevasion.paths import RUNS
 
 
 def main() -> None:

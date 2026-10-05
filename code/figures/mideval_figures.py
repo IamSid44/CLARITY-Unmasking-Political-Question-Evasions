@@ -3,7 +3,6 @@
 
 from __future__ import annotations
 
-from pathlib import Path
 
 import matplotlib
 
@@ -14,9 +13,9 @@ import numpy as np
 from qevasion.labels import encode_clarity, leaf_to_official_clarity
 from qevasion.loader import DATA_CACHE, dev_reference_mask, load_qevasion
 from qevasion.scoring import score_subtask1, score_subtask2
+from qevasion.paths import FIGURES as OUT
+from qevasion.paths import RUNS
 
-ROOT = Path(__file__).resolve().parents[2]
-OUT = ROOT / "docs" / "figures"
 CONFIGS = [
     ("sub-question + answer\n8 epochs", ["L0_large_base", "E11_base_8ep"]),
     ("sub-question + answer\n16 epochs", ["E10_base_16ep", "E11_base_16ep"]),
@@ -28,7 +27,7 @@ SURFACE, INK, INK2, GRID, SEED, MEAN = "#fcfcfb", "#0b0b0b", "#52514e", "#e4e3df
 def per_seed(runs, mask, ctrue):
     s2, s1 = {}, {}
     for r in runs:
-        for f in sorted((ROOT / "runs" / r).glob("seed*/dev_probs.npy")):
+        for f in sorted((RUNS / r).glob("seed*/dev_probs.npy")):
             seed = int(f.parent.name.removeprefix("seed"))
             pred = np.load(f).argmax(1)
             s2[seed] = score_subtask2(pred, mask).macro_f1

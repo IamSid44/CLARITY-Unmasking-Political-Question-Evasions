@@ -9,13 +9,11 @@ import time
 from collections import Counter
 from contextlib import contextmanager
 from itertools import combinations
-from pathlib import Path
 
 import numpy as np
 import pandas as pd
 
 from qevasion.labels import (
-    CLARITY_LABELS,
     EVASION_LABELS,
     N_EVASION,
     encode_clarity,
@@ -25,11 +23,12 @@ from qevasion.labels import (
     normalize_evasion,
 )
 from qevasion.loader import DATA_CACHE, consensus_level, derive_dev_consensus_leaf, dev_reference_mask, load_qevasion
-from qevasion.scoring import OOV_INDEX, score_subtask1, score_subtask2
+from qevasion.scoring import score_subtask1, score_subtask2
 from decision_rules.decide import fit_tau, logit_adjust, make_rules, nested_cv
 
-ROOT = Path(__file__).resolve().parents[2]
-ANALYSIS, SPLITS = ROOT / "docs" / "raw" / "mideval", ROOT / "data" / "splits"
+from qevasion.paths import RAW, RUNS, SPLITS, TEST_CSV
+
+ANALYSIS = RAW / "mideval"
 ANN = ("annotator1", "annotator2", "annotator3")
 SEED = 2026
 N_BOOT = 1000
@@ -63,7 +62,7 @@ def section(name: str):
 
 
 def load_seed_probs(runs: list[str]) -> np.ndarray:
-    files = [f for r in runs for f in sorted((ROOT / "runs" / r).glob("seed*/dev_probs.npy"))]
+    files = [f for r in runs for f in sorted((RUNS / r).glob("seed*/dev_probs.npy"))]
     if not files:
         raise SystemExit(f"no dev_probs.npy for {runs}")
     return np.stack([np.load(f) for f in files])
@@ -139,7 +138,7 @@ def main() -> None:
     n = len(dev)
 
     with section("A  data facts and annotator statistics"):
-        test = pd.read_csv(ROOT / "data" / "clarity_task_evaluation_dataset.csv")
+        test = pd.read_csv(TEST_CSV)
         say(f"splits: train {len(train)}, dev {n}, test {len(test)} (test has no labels locally)")
         say(f"dev majority label exists for {has_maj.sum()} items; {(~has_maj).sum()} three-way splits")
         say(f"dev consensus: unanimous {(cons == 1).sum()}, 2-1 {(cons == 2).sum()}, all different {(cons == 3).sum()}")
@@ -232,7 +231,7 @@ def main() -> None:
     with section("C  frozen splits"):
         nine_way = ("L0_large_base", "E8_fullq_bal_focal", "E8b_fullq_ce", "E9_hier", "E10_base_16ep",
                     "E10_fullq_16ep", "E11_base_8ep", "E11_base_16ep", "E11_fullq_16ep")
-        vi = [np.load(f) for r in nine_way for f in sorted((ROOT / "runs" / r).glob("seed*/val_index.npy"))]
+        vi = [np.load(f) for r in nine_way for f in sorted((RUNS / r).glob("seed*/val_index.npy"))]
         same = all(np.array_equal(np.sort(v), np.sort(vi[0])) for v in vi)
         say(f"train-internal slice: {len(vi[0])} rows, identical across all {len(vi)} 9-way runs: {same}")
         (SPLITS / "train_internal_val_index.json").write_text(json.dumps(sorted(int(i) for i in vi[0])))

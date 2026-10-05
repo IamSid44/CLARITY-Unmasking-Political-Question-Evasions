@@ -3,7 +3,6 @@
 
 from __future__ import annotations
 
-from pathlib import Path
 
 import matplotlib
 
@@ -16,9 +15,9 @@ from decision_rules.decide import make_rules, nested_cv
 from qevasion.labels import N_EVASION, encode_clarity, encode_evasion, leaf_to_official_clarity
 from qevasion.loader import dev_reference_mask, load_qevasion
 from qevasion.scoring import score_subtask1, score_subtask2
+from qevasion.paths import REPORT_FIGURES as OUT
 
-ROOT = Path(__file__).resolve().parents[2]
-OUT = ROOT / "docs" / "figures"
+from qevasion.paths import RUNS
 
 plt.rcParams.update({
     "font.family": "serif", "font.serif": ["STIXGeneral"], "mathtext.fontset": "stix",
@@ -33,7 +32,7 @@ SEED_C, MEAN_C, DEB_C, QWEN_C = "0.70", "black", "0.80", "0.45"
 def load(runs: list[str]) -> dict[int, np.ndarray]:
     out = {}
     for r in runs:
-        for f in sorted((ROOT / "runs" / r).glob("seed*/dev_probs.npy")):
+        for f in sorted((RUNS / r).glob("seed*/dev_probs.npy")):
             out[int(f.parent.name.removeprefix("seed"))] = np.load(f)
     return out
 

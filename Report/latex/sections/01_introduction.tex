@@ -1,0 +1,26 @@
+\section{Introduction}
+\label{sec:intro}
+\FigureArch
+
+Politicians often answer the question they would have liked to be asked.
+\citet{thomas-etal-2024-never} turned this observation into a classification task with a two-level taxonomy of response clarity and evasion, and SemEval-2026 Task~6 \citep{thomas-etal-2026-semeval} made it a shared task.
+Subtask~2 asks for one of nine evasion types, and Subtask~1 for one of three clarity levels, which follow directly from the nine types.
+
+The competition was won by pipelines that call a large language model (LLM) several times per item \citep{shi-etal-2026-teleai,peerachaidecho-rutherford-2026-chulanlp}.
+Fine-tuned encoders, by contrast, stopped at about 0.50 macro-F1 on Subtask~2 no matter how large they were or how many were ensembled \citep{thomas-etal-2026-semeval}.
+A leaderboard cannot tell us \emph{why} the encoders stop there, and the possible reasons predict different things.
+If the labels are too noisy to learn, models should fail where annotators disagree.
+If the decision rule is wrong for the metric, a better rule should help.
+If the model lacks the knowledge needed to read an answer against its question, a larger pretrained model should help under the same protocol.
+And if the meaning of the labels cannot be learnt from 3,448 examples, giving the model definitions should help.
+
+We test these explanations with a deliberately controlled single-pass classifier (Figure~\ref{fig:arch}).
+Every change is made on its own against a named control, every claim rests on ten paired seeds, our predictions were written down before each run, and nothing is chosen on the development set.
+This gives four contributions.
+\begin{itemize}
+  \item A DeBERTa-v3-large system (\S\ref{sec:encoder}) whose two real improvements, longer training and the full journalist question, are separated from a series of documented failures: re-ranking, hierarchical models, rebalanced losses, per-class thresholds and model soups.
+  \item Evidence that the remaining gap lies in the model and not in label noise or the decision rule (\S\ref{sec:analysis}).
+  \item A one-change test of the knowledge explanation (\S\ref{sec:llm}). Replacing the backbone with Qwen3-8B-Base fine-tuned with LoRA \citep{qwen3,hu2022lora} improves both subtasks on all ten seeds and lifts the ten-seed system from 0.405 to 0.543 on Subtask~2 and from 0.648 to 0.746 on Subtask~1.
+  \item An analysis of where that gain falls, which shows that our own registered prediction was wrong (\S\ref{sec:analysis}).
+\end{itemize}
+Because the test labels were never released, all comparisons are on the 308-item development set, and we report seed spreads, paired differences and bootstrap intervals throughout.

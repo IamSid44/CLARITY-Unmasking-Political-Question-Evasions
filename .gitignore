@@ -3,21 +3,26 @@ __pycache__/
 .DS_Store
 .pytest_cache/
 
+# generated locally (runs and logs are on Hugging Face / W&B)
 runs/
 logs/
 wandb/
 data/cache/
-.env
-code/.env
 *.log
 *.tmp
 
-jarvis_bundle.tgz
+# keys
+.env
+code/.env
+
+# submission packaging
 Nier_ANLP-Mid.zip
 Nier_ANLP-Mid/
 
-archive/
+# packaged predictions: only the three reported systems are tracked
+submissions/*
+!submissions/L0_large_base/
+!submissions/L0_large_base_logitadj/
+!submissions/FINAL_fullq_16ep_10seed_logitadj/
+
 .claude/
-submissions/
-clarity/
-Materials/

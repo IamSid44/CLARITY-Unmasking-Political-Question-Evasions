@@ -1,0 +1,16 @@
+# E14 on GPU 0 (one lane: two runs on one card finish no sooner than in turn).
+# 1) E13b extended to seeds 3-9, so the 12-epoch configuration has 10 seeds (epoch chosen on the train slice).
+Q8_fullq_lora_12ep 3
+Q8_fullq_lora_12ep 4
+Q8_fullq_lora_12ep 5
+Q8_fullq_lora_12ep 6
+Q8_fullq_lora_12ep 7
+Q8_fullq_lora_12ep 8
+Q8_fullq_lora_12ep 9
+# 2) Cross-fitting: 5 folds of all 3,448 train rows (data/splits/train_5fold.json), seed 0, last epoch.
+#    val_probs.npy of fold k = out-of-fold probabilities of the rows in fold k.
+Q8_12ep_crossfit fold0 --select last --no-save-epoch-adapters
+Q8_12ep_crossfit fold1 --select last --no-save-epoch-adapters
+Q8_12ep_crossfit fold2 --select last --no-save-epoch-adapters
+Q8_12ep_crossfit fold3 --select last --no-save-epoch-adapters
+Q8_12ep_crossfit fold4 --select last --no-save-epoch-adapters

@@ -6,7 +6,6 @@ from __future__ import annotations
 import argparse
 import json
 import math
-import os
 import time
 from dataclasses import asdict, dataclass
 from pathlib import Path
@@ -43,7 +42,7 @@ from qevasion.scoring import macro_f1_single_label, score_subtask1, score_subtas
 from utils.ckpt import atomic_torch_save, clear_resume, load_resume, save_resume
 from utils.tracking import Tracker, load_env, push_async
 
-RUNS = Path(os.environ.get("CLARITY_RUNS", Path(__file__).resolve().parents[2] / "runs"))
+from qevasion.paths import RUNS
 
 LABEL_DESCRIPTIONS: dict[str, str] = {
     "Explicit": "the requested information is stated directly, in the form asked for",

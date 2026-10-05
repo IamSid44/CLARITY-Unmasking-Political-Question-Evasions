@@ -1,13 +1,14 @@
 #!/usr/bin/env python3
 """E13 seeds 0-2: top-k coverage, confidence vs correctness, and prediction counts of the 3-seed probability average (argmax)."""
-from pathlib import Path
 
 import numpy as np
 
 from qevasion.loader import dev_reference_mask, load_qevasion, DATA_CACHE
 from qevasion.labels import EVASION_LABELS, encode_evasion
 from qevasion.scoring import score_subtask2
-RUN = Path(__file__).resolve().parents[2] / "runs" / "Q8_fullq_lora"
+from qevasion.paths import RUNS
+
+RUN = RUNS / "Q8_fullq_lora"
 sp = load_qevasion(DATA_CACHE); mask = dev_reference_mask(sp.dev)
 ytr = encode_evasion(sp.train["evasion_label"].tolist())
 P = [np.load(RUN / f"seed{s}/dev_probs.npy") for s in range(3)]

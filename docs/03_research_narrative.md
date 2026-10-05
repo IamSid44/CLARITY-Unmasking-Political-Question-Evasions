@@ -1177,7 +1177,15 @@ classifier**:
 12 epochs are adopted for it, at 3 seeds so far. The DeBERTa track below remains the controlled
 baseline it was built to be.
 
-**Next steps, in order (current plan)** (the plan is the timeline in the Conclusion of `Report/Report.pdf`):
+**After the mid-evaluation (2026-10-06).** Phase 2 has started. The cascade (modules M1–M4), its
+protocol, the compute budget and the server procedure are in
+[`05_phase2_plan_and_budget.md`](05_phase2_plan_and_budget.md). Its first step, **E14 (M1)**, is
+registered in the experiment log. That step is the 12-epoch Qwen at 10 seeds, cross-fitting, and
+candidate sets with uncertainty. A finding made on the train slice before E14 ran changes one exit
+criterion: at 12 epochs, a candidate set needs 5–7 labels to cover the gold label for 90–95% of slice
+items.
+
+**Next steps, in order (plan at the mid-evaluation)** (the timeline in the Conclusion of `Report/Report.pdf`):
 1. **12 epochs at 10 seeds** → the new single-pass system. Then all of train with 12 epochs, as
    its own test.
 2. **Cascade, the label-meaning test.** Uncertain items, with Qwen's top-k, go to a larger open

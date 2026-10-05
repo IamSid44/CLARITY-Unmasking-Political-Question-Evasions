@@ -30,8 +30,9 @@ from pptx.opc.constants import RELATIONSHIP_TYPE as RT
 from pptx.oxml.ns import qn
 from pptx.util import Emu, Inches, Pt
 
-ROOT = Path(__file__).resolve().parents[2]
-FIG = ROOT / "docs" / "figures" / "deck"
+from qevasion.paths import FIGURES, ROOT
+
+FIG = FIGURES / "deck"
 OUT = ROOT / "Slides" / "CLARITY_mideval.pptx"
 
 # Palette: slate text on an off-white page, white panels, one steel accent for "what changed".

@@ -12,9 +12,9 @@ from decision_rules.decide import fit_tau, logit_adjust, make_rules, nested_cv, 
 from qevasion.labels import (EVASION_LABELS, N_EVASION, encode_clarity, encode_evasion,
                              leaf_to_official_clarity)
 from qevasion.loader import consensus_level, dev_reference_mask, load_qevasion
+from qevasion.paths import RUNS
 from qevasion.scoring import score_subtask1, score_subtask2
 
-RUNS = Path(__file__).resolve().parents[2] / "runs"
 sp = load_qevasion()
 GOLD = dev_reference_mask(sp.dev)
 CLAR = encode_clarity(sp.dev["clarity_label"].tolist())

@@ -1,0 +1,9 @@
+@module models.llm_classifier
+@hf-push
+@need-gb 60
+
+# E14 (module M1): the E13b configuration -- Qwen3-8B-Base + LoRA, 12 epochs -- on the lab server.
+# Everything else is llm_classifier.py's default (report Table 7), as in runs/Q8_fullq_lora_12ep/seed0/config.json.
+--epochs 12
+--no-grad-checkpoint
+--track

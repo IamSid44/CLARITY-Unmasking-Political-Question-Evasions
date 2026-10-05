@@ -3,7 +3,6 @@
 
 from __future__ import annotations
 
-from pathlib import Path
 
 import matplotlib
 
@@ -15,9 +14,9 @@ from decision_rules.decide import make_rules, nested_cv
 from qevasion.labels import N_EVASION, encode_evasion
 from qevasion.loader import dev_reference_mask, load_qevasion
 from qevasion.scoring import score_subtask2
+from qevasion.paths import FIGURES as OUT
+from qevasion.paths import RUNS
 
-ROOT = Path(__file__).resolve().parents[2]
-OUT = ROOT / "docs" / "figures"
 CONFIGS = [
     ("DeBERTa-v3-large\nbaseline", ["L0_large_base", "E11_base_8ep"]),
     ("DeBERTa-v3-large\n+ full question, 16 ep", ["E10_fullq_16ep", "E11_fullq_16ep"]),
@@ -33,7 +32,7 @@ BAR_D, BAR_Q, REF = "#9a9a94", "#2a78d6", "#c2410c"
 def load(runs: list[str]) -> dict[int, np.ndarray]:
     out = {}
     for r in runs:
-        for f in sorted((ROOT / "runs" / r).glob("seed*/dev_probs.npy")):
+        for f in sorted((RUNS / r).glob("seed*/dev_probs.npy")):
             out[int(f.parent.name.removeprefix("seed"))] = np.load(f)
     return out
 

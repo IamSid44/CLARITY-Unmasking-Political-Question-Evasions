@@ -1,0 +1,71 @@
+\section{Problem Statement, Data and Evaluation}
+\label{sec:task}
+
+\paragraph{Problem.}
+SemEval-2026 Task~6 \citep{thomas-etal-2026-semeval} uses the question--answer pairs of \citet{thomas-etal-2024-never}, taken from U.S.\ presidential interviews.
+Each item is a triple $x = (q, Q, a)$.
+Here $q$ is a sub-question (median 15 tokens), $Q$ is the journalist's full turn from which it was split (median 62 tokens), and $a$ is the president's entire answer (median 266 tokens).
+Let $\mathcal{Y}_9$ be the nine evasion types, $\mathcal{Y}_3$ the three clarity levels, and $g:\mathcal{Y}_9 \rightarrow \mathcal{Y}_3$ the fixed taxonomy map in Table~\ref{tab:taxonomy}.
+Subtask~2 (\Stwo{}) asks for $f(x) \in \mathcal{Y}_9$, the way \emph{that particular sub-question} was answered, and Subtask~1 (\Sone{}) asks for a level in $\mathcal{Y}_3$.
+Like the top-ranked systems \citep{shi-etal-2026-teleai,peerachaidecho-rutherford-2026-chulanlp}, we learn $f$ and predict $g(f(x))$ for \Sone{}.
+We call a classifier \emph{single-pass} if it runs one model once per item, and the question of this paper is what limits such a classifier on this task.
+
+\begin{table}[t]
+\centering
+\small
+\setlength{\tabcolsep}{3.5pt}
+\begin{tabular}{@{}llrr@{}}
+\toprule
+Evasion type & Clarity level & Train \% & Dev sets \\
+\midrule
+Explicit            & Clear Reply     & 30.5 & 115 \\
+\midrule
+Implicit            & Ambivalent      & 14.2 & 99 \\
+Dodging             & Ambivalent      & 20.5 & 96 \\
+General             & Ambivalent      & 11.2 & 113 \\
+Deflection          & Ambivalent      & 11.0 & 51 \\
+Partial/half-answer & Ambivalent      & 2.3  & 14 \\
+\midrule
+Declining to answer & Clear Non-Reply & 4.2  & 17 \\
+Claims ignorance    & Clear Non-Reply & 3.5  & 15 \\
+Clarification       & Clear Non-Reply & 2.7  & 4 \\
+\bottomrule
+\end{tabular}
+\caption{The taxonomy. Each evasion type determines a clarity level. Train \% is the share of the 3,448 training labels, and Dev sets is the number of the 308 dev items whose reference set contains the type.}
+\label{tab:taxonomy}
+\end{table}
+
+\paragraph{Data.}
+The training set has 3,448 items with one label each.
+The development (dev) set has 308 items labelled by three annotators, of which 125 are unanimous, 150 split two to one and 33 get three different labels, so the reference set $G_i$ of an item holds one to three types.
+The 237 test items have two annotators each, but their labels were never released and the evaluation server has closed, so every comparison in this paper is on dev.
+Two properties of the data shaped our modelling.
+First, 69\% of training rows share their answer with another sub-question, and 71.7\% of those shared answers carry different labels, so the model has to work out which part of a long answer responds to which sub-question.
+Second, the answers are long, and for 101 of the 308 dev items the sub-question and answer together exceed 512 DeBERTa tokens.
+
+\paragraph{Metric.}
+Both subtasks are scored by macro-F1 over all declared classes, so a class that is never predicted contributes $F_1=0$.
+\Sone{} uses plain macro-F1.
+\Stwo{} uses \emph{multi-reference macro-F1}, in which a prediction $\hat{y}_i$ is a true positive for class~$\hat{y}_i$ if $\hat{y}_i \in G_i$ and a false positive otherwise, while a miss charges one false negative to every member of $G_i$.
+If every prediction is acceptable, every class predicted at least once has $F_1=1$, and
+\begin{equation}
+  \text{macro-F1} = \frac{\lvert\{\hat{y}_1,\dots,\hat{y}_N\}\rvert}{9} .
+  \label{eq:task-coverage}
+\end{equation}
+The score therefore rewards two separate things, landing in the reference set (the \emph{in-set rate}) and \emph{coverage}, naming each class at least once, so that Clarification (4 dev reference sets) counts as much as Explicit (115).
+The floors show the trade-off.
+Always predicting Explicit lands in-set for 37.3\% of dev items but scores only 0.060 on \Stwo{}, uniform guessing scores 0.129, and TF-IDF with logistic regression scores 0.257 (on \Sone{}, 0.136, 0.299 and 0.445).
+
+\paragraph{Evaluation protocol.}
+We choose the training epoch on the \emph{train slice}, a fixed stratified 10\% of train (345 rows) held out from training, and never use dev to choose anything.
+Every system claim rests on \emph{ten paired seeds}, with the same seed numbers in both arms, reported as mean and standard deviation together with the paired difference, its $t$ statistic and the number of seeds that improve.
+Each variant is first screened on three seeds against a bar fixed in advance, a gain of at least +0.015 with at least two of the three seeds up.
+A \emph{single model} is one seed scored by argmax with no tuning on dev, and a \emph{system} averages the seeds' probabilities and applies logit adjustment \citep{menon2021longtail},
+\begin{equation}
+  \hat{y}(x) = \arg\max_{c}\; \frac{\bar{p}(c \mid x)}{\pi_c^{\,\tau}},
+  \label{eq:la}
+\end{equation}
+where $\bar{p}$ is the mean of the seeds' probabilities, $\pi_c$ is the frequency of class~$c$ in train, and $\tau$ is the only fitted parameter.
+Since $\tau$ is fitted on dev, we choose it by 5-fold nested cross-validation (grid from $-1$ to $2$, step 0.05) and score the pooled held-out predictions, reporting the first split and, where given, the mean over ten splits.
+Systems are compared with a bootstrap over dev items with the seeds held fixed (2,000 resamples), and because the test set has two annotators we also rescore dev against each of its three two-annotator reference sets.
+Before each experiment, we wrote its hypotheses and predicted outcomes into an experiment log.

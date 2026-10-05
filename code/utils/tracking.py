@@ -9,7 +9,8 @@ from pathlib import Path
 
 os.environ.setdefault("HF_HUB_DISABLE_XET", "1")
 
-ROOT = Path(__file__).resolve().parents[2]
+ROOT = Path(__file__).resolve().parents[2]  # kept local: this file also runs as a plain script
+LOGS = ROOT / "logs"
 ENV_FILE = ROOT / "code" / ".env"
 DEFAULT_PROJECT = "clarity-semeval26"
 
@@ -137,8 +138,8 @@ def push_run(outdir: Path, name: str, seed: int | str) -> bool:
         return False
 
 
-UPLOAD_LOG = ROOT / "logs" / "hf_uploads.log"
-UPLOAD_LOCK = ROOT / "logs" / ".hf_upload.lock"
+UPLOAD_LOG = LOGS / "hf_uploads.log"
+UPLOAD_LOCK = LOGS / ".hf_upload.lock"
 UPLOAD_TIMEOUT_S = 3600
 
 

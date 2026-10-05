@@ -1,4 +1,9 @@
-# Nier_ANLP: Mid-Evaluation Submission
+# Nier_ANLP: CLARITY (SemEval-2026 Task 6)
+
+**Status (2026-10-06):** the mid-evaluation is submitted (`Report/Report.pdf`, `Slides/CLARITY_mideval.pptx`).
+Phase 2, a confidence-routed cascade towards the final evaluation, has started. Its plan, protocol,
+budget and server procedure are in [`docs/05_phase2_plan_and_budget.md`](docs/05_phase2_plan_and_budget.md),
+and the running experiment (E14, module M1) is registered in `docs/02_experiment_log.md`.
 
 **Knowledge over Structure: A Controlled Study of Response Clarity Classification in Political Interviews**
 
@@ -29,7 +34,9 @@ International Institute of Information Technology, Hyderabad
 
 | If you want to... | Go to |
 |---|---|
-| read the report | `Report/Report.pdf` |
+| read the report | `Report/Report.pdf` (LaTeX source: `Report/latex/`) |
+| see the slides | `Slides/CLARITY_mideval.pptx` (built by `code/slides/build_deck.py`) |
+| see the plan for the final evaluation | `docs/05_phase2_plan_and_budget.md` |
 | understand the code layout | §3 and §4 below |
 | see the main models | `code/models/encoder.py` (DeBERTa), `code/models/llm_classifier.py` (Qwen3-8B + LoRA) |
 | see the scoring function | `code/qevasion/scoring.py` |
@@ -37,7 +44,7 @@ International Institute of Information Technology, Hyderabad
 | follow the research step by step | `docs/03_research_narrative.md` |
 | check each experiment's hypothesis and result | `docs/02_experiment_log.md` |
 | find the file behind any number in the report | `docs/04_results_sources.md` |
-| reproduce something | §6 below |
+| reproduce something | §7 below |
 
 ## 2. The task in brief
 
@@ -58,22 +65,27 @@ every number here is on the 308-item dev set.
 ## 3. Folder layout
 
 ```
-Nier_ANLP-Mid/
+CLARITY-Unmasking-Political-Question-Evasions/
 ├── README.md                        this file
 ├── requirements.txt                 Python dependencies
 ├── Report/
-│   └── Report.pdf                   the mid-evaluation report
+│   ├── Report.pdf                   the mid-evaluation report
+│   └── latex/                       its ACL-format LaTeX source (the final report extends it)
+├── Slides/
+│   └── CLARITY_mideval.pptx         the mid-evaluation slides (editable)
 │
 ├── code/                            ALL source code (run every command from inside this folder)
-│   ├── qevasion/                    shared library: data, labels, official-scorer replica
+│   ├── qevasion/                    shared library: data, labels, splits, paths, official-scorer replica
 │   ├── models/                      the trainable classifiers and model-level variants
+│   ├── cascade/                     Phase 2 cascade modules (M1: candidate sets and uncertainty)
 │   ├── decision_rules/              turning saved probabilities into labels
 │   ├── evaluation/                  metrics, run comparisons, packaging predictions
 │   ├── preregistered_analyses/      the analyses behind the reported numbers
-│   ├── figures/                     figures and tables used in the report
+│   ├── figures/                     figures and tables used in the report and slides
+│   ├── slides/                      builds the mid-evaluation deck (python-pptx)
 │   ├── utils/                       checkpointing and experiment tracking
-│   ├── launch/                      scripts that ran the 8B model on a rented GPU
-│   ├── experiments/                 argument files for every encoder experiment (E8–E12)
+│   ├── launch/                      lab-server queue (tmux) and rented-GPU (JarvisLabs) launchers
+│   ├── experiments/                 run lists of every queued experiment (E8–E12 encoder, E14 Qwen)
 │   └── .env.example                 template for optional W&B / Hugging Face keys
 │
 ├── data/                            evaluation CSV and fixed splits (train/dev download automatically)
@@ -81,9 +93,13 @@ Nier_ANLP-Mid/
 └── submissions/                     packaged predictions of the DeBERTa systems
 ```
 
-Two folders are created when you run the code and are not shipped: `runs/` (one folder per
-configuration and seed, holding probabilities, metrics and checkpoints; downloadable from Hugging Face)
-and `data/cache/` (the downloaded train and dev parquet files).
+Three folders are created when you run the code and are not shipped:
+- `runs/`: one folder per configuration and seed (or fold), holding probabilities, metrics and
+  checkpoints. It can be downloaded from Hugging Face.
+- `logs/`: training and queue logs.
+- `data/cache/`: the downloaded train and dev parquet files.
+
+Every path is defined once, in `code/qevasion/paths.py`. `CLARITY_RUNS` moves `runs/`.
 
 ---
 
@@ -159,8 +175,9 @@ and `data/cache/` (the downloaded train and dev parquet files).
 | `models.llm_classifier` | `utils.tracking` |
 | `models.rerank`, `models.soup` | `models.encoder` (and `utils.*`) |
 | `evaluation.compare_runs` | `models.encoder` |
-| `decision_rules.decode_variants`, `models.hier_combine`, `preregistered_analyses.mideval_analysis`, `preregistered_analyses.e11_replication`, `preregistered_analyses.e13_analysis`, `preregistered_analyses.qualitative_examples`, `figures.paper_figures`, `figures.paper_example`, `figures.e13_figures` | `decision_rules.decide` |
+| `decision_rules.decode_variants`, `models.hier_combine`, `preregistered_analyses.mideval_analysis`, `preregistered_analyses.e11_replication`, `preregistered_analyses.e13_analysis`, `preregistered_analyses.qualitative_examples`, `figures.paper_figures`, `figures.paper_example`, `figures.e13_figures`, `cascade.candidates` | `decision_rules.decide` |
 | `figures.paper_example`, `preregistered_analyses.qualitative_examples` | `preregistered_analyses.e13_analysis` |
+| `preregistered_analyses.e14_m1_analysis` | `cascade.candidates`, `preregistered_analyses.e13_analysis` |
 
 ---
 
@@ -211,12 +228,20 @@ and `data/cache/` (the downloaded train and dev parquet files).
 | `e13_analysis.py` | E13: Qwen vs DeBERTa, paired per seed and as 10-seed systems, plus E13b/E13c | `docs/raw/E13_final_analysis.txt` |
 | `e13_topk.py` | Top-k coverage and confidence vs correctness for Qwen | `docs/raw/E13_Q8_topk_confidence.txt` |
 | `qualitative_examples.py` | Side-by-side examples of the two 10-seed systems | `docs/raw/qualitative_examples.txt` |
+| `e14_m1_analysis.py` | E14 (M1): 12 vs 3 epochs, the seed-count curve, candidate-set coverage, uncertainty AUROC, headroom for the LLM stage | `docs/raw/E14_*.txt` |
+
+### `code/cascade/`
+
+| File | Purpose |
+|---|---|
+| `candidates.py` | Module M1. From a seed ensemble's saved probabilities it builds candidate sets C(x) (adaptive, rank-conformal or fixed top-k, calibrated on the train slice after temperature scaling) and an uncertainty score u(x) (logistic regression on the slice), for slice, dev, test and the cross-fitted train rows. Output: `runs/M1/<config>_<method>_a<alpha>/` |
 
 ### `code/figures/`
 
 | File | Produces |
 |---|---|
-| `paper_figures.py` | The report's two data figures, `fig_deberta_seeds.pdf` and `fig_qwen_vs_deberta.pdf`, written to `docs/figures/` |
+| `paper_figures.py` | The report's two data figures, `fig_deberta_seeds.pdf` and `fig_qwen_vs_deberta.pdf`, written to `Report/latex/figures/` |
+| `deck_figures.py` | The slides' figures, in the report's style, written to `docs/figures/deck/` |
 | `paper_example.py` | The report's worked example: one dev item through both 10-seed systems |
 | `taxonomy_counts.py` | Per-class counts for the taxonomy table (Table 1) |
 | `e13_figures.py`, `mideval_figures.py` | `docs/figures/e13_qwen_vs_deberta.png`, `docs/figures/per_seed_progression.png` |
@@ -232,13 +257,19 @@ and `data/cache/` (the downloaded train and dev parquet files).
 
 | File | Purpose |
 |---|---|
+| `start.sh` | Lab server: starts (or resumes) an experiment in a tmux session `clarity-<EXP>`, one window per lane file, so runs survive an ssh drop |
+| `run_queue.sh` | Lab server: runs one lane's list of runs in order. It skips finished runs, resumes interrupted ones, uploads each finished run to HF, and guards GPU memory on the shared card (falls back to gradient checkpointing). Usage is in the file header and `docs/05_phase2_plan_and_budget.md` §5 |
 | `jarvis_drive.sh` | Runs on a local machine. It packages the code, copies it to a rented GPU instance, starts training there inside tmux, copies logs and results back every 5 minutes, and pauses the instance when done |
 | `jarvis_setup.sh` | Runs on the instance. It creates the Python environment, downloads the model, runs a smoke test (including resume) and a timing pilot, then trains each seed and uploads the results |
 
 ### `code/experiments/`
 
-One folder per encoder experiment (E8, E8b, E9, E10, E11, E12). `common.args` holds the arguments
-shared by the experiment. Each line of a `lane_*.txt` file is one run: `<run name> <seed> <extra arguments>`.
+One folder per queued experiment: E8, E8b, E9, E10, E11 and E12 are DeBERTa; E14 is Qwen3-8B.
+- `common.args` holds the arguments shared by the experiment, plus queue directives (`@module`,
+  `@hf-push`, `@need-gb`).
+- Each line of a `lane_gpu<N>_<x>.txt` file is one run: `<run name> <seed | fold<k>> <extra arguments>`.
+
+`bash code/launch/start.sh <EXP>` runs an experiment.
 
 ### `data/`
 
@@ -247,6 +278,7 @@ shared by the experiment. Each line of a `lane_*.txt` file is one run: `<run nam
 | `clarity_task_evaluation_dataset.csv` | The task evaluation file (question–answer items with annotator columns) |
 | `splits/train_internal_val_index.json` | The fixed 10% train slice used for epoch selection |
 | `splits/dev_A_B.json` | A stratified two-way split of dev, used for the 2-fold protocol rows |
+| `splits/train_5fold.json` | The stratified 5-fold partition of all 3,448 train rows used for cross-fitting (E6 DeBERTa, E14 Qwen) |
 
 ### `docs/`
 
@@ -256,16 +288,19 @@ shared by the experiment. Each line of a `lane_*.txt` file is one run: `<run nam
 | `02_experiment_log.md` | Chronological log: every experiment's hypothesis and prediction (written before it ran), setup, result and analysis |
 | `03_research_narrative.md` | The same work as one argument, step by step from the first DeBERTa run to E13 |
 | `04_results_sources.md` | Every number in the report with the script and output file it comes from |
+| `05_phase2_plan_and_budget.md` | Phase 2 (after the mid-evaluation): the cascade plan, protocol, compute ledger and budget, how to run on the lab server |
 | `raw/` | Raw text and CSV outputs of every analysis script |
 | `figures/` | Generated figures |
 
-Read the documents in `docs/` in order: 01 explains the metric, 02 is the full record, 03 tells the story, and 04 is
-the index of numbers.
+Read the documents in `docs/` in order: 01 explains the metric, 02 is the full record, 03 tells the
+story, 04 is the index of numbers, and 05 is the plan from here on.
 
-The log records the work as it happened. It mentions the lab-server queue scripts (`run_queue.sh`,
-`run_pipeline.sh`, `start.sh`), training logs (`logs/*.log`) and the team's earlier analysis track
-(`higrec`). These were infrastructure or superseded work and are not part of this submission. Every
-result the report uses is reproducible from the code here and the runs on Hugging Face.
+The log records the work as it happened. It mentions:
+- `run_pipeline.sh`, the original E0 + E6 pipeline, which is no longer shipped;
+- the team's earlier analysis track (`higrec`), since retired; it remains in the git history.
+
+The lab-server queue (`run_queue.sh`, `start.sh`) is in `code/launch/`. Every result the report uses
+is reproducible from the code here and the runs on Hugging Face.
 
 ### `submissions/`
 
@@ -287,7 +322,8 @@ adjustment, and the final DeBERTa system (`FINAL_fullq_16ep_10seed_logitadj`). E
 | TeleAI (1st place), multi-call DeepSeek-V3 pipeline | 0.617 | 0.812 |
 | Human annotator scored against the other two | 0.684 | — |
 
-The plan and timeline to the final evaluation are in the Conclusion of `Report/Report.pdf`.
+The plan and timeline to the final evaluation are in the Conclusion of `Report/Report.pdf`. The working
+version, with the budget and the current status, is `docs/05_phase2_plan_and_budget.md`.
 
 ---
 
@@ -319,7 +355,7 @@ python -m preregistered_analyses.e11_replication       # DeBERTa replication
 python -m decision_rules.decide --run-dir ../runs/E10_fullq_16ep
 python -m evaluation.analyze   --run-dir ../runs/Q8_fullq_lora
 python -m evaluation.verify_scorer_geometry
-python -m figures.paper_figures                        # report figures -> docs/figures/
+python -m figures.paper_figures                        # report figures -> Report/latex/figures/
 python -m figures.taxonomy_counts                      # Table 1
 ```
 
@@ -342,8 +378,16 @@ python -m models.llm_classifier --name Q8_fullq_lora_12ep --seed 0 --epochs 12 #
 python -m models.llm_classifier --name Q8_alldata --seed 0 --val-frac 0 --select last   # E13c
 ```
 
-On a rented instance: `bash code/launch/jarvis_drive.sh` (run from the submission root, with no
-arguments, to list its commands).
+On the lab server, in tmux, with W&B logging and HF upload: `bash code/launch/start.sh E14` (see
+`docs/05_phase2_plan_and_budget.md` §5). On a rented instance: `bash code/launch/jarvis_drive.sh`.
+Run it from the repository root; with no arguments it lists its commands.
+
+**Phase 2, module M1** (CPU, after the runs):
+
+```bash
+python -m cascade.candidates --run Q8_fullq_lora_12ep --crossfit Q8_12ep_crossfit --method aps --alpha 0.1
+python -m preregistered_analyses.e14_m1_analysis > ../docs/raw/E14_m1_analysis.txt
+```
 
 **Keys (optional).** For W&B logging or Hugging Face uploads, copy `code/.env.example` to `code/.env`
 and fill it in. This submission contains no keys.

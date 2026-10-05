@@ -6,7 +6,6 @@ from __future__ import annotations
 import argparse
 import json
 import math
-import os
 import random
 import time
 from dataclasses import asdict, dataclass
@@ -28,7 +27,8 @@ from qevasion.labels import (
     encode_evasion,
     leaf_to_official_clarity,
 )
-from qevasion.loader import dev_reference_mask, load_qevasion
+from qevasion.loader import (SPLIT_SEED, dev_reference_mask, load_qevasion, stratified_fold_index,
+                             stratified_val_index)
 from qevasion.scoring import macro_f1_single_label, score_subtask1, score_subtask2
 
 import pandas as pd
@@ -37,7 +37,8 @@ from utils.ckpt import atomic_torch_save, clear_resume, load_resume, save_resume
 from utils.tracking import Tracker, load_env, push_async
 
 from qevasion.loader import DATA_CACHE
-TEST_CSV = Path(__file__).resolve().parents[2] / "data" / "clarity_task_evaluation_dataset.csv"
+from qevasion.paths import RUNS, TEST_CSV
+
 N_TEST = 237
 
 
@@ -47,7 +48,6 @@ def load_test() -> pd.DataFrame:
         raise SystemExit(f"{TEST_CSV} has {len(df)} rows, expected {N_TEST}")
     return df
 
-SPLIT_SEED = 12345
 ANNOTATOR_IDS = ("85", "86", "89")
 
 NON_REPLY = ("Declining to answer", "Claims ignorance", "Clarification")
@@ -381,28 +381,6 @@ def check_vram(max_gb: float) -> None:
     print(f"[vram] {free_gb:.1f} GB free of {total_b / 1024**3:.1f} GB")
 
 
-def stratified_val_index(y: np.ndarray, frac: float, seed: int) -> np.ndarray:
-    """Stratified held-out index, identical for every run (SPLIT_SEED)."""
-    rng = np.random.default_rng(seed)
-    idx = []
-    for c in range(N_EVASION):
-        rows = np.where(y == c)[0]
-        rng.shuffle(rows)
-        idx.extend(rows[: max(1, int(round(len(rows) * frac)))])
-    return np.sort(np.asarray(idx))
-
-
-def stratified_fold_index(y: np.ndarray, n_folds: int, fold: int, seed: int) -> np.ndarray:
-    """Rows of fold `fold` under a stratified K-fold partition fixed by `seed`."""
-    rng = np.random.default_rng(seed)
-    assign = np.empty(len(y), dtype=np.int64)
-    for c in range(N_EVASION):
-        rows = np.where(y == c)[0]
-        rng.shuffle(rows)
-        assign[rows] = np.arange(len(rows)) % n_folds
-    return np.sort(np.where(assign == fold)[0])
-
-
 def run(cfg: Cfg, outdir: Path) -> dict:
     device = "cuda"
     tag = f"f{cfg.fold}" if cfg.fold >= 0 else f"s{cfg.seed}"
@@ -660,7 +638,7 @@ def main() -> None:
             p.add_argument(f"--{f.replace('_', '-')}", action=argparse.BooleanOptionalAction, default=v)
         else:
             p.add_argument(f"--{f.replace('_', '-')}", type=type(v), default=v)
-    p.add_argument("--outroot", default=os.environ.get("CLARITY_RUNS", str(Path(__file__).resolve().parents[2] / "runs")))
+    p.add_argument("--outroot", default=str(RUNS))
     args = p.parse_args()
     cfg = Cfg(**{k: v for k, v in vars(args).items() if k != "outroot"})
     load_env()

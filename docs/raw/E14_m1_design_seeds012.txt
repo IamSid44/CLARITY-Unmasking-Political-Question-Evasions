@@ -1,0 +1,56 @@
+[interim, before any E14 run: the E13b screen seeds 0-2 only; written 2026-10-06]
+E14 (M1) analysis -- 12-epoch Qwen3-8B LoRA (Q8_fullq_lora_12ep), seeds finished: [0, 1, 2]; cross-fitted folds (Q8_12ep_crossfit): none yet
+
+A. 12 epochs (Q8_fullq_lora_12ep) vs 3 epochs (Q8_fullq_lora), same seeds -- dev
+
+   paired seeds: [0, 1, 2]
+   seed  12ep S2  3ep S2       Δ    12ep S1  3ep S1       Δ
+      0    0.531   0.405  +0.125      0.751   0.647  +0.104
+      1    0.560   0.426  +0.134      0.740   0.687  +0.053
+      2    0.539   0.554  -0.014      0.735   0.728  +0.007
+   mean  12ep S2 0.543 ± 0.015, S1 0.742;  3ep S2 0.462 ± 0.080, S1 0.688
+   paired S2: +0.082 ± 0.083 (t = 1.70, 2/3 seeds up)
+   paired S1: +0.054 ± 0.048 (t = 1.95, 3/3 seeds up)
+   single model + logit adjustment, S2: 12ep 0.557, 3ep 0.528; paired +0.029 ± 0.020 (t = 2.57, 3/3 seeds up)
+   mean top probability on dev: 12ep 0.873, 3ep 0.549
+
+   3-seed systems (ensemble + LA, nested CV), S2: 12ep 0.555 (10 CV splits 0.548), 3ep 0.565 (0.573);  S1 12ep 0.735, 3ep 0.729
+   12ep - 3ep system, bootstrap over items: -0.010  95% [-0.092, +0.067]  P(<=0) = 0.599
+   NOTE: 3 seeds -- no system claim before 10
+
+B. System S2 against the number of seeds K (20 random subsets per K, nested CV split 0)
+
+   K= 1: S2 0.558 ± 0.009
+   K= 2: S2 0.548 ± 0.023
+   K= 3: S2 0.555 ± 0.000
+
+C. Candidate sets C(x): gold-label coverage and mean size (slice = calibration set)
+
+   rule             slice cov   |C|   train OOF cov   |C|   dev any-ref cov   |C|
+   aps a=0.05           0.986  7.01               --      --             0.994  7.23
+   aps a=0.1            0.974  6.28               --      --             0.994  6.55
+   topk a=0.05          0.974  7.00               --      --             0.994  7.00
+   topk a=0.1           0.913  5.00               --      --             0.974  5.00
+   fixed k=2            0.678  2.00               --      --             0.812  2.00
+   fixed k=3            0.783  3.00               --      --             0.916  3.00
+   fixed k=4            0.858  4.00               --      --             0.961  4.00
+
+   tau_C 0.50 and temperature 3.86, both fitted on the slice; seeds [0, 1, 2]
+   slice gold-label rank distribution: 1: 0.554, 2: 0.125, 3: 0.104, 4: 0.075, 5: 0.055, 6: 0.038, 7: 0.023, 8: 0.020, 9: 0.006
+
+D. Uncertainty u(x): AUROC for an error of the adjusted argmax
+
+   slice (5-fold CV inside the slice): logistic u 0.682, 1 - top prob 0.696   (error rate 0.446)
+   dev (u fitted on the whole slice):  logistic u 0.683, 1 - top prob 0.688   (error rate 0.399)
+   coefficients (standardised features): {'top_prob': np.float64(0.457), 'margin': np.float64(-0.067), 'entropy': np.float64(1.469), 'seed_disagreement': np.float64(0.119), 'set_size': np.float64(-0.274)}
+
+E. Headroom for M3: dev S2 when the fraction delta with the highest u(x) is re-decided
+   oracle: a reference label inside C(x) if there is one (else M1's label); random: uniform in C(x)
+
+   M1 system (ensemble + LA, nested CV) S2 0.555
+   aps a=0.1        oracle δ=0: 0.555  δ=0.1: 0.615  δ=0.2: 0.672  δ=0.3: 0.709  δ=0.5: 0.802  δ=1: 0.997
+                    random δ=0: 0.555  δ=0.1: 0.494  δ=0.2: 0.459  δ=0.3: 0.406  δ=0.5: 0.364  δ=1: 0.179
+   topk a=0.1       oracle δ=0: 0.555  δ=0.1: 0.612  δ=0.2: 0.659  δ=0.3: 0.682  δ=0.5: 0.788  δ=1: 0.977
+                    random δ=0: 0.555  δ=0.1: 0.523  δ=0.2: 0.492  δ=0.3: 0.466  δ=0.5: 0.421  δ=1: 0.228
+   fixed k=3        oracle δ=0: 0.555  δ=0.1: 0.600  δ=0.2: 0.643  δ=0.3: 0.662  δ=0.5: 0.759  δ=1: 0.929
+                    random δ=0: 0.555  δ=0.1: 0.552  δ=0.2: 0.551  δ=0.3: 0.516  δ=0.5: 0.502  δ=1: 0.324

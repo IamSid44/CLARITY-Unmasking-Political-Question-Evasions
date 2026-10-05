@@ -10,11 +10,10 @@ from pathlib import Path
 
 import numpy as np
 
-from qevasion.labels import EVASION_LABELS, N_EVASION, encode_evasion, multi_reference_mask
-from qevasion.loader import dev_reference_mask, load_qevasion
+from qevasion.labels import N_EVASION, encode_evasion, multi_reference_mask
+from qevasion.loader import DATA_CACHE, dev_reference_mask, load_qevasion
 from qevasion.scoring import score_subtask2
 
-from qevasion.loader import DATA_CACHE
 ANNOTATOR_COLUMNS = ("annotator1", "annotator2", "annotator3")
 
 

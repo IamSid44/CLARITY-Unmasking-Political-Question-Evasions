@@ -15,9 +15,8 @@ from qevasion.labels import (EVASION_LABELS, OFFICIAL_PARTITION_MAP, encode_clar
                              leaf_to_official_clarity)
 from qevasion.loader import dev_reference_mask, load_qevasion
 from qevasion.scoring import score_subtask1, score_subtask2
+from qevasion.paths import LOGS, RUNS
 
-HERE = Path(__file__).resolve().parents[2]
-RUNS, LOGS = HERE / "runs", HERE / "logs"
 EPOCH_LINE = re.compile(r"ep(\d+) loss=([0-9.]+) val=([0-9.]+) devS2=([0-9.]+)")
 
 

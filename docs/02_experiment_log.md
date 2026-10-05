@@ -11,13 +11,13 @@ over seeds. Raw outputs behind the headline tables are in `docs/raw/`.
 
 | | |
 |---|---|
-| Period | 2026-09-19 → 2026-10-02 |
+| Period | 2026-09-19 → 2026-10-02 (mid-evaluation); Phase 2 from 2026-10-06 |
 | Hardware | 1× RTX PRO 6000 (96 GB), shared with other users' jobs; E13 on JarvisLabs VMs with the same GPU |
 | Backbone | `microsoft/deberta-v3-large` (435M parameters) through E12; `Qwen/Qwen3-8B-Base` + LoRA from E13 |
 | Final system (E11, by a rule fixed in advance) | full question + 16 epochs, **10-seed** ensemble + logit adjustment: dev S2 **0.405** (0.412 over CV splits), dev S1 **0.648**; the 10-seed baseline system scores 0.428 / 0.601 — not distinguishable on S2 |
 | Latest | E12: training on all of train is the one variant that helps (S2 +0.029 per model, 4/5 seeds; 5-seed system 0.489); the hierarchy of specialist encoders, boundary experts and model soups do not |
 | Latest | **E13: Qwen3-8B + LoRA, the backbone as the one change, 10 seeds.** Single model S2 0.476 ± 0.043 vs 0.384 (+0.092, 10/10 up); **10-seed system S2 0.543 / S1 0.746 vs DeBERTa 0.405 / 0.648** (+0.136, 95% [+0.054, +0.224]). 12 epochs adopted on the slice (3-seed screen); all of train +0.017 per model, not distinguishable |
-| Running | nothing; the JarvisLabs VMs were destroyed after every seed was confirmed on HF |
+| Running | **E14 (module M1)**: 12-epoch Qwen seeds 3–9 + 5 cross-fit folds on the lab server (registered below; plan in `05_phase2_plan_and_budget.md`) |
 
 ---
 
@@ -47,6 +47,7 @@ system takes.
 | E13 + E13x | **Qwen3-8B-Base + LoRA** instead of DeBERTa (same input, rows, slice; 3 epochs; 10 seeds) | **0.476 ± 0.043** | **0.709 ± 0.031** | **0.543** (S1 0.746) | **best by far**: +0.092 S2 / +0.095 S1 per model over DeBERTa, 10/10 seeds; system +0.136 [+0.054, +0.224] |
 | E13b | Qwen, 12 epochs instead of 3 (3 seeds) | 0.543 *(3 seeds)* | 0.742 | | slice F1 +0.084 (3/3) → **adopted**; best epochs 8–11; 10 seeds after the mid-eval |
 | E13c | Qwen, all of train, last epoch (10 seeds) | 0.492 ± 0.045 | 0.715 | 0.575 | +0.017 per model (6/10); system +0.028 [−0.026, +0.092]: not distinguishable |
+| E14 | M1: Qwen 12 epochs at 10 seeds + 5-fold cross-fitting; C(x), u(x) | *running* | | | registered 2026-10-06 |
 | — | ChulaNLP's fine-tuned DeBERTa-large (published; checkpoint chosen on dev) | 0.46 | 0.65 | | for reference |
 
 **The three main systems at 10 seeds (E11)** — the numbers to quote. Single models:
@@ -86,6 +87,7 @@ system (`../submissions/FINAL_fullq_16ep_10seed_logitadj/`); Codabench is closed
 - [E11 — Replication on new seeds, and the final system](#e11--replication-on-new-seeds-and-the-final-system-launched-2026-09-27)
 - [E12 — Groundwork, plan and runs](#e12--groundwork-plan-and-runs-launched-2026-09-28)
 - [E13 — Is the encoder's gap a knowledge gap? A LoRA-tuned Qwen3-8B classifier](#e13--is-the-encoders-gap-a-knowledge-gap-a-lora-tuned-qwen3-8b-classifier-registered-2026-10-02)
+- [E14 — Module M1: the 12-epoch Qwen at 10 seeds, cross-fitting, candidate sets and uncertainty](#e14--module-m1-the-12-epoch-qwen-at-10-seeds-cross-fitting-candidate-sets-and-uncertainty-registered-2026-10-06)
 - [Deferred](#deferred)
 
 ---
@@ -1892,6 +1894,91 @@ a mean weight of 0.79 on Qwen. **DeBERTa adds nothing to Qwen.**
 VMs c and d. JarvisLabs credit (API balance) went from ₹5,548.09 to ₹4,029.30, so this round cost
 **₹1,518.79**. The project total is ₹1,850.70 of ₹5,880. Without gradient checkpointing a 3-epoch
 seed takes 15–16 min and a 12-epoch seed about 59 min, peaking at 53 GiB.
+
+---
+
+## E14 — Module M1: the 12-epoch Qwen at 10 seeds, cross-fitting, candidate sets and uncertainty *(registered 2026-10-06)*
+
+*Written before any E14 run started.* This is the first step of the Phase 2 cascade (report §7;
+[`05_phase2_plan_and_budget.md`](05_phase2_plan_and_budget.md)).
+
+**What was already known when this was written.** The registration does not pretend otherwise.
+- **E13b's seeds 0–2 dev numbers are known.** S2 0.531 / 0.560 / 0.539.
+- **The candidate-set design was studied on those three seeds.** The study was done on the train
+  slice; its dev numbers were printed alongside. Output: `raw/E14_m1_design_seeds012.txt`.
+- **What it showed:**
+  - The 12-epoch models are overconfident: mean top probability 0.81 on the slice and 0.87 on dev,
+    against 0.57 / 0.55 for 3 epochs.
+  - On the slice, any set rule needs 5–7 labels to cover the gold label for 90–95% of items. The gold
+    label ranks 4th or lower for 22% of slice items.
+  - The logistic u(x) did not beat 1 − top probability: AUROC 0.682 vs 0.696 on the slice.
+  - The 3-seed 12-epoch system was 0.555 against 0.565 for 3 epochs on the same seeds.
+
+**Why.** M1 is the cascade's base:
+- **The 12-epoch schedule is adopted but not established.** It was adopted on the slice (E13b: slice
+  F1 +0.084, 3/3 seeds), but only on 3 seeds. A system needs 10.
+- **M3 and M4 need cross-fitted train candidates.** M3 needs them for exemplar design, and M4 for
+  distillation targets.
+- **C(x) and u(x) decide how much an LLM stage can add, and on which items.**
+
+**Runs** (`code/experiments/E14/`, lab server GPU 0, one lane, W&B + HF):
+
+| run | what | change from E13b |
+|---|---|---|
+| `Q8_fullq_lora_12ep` seeds 3–9 | E13b's configuration | none (new seeds) |
+| `Q8_12ep_crossfit` fold0–4 | train on 4/5 of all 3,448 rows, 12 epochs, last epoch; the held-out fold's probabilities are the out-of-fold predictions | rows (all of train, by fold) and `--select last`, since choosing the epoch on the held-out fold would leak |
+
+**Fold partition.** It is `data/splits/train_5fold.json` (stratified, SPLIT_SEED 12345), identical to
+the DeBERTa folds of E6 (`F0_oof`).
+
+**Hardware.** The lab server's GPU is a 300 W Max-Q card, where JarvisLabs used a 600 W card; it is the
+same architecture, with torch 2.11 / transformers 5.17 / peft 0.20. The runs go without gradient
+checkpointing, as E13b did. If a lab-mate's job leaves too little memory, the queue uses gradient
+checkpointing instead: the same computation, slower. Each run's `config.json` records which.
+
+**Code.**
+- `cascade/candidates.py` builds C(x) and u(x) from saved probabilities.
+- `preregistered_analyses/e14_m1_analysis.py` runs sections A–E below.
+- Everything is fitted on the slice: τ_C, a temperature T, the set threshold and the u(x) regression.
+  Dev only reports.
+
+**Hypotheses and predictions.**
+- **H1, single models, 10 seeds.** 12 epochs gives S2 0.50–0.54 (3 epochs: 0.476 ± 0.043).
+  - The paired gain is +0.03 to +0.07, with at least 7 of 10 seeds up.
+  - S1 gains +0.01 to +0.04.
+- **H2, systems.** The 10-seed 12-epoch system (ensemble + LA, nested CV) scores S2 0.55–0.60
+  (3 epochs: 0.543).
+  - The gain over 3 epochs is smaller than the per-model gain, and its bootstrap interval includes 0.
+    This is the E11/E13c pattern, made stronger by overconfidence: ensembling and LA add less to
+    sharper models (LA added +0.014 per 12-epoch model vs +0.066 at 3 epochs, seeds 0–2).
+  - The schedule was chosen on the slice, so whatever the dev result, **M1 uses 12 epochs**. Dev is
+    reported, not used to choose.
+- **H3, candidate sets.** At α = 0.10 on the slice, adaptive sets after temperature scaling need
+  5.5–7 labels on average.
+  - The cross-fitted train rows confirm the slice coverage to within 0.03; this is an independent
+    check of the calibration.
+  - A fixed top-3 covers 0.75–0.82 of slice items and 0.90–0.94 of dev items (any reference).
+- **H4, uncertainty.** u(x) reaches an AUROC of 0.66–0.74 on the slice (5-fold CV) and on dev.
+  - If the logistic regression does not beat 1 − top probability by 0.01 on the slice, M2 uses
+    1 − top probability. This is the expected outcome.
+- **H5, headroom (the go/no-go for M3's budget).** An oracle restricted to the top-3 set, applied to
+  the 30% most uncertain dev items, reaches S2 ≥ 0.65.
+  - If it reaches less than M1's system + 0.03, M3 is de-scoped and its Jarvis budget is held back.
+- **H6, cost.** K = 5 seeds lands within 0.01 S2 of K = 10 on average over random subsets.
+
+**Decision to take with the user before M3 (not a dev choice).** How C(x) feeds M3:
+- **(a) a fixed small set:** top-3 by the M1 ranking;
+- **(b) all nine labels scored by the LLM** and fused with p̄, with C(x) used only to choose the
+  definitions and examples in the prompt.
+
+The slice shows that a set that is both small and high-coverage does not exist for this model.
+
+**Exit criterion (report Table 5), restated.** "Gold in C(x) for ≥ 95% of slice items" is met only by
+sets of ~7 labels, so it is replaced by H3's coverage check and H5's headroom. The reason is the
+finding above, made on the slice before the runs.
+
+**Cost.** Free (lab server). Estimated 1.2–1.6 h per run, 12 runs, ~15–19 h of wall time. A
+20-step pilot measures it first.
 
 ---
 

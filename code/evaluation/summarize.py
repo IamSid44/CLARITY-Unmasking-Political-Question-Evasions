@@ -10,8 +10,8 @@ from pathlib import Path
 import numpy as np
 
 from qevasion.labels import EVASION_LABELS
+from qevasion.paths import RUNS
 
-RUNS = Path(__file__).resolve().parents[2] / "runs"
 LOW_SUPPORT = 10
 
 
@@ -20,7 +20,9 @@ def load(cfg_dir: Path) -> dict[int, dict]:
     for seed_dir in sorted(cfg_dir.glob("seed*")):
         f = seed_dir / "metrics.json"
         if f.exists():
-            out[int(seed_dir.name[4:])] = json.loads(f.read_text())
+            m = json.loads(f.read_text())
+            if "dev_subtask2_macro_f1" in m:  # sub-task runs (E12b/E12c --task ...) have no 9-way dev score
+                out[int(seed_dir.name[4:])] = m
     return out
 
 
@@ -53,7 +55,6 @@ def main() -> None:
     for name, seeds in configs.items():
         s2 = np.array([m["dev_subtask2_macro_f1"] for m in seeds.values()])
         s1 = np.array([m["dev_subtask1_macro_f1"] for m in seeds.values()])
-        va = np.array([m["val_macro_f1"] for m in seeds.values()])
         ins = np.array([m.get("dev_inset", {}).get("inset_rate", np.nan) for m in seeds.values()])
         nmd = np.array([m.get("dev_inset", {}).get("classes_named", np.nan) for m in seeds.values()])
         delta = "  --"
