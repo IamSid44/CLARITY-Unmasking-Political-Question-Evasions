@@ -15,3 +15,9 @@ code/.env
 jarvis_bundle.tgz
 Nier_ANLP-Mid.zip
 Nier_ANLP-Mid/
+
+archive/
+.claude/
+submissions/
+clarity/
+Materials/
