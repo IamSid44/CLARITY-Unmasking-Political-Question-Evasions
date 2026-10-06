@@ -19,6 +19,7 @@ hypothesis is registered there before its run starts.
 | DeBERTa-v3-large, 10-seed system | 0.405 | 0.648 |
 | Qwen3-8B-Base + LoRA (3 epochs), 10-seed system | **0.543** | **0.746** |
 | Qwen, 12 epochs, single model (3-seed screen, E13b) | 0.543 ± 0.015 | 0.742 |
+| **Qwen, 12 epochs, 10-seed system (E14 = M1, after the mid-evaluation)** | **0.598** | **0.743** |
 | TeleAI (1st place), multi-call DeepSeek-V3 pipeline | 0.617 | 0.812 |
 
 Two facts from the analysis decide what comes next (report §6):
@@ -29,6 +30,14 @@ Two facts from the analysis decide what comes next (report §6):
 
 So most remaining errors are a choice among a few labels the model already ranks highly, on items it
 can flag as uncertain.
+
+## Status (2026-10-06, 22:30)
+
+| Module | State |
+|---|---|
+| **M1** | **done (E14).** 10-seed 12-epoch system S2 0.598 / S1 0.743; cross-fitted train probabilities for all 3,448 rows; C(x) and u(x) code; all runs on HF and W&B. Results against H1–H6 are in the log, §E14 results. |
+| M3 | next, Oct 12–18. Its inputs are fixed by E14: rank-based C(x) (top-3 or top-4), u(x) = 1 − top probability, deferral δ ≈ 0.2–0.3. Model choice and prompt design are open. |
+| M2, M4 | as planned |
 
 ## 2. The plan: a confidence-routed cascade (report §7, Figure 5)
 
@@ -60,6 +69,16 @@ feeds M3 is recorded in the E14 entry of the log. The options:
 - letting M3 score all nine labels, fused with p̄, with C(x) choosing only which definitions and
   examples go into the prompt.
 
+**Resolved by E14 at 10 seeds (2026-10-06).**
+- **C(x) must be defined by rank, not by probability mass.** Mass thresholds fitted on the 10-seed slice
+  probabilities did not transfer to the single-model cross-fitted rows: coverage 0.76 against 0.98 on
+  the slice. Rank-based sets did: top-k 0.90 against 0.91.
+- **Fixed top-3** covers 0.81 of slice items, 0.77 of cross-fitted train rows, and 0.925 of dev items
+  (any reference).
+- **u(x) is 1 − top probability.** The logistic regression did not beat it.
+- **The oracle headroom is large enough to justify M3's budget.** Deciding the 30% most uncertain items
+  perfectly within the top 3 would give 0.727, against M1's 0.598.
+
 ## 3. Protocol (unchanged since E8)
 
 1. **Register first.** Every experiment's hypotheses, predicted numbers and decision rule go into
@@ -85,7 +104,7 @@ feeds M3 is recorded in the E14 entry of the log. The options:
 | 2026-10-02 | E13 screen, setup and pilots | JarvisLabs, 1 × RTX PRO 6000 | ₹331.91 |
 | 2026-10-02 | E13x / E13b / E13c (4 VMs) | JarvisLabs | ₹1,518.79 |
 | **balance** | | | **₹4,029.30 of ₹5,880** (≈ ₹190 per GPU-hour, ≈ 21 GPU-hours) |
-| 2026-10-06 → | E14 (M1): 7 seeds + 5 folds | lab server, GPU 0 | free |
+| 2026-10-06 | E14 (M1): 7 seeds + 5 folds, ~30 GPU-hours over 20 h of wall time (GPU 0 + two MIG slices) | lab server | free (≈ ₹2,300 at Jarvis rates) |
 
 ### 4.2 Plan for the remaining credit
 
@@ -110,11 +129,33 @@ feeds M3 is recorded in the E14 entry of the log. The options:
 ## 5. Running on the lab server
 
 ```bash
-bash code/launch/start.sh E14            # one tmux session (clarity-E14), one window per lane file
-tmux attach -t clarity-E14               # watch; Ctrl-b d to detach (runs survive an ssh drop)
-tail -f logs/E14.log                     # one line per event
-tail -f logs/Q8_fullq_lora_12ep_seed3.log
+bash code/launch/gpu_watch.sh E14 start   # watcher (tmux clarity-E14-watch): model download -> E14 lanes -> slice
+bash code/launch/gpu_watch.sh E14 status  # what runs where; who else is on our GPU-1 slice
+bash code/launch/gpu_watch.sh E14 release # give the slice back now (and keep off it); `allow` undoes this
+tmux attach -t clarity-E14                # the lanes; Ctrl-b n/p switch windows, Ctrl-b d detach
+tail -f logs/E14_watch.log logs/E14.log   # watcher events and queue events, one line each
+tail -f logs/Q8_fullq_lora_12ep_seed3.log # one run's training output (loss, ETA, per-epoch scores)
 ```
+
+`start.sh E14` alone starts only the normal lanes (no slice, no download step).
+
+**Using spare capacity (`code/launch/gpu_watch.sh`).** The watcher starts the normal lane(s) once, then
+looks at our GPU-1 MIG slice (GI 1, 48 GB, 2/7 of the card) every 10 minutes:
+- **Starting the slice lane.** When no other user has a process on the slice and at least 30 GB is
+  free, it starts the slice lane (`lane_gpu1_a.txt`, marked `# start: watcher`). That lane holds the
+  same runs in reverse order.
+- **Yielding the slice.** While the lane holds the slice, the watcher checks every 2 minutes. As soon as
+  another user's process appears there, or on `release`, it stops the lane. The run that was training
+  loses at most its current epoch.
+- **Picking up orphaned runs.** Lanes re-check their lists every 10 minutes, so whichever lane is free
+  next resumes the stopped run from `resume.pt`. W&B continues the same run.
+- **Leaving GPU 0 alone.** The watcher never stops the GPU-0 lane. To free GPU 0, run
+  `tmux kill-window -t =clarity-E14:lane_gpu0_a`; the run resumes later from its last epoch.
+- **The second slice (GI 2).** It belongs to another group. From 2026-10-06 (user's request) it has its own lane, `lane_gpu1_b.txt`, under the same rules: used only while no one else is on it, and released within 2 minutes when someone is.
+- **Making room on GPU 0 for a lab-mate without stopping.** Restart the GPU-0 lane with `QUEUE_NEED_GB=999`, which forces checkpointing (~21 GB instead of ~56 GB). Do it right after an epoch finishes, so no progress is lost (done 2026-10-06 16:05 for seed 9):
+  `tmux kill-window -t =clarity-E14:lane_gpu0_a; tmux new-window -d -t =clarity-E14: -n lane_gpu0_a "env QUEUE_NEED_GB=999 bash $PWD/code/launch/run_queue.sh $PWD/code/experiments/E14/lane_gpu0_a.txt"`
+- **Using freed GPU-0 memory.** If memory frees up on GPU 0 (the idle vLLM), the next GPU-0 run starts
+  without gradient checkpointing on its own.
 
 **The experiment folder.** An experiment is `code/experiments/<EXP>/`:
 - `common.args` holds the shared flags plus directives: `@module`, `@hf-push`, `@need-gb`.
@@ -127,13 +168,16 @@ tail -f logs/Q8_fullq_lora_12ep_seed3.log
   or `<name>/fold<k>/`);
 - logs every epoch to W&B (`clarity-semeval26`, grouped by run name).
 
-**GPU memory.** Qwen without gradient checkpointing needs ~53 GiB. When the shared GPU has less than
-`@need-gb` free, the queue waits 30 min and then runs with gradient checkpointing. That gives the same
-computation, about 1.35× slower. An out-of-memory crash is resumed the same way.
+**GPU memory.** Qwen without gradient checkpointing needs ~53 GiB.
+- When the shared GPU has less than `@need-gb` free, the queue waits 30 min once, then runs with
+  gradient checkpointing (the same computation, about 1.35× slower). A device smaller than
+  `@need-gb`, such as the 48 GB slice, always uses checkpointing.
+- A run does not start at all below `@min-gb` (24 GB) free; the queue re-checks every 5 minutes.
+- An out-of-memory crash is resumed from its last epoch with checkpointing.
 
 **Server rules** (each learnt from an incident in the log):
 - One lane per GPU.
 - Never kill the process whose command line starts with `tmux new-session`: it is the tmux server. Use
-  `tmux kill-session -t clarity-<EXP>`.
+  `tmux kill-session -t =clarity-<EXP>` (the `=` matters: without it tmux may match `clarity-<EXP>-watch` by prefix).
 - Never edit a running bash script in place. Write a copy and `mv` it over the original.
 - Smoke tests run without `--track`, without `@hf-push`, and into a scratch `CLARITY_RUNS`.

@@ -208,3 +208,32 @@ How to read this:
   correctness:** the in-set rate rises from 0.40 to 0.87 across confidence fifths. Both are
   measured on seeds 0–2. This is the headroom the planned cascade targets.
 - **The 3-seed screen of E13 (S2 0.462 ± 0.080) is superseded by the 10-seed numbers.**
+
+## 10. Phase 2, module M1: Qwen 12 epochs at 10 seeds (E14, done 2026-10-06)
+
+These numbers are not in the mid-evaluation report. They come after it.
+
+Source: `raw/E14_m1_analysis.txt`, written by
+`python -m preregistered_analyses.e14_m1_analysis > ../docs/raw/E14_m1_analysis.txt` (CPU, ~1 min; needs
+`Q8_fullq_lora`, `Q8_fullq_lora_12ep` and `Q8_12ep_crossfit` from the HF repo). Section letters refer to
+that file.
+
+| Number | Value | Section |
+|---|---|---|
+| single model S2, 12 epochs, seeds 0–9 | 0.525 ± 0.042 (3 epochs: 0.476 ± 0.043) | A |
+| paired S2 gain over 3 epochs | +0.049 ± 0.062, t = 2.48, 8/10 seeds up | A |
+| single model S1, 12 epochs | 0.729 (3 epochs: 0.709); paired +0.020, 6/10 up | A |
+| 10-seed system S2 (ensemble + LA, nested CV split 0 / mean of 10 splits) | **0.598 / 0.601** (3 epochs: 0.543 / 0.549) | A |
+| 10-seed system S1 | 0.743 (3 epochs: 0.746) | A |
+| system difference, bootstrap over items | +0.057, 95% [−0.003, +0.125], P(≤0) = 0.032 | A |
+| system on the three 2-annotator reference sets | 0.540 / 0.571 / 0.536, mean 0.549 (3 epochs: mean 0.524) | A |
+| mean top probability on dev | 0.839 (3 epochs: 0.542) | A |
+| system S2 vs number of seeds K | K=1 0.509, K=3 0.564, K=5 0.555, K=10 0.598 | B |
+| top-3 coverage: slice / cross-fitted train / dev any-reference | 0.812 / 0.768 / 0.925 | C |
+| mass-based sets (APS, α = 0.10): coverage slice / cross-fitted train, mean size | 0.977 / 0.756, 5.94 labels on the slice | C |
+| u(x) AUROC: logistic regression vs 1 − top probability (slice CV / dev) | 0.683 / 0.707 vs 0.714 / 0.712 | D |
+| oracle within top-3, deferral δ = 0.1 / 0.2 / 0.3 | 0.635 / 0.684 / 0.727 (M1 alone 0.598) | E |
+| random within top-3 at δ = 0.3 | 0.587 | E |
+
+Per-run numbers (selected epoch, slice F1, dev S2/S1, time) are in `runs/<config>/<seed|fold>/metrics.json`,
+tabulated in the log under "E14 results".

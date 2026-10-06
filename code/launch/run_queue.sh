@@ -12,7 +12,12 @@
 #                          @hf-push                        upload each finished run to HF (tracking.py push)
 #                          @need-gb 60                     GPU memory a run needs WITHOUT gradient
 #                                                          checkpointing (llm_classifier only, see below)
-#   lane_gpu<N>_<x>.txt  one lane each; the GPU is taken from the file name.
+#                          @min-gb 24                      GPU memory needed to start at all (with checkpointing)
+#   lane_gpu<N>_<x>.txt  one lane each; the GPU is taken from the file name. Optional header lines:
+#                          # device: <MIG UUID>   run on that MIG slice (`nvidia-smi -L`)
+#                          # gi: <n>              its GPU-instance id, so free memory can be read
+#                          # start: watcher       not started by start.sh; gpu_watch.sh starts and
+#                                                 stops it when the device is free / contended
 #                        Each non-comment line:   <run-name> <seed> [extra flags]
 #                          <seed> is a number (-> runs/<name>/seed<k>/) or fold<k> for cross-fitting
 #                          (-> --seed 0 --fold k, runs/<name>/fold<k>/)
@@ -21,7 +26,10 @@
 #
 # Lanes may list the SAME runs: each run is locked while it trains, so a lane that reaches a run another
 # lane holds skips it. Finished runs (metrics.json) are skipped; interrupted ones resume from their last
-# completed epoch (resume.pt). To move work, edit lane files and restart -- nothing is lost.
+# completed epoch (resume.pt). A lane keeps passing over its list (every 10 min) until every run in it
+# has finished, so a run orphaned by a stopped lane is picked up by another. A run that failed twice
+# is marked .failed and skipped (delete the marker to retry). To move work, edit lane files and
+# restart -- nothing is lost.
 #
 # GPU memory (llm_classifier). With `--no-grad-checkpoint` in common.args a run needs @need-gb free. If
 # the GPU has less (a lab-mate's job), the lane waits up to 30 min, then starts with
@@ -49,13 +57,15 @@ GPU="$(basename "$LANE" | sed -nE 's/^lane_gpu([0-9]+)_.*\.txt$/\1/p')"
 PY="${CLARITY_PY:-/scratch/shlok/Temp/.venv/bin/python}"
 # A lane file may pin an exact device with a line "# device: <id>" -- e.g. a MIG slice's UUID.
 DEVICE="$(sed -nE 's/^#[[:space:]]*device:[[:space:]]*([^[:space:]]+).*/\1/p' "$LANE" | head -1)"
+GI="$(sed -nE 's/^#[[:space:]]*gi:[[:space:]]*([0-9]+).*/\1/p' "$LANE" | head -1)"
 export CUDA_VISIBLE_DEVICES="${DEVICE:-$GPU}" TOKENIZERS_PARALLELISM=false PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True
 
 ARGS_FILE="$EXPDIR/common.args"
 directive() { sed -nE "s/^@$1[[:space:]]*(.*)$/\1/p" "$ARGS_FILE" | head -1; }
 MODULE="$(directive module)"; MODULE="${MODULE:-models.encoder}"
 HF_PUSH=0; grep -qE '^@hf-push' "$ARGS_FILE" && HF_PUSH=1
-NEED_GB="$(directive need-gb)"; NEED_GB="${NEED_GB:-60}"
+NEED_GB="$(directive need-gb)"; NEED_GB="${QUEUE_NEED_GB:-${NEED_GB:-60}}"   # QUEUE_NEED_GB=999 forces checkpointing (~21 GB) to leave room for a lab-mate
+MIN_GB="$(directive min-gb)"; MIN_GB="${MIN_GB:-24}"
 COMMON="$(grep -vE '^\s*(#|$|@)' "$ARGS_FILE" | tr '\n' ' ')"
 RUNS="${CLARITY_RUNS:-$ROOT/runs}"
 LOGS="$ROOT/logs"
@@ -63,6 +73,7 @@ mkdir -p "$LOGS" "$RUNS" "$ROOT/docs/raw"
 LOG="$LOGS/${EXP}.log"
 TAG="$(basename "$LANE" .txt)"
 log() { echo "[$(date '+%F %T')] [$TAG] $*" | tee -a "$LOG"; }
+logq() { [ "${QUIET:-0}" = 1 ] || log "$@"; }   # skip messages: first pass only
 
 run_dir() { case "$2" in fold*) echo "$RUNS/$1/$2" ;; *) echo "$RUNS/$1/seed$2" ;; esac; }
 seed_args() { case "$1" in fold*) echo "--seed 0 --fold ${1#fold}" ;; *) echo "--seed $1" ;; esac; }
@@ -70,10 +81,16 @@ lane_lines() { cat "$EXPDIR"/lane_gpu*_*.txt | grep -vE '^\s*(#|$|@)'; }
 expected_seeds() { lane_lines | awk -v n="$1" '$1==n {print $2}' | sort -u | wc -l; }
 finished_seeds() { ls "$RUNS/$1"/seed*/metrics.json "$RUNS/$1"/fold*/metrics.json 2>/dev/null | wc -l; }
 is_subtask() { lane_lines | awk -v n="$1" '$1==n' | grep -qE -- "--task +(gate|other6|nr3|pair:)"; }
-free_gb() {  # free memory of the lane's GPU in GB; empty if unknown (e.g. a MIG slice)
+mem_gb() {  # free|total memory of the lane's device in GB; empty if unknown
+  if [ -n "$GI" ]; then   # MIG slice: read its row of the "MIG devices" table
+    nvidia-smi 2>/dev/null | awk -v g="$GPU" -v gi="$GI" -v w="$1" '$1=="|" && $2==g && $3==gi && $6=="|" && $7 ~ /MiB$/ {
+      u=$7; t=$9; sub("MiB","",u); sub("MiB","",t); printf "%d", (w=="free" ? t-u : t)/1024; exit }'
+    return 0
+  fi
   [ -n "$DEVICE" ] && return 0
-  nvidia-smi -i "$GPU" --query-gpu=memory.free --format=csv,noheader,nounits 2>/dev/null | awk '{printf "%d", $1/1024}'
+  nvidia-smi -i "$GPU" --query-gpu=memory."$1" --format=csv,noheader,nounits 2>/dev/null | awk '{printf "%d", $1/1024}'
 }
+free_gb() { mem_gb free; }
 
 hf_push() {  # run dir -- background upload, one at a time (same lock as utils/tracking.py push_async)
   [ "$HF_PUSH" = 1 ] || return 0
@@ -104,7 +121,12 @@ post_process() {  # name -- encoder only: analysis + decision rules + submission
 memory_mode() {  # echo the checkpointing flag override for llm_classifier ("" = keep common.args)
   [ "$MODULE" = "models.llm_classifier" ] || return 0
   echo " $COMMON $* " | grep -q -- " --no-grad-checkpoint " || return 0
-  local f w fell_back="$LOGS/.${EXP}_${TAG}.fell_back"
+  local f w fell_back="$LOGS/.${EXP}_${TAG}.fell_back" total
+  total="$(mem_gb total)"
+  if [ -n "$total" ] && [ "$total" -lt "$NEED_GB" ]; then
+    log "note  device has ${total} GB in all, less than the ${NEED_GB} GB a run without checkpointing needs: --grad-checkpoint" >&2
+    echo "--grad-checkpoint"; return 0
+  fi
   for w in $(seq 0 "${QUEUE_WAIT_STEPS:-15}"); do   # 2-min steps
     f="$(free_gb)"; [ -z "$f" ] && return 0
     if [ "$f" -ge "$NEED_GB" ]; then rm -f "$fell_back"; return 0; fi
@@ -117,16 +139,27 @@ memory_mode() {  # echo the checkpointing flag override for llm_classifier ("" =
   echo "--grad-checkpoint"
 }
 
+wait_min_memory() {  # block until the device has MIN_GB free (a lab-mate's job may hold it)
+  local f said=0
+  while :; do
+    f="$(free_gb)"; { [ -z "$f" ] || [ "$f" -ge "$MIN_GB" ]; } && return 0
+    [ $said = 0 ] && log "wait  GPU $GPU${GI:+ slice $GI} has ${f} GB free, ${MIN_GB} GB needed to start; re-checking every 5 min" && said=1
+    sleep 300
+  done
+}
+
 attempt() {  # name seed extra...
   local name="$1" seed="$2"; shift 2
   local out logf ckpt="" try rc
   out="$(run_dir "$name" "$seed")"; logf="$LOGS/${name}_$(basename "$out").log"
-  [ -f "$out/metrics.json" ] && { log "skip  $name $seed (finished)"; return 0; }
+  [ -f "$out/metrics.json" ] && { logq "skip  $name $seed (finished)"; return 0; }
   mkdir -p "$out"
   exec 8>"$out/.lane.lock"   # held (also by the trainer, which inherits it) until this run ends
-  if ! flock -n 8; then log "skip  $name $seed (another lane is running it)"; exec 8>&-; return 1; fi
-  [ -f "$out/metrics.json" ] && { log "skip  $name $seed (finished)"; exec 8>&-; return 0; }
+  if ! flock -n 8; then logq "skip  $name $seed (another lane is running it)"; exec 8>&-; return 1; fi
+  [ -f "$out/metrics.json" ] && { logq "skip  $name $seed (finished)"; exec 8>&-; return 0; }
+  [ -f "$out/.failed" ] && { logq "skip  $name $seed (failed twice; delete $out/.failed to retry)"; exec 8>&-; return 1; }
   [ -f "$out/resume.pt" ] && log "resume $name $seed from its last checkpoint"
+  wait_min_memory
   for try in $(seq 1 12); do
     [ -z "$ckpt" ] && ckpt="$(memory_mode "$@")"
     log "start $name $seed on GPU $GPU ($MODULE${ckpt:+, $ckpt})"
@@ -134,7 +167,7 @@ attempt() {  # name seed extra...
     "$PY" -m "$MODULE" --name "$name" $(seed_args "$seed") --outroot "$RUNS" $COMMON "$@" $ckpt >>"$logf" 2>&1
     rc=$?
     if [ $rc = 0 ]; then
-      log "ok    $name $seed  $(grep -oE 'devS2=[0-9.]+ devS1=[0-9.]+' "$logf" | tail -1)"
+      log "ok    $name $seed  $(grep -E '^\[done\]' "$logf" | tail -1 | sed -E 's/^\[done\] [^:]*: //' | cut -c1-110)"
       hf_push "$out"; exec 8>&-; return 0
     fi
     if tail -3 "$logf" | grep -q "FAIL FAST"; then
@@ -147,7 +180,7 @@ attempt() {  # name seed extra...
       log "retry $name $seed (exit $rc, see ${logf#$ROOT/}); resuming from its last finished epoch"
       tail -3 "$logf" | tee -a "$LOG"; sleep 60
     else
-      log "FAIL  $name $seed (see ${logf#$ROOT/}):"; tail -4 "$logf" | tee -a "$LOG"; exec 8>&-; return 1
+      log "FAIL  $name $seed (see ${logf#$ROOT/}):"; tail -4 "$logf" | tee -a "$LOG"; touch "$out/.failed"; exec 8>&-; return 1
     fi
   done
   log "GAVE UP $name $seed after 12 attempts"; exec 8>&-; return 1
@@ -165,14 +198,30 @@ wait_for() {  # run-name seed... -- block until each has finished (metrics.json)
   log "done  waiting: $name $* finished"
 }
 
-log "lane start ($EXP, GPU $GPU, $MODULE): $(grep -cvE '^\s*(#|$|@)' "$LANE") run(s)"
-while read -r name seed extra; do
-  [[ -z "${name:-}" || "$name" == \#* ]] && continue
-  # shellcheck disable=SC2086
-  if [ "$name" = "@after" ]; then wait_for "$seed" $extra; continue; fi
-  # shellcheck disable=SC2086
-  attempt "$name" "$seed" $extra && post_process "$name"
-done < <(grep -vE '^\s*(#|$)' "$LANE")
+lane_done() {  # every run of this lane finished (or marked failed)
+  local name seed extra d
+  while read -r name seed extra; do
+    [ "$name" = "@after" ] && continue
+    d="$(run_dir "$name" "$seed")"
+    [ -f "$d/metrics.json" ] || [ -f "$d/.failed" ] || return 1
+  done < <(grep -vE '^\s*(#|$)' "$LANE")
+  return 0
+}
+
+log "lane start ($EXP, GPU $GPU${GI:+ slice $GI}, $MODULE): $(grep -cvE '^\s*(#|$|@)' "$LANE") run(s)"
+for pass in $(seq 1 300); do
+  while read -r name seed extra; do
+    [[ -z "${name:-}" || "$name" == \#* ]] && continue
+    # shellcheck disable=SC2086
+    if [ "$name" = "@after" ]; then wait_for "$seed" $extra; continue; fi
+    # shellcheck disable=SC2086
+    attempt "$name" "$seed" $extra && post_process "$name"
+  done < <(grep -vE '^\s*(#|$)' "$LANE")
+  lane_done && break
+  QUIET=1
+  [ "$pass" = 1 ] && log "pass  unfinished runs remain (another lane holds them); re-checking every 10 min to pick up any it drops"
+  sleep "${QUEUE_PASS_SLEEP:-600}"
+done
 
 # Retry uploads that failed or never ran, for this experiment's runs only.
 if [ "$HF_PUSH" = 1 ]; then

@@ -1,0 +1,69 @@
+E14 (M1) analysis -- 12-epoch Qwen3-8B LoRA (Q8_fullq_lora_12ep), seeds finished: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]; cross-fitted folds (Q8_12ep_crossfit): ['fold0', 'fold1', 'fold2', 'fold3', 'fold4']
+
+A. 12 epochs (Q8_fullq_lora_12ep) vs 3 epochs (Q8_fullq_lora), same seeds -- dev
+
+   paired seeds: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+   seed  12ep S2  3ep S2       Δ    12ep S1  3ep S1       Δ
+      0    0.531   0.405  +0.125      0.751   0.647  +0.104
+      1    0.560   0.426  +0.134      0.740   0.687  +0.053
+      2    0.539   0.554  -0.014      0.735   0.728  +0.007
+      3    0.570   0.480  +0.090      0.769   0.683  +0.086
+      4    0.530   0.512  +0.017      0.740   0.749  -0.008
+      5    0.436   0.495  -0.059      0.646   0.712  -0.066
+      6    0.467   0.461  +0.006      0.664   0.716  -0.052
+      7    0.540   0.501  +0.039      0.754   0.702  +0.052
+      8    0.557   0.474  +0.083      0.774   0.718  +0.056
+      9    0.515   0.449  +0.066      0.720   0.748  -0.027
+   mean  12ep S2 0.525 ± 0.042, S1 0.729;  3ep S2 0.476 ± 0.043, S1 0.709
+   paired S2: +0.049 ± 0.062 (t = 2.48, 8/10 seeds up)
+   paired S1: +0.020 ± 0.058 (t = 1.11, 6/10 seeds up)
+   single model + logit adjustment, S2: 12ep 0.533, 3ep 0.538; paired -0.005 ± 0.080 (t = -0.22, 6/10 seeds up)
+   mean top probability on dev: 12ep 0.839, 3ep 0.542
+
+   10-seed systems (ensemble + LA, nested CV), S2: 12ep 0.598 (10 CV splits 0.601), 3ep 0.543 (0.549);  S1 12ep 0.743, 3ep 0.746
+   12ep - 3ep system, bootstrap over items: +0.057  95% [-0.003, +0.125]  P(<=0) = 0.032
+   2-annotator reference sets (test regime), systems S2: 12ep 0.540, 0.571, 0.536 (mean 0.549); 3ep 0.498, 0.536, 0.537 (mean 0.524)
+
+B. System S2 against the number of seeds K (20 random subsets per K, nested CV split 0)
+
+   K= 1: S2 0.509 ± 0.049
+   K= 2: S2 0.541 ± 0.030
+   K= 3: S2 0.564 ± 0.024
+   K= 4: S2 0.558 ± 0.019
+   K= 5: S2 0.555 ± 0.029
+   K= 6: S2 0.561 ± 0.021
+   K= 7: S2 0.576 ± 0.022
+   K= 8: S2 0.562 ± 0.021
+   K= 9: S2 0.574 ± 0.020
+   K=10: S2 0.598 ± 0.000
+
+C. Candidate sets C(x): gold-label coverage and mean size (slice = calibration set)
+
+   rule             slice cov   |C|   train OOF cov   |C|   dev any-ref cov   |C|
+   aps a=0.05           0.986  6.51           0.785  2.88             0.997  6.62
+   aps a=0.1            0.977  5.94           0.756  2.58             0.997  6.12
+   topk a=0.05          0.965  6.00           0.937  6.00             0.994  6.00
+   topk a=0.1           0.910  5.00           0.896  5.00             0.981  5.00
+   fixed k=2            0.699  2.00           0.662  2.00             0.818  2.00
+   fixed k=3            0.812  3.00           0.768  3.00             0.925  3.00
+   fixed k=4            0.870  4.00           0.844  4.00             0.964  4.00
+
+   tau_C 0.20 and temperature 2.15, both fitted on the slice; seeds [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+   slice gold-label rank distribution: 1: 0.548, 2: 0.151, 3: 0.113, 4: 0.058, 5: 0.041, 6: 0.055, 7: 0.017, 8: 0.009, 9: 0.009
+
+D. Uncertainty u(x): AUROC for an error of the adjusted argmax
+
+   slice (5-fold CV inside the slice): logistic u 0.683, 1 - top prob 0.714   (error rate 0.452)
+   dev (u fitted on the whole slice):  logistic u 0.707, 1 - top prob 0.712   (error rate 0.370)
+   coefficients (standardised features): {'top_prob': np.float64(0.528), 'margin': np.float64(-0.558), 'entropy': np.float64(1.157), 'seed_disagreement': np.float64(0.054), 'set_size': np.float64(-0.294)}
+
+E. Headroom for M3: dev S2 when the fraction delta with the highest u(x) is re-decided
+   oracle: a reference label inside C(x) if there is one (else M1's label); random: uniform in C(x)
+
+   M1 system (ensemble + LA, nested CV) S2 0.598
+   aps a=0.1        oracle δ=0: 0.598  δ=0.1: 0.645  δ=0.2: 0.717  δ=0.3: 0.765  δ=0.5: 0.877  δ=1: 0.998
+                    random δ=0: 0.598  δ=0.1: 0.568  δ=0.2: 0.553  δ=0.3: 0.536  δ=0.5: 0.469  δ=1: 0.201
+   topk a=0.1       oracle δ=0: 0.598  δ=0.1: 0.651  δ=0.2: 0.708  δ=0.3: 0.765  δ=0.5: 0.867  δ=1: 0.988
+                    random δ=0: 0.598  δ=0.1: 0.571  δ=0.2: 0.559  δ=0.3: 0.544  δ=0.5: 0.490  δ=1: 0.244
+   fixed k=3        oracle δ=0: 0.598  δ=0.1: 0.635  δ=0.2: 0.684  δ=0.3: 0.727  δ=0.5: 0.795  δ=1: 0.880
+                    random δ=0: 0.598  δ=0.1: 0.586  δ=0.2: 0.585  δ=0.3: 0.587  δ=0.5: 0.542  δ=1: 0.342

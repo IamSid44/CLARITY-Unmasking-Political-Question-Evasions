@@ -1,0 +1,21 @@
+# E14 on the SECOND GPU-1 MIG slice (GI 2, 48 GB, 2/7 of the card). This slice belongs to another
+# group; the user asked on 2026-10-06 to use it while it is free. Started and stopped by
+# code/launch/gpu_watch.sh exactly like lane_gpu1_a: only while no other user has a process on it,
+# stopped within 2 min when one appears (or on `bash code/launch/gpu_watch.sh E14 release`).
+# Gradient checkpointing (48 GB). Same runs as the other lanes, starting from fold0, so the three
+# lanes (GPU 0: seeds upward; GI 1: fold4 downward; GI 2: fold0 upward) rarely meet.
+# device: MIG-b35fcf93-7118-5556-80c8-9d7e3da575a3
+# gi: 2
+# start: watcher
+Q8_12ep_crossfit fold0 --select last --no-save-epoch-adapters
+Q8_12ep_crossfit fold1 --select last --no-save-epoch-adapters
+Q8_12ep_crossfit fold2 --select last --no-save-epoch-adapters
+Q8_12ep_crossfit fold3 --select last --no-save-epoch-adapters
+Q8_12ep_crossfit fold4 --select last --no-save-epoch-adapters
+Q8_fullq_lora_12ep 9
+Q8_fullq_lora_12ep 8
+Q8_fullq_lora_12ep 7
+Q8_fullq_lora_12ep 6
+Q8_fullq_lora_12ep 5
+Q8_fullq_lora_12ep 4
+Q8_fullq_lora_12ep 3

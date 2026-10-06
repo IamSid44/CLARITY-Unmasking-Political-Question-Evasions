@@ -1,9 +1,12 @@
 # Nier_ANLP: CLARITY (SemEval-2026 Task 6)
 
 **Status (2026-10-06):** the mid-evaluation is submitted (`Report/Report.pdf`, `Slides/CLARITY_mideval.pptx`).
-Phase 2, a confidence-routed cascade towards the final evaluation, has started. Its plan, protocol,
-budget and server procedure are in [`docs/05_phase2_plan_and_budget.md`](docs/05_phase2_plan_and_budget.md),
-and the running experiment (E14, module M1) is registered in `docs/02_experiment_log.md`.
+Phase 2 is a confidence-routed cascade towards the final evaluation. Its plan, protocol, budget and
+server procedure are in [`docs/05_phase2_plan_and_budget.md`](docs/05_phase2_plan_and_budget.md).
+
+Its first module, **M1 (experiment E14), is done.** The 12-epoch Qwen3-8B system reaches
+**dev S2 0.598 / S1 0.743** with 10 seeds. E14's registration and results are in `docs/02_experiment_log.md`.
+The next module, M3 (an LLM adjudicator for uncertain items), is planned for Oct 12–18.
 
 **Knowledge over Structure: A Controlled Study of Response Clarity Classification in Political Interviews**
 
@@ -258,6 +261,7 @@ Every path is defined once, in `code/qevasion/paths.py`. `CLARITY_RUNS` moves `r
 | File | Purpose |
 |---|---|
 | `start.sh` | Lab server: starts (or resumes) an experiment in a tmux session `clarity-<EXP>`, one window per lane file, so runs survive an ssh drop |
+| `gpu_watch.sh` | Lab server: orchestrates an experiment from tmux. It finishes the model download, starts the lanes, and adds or removes a lane on our GPU-1 MIG slice when it is free or another user needs it (`start`, `status`, `release`, `allow`) |
 | `run_queue.sh` | Lab server: runs one lane's list of runs in order. It skips finished runs, resumes interrupted ones, uploads each finished run to HF, and guards GPU memory on the shared card (falls back to gradient checkpointing). Usage is in the file header and `docs/05_phase2_plan_and_budget.md` §5 |
 | `jarvis_drive.sh` | Runs on a local machine. It packages the code, copies it to a rented GPU instance, starts training there inside tmux, copies logs and results back every 5 minutes, and pauses the instance when done |
 | `jarvis_setup.sh` | Runs on the instance. It creates the Python environment, downloads the model, runs a smoke test (including resume) and a timing pilot, then trains each seed and uploads the results |
@@ -287,7 +291,7 @@ One folder per queued experiment: E8, E8b, E9, E10, E11 and E12 are DeBERTa; E14
 | `01_scorer_geometry.md` | What the multi-reference scorer rewards, and what that implies for decision rules |
 | `02_experiment_log.md` | Chronological log: every experiment's hypothesis and prediction (written before it ran), setup, result and analysis |
 | `03_research_narrative.md` | The same work as one argument, step by step from the first DeBERTa run to E13 |
-| `04_results_sources.md` | Every number in the report with the script and output file it comes from |
+| `04_results_sources.md` | Every number in the report with the script and output file it comes from (§10: Phase 2 numbers) |
 | `05_phase2_plan_and_budget.md` | Phase 2 (after the mid-evaluation): the cascade plan, protocol, compute ledger and budget, how to run on the lab server |
 | `raw/` | Raw text and CSV outputs of every analysis script |
 | `figures/` | Generated figures |
@@ -319,6 +323,8 @@ adjustment, and the final DeBERTa system (`FINAL_fullq_16ep_10seed_logitadj`). E
 | DeBERTa 10-seed system (ensemble + logit adjustment) | 0.405 | 0.648 |
 | **Qwen3-8B-Base + LoRA, single model (mean of 10 seeds)** | **0.476 ± 0.043** | **0.709 ± 0.031** |
 | **Qwen3-8B-Base + LoRA, 10-seed system** | **0.543** | **0.746** |
+| Qwen3-8B-Base + LoRA, 12 epochs, single model (mean of 10 seeds; E14, after the mid-evaluation) | 0.525 ± 0.042 | 0.729 |
+| **Qwen3-8B-Base + LoRA, 12 epochs, 10-seed system (E14 = cascade module M1)** | **0.598** | **0.743** |
 | TeleAI (1st place), multi-call DeepSeek-V3 pipeline | 0.617 | 0.812 |
 | Human annotator scored against the other two | 0.684 | — |
 
@@ -388,6 +394,10 @@ Run it from the repository root; with no arguments it lists its commands.
 python -m cascade.candidates --run Q8_fullq_lora_12ep --crossfit Q8_12ep_crossfit --method aps --alpha 0.1
 python -m preregistered_analyses.e14_m1_analysis > ../docs/raw/E14_m1_analysis.txt
 ```
+
+The E14 runs themselves: `bash code/launch/gpu_watch.sh E14 start` on the lab server (§5 of docs/05),
+or per run, for example `python -m models.llm_classifier --name Q8_fullq_lora_12ep --seed 3 --epochs 12`
+and `python -m models.llm_classifier --name Q8_12ep_crossfit --seed 0 --fold 2 --select last --epochs 12`.
 
 **Keys (optional).** For W&B logging or Hugging Face uploads, copy `code/.env.example` to `code/.env`
 and fill it in. This submission contains no keys.

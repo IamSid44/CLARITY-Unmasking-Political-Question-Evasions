@@ -17,7 +17,8 @@ from __future__ import annotations
 import numpy as np
 
 from cascade.candidates import build, fit_uncertainty, gold_rank, onehot
-from preregistered_analyses.e13_analysis import GOLD, boot, finished, paired, probs, s1, s2, system
+from decision_rules.decide import nested_cv, reference_masks
+from preregistered_analyses.e13_analysis import GOLD, R1, boot, finished, paired, probs, s1, s2, sp, system
 from qevasion.paths import RUNS
 from qevasion.scoring import score_subtask2
 
@@ -56,6 +57,11 @@ def section_a() -> None:
     print(f"\n   {len(seeds)}-seed systems (ensemble + LA, nested CV), S2: 12ep {sn:.3f} (10 CV splits {sn10:.3f}), "
           f"3ep {so:.3f} ({so10:.3f});  S1 12ep {s1(prn):.3f}, 3ep {s1(pro):.3f}")
     print(f"   12ep - 3ep system, bootstrap over items: {boot(prn, pro)}")
+    masks = {n: g for n, g in reference_masks(sp.dev, True).items() if n != "3ann"}
+    two_n = [nested_cv(R1, pn.mean(0), g, 5, 0)["out_of_fold_macro_f1"] for g in masks.values()]
+    two_o = [nested_cv(R1, po.mean(0), g, 5, 0)["out_of_fold_macro_f1"] for g in masks.values()]
+    print(f"   2-annotator reference sets (test regime), systems S2: 12ep {', '.join(f'{v:.3f}' for v in two_n)} "
+          f"(mean {np.mean(two_n):.3f}); 3ep {', '.join(f'{v:.3f}' for v in two_o)} (mean {np.mean(two_o):.3f})")
     if len(seeds) < 10:
         print(f"   NOTE: {len(seeds)} seeds -- no system claim before 10")
 

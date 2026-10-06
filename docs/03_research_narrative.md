@@ -1185,6 +1185,17 @@ candidate sets with uncertainty. A finding made on the train slice before E14 ra
 criterion: at 12 epochs, a candidate set needs 5–7 labels to cover the gold label for 90–95% of slice
 items.
 
+**E14 result (2026-10-06).** At 10 seeds, 12 epochs raises the single model to S2 0.525 ± 0.042
+(+0.049, 8/10 seeds up). The 10-seed system reaches **S2 0.598 / S1 0.743** without any LLM call, at
+the cascade's own target and 0.019 below TeleAI's multi-call pipeline. The gain over the 3-epoch system
+(+0.057) is likely but its interval still touches zero, [−0.003, +0.125].
+- **Candidate sets have to be rank-based.** Probability-mass sets did not carry over to the
+  cross-fitted rows.
+- **The simplest uncertainty score is as good as a fitted one:** 1 − top probability.
+- **An LLM stage has room to help.** An oracle within the top 3 on the 30% most uncertain items would
+  reach 0.727. Random choice within the same sets would lower the score, so M3 has to be genuinely
+  better than chance among M1's top candidates.
+
 **Next steps, in order (plan at the mid-evaluation)** (the timeline in the Conclusion of `Report/Report.pdf`):
 1. **12 epochs at 10 seeds** → the new single-pass system. Then all of train with 12 epochs, as
    its own test.

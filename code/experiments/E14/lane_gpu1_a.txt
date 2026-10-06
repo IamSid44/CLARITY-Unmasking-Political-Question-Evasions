@@ -1,0 +1,20 @@
+# E14 on our GPU-1 MIG slice (GI 1, 48 GB, 2/7 of the GPU's compute), started and stopped by
+# code/launch/gpu_watch.sh: only while no other user has a process on the slice; stopped when one
+# appears (or on `bash code/launch/gpu_watch.sh E14 release`). The slice has 48 GB, so runs here use
+# gradient checkpointing (same computation, slower). Same runs as lane_gpu0_a, in reverse order: the
+# per-run lock shares them out, and a run stopped here resumes from its last epoch on either lane.
+# device: MIG-def14cbb-599b-58f4-9cef-4befe9ff8506
+# gi: 1
+# start: watcher
+Q8_12ep_crossfit fold4 --select last --no-save-epoch-adapters
+Q8_12ep_crossfit fold3 --select last --no-save-epoch-adapters
+Q8_12ep_crossfit fold2 --select last --no-save-epoch-adapters
+Q8_12ep_crossfit fold1 --select last --no-save-epoch-adapters
+Q8_12ep_crossfit fold0 --select last --no-save-epoch-adapters
+Q8_fullq_lora_12ep 9
+Q8_fullq_lora_12ep 8
+Q8_fullq_lora_12ep 7
+Q8_fullq_lora_12ep 6
+Q8_fullq_lora_12ep 5
+Q8_fullq_lora_12ep 4
+Q8_fullq_lora_12ep 3

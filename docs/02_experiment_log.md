@@ -11,13 +11,14 @@ over seeds. Raw outputs behind the headline tables are in `docs/raw/`.
 
 | | |
 |---|---|
-| Period | 2026-09-19 → 2026-10-02 (mid-evaluation); Phase 2 from 2026-10-06 |
-| Hardware | 1× RTX PRO 6000 (96 GB), shared with other users' jobs; E13 on JarvisLabs VMs with the same GPU |
+| Period | 2026-09-19 → 2026-10-02 (mid-evaluation); Phase 2 from 2026-10-06 (E14 done 2026-10-06) |
+| Hardware | 1× RTX PRO 6000 (96 GB), shared with other users' jobs; E13 on JarvisLabs VMs with the same GPU; E14 on the lab server's GPU 0 plus two GPU-1 MIG slices (48 GB each) when free |
 | Backbone | `microsoft/deberta-v3-large` (435M parameters) through E12; `Qwen/Qwen3-8B-Base` + LoRA from E13 |
 | Final system (E11, by a rule fixed in advance) | full question + 16 epochs, **10-seed** ensemble + logit adjustment: dev S2 **0.405** (0.412 over CV splits), dev S1 **0.648**; the 10-seed baseline system scores 0.428 / 0.601 — not distinguishable on S2 |
 | Latest | E12: training on all of train is the one variant that helps (S2 +0.029 per model, 4/5 seeds; 5-seed system 0.489); the hierarchy of specialist encoders, boundary experts and model soups do not |
 | Latest | **E13: Qwen3-8B + LoRA, the backbone as the one change, 10 seeds.** Single model S2 0.476 ± 0.043 vs 0.384 (+0.092, 10/10 up); **10-seed system S2 0.543 / S1 0.746 vs DeBERTa 0.405 / 0.648** (+0.136, 95% [+0.054, +0.224]). 12 epochs adopted on the slice (3-seed screen); all of train +0.017 per model, not distinguishable |
-| Running | **E14 (module M1)**: 12-epoch Qwen seeds 3–9 + 5 cross-fit folds on the lab server (registered below; plan in `05_phase2_plan_and_budget.md`) |
+| Latest | **E14 (module M1, Phase 2 step 1) done 2026-10-06.** Qwen 12 epochs at 10 seeds: single model S2 0.525 ± 0.042 (+0.049 vs 3 epochs, 8/10 up); **10-seed system S2 0.598 / S1 0.743** (+0.057 vs 0.543, 95% [−0.003, +0.125]); 2-annotator mean 0.549. Cross-fitted train probabilities for all 3,448 rows. Candidate sets must be rank-based; u(x) = 1 − top prob; oracle headroom at δ = 0.3 is 0.727, so M3 goes ahead |
+| Running | nothing |
 
 ---
 
@@ -47,7 +48,7 @@ system takes.
 | E13 + E13x | **Qwen3-8B-Base + LoRA** instead of DeBERTa (same input, rows, slice; 3 epochs; 10 seeds) | **0.476 ± 0.043** | **0.709 ± 0.031** | **0.543** (S1 0.746) | **best by far**: +0.092 S2 / +0.095 S1 per model over DeBERTa, 10/10 seeds; system +0.136 [+0.054, +0.224] |
 | E13b | Qwen, 12 epochs instead of 3 (3 seeds) | 0.543 *(3 seeds)* | 0.742 | | slice F1 +0.084 (3/3) → **adopted**; best epochs 8–11; 10 seeds after the mid-eval |
 | E13c | Qwen, all of train, last epoch (10 seeds) | 0.492 ± 0.045 | 0.715 | 0.575 | +0.017 per model (6/10); system +0.028 [−0.026, +0.092]: not distinguishable |
-| E14 | M1: Qwen 12 epochs at 10 seeds + 5-fold cross-fitting; C(x), u(x) | *running* | | | registered 2026-10-06 |
+| **E14** | **M1: Qwen 12 epochs at 10 seeds** (+ 5-fold cross-fitting; C(x), u(x)) | **0.525 ± 0.042** | **0.729** | **0.598** (S1 0.743) | **new best system**: +0.057 vs E13x [−0.003, +0.125]; per model +0.049 (8/10); K = 5 is not enough |
 | — | ChulaNLP's fine-tuned DeBERTa-large (published; checkpoint chosen on dev) | 0.46 | 0.65 | | for reference |
 
 **The three main systems at 10 seeds (E11)** — the numbers to quote. Single models:
@@ -88,6 +89,7 @@ system (`../submissions/FINAL_fullq_16ep_10seed_logitadj/`); Codabench is closed
 - [E12 — Groundwork, plan and runs](#e12--groundwork-plan-and-runs-launched-2026-09-28)
 - [E13 — Is the encoder's gap a knowledge gap? A LoRA-tuned Qwen3-8B classifier](#e13--is-the-encoders-gap-a-knowledge-gap-a-lora-tuned-qwen3-8b-classifier-registered-2026-10-02)
 - [E14 — Module M1: the 12-epoch Qwen at 10 seeds, cross-fitting, candidate sets and uncertainty](#e14--module-m1-the-12-epoch-qwen-at-10-seeds-cross-fitting-candidate-sets-and-uncertainty-registered-2026-10-06)
+  - [E14 results](#e14-results-all-12-runs-finished-2026-10-06-2205-ist)
 - [Deferred](#deferred)
 
 ---
@@ -1921,7 +1923,7 @@ seed takes 15–16 min and a 12-epoch seed about 59 min, peaking at 53 GiB.
   distillation targets.
 - **C(x) and u(x) decide how much an LLM stage can add, and on which items.**
 
-**Runs** (`code/experiments/E14/`, lab server GPU 0, one lane, W&B + HF):
+**Runs** (`code/experiments/E14/`, W&B + HF). They run on the lab server: GPU 0 (`lane_gpu0_a`), plus our GPU-1 MIG slice (`lane_gpu1_a`, same runs in reverse order) whenever `gpu_watch.sh` finds it free. From 2026-10-06 09:50, the second GPU-1 slice (`lane_gpu1_b`, GI 2) runs under the same rules. A run stopped by contention resumes from its last epoch. Launched with `bash code/launch/gpu_watch.sh E14 start`.
 
 | run | what | change from E13b |
 |---|---|---|
@@ -1979,6 +1981,102 @@ finding above, made on the slice before the runs.
 
 **Cost.** Free (lab server). Estimated 1.2–1.6 h per run, 12 runs, ~15–19 h of wall time. A
 20-step pilot measures it first.
+
+### E14 results *(all 12 runs finished 2026-10-06 22:05 IST)*
+
+Sources:
+- `raw/E14_m1_analysis.txt`: `e14_m1_analysis.py`, sections A–E;
+- every run folder is on the HF repo under `Q8_fullq_lora_12ep/seed<k>/` and `Q8_12ep_crossfit/fold<k>/`;
+- curves in W&B, groups `Q8_fullq_lora_12ep` and `Q8_12ep_crossfit`.
+
+**The runs.** In the "lane" column, *ckpt* means the run used gradient checkpointing (same computation,
+slower).
+- **GPU 0 alone (seeds 3, 7, 8):** 75–120 min per run.
+- **GPU 0 shared with a lab-mate's vLLM (seeds 4–6):** 160–180 min.
+- **A GPU-1 MIG slice:** about 200 min.
+- **Seed 9:** restarted at the epoch-8 boundary with checkpointing, to leave room on GPU 0 for a lab-mate.
+- **Fold 4:** stopped two minutes into its first epoch on our GI-1 slice when a lab-mate's job arrived,
+  then trained on GPU 0.
+- **Lost work:** none apart from those two minutes.
+
+| run | lane(s) | selected epoch | slice / held-out fold F1 | dev S2 | dev S1 | final train loss | minutes |
+|---|---|---|---|---|---|---|---|
+| seed 3 | GPU 0, ckpt | 5 | 0.479 | 0.570 | 0.769 | 0.022 | 120 |
+| seed 4 | GPU 0, ckpt (shared) | 8 | 0.487 | 0.530 | 0.740 | 0.025 | 178 |
+| seed 5 | GPU 0, ckpt (shared) | 7 | 0.490 | 0.436 | 0.646 | 0.022 | 170 |
+| seed 6 | GPU 0, ckpt | 11 | 0.490 | 0.467 | 0.664 | 0.025 | 159 |
+| seed 7 | GPU 0 | 8 | 0.500 | 0.540 | 0.754 | 0.026 | 75 |
+| seed 8 | GPU 0 | 10 | 0.498 | 0.557 | 0.774 | 0.022 | 75 |
+| seed 9 | GPU 0, then ckpt from epoch 9 | 4 | 0.477 | 0.515 | 0.720 | 0.026 | 82 |
+| fold 0 | GI-2 slice, ckpt | 11 (last) | 0.466 | 0.563 | 0.740 | 0.019 | 200 |
+| fold 1 | GI-2 slice, ckpt | 11 (last) | 0.503 | 0.560 | 0.720 | 0.024 | 197 |
+| fold 2 | GPU 0, ckpt | 11 (last) | 0.472 | 0.578 | 0.741 | 0.022 | 172 |
+| fold 3 | GI-2 slice, ckpt | 11 (last) | 0.526 | 0.494 | 0.713 | 0.015 | 198 |
+| fold 4 | GI-1 slice (stopped), GPU 0, ckpt | 11 (last) | 0.478 | 0.512 | 0.756 | 0.027 | 159 |
+
+For a fold, the F1 column is the macro-F1 on its held-out fold of train, and its dev scores are those of
+a model trained on 80% of train. Seeds 0–2 are E13b's runs (dev S2 0.531 / 0.560 / 0.539).
+
+**Against the predictions.**
+
+| | prediction | result | verdict |
+|---|---|---|---|
+| **H1** single model S2, 10 seeds | 0.50–0.54 | **0.525 ± 0.042** (3 epochs: 0.476 ± 0.043) | held |
+| | paired gain +0.03 to +0.07, ≥ 7/10 up | **+0.049 ± 0.062** (t = 2.48, **8/10** up) | held |
+| | S1 +0.01 to +0.04 | +0.020 (t = 1.11, 6/10 up) | held, weakly |
+| **H2** 10-seed system S2 | 0.55–0.60 | **0.598** (10 CV splits 0.601); 3 epochs 0.543 (0.549) | held |
+| | gain smaller than per model; CI includes 0 | +0.057, 95% [−0.003, +0.125], P(≤0) = 0.032 | gain **not** smaller; CI includes 0 (just) |
+| | system S1 | 0.743 vs 0.746 | flat |
+| | 2-annotator sets (test regime) | 0.540 / 0.571 / 0.536, mean **0.549** (3 epochs 0.524) | — |
+| **H3** APS sets at α = 0.10 need 5.5–7 labels (slice) | 5.5–7 | 5.94 | held |
+| | cross-fitted train rows confirm slice coverage within 0.03 | APS: 0.756 vs 0.977 (**no**); rank-conformal top-k: 0.896 vs 0.910 (yes) | **mixed** |
+| | fixed top-3: slice 0.75–0.82, dev 0.90–0.94 | 0.812 / 0.925 (train out-of-fold 0.768) | held |
+| **H4** u(x) AUROC 0.66–0.74; logistic must beat 1 − top prob by 0.01 | | logistic 0.683 (slice CV) / 0.707 (dev); 1 − top prob 0.714 / 0.712 | AUROC held; logistic does **not** beat the baseline, so **M2 uses 1 − top probability** (as expected) |
+| **H5** oracle within top-3 at δ = 0.3 ≥ 0.65, and ≥ M1 + 0.03 | | **0.727** (M1 0.598; at δ = 0.1 / 0.2: 0.635 / 0.684) | held: **M3 is worth building** |
+| **H6** K = 5 within 0.01 of K = 10 | | K = 5: 0.555 ± 0.029 vs K = 10: 0.598 | **failed**: keep 10 seeds |
+
+**What the results say.**
+- **Twelve epochs are confirmed.** The per-model gain holds at 10 seeds. The system gain of +0.057 is
+  as large as the per-model gain, against our prediction.
+  - Logit adjustment helps the overconfident 12-epoch models little: single model + LA scores 0.533 at
+    12 epochs vs 0.538 at 3. Averaging seeds makes up for it.
+  - Single 12-epoch models are sharp but disagree with each other, and the ensemble benefits. The
+    K-curve shows this: it rises from 0.509 at K = 1 to 0.598 at K = 10. The cost lever K is therefore
+    weak, since fewer seeds cost accuracy.
+- **The single-pass system reaches 0.598 dev S2 with no LLM call.** That is the cascade's whole target
+  (0.60), and 0.019 below TeleAI's multi-call pipeline (0.617). The bootstrap interval still includes
+  the 3-epoch system, so "better than E13" is likely (P(≤ 0) = 0.03) but not established.
+- **Mass-based candidate sets do not transfer between ensembles.** The temperature and threshold were
+  fitted on the 10-seed ensemble's slice probabilities. The cross-fitted rows come from single fold
+  models, which are sharper, so the same mass threshold gives smaller sets with 0.76 coverage.
+  Rank-based sets (fixed k, or conformal k) transfer within 0.015. **So C(x) should be defined by rank.**
+  M4 uses single-model cross-fitted candidates, and a fixed top-k behaves the same there as on dev.
+- **There is room for an LLM stage, but it must beat a high bar.**
+  - An oracle restricted to the top 3 of the 30% most uncertain items reaches 0.727 (top-5/6: 0.765).
+  - Picking at random inside the top 3 *lowers* S2: 0.587 at δ = 0.3.
+  - The adjudicator must therefore be clearly better than chance among candidates M1 already ranks well.
+
+**Deviations from the registration.** None changes the computation.
+- **Gradient checkpointing:** used whenever a lab-mate's job left less than 60 GB free. Each run's
+  `config.json` and the queue log (`logs/E14.log`) record which.
+- **A second MIG slice:** GI 2, at the user's request on 2026-10-06 09:50, under the same give-it-back
+  rules.
+- **Infrastructure fixes during the run:**
+  - tmux session targets now use exact names;
+  - the queue log reports the selected epoch's score instead of the last epoch's;
+  - `QUEUE_NEED_GB` forces checkpointing on demand.
+
+**Decisions this leaves for M3** (see `05_phase2_plan_and_budget.md` §2.1):
+1. **C(x) is rank-based.** Either a fixed top-3 (dev any-reference 0.925, train out-of-fold 0.768), or
+   all nine labels with p̄ fused in. The data favour top-3 or top-4 for the prompt, with fusion so the
+   LLM can fall back on M1.
+2. **u(x) = 1 − top probability** of the 10-seed adjusted ensemble.
+3. **Deferral budget:** δ ≈ 0.2–0.3 is where the oracle gain per call is largest (+0.047 at 0.1, +0.086
+   at 0.2, +0.129 at 0.3).
+
+**Cost.** Free: lab server, ~30 GPU-hours over 20 h of wall time, from 3 lanes (GPU 0 plus two MIG
+slices when they were free). On JarvisLabs the same runs would have cost roughly ₹2,300. The credit
+balance is unchanged at ₹4,029.30.
 
 ---
 
