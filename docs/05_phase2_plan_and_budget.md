@@ -31,12 +31,12 @@ Two facts from the analysis decide what comes next (report §6):
 So most remaining errors are a choice among a few labels the model already ranks highly, on items it
 can flag as uncertain.
 
-## Status (2026-10-06, 22:30)
+## Status (2026-10-13)
 
 | Module | State |
 |---|---|
 | **M1** | **done (E14).** 10-seed 12-epoch system S2 0.598 / S1 0.743; cross-fitted train probabilities for all 3,448 rows; C(x) and u(x) code; all runs on HF and W&B. Results against H1–H6 are in the log, §E14 results. |
-| M3 | next, Oct 12–18. Its inputs are fixed by E14: rank-based C(x) (top-3 or top-4), u(x) = 1 − top probability, deferral δ ≈ 0.2–0.3. Model choice and prompt design are open. |
+| **M3** | **done (E15, 2026-10-14; corrected for a fusion bug the same day).** Local Qwen3.8-27B-FP8 over M1's top 4, no examples, fused on the 30% least confident items: **dev S2 0.669 (10 splits 0.660), +0.067 [+0.009, +0.124]; S1 0.798; 0.36 calls/item**. δ = 0.2 gives 0.635 at 0.23 calls. DeepSeek V4 Flash and Gemma 4 31B (API) not adopted. API spend $0.26. Next: adopt δ = 0.3, then M4. |
 | M2, M4 | as planned |
 
 ## 2. The plan: a confidence-routed cascade (report §7, Figure 5)
@@ -103,15 +103,16 @@ feeds M3 is recorded in the E14 entry of the log. The options:
 | 2026-09-19 → 09-29 | E0–E12 (DeBERTa, ~120 runs) | lab server, RTX PRO 6000 (shared) | free |
 | 2026-10-02 | E13 screen, setup and pilots | JarvisLabs, 1 × RTX PRO 6000 | ₹331.91 |
 | 2026-10-02 | E13x / E13b / E13c (4 VMs) | JarvisLabs | ₹1,518.79 |
-| **balance** | | | **₹4,029.30 of ₹5,880** (≈ ₹190 per GPU-hour, ≈ 21 GPU-hours) |
 | 2026-10-06 | E14 (M1): 7 seeds + 5 folds, ~30 GPU-hours over 20 h of wall time (GPU 0 + two MIG slices) | lab server | free (≈ ₹2,300 at Jarvis rates) |
+| 2026-10-13 | E15 (M3): API probe, screen and secondary dev arms through the JarvisLabs Model API; local Qwen3.8-27B arms on the lab server (free) | Jarvis API + lab server | $0.262 ≈ ₹23 (ledger `runs/M3/api_ledger.jsonl`) |
+| **balance** | | | **≈ ₹4,006 of ₹5,880** (₹4,029.30 before E15; to be confirmed on the dashboard) |
 
 ### 4.2 Plan for the remaining credit
 
 | Phase | Work | Where | GPU-h | ₹ (estimate) |
 |---|---|---|---|---|
 | M1 | 12-epoch seeds 3–9, 5 cross-fit folds | lab server | (~15–19 h wall) | 0 |
-| M3 | vLLM adjudicator (~32B–70B, quantised) on slice, dev and test; prompt iterations | Jarvis, 1 VM | 4–6 | 800–1,150 |
+| M3 | Qwen3.8-27B-FP8 locally (free); DeepSeek V4 Flash / Gemma 4 31B through the JarvisLabs Model API (per token: DeepSeek $0.13 in / $0.03 cached / $0.26 out per M) on screen, slice, dev, test and 50% of train | lab server + Jarvis API | 0 | ≈ 260–350 (cap $8 ≈ ₹700) |
 | M2 | router, δ sweep, ablations | CPU | 0 | 0 |
 | M4 | M3 on the 3,448 train rows; retrain M1 on soft targets (3-seed screen on the server, 7-seed extension on parallel Jarvis VMs if it passes) | mixed | 2–4 + 7 | 1,750–2,100 |
 | reserve | reruns, final freeze | | | ~600 |
@@ -181,3 +182,28 @@ looks at our GPU-1 MIG slice (GI 1, 48 GB, 2/7 of the card) every 10 minutes:
   `tmux kill-session -t =clarity-<EXP>` (the `=` matters: without it tmux may match `clarity-<EXP>-watch` by prefix).
 - Never edit a running bash script in place. Write a copy and `mv` it over the original.
 - Smoke tests run without `--track`, without `@hf-push`, and into a scratch `CLARITY_RUNS`.
+
+## 6. Running M3 (E15)
+
+Code is in `code/cascade/`. Local runs use their own venv, `/scratch/shlok/Temp/.venv-vllm` (vLLM 0.31.0), so the training venv is untouched. API runs need `JARVIS_API_KEY` in `code/.env`, which is gitignored.
+
+| step | command (from `code/`) | where |
+|---|---|---|
+| models | `bash ../code/launch/download_model.sh Qwen/Qwen3.8-27B-FP8` (also `Qwen/Qwen3-Embedding-0.6B`) | server, resumable |
+| embeddings | `python -m cascade.exemplars embed` → `runs/M3/embeddings/` | server GPU, ~2 min |
+| API probe | `$API_PY -m cascade.api_probe > ../docs/raw/E15_api_probe.txt` | API, cap $1 |
+| local screen | `bash ../code/launch/m3_local.sh screen` (k = 0, 4, 10) | GPU 0, free |
+| API screen | `$API_PY -m cascade.adjudicate --backend api --model <id> --tag <tag> --k <k> --splits screen --dry-run`, then without `--dry-run` (thinking is switched off by default) | API |
+| screen analysis | `python -m cascade.fuse screen --tags <tag>,<tag>,...` | CPU |
+| full scoring | `--splits slice,dev,test,train50` with the adopted arm (screen rows are copied, not re-paid) | GPU 0 / API |
+| dev system and M2 curve | `python -m cascade.fuse dev --tag <tag>` | CPU |
+
+`$VLLM_PY` is `/scratch/shlok/Temp/.venv-vllm/bin/python`: vLLM 0.31.0, a copy of `/scratch/shlok/venvs/vllm` plus pandas, pyarrow and scikit-learn. `$API_PY` is the training venv's python with the openai client on the path: `PYTHONPATH=/scratch/shlok/Temp/.pylib-openai /scratch/shlok/Temp/.venv/bin/python`. E15's API runs used this.
+
+**Spend guard.** Every API response's usage goes to `runs/M3/api_ledger.jsonl`. Requests stop when either
+limit is reached: the E15 cap of $8 (`cascade/api_budget.GLOBAL_CAP_USD`), or the run's own `--max-usd`
+(default $1). A run whose dry-run projection exceeds `--max-usd` refuses to start.
+
+**Resuming.** Outputs go to `runs/M3/<tag>/responses.jsonl`, one line per item, appended as results arrive.
+A rerun skips finished items and retries failed ones. A tag's `config.json` pins the model, k, the prompt
+version and the switches, so a changed configuration needs a new tag.

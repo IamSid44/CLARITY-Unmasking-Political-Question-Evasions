@@ -1,0 +1,8 @@
+slice: 104 rows; gold in top-4 0.837; M1 top-1 accuracy 0.413; random within C 0.209
+
+qwen38_27b_k0
+  LLM alone within C: 0.337   fused (5-fold CV): 0.346   M1: 0.413
+  NLL of gold under q (gold in C, n=87): 1.417
+  LLM right & M1 wrong 0.096;  LLM wrong & M1 right 0.173
+  argmax letter A-D [43, 22, 34, 5];  mean letter mass 0.994;  items with a letter missing from top-20 0.000
+  GPU-seconds per item 0.155; mean prompt tokens 1224

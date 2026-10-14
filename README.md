@@ -1,12 +1,16 @@
 # Nier_ANLP: CLARITY (SemEval-2026 Task 6)
 
-**Status (2026-10-06):** the mid-evaluation is submitted (`Report/Report.pdf`, `Slides/CLARITY_mideval.pptx`).
+**Status (2026-10-14):** the mid-evaluation is submitted (`Report/Report.pdf`, `Slides/CLARITY_mideval.pptx`).
 Phase 2 is a confidence-routed cascade towards the final evaluation. Its plan, protocol, budget and
 server procedure are in [`docs/05_phase2_plan_and_budget.md`](docs/05_phase2_plan_and_budget.md).
 
 Its first module, **M1 (experiment E14), is done.** The 12-epoch Qwen3-8B system reaches
 **dev S2 0.598 / S1 0.743** with 10 seeds. E14's registration and results are in `docs/02_experiment_log.md`.
-The next module, M3 (an LLM adjudicator for uncertain items), is planned for Oct 12–18.
+The second, **M3 (experiment E15, an LLM adjudicator for uncertain items), is done.** A local Qwen3.8-27B-FP8
+chooses among M1's top four labels for the 30% least confident items, and its choice is fused with M1.
+This gives **dev S2 0.669 / S1 0.798 at 0.36 LLM calls per item**, +0.067 [+0.009, +0.124] over M1; TeleAI
+scores 0.617 / 0.812 at 1.94 calls. These numbers were corrected on 2026-10-14 for a fusion bug; see E15 in
+the log.
 
 **Knowledge over Structure: A Controlled Study of Response Clarity Classification in Political Interviews**
 
@@ -80,7 +84,7 @@ CLARITY-Unmasking-Political-Question-Evasions/
 ├── code/                            ALL source code (run every command from inside this folder)
 │   ├── qevasion/                    shared library: data, labels, splits, paths, official-scorer replica
 │   ├── models/                      the trainable classifiers and model-level variants
-│   ├── cascade/                     Phase 2 cascade modules (M1: candidate sets and uncertainty)
+│   ├── cascade/                     Phase 2 cascade modules (M1 candidate sets and uncertainty; M3 LLM adjudicator and fusion)
 │   ├── decision_rules/              turning saved probabilities into labels
 │   ├── evaluation/                  metrics, run comparisons, packaging predictions
 │   ├── preregistered_analyses/      the analyses behind the reported numbers
@@ -237,6 +241,10 @@ Every path is defined once, in `code/qevasion/paths.py`. `CLARITY_RUNS` moves `r
 
 | File | Purpose |
 |---|---|
+| `prompts.py`, `exemplars.py` | Module M3's prompt (definitions, confusion guide, lettered candidates) and the retrieval of train examples (excluding same-answer and same-interview rows) |
+| `adjudicate.py` | Module M3: scores M1's top-4 candidates with an LLM (local vLLM or the JarvisLabs Model API), one request and one output token per item; resumable, never pays twice. Output: `runs/M3/<tag>/responses.jsonl` |
+| `api_budget.py`, `api_probe.py` | API prices and the spend ledger with E15's hard cap; the probe of what the API returns |
+| `fuse.py` | Fuses q with M1 over C(x), defers by confidence (the M2 curve), and scores the screen, the slice and the dev system |
 | `candidates.py` | Module M1. From a seed ensemble's saved probabilities it builds candidate sets C(x) (adaptive, rank-conformal or fixed top-k, calibrated on the train slice after temperature scaling) and an uncertainty score u(x) (logistic regression on the slice), for slice, dev, test and the cross-fitted train rows. Output: `runs/M1/<config>_<method>_a<alpha>/` |
 
 ### `code/figures/`
@@ -263,6 +271,7 @@ Every path is defined once, in `code/qevasion/paths.py`. `CLARITY_RUNS` moves `r
 | `start.sh` | Lab server: starts (or resumes) an experiment in a tmux session `clarity-<EXP>`, one window per lane file, so runs survive an ssh drop |
 | `gpu_watch.sh` | Lab server: orchestrates an experiment from tmux. It finishes the model download, starts the lanes, and adds or removes a lane on our GPU-1 MIG slice when it is free or another user needs it (`start`, `status`, `release`, `allow`) |
 | `run_queue.sh` | Lab server: runs one lane's list of runs in order. It skips finished runs, resumes interrupted ones, uploads each finished run to HF, and guards GPU memory on the shared card (falls back to gradient checkpointing). Usage is in the file header and `docs/05_phase2_plan_and_budget.md` §5 |
+| `m3_local.sh`, `download_model.sh` | Lab server: E15's local LLM arms on GPU 0 (vLLM venv), and resumable model downloads |
 | `jarvis_drive.sh` | Runs on a local machine. It packages the code, copies it to a rented GPU instance, starts training there inside tmux, copies logs and results back every 5 minutes, and pauses the instance when done |
 | `jarvis_setup.sh` | Runs on the instance. It creates the Python environment, downloads the model, runs a smoke test (including resume) and a timing pilot, then trains each seed and uploads the results |
 
@@ -325,6 +334,7 @@ adjustment, and the final DeBERTa system (`FINAL_fullq_16ep_10seed_logitadj`). E
 | **Qwen3-8B-Base + LoRA, 10-seed system** | **0.543** | **0.746** |
 | Qwen3-8B-Base + LoRA, 12 epochs, single model (mean of 10 seeds; E14, after the mid-evaluation) | 0.525 ± 0.042 | 0.729 |
 | **Qwen3-8B-Base + LoRA, 12 epochs, 10-seed system (E14 = cascade module M1)** | **0.598** | **0.743** |
+| **M1 + M3: Qwen3.8-27B-FP8 over M1's top 4, fused, 30% deferred (0.36 calls/item; E15)** | **0.669** (10 CV splits 0.660) | **0.798** |
 | TeleAI (1st place), multi-call DeepSeek-V3 pipeline | 0.617 | 0.812 |
 | Human annotator scored against the other two | 0.684 | — |
 
@@ -382,6 +392,16 @@ run still completes.
 python -m models.llm_classifier --name Q8_fullq_lora --seed 0                  # E13
 python -m models.llm_classifier --name Q8_fullq_lora_12ep --seed 0 --epochs 12 # E13b
 python -m models.llm_classifier --name Q8_alldata --seed 0 --val-frac 0 --select last   # E13c
+```
+
+**Run the M3 cascade stage (E15).** This needs M1's inputs in `runs/M1/`, a vLLM environment for the
+local LLM, and `JARVIS_API_KEY` in `code/.env` for the API arms. Details are in
+`docs/05_phase2_plan_and_budget.md` §6.
+
+```bash
+python -m cascade.exemplars embed                                  # retrieval embeddings (GPU, ~2 min)
+bash ../code/launch/m3_local.sh screen && bash ../code/launch/m3_local.sh full 0   # Qwen3.8-27B-FP8, GPU 0
+python -m cascade.fuse dev --tag qwen38_27b_k0                     # dev system and the deferral curve
 ```
 
 On the lab server, in tmux, with W&B logging and HF upload: `bash code/launch/start.sh E14` (see

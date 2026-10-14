@@ -18,6 +18,7 @@ over seeds. Raw outputs behind the headline tables are in `docs/raw/`.
 | Latest | E12: training on all of train is the one variant that helps (S2 +0.029 per model, 4/5 seeds; 5-seed system 0.489); the hierarchy of specialist encoders, boundary experts and model soups do not |
 | Latest | **E13: Qwen3-8B + LoRA, the backbone as the one change, 10 seeds.** Single model S2 0.476 ± 0.043 vs 0.384 (+0.092, 10/10 up); **10-seed system S2 0.543 / S1 0.746 vs DeBERTa 0.405 / 0.648** (+0.136, 95% [+0.054, +0.224]). 12 epochs adopted on the slice (3-seed screen); all of train +0.017 per model, not distinguishable |
 | Latest | **E14 (module M1, Phase 2 step 1) done 2026-10-06.** Qwen 12 epochs at 10 seeds: single model S2 0.525 ± 0.042 (+0.049 vs 3 epochs, 8/10 up); **10-seed system S2 0.598 / S1 0.743** (+0.057 vs 0.543, 95% [−0.003, +0.125]); 2-annotator mean 0.549. Cross-fitted train probabilities for all 3,448 rows. Candidate sets must be rank-based; u(x) = 1 − top prob; oracle headroom at δ = 0.3 is 0.727, so M3 goes ahead |
+| Latest | **E15 (module M3) done 2026-10-14; dev numbers corrected the same day (a fusion bug, see E15 correction).** Local Qwen3.8-27B-FP8 over M1's top 4, no examples, fused on the 30% least confident items: **dev S2 0.669 (10 splits 0.660), +0.067 [+0.009, +0.124] over M1; S1 0.798 (+0.055); 0.36 LLM calls/item**, against TeleAI's 0.617 / 0.812 at 1.94 calls. 2-annotator mean 0.589. API spend $0.26 |
 | Running | nothing |
 
 ---
@@ -49,6 +50,7 @@ system takes.
 | E13b | Qwen, 12 epochs instead of 3 (3 seeds) | 0.543 *(3 seeds)* | 0.742 | | slice F1 +0.084 (3/3) → **adopted**; best epochs 8–11; 10 seeds after the mid-eval |
 | E13c | Qwen, all of train, last epoch (10 seeds) | 0.492 ± 0.045 | 0.715 | 0.575 | +0.017 per model (6/10); system +0.028 [−0.026, +0.092]: not distinguishable |
 | **E14** | **M1: Qwen 12 epochs at 10 seeds** (+ 5-fold cross-fitting; C(x), u(x)) | **0.525 ± 0.042** | **0.729** | **0.598** (S1 0.743) | **new best system**: +0.057 vs E13x [−0.003, +0.125]; per model +0.049 (8/10); K = 5 is not enough |
+| E15 | **M3: + Qwen3.8-27B-FP8 adjudicator over M1's top 4, fused, δ = 0.3** (0.36 calls/item) | 0.603 *(LLM alone within C)* | | **0.669** (10 splits 0.660; S1 **0.798**) | **new best system**: +0.067 [+0.009, +0.124] over M1; corrected 2026-10-14 (fusion bug) |
 | — | ChulaNLP's fine-tuned DeBERTa-large (published; checkpoint chosen on dev) | 0.46 | 0.65 | | for reference |
 
 **The three main systems at 10 seeds (E11)** — the numbers to quote. Single models:
@@ -2077,6 +2079,401 @@ a model trained on 80% of train. Seeds 0–2 are E13b's runs (dev S2 0.531 / 0.5
 **Cost.** Free: lab server, ~30 GPU-hours over 20 h of wall time, from 3 lanes (GPU 0 plus two MIG
 slices when they were free). On JarvisLabs the same runs would have cost roughly ₹2,300. The credit
 balance is unchanged at ₹4,029.30.
+
+---
+
+## E15 — Module M3: a candidate-constrained LLM adjudicator, fused with M1 *(registered 2026-10-13)*
+
+*Written before any M3 scoring run. The API probe (step 0 below) may change only the items marked
+"probe-dependent"; any such change is recorded here before the screen starts.*
+
+**Why.** E14 left M1 at dev S2 0.598 with no LLM call, and showed where an LLM can help.
+- **M1 ranks better than it decides.** On the 30% least confident dev items, M1's top label is in the
+  reference set for 0.45 of items, but the top 4 contain a reference label for 0.95. On the slice
+  (one gold label) the figures are 0.41 and 0.84; on cross-fitted train rows, 0.31 and 0.81.
+- **M1's first choice still carries information.** Within the top 3, its first choice is right about
+  twice as often as its second (slice: 0.41 / 0.22 / 0.14), and picking at random inside the top 3
+  lowers S2 (E14: 0.587). The LLM must therefore be *fused* with M1, not substituted for it.
+- **The oracle headroom is large.** Re-deciding the 30% least confident items perfectly within the
+  top 3 gives 0.727 (E14 H5).
+
+**Two facts found while designing (2026-10-13, train only), which shape the protocol.**
+- **Sibling rows.** 69% of train rows share their answer text with another row (other sub-questions of
+  the same answer; 72% of those groups carry different labels). The slice and the 5 folds were split
+  by row, so 67% of slice rows have their answer text in the training part. Test shares no answer and
+  no interview with train; dev shares 1% of answers and 38% of interviews.
+  - *Consequence 1:* exemplars are retrieved from train rows with a **different answer and a different
+    interview** (URL), for every split, to match test.
+  - *Consequence 2:* M1's probabilities on slice and cross-fitted rows come from a partly-seen regime,
+    so the fusion weights for the reported system are fitted by **nested CV on dev**, as the report says,
+    not on train rows.
+- **Confusions among deferred train rows** (cross-fitted M1, 30% least confident, gold → M1):
+  Explicit/Implicit 115, General/Implicit 68, Deflection/Implicit 60, Explicit/General 55,
+  Dodging/Implicit 51, Deflection/General 48, Deflection/Dodging 46. These match the report's dev
+  pairs, so the confusion guide covers Explicit–Implicit, Implicit–General, Explicit–General,
+  Deflection vs Implicit/General, and Dodging–Deflection.
+
+**Decisions taken with the user (2026-10-13), before any run.**
+1. **Candidates C(x) = M1's top 4 by rank** (rank-based, per E14), shown to the LLM in the fixed label
+   order of the taxonomy, not in M1's order, so the LLM is not anchored on M1's ranking.
+2. **Scoring without reasoning.** One request per item, one output token; q(c | x) is the softmax of the
+   option letters' log-probabilities over C(x). *Probe-dependent:* if an API model returns no
+   log-probabilities, q is estimated from 5 samples at temperature 1 (cached input makes the repeats cheap).
+3. **Fusion** over C(x): λ log p̄ + (1 − λ) log q − τ log π; items outside the deferred set and labels
+   outside C(x) keep M1's decision (log p̄ − τ log π). λ ∈ {0, 0.1, …, 1} and τ on the E4 grid are
+   fitted jointly by 5-fold nested CV on dev (10 splits reported), as for τ since E4.
+4. **Prompt.** A fixed preamble (task, definitions of all 9 labels, the confusion guide above) that is
+   identical for every item and therefore cached, then up to k retrieved examples, then the item
+   (sub-question, full question, full answer), then the lettered candidates. Items are never truncated.
+   - **Examples** are retrieved by cosine similarity of `Qwen/Qwen3-Embedding-0.6B` embeddings of
+     "sub-question + answer", restricted to train rows whose gold label is in C(x) and which share neither
+     the answer nor the interview with the item. They are taken **round-robin over the candidates**
+     (nearest of each candidate first), so every candidate is illustrated and the examples do not vote by
+     majority. Examples are shown in full; if a prompt would exceed 12k tokens, the least similar examples
+     are dropped, never cut.
+   - **Shorter prompts are not adopted.** The example count is measured instead (screen, below).
+5. **Precision:** FP8 or BF16 only, from the publisher's own checkpoints; no 4-bit.
+6. **Models, one or two per size class:**
+   - *~30B:* `Qwen/Qwen3.8-27B-FP8`, served locally with vLLM 0.30.0 on the lab server's GPU 0 (free),
+     thinking disabled; and Gemma 4 31B through the JarvisLabs Model API, screen only.
+   - *large:* DeepSeek V4 Flash (304B MoE) through the JarvisLabs Model API. It is the successor of the
+     model in TeleAI's pipeline.
+   - Not used: GLM-5.3 (about 10× the price), self-hosted Mistral-Small-4 (dearer than the API and
+     smaller), any 4-bit model.
+   - **Deviation from report §7:** the report planned a locally served LLM. For an API model, cost is
+     reported as calls, input/output tokens and ₹ per item (TeleAI's units); for the local model, as
+     GPU-seconds per item. Every response is saved, so results are reproducible from disk even if a hosted
+     model changes.
+7. **Confidence gating of what gets scored.** Dev, test and slice are scored in full (so the whole
+   accuracy-vs-calls curve of M2 comes for free); train only for the 50% least confident cross-fitted
+   rows (M4's distillation inputs; gold labels serve elsewhere).
+
+**Steps.**
+- **Step 0, API probe** (`cascade/api_probe.py`, cap $1). For each API model: exact model id;
+  log-probabilities with `top_logprobs`; how to disable thinking; cached-token accounting on a repeated
+  prompt; determinism at temperature 0; rate limits; cost per request from `usage`. The user notes the
+  credit balance before and after, to confirm API use is billed to the same credit.
+- **Step 1, screen** (`cascade/adjudicate.py`). 300 rows drawn (seed 15) from the 30% least confident
+  cross-fitted train rows, excluding the slice. Single gold label. Arms:
+  - Qwen3.8-27B local with k ∈ {0, 4, 10} examples (free; the example-count measurement);
+  - Gemma 4 31B (API) and DeepSeek V4 Flash (API), each at the k chosen from the Qwen arm;
+  - Qwen3.8-27B through the API at the same k: a **faithfulness check** of the hosted service against our
+    local copy of the same FP8 weights.
+- **Step 2, full scoring** with the adopted configuration: slice, dev, test, and 50% of train. The local
+  Qwen arm is run on everything in any case (free), so the paper has a size comparison on dev.
+- **Step 3, fusion and the M2 curve** (`cascade/fuse.py`), on dev with nested CV; dev is scored once per
+  registered configuration.
+
+**Screen metrics (train rows, single gold).** For each arm: accuracy of argmax q within C(x) (the LLM
+alone); fused accuracy, with λ and τ fitted by 5-fold CV inside the 300 rows; negative log-likelihood of
+the gold label under q (rows with gold in C(x)); and complementarity: the share of rows where the LLM is
+right and M1 is wrong, and the reverse.
+
+**Hypotheses and predictions.** On the 300 screen rows, M1's top-1 accuracy is about 0.31, gold is in
+the top 4 for about 0.81, and random choice within the top 4 gives about 0.20.
+- **H1 (the LLM alone):** within-C accuracy is 0.35–0.45 for Qwen3.8-27B, 0.40–0.50 for DeepSeek V4
+  Flash, and 0.33–0.43 for Gemma 4 31B. Every arm beats M1's 0.31.
+- **H2 (examples):** for Qwen3.8-27B, k = 10 beats k = 0 by +0.03 to +0.08 in within-C accuracy, and
+  k = 4 is within 0.02 of k = 10.
+- **H3 (fusion):** fused accuracy beats M1 by +0.05 to +0.12 on the screen rows, and beats the LLM alone.
+- **H4 (faithfulness):** API and local Qwen3.8-27B agree on argmax q for ≥ 95% of rows, with mean
+  Jensen–Shannon divergence below 0.02.
+- **H5 (dev system, the headline):** M1 + M3 at δ = 0.3 scores dev S2 **0.61–0.64** (M1: 0.598). The
+  paired bootstrap over items excludes 0 if the gain is ≥ +0.025; this comparison is tighter than our
+  seed comparisons, because 70% of items keep the same prediction in both arms.
+- **H6 (the M2 curve):** most of the gain arrives by δ = 0.3; δ = 1 is not better than δ = 0.5 by more
+  than 0.01.
+- **H7 (Subtask 1):** S1 changes by +0.00 to +0.03; Explicit–Implicit is the one large confusion that
+  crosses clarity levels.
+
+**Decision rules (fixed now).**
+- **Example count:** k = argmax of fused screen accuracy over {0, 4, 10} for Qwen3.8-27B; if another k
+  is within 0.01 of the best, k = 10 (the report's design) is preferred.
+- **Model:** DeepSeek V4 Flash is adopted for step 2 if its fused screen accuracy beats the better
+  ~30B arm by ≥ 0.02 (6 of 300 rows); otherwise the better ~30B arm is adopted, preferring the free
+  local Qwen when the two ~30B arms are within 0.01.
+- **Faithfulness:** if H4 fails (agreement < 0.90), API results are reported with that caveat, and the
+  adopted configuration prefers a local model when within 0.02.
+- **Go/no-go:** if no arm's fused screen accuracy beats M1 by ≥ 0.03, step 2 runs only the free local
+  arm, and M3 is reported as a negative result.
+
+**Cost.** A hard cap of **$8 (≈ ₹700) of API spend for all of E15**, enforced in code by a ledger
+(`runs/M3/api_ledger.jsonl`) that refuses any request beyond it. Estimate: probe < $0.5; screen ≈ $1
+(Gemma $0.2, DeepSeek $0.2, Qwen through the API $0.5); DeepSeek on all ~2,600 items ≈ $1.7 (≈ ₹145).
+Expected total ≈ $3–4 (≈ ₹260–350). The local Qwen arm is free.
+
+
+### E15 step 0: API probe *(2026-10-13 21:45, $0.016 in total)*
+
+Sources: `raw/E15_api_probe.txt` (switch survey) and `raw/E15_api_probe_long.txt` (the real long prompt,
+thinking off). Model ids: `deepseek-v4-flash-0731`, `gemma-4-31b-it`, `qwen-3.8-27b-fp8`.
+
+| | DeepSeek V4 Flash | Gemma 4 31B | Qwen3.8-27B (API) |
+|---|---|---|---|
+| log-probabilities (top 20) | yes | yes | yes |
+| thinking by default | on | on | on |
+| switched off by `chat_template_kwargs: {enable_thinking: false}` or `reasoning_effort: "none"` | yes | yes | yes |
+| `thinking: {type: disabled}` | no effect | no effect | no effect |
+| first token on the long prompt, thinking off | a letter | a letter | a letter |
+| prompt tokens of the long screen item (k = 10) | 7,387 | 7,611 | 7,362 |
+| repeated prompt billed as cached | **no** | yes (7,584 of 7,611) | yes (7,056 of 7,362) |
+| cost per item, uncached / cached | $0.00096 / — | $0.00076 / $0.00038 | $0.00221 / $0.00066 |
+| deterministic at temperature 0 | top-5 order yes; letter log-probs vary by up to 0.54 | yes (≤ 0.25) | yes (0.000) |
+| n = 3 samples | supported | supported | supported |
+
+What this settles (the probe-dependent items of the registration):
+- **q is read from log-probabilities**, as registered; the sampling fallback is not needed.
+- **Every API call sends `extra_body = {"chat_template_kwargs": {"enable_thinking": false}}`**, the same
+  switch the local vLLM runs use.
+- **DeepSeek is not bit-deterministic** (an MoE served with batching): its letter log-probabilities move by
+  up to 0.54 between identical calls. Each item is scored once, as registered; this noise is part of
+  what the fusion sees, and is reported.
+- **Costs:** the dry run's character-based token estimate is ~30% high, so projections are conservative.
+  DeepSeek on all ~2,600 items ≈ $2.5 (no caching); the screen arms ≈ $0.3 each.
+- **The three models already differ on the one probe item:** DeepSeek A (−0.41) vs D (−1.41), Gemma A
+  (≈ 0, very sharp), Qwen C (−0.94) vs A (−1.06).
+
+**One change to the registration, made before any screen run.** A 3-item smoke test on Gemma
+(cost $0.001) gave q ≈ 1.0 on one letter for every item, with the other letters at log-probabilities of
+−15 or below. On the registered λ grid {0, 0.1, …, 1}, M1 can then never overrule Gemma short of
+λ = 1, so the grid gains finer steps near 1: {…, 0.9, 0.95, 0.98, 0.99, 0.995, 1}. Nothing else changes.
+
+**Infrastructure deviation: vLLM 0.31.0 instead of 0.30.0.** Installing 0.30.0 from PyPI failed or stalled
+for over two hours: connections from the server kept timing out, and once the shared root disk's `/tmp`
+filled up. vLLM 0.31.0 (with torch 2.13.0+cu130) is already installed and working for another project
+under this account (`/scratch/shlok/venvs/vllm`), and its wheels are in that project's uv cache. So
+`.venv-vllm` is built from that cache with 0.31.0. That environment is left untouched. Both versions
+support Qwen3.8 (`Qwen3_5ForConditionalGeneration`), and scoring is unchanged: greedy, one token,
+top-20 log-probs.
+
+
+### E15 step 1: the screen *(2026-10-13 23:33–23:46; local arms free, API arms $0.17)*
+
+Sources: `raw/E15_screen_local_k.txt` (example count) and `raw/E15_screen_models.txt` (models, faithfulness).
+300 cross-fitted train rows from the 30% least confident (slice excluded), one gold label each. On these
+rows the gold label is in the top 4 for 0.810, M1's top-1 accuracy is 0.293, and random choice within C
+gives 0.203. "Fused" is λ and τ fitted by 5-fold CV inside the 300 rows.
+
+| arm | k | LLM alone within C | fused | NLL of gold | LLM right, M1 wrong / reverse | cost or GPU time per item | prompt tokens |
+|---|---|---|---|---|---|---|---|
+| Qwen3.8-27B-FP8, local | 0 | 0.320 | **0.353** | 1.495 | 0.207 / 0.180 | 0.16 GPU-s | 1,145 |
+| Qwen3.8-27B-FP8, local | 4 | 0.320 | 0.317 | 1.546 | 0.200 / 0.173 | 0.47 GPU-s | 3,353 |
+| Qwen3.8-27B-FP8, local | 10 | 0.307 | 0.330 | 1.549 | 0.197 / 0.183 | 0.92 GPU-s | 6,303 |
+| Qwen3.8-27B-FP8, API | 0 | 0.320 | 0.373 | 1.484 | 0.200 / 0.173 | $0.00034 | 1,145 |
+| Gemma 4 31B, API | 0 | 0.320 | 0.363 | 8.574 | 0.203 / 0.177 | $0.00009 | 1,179 |
+| DeepSeek V4 Flash, API | 0 | 0.320 | 0.317 | 2.574 | 0.227 / 0.200 | $0.00015 | 1,131 |
+
+- The four k = 0 arms all get 96 of 300 rows right on their own, although they agree with each other on
+  only 47–59% of rows (checked: a coincidence, not a bug).
+- Paired fused differences (bootstrap over rows): k0 − k4 +0.037 [+0.000, +0.073], k0 − k10
+  +0.023 [−0.013, +0.063]; DeepSeek − local Qwen −0.037 [−0.083, +0.007], Gemma − local Qwen
+  +0.010 [−0.040, +0.053]. The API and local copies of the same Qwen differ by +0.020 [−0.010, +0.047].
+  That is the screen's noise level between two nearly identical arms.
+- Gemma is extremely overconfident (for 44% of rows some candidate letter is missing from its top 20).
+  DeepSeek puts most of its mass on Deflection and Explicit (Deflection 104 / 300 predictions).
+
+**Against the predictions.**
+| | prediction | result | verdict |
+|---|---|---|---|
+| H1 LLM alone within C | Qwen 0.35–0.45, DeepSeek 0.40–0.50, Gemma 0.33–0.43; all beat M1 | 0.320 each; M1 0.293 | **failed** on the ranges; each beats M1, but only by 0.027 |
+| H2 examples | k10 − k0 +0.03 to +0.08; k4 within 0.02 of k10 | k10 − k0 −0.013 (alone), −0.023 (fused) | **failed**: retrieved examples do not help this model |
+| H3 fusion | fused − M1 +0.05 to +0.12; fused > LLM alone | +0.060 (local Qwen, k0); 0.353 > 0.320 | held |
+| H4 faithfulness | argmax agreement ≥ 0.95, mean JS < 0.02 | 0.933, 0.0035 (max 0.027) | **half**: the distributions are close, and the disagreements are on near-ties; above the 0.90 caveat threshold |
+
+**Decisions, by the registered rules.**
+- **Example count: k = 0.** The best fused accuracy is k = 0 (0.353); k = 10 (0.330) is not within 0.01,
+  so the tie-break towards k = 10 does not apply. Prompts are then ~1.1k tokens, not ~7k.
+- **Model: the local Qwen3.8-27B-FP8.** DeepSeek does not beat the better ~30B arm by ≥ 0.02 (it is
+  0.037 below), so it is not adopted. Gemma (0.363) and local Qwen (0.353) are within 0.01 of each
+  other, so the free local Qwen is preferred.
+- **Go/no-go: go.** Fused beats M1 by +0.060 (threshold 0.03).
+- **Step 2** therefore runs local Qwen k = 0 on slice, dev, test and train50 (free, ~10 min).
+
+**One addition, declared here before any dev scoring.** DeepSeek and Gemma at k = 0 are also scored
+on **dev only** (≈ $0.08 together), as secondary arms. They are reported next to the adopted arm, so that
+the paper shows whether a 300B model changes the system result. They are **not used for any choice**:
+the adopted system is fixed above, and the screen is noisy (±0.02 between two copies of the same model).
+
+
+### E15 steps 2–3: full scoring, slice confirmation, dev system and the M2 curve *(2026-10-13 23:46–00:05)*
+
+> **Superseded in part (2026-10-14).** The dev-system numbers in this section (the dev table, H5–H7,
+> "What the results say" and "Open for the user") came from a **bug in `cascade/fuse.py`**: one τ was shared between the fused
+> items and the items that should keep M1's answer. See "E15 correction" below. The step-2 scoring, the
+> slice confirmation and the screen are unaffected.
+
+Sources:
+- `raw/E15_dev_qwen38_27b_k0.txt`, the adopted arm;
+- `raw/E15_dev_gemma4_31b_k0.txt` and `raw/E15_dev_deepseek_v4flash_k0.txt`, the secondary arms declared above;
+- `raw/E15_slice_qwen_k0.txt`, the confirmation set.
+
+**Step 2.** Local Qwen3.8-27B-FP8, k = 0, scored all 2,914 items (slice 345, dev 308, test 237,
+train50 1,724; the 300 screen rows were copied, not re-scored). Wall time 7 min, 0.155 GPU-s per item,
+free. Responses: `runs/M3/qwen38_27b_k0/responses.jsonl`. The train50 rows are M4's inputs.
+
+**Slice confirmation** (the 104 slice items in the 30% least confident, 10-seed candidates, one gold label):
+
+| | M1 (10-seed) | LLM alone within C | fused (5-fold CV within the 104) |
+|---|---|---|---|
+| accuracy | **0.413** | 0.337 | 0.346 |
+
+The LLM is right where M1 is wrong on 0.096 of these items, and the reverse on 0.173. **The report's exit
+criterion for M3 ("beats M1 on deferred slice items") is not met.** Caveat, registered in advance: 67%
+of slice rows have their answer text in M1's training part, which flatters M1 on the slice (dev shares
+1% of answers with train, test none).
+
+**Dev system** (λ, τ by 5-fold nested CV on dev; S2 on split 0, plus the mean of 10 splits; the deferral
+threshold comes from the slice, so the realised calls per item differ from δ):
+
+| δ | calls/item | S2 | S2, 10 splits | Δ S2 vs M1, 95% | S1 | Δ S1 vs M1, 95% | 2-annotator S2 |
+|---|---|---|---|---|---|---|---|
+| 0 (M1) | 0 | 0.598 | 0.601 | — | 0.743 | — | 0.549 |
+| 0.1 | 0.110 | 0.604 | 0.599 | +0.005 [−0.021, +0.026] | 0.752 | +0.009 [−0.027, +0.042] | 0.546 |
+| 0.2 | 0.231 | 0.592 | 0.585 | −0.010 [−0.093, +0.051] | 0.756 | +0.012 [−0.042, +0.062] | 0.537 |
+| **0.3** | **0.357** | **0.616** | **0.603** | +0.014 [−0.069, +0.077] | **0.781** | +0.038 [−0.006, +0.083] | 0.558 |
+| 0.5 | 0.649 | 0.603 | 0.607 | +0.003 [−0.046, +0.051] | 0.793 | **+0.050 [+0.008, +0.089]** | 0.565 |
+| 1 | 1.000 | 0.636 | 0.609 | +0.033 [−0.030, +0.104] | 0.798 | **+0.055 [+0.011, +0.100]** | 0.584 |
+
+- **The LLM alone, restricted to M1's top 4, matches M1 on dev:** S2 0.603 (in-set rate 0.643), with no
+  examples and one output token. Gemma alone: 0.601; DeepSeek alone: 0.476.
+- **The fitted (λ, τ) jump around across δ** (λ 0.6, 0.1, 0.4, 0.5, 0.2), and the split-0 scores move by
+  ±0.03 between neighbouring δ while the 10-split means stay at 0.585–0.609. The fusion objective is
+  flat, and two parameters fitted on ~246 items are noisy. The 10-split means are the numbers to trust.
+- **Secondary arms on dev** (declared before dev scoring; not used for any choice):
+  - Gemma 4 31B: 10-split S2 0.598–0.614 for every δ, so no S2 gain; S1 +0.053 [+0.023, +0.084] at δ = 1.
+  - DeepSeek V4 Flash: no gain anywhere. The fit mostly sets λ ≈ 1 (ignores it), and at δ = 0.3 S2 is
+    −0.022 [−0.048, −0.001].
+- **Cost of the adopted system at δ = 0.3:** 0.357 LLM calls per item, ~1.2k input tokens and 1 output
+  token per call, 0.055 GPU-seconds per item on the lab card. TeleAI: 1.94 calls, ~7,300 input and ~380
+  output tokens per item.
+
+**Against the predictions.**
+| | prediction | result | verdict |
+|---|---|---|---|
+| H5 dev S2 at δ = 0.3 | 0.61–0.64, CI excludes 0 if gain ≥ 0.025 | 0.616 on split 0, but 0.603 over 10 splits; +0.014 [−0.069, +0.077] | **not established**: no S2 gain distinguishable from M1 |
+| H6 M2 curve | most gain by δ = 0.3; δ = 1 ≤ δ = 0.5 + 0.01 | 10 splits: 0.603 / 0.607 / 0.609 at δ = 0.3 / 0.5 / 1, a flat curve; split 0: δ = 1 is +0.033 over δ = 0.5 | held on the 10-split means (there is no gain to arrive) |
+| H7 S1 | +0.00 to +0.03 | +0.038 at δ = 0.3; +0.050 / +0.055 at δ = 0.5 / 1 (CIs exclude 0) | **exceeded**: M3 helps Subtask 1 |
+| report exit criterion | M3 beats M1 on deferred slice items | 0.346 vs 0.413 | **failed** (slice partly seen by M1, see above) |
+
+**What the results say.**
+- **A prompted 27B model, constrained to M1's top four labels, is as good as our fine-tuned 10-seed system
+  on Subtask 2** (0.603 vs 0.598). It uses no examples and one output token, and its errors differ from
+  M1's. Yet fusing the two does not raise S2 reliably.
+- **The screen overstated the gain.** On cross-fitted rows, M1 is a single model (top-1 0.293), and
+  fusion added +0.060 there. The deployed M1 is a 10-seed ensemble, which is far stronger on the same kind
+  of items (slice 0.413) and leaves the LLM little to add. The screen's baseline should have been the
+  deployed one; only the slice has 10-seed probabilities for train rows, and it is small and partly seen.
+- **M3 does make M1 more accurate; macro-F1 hides it.** At δ = 0.3, M3 changes 62 dev predictions.
+  - 26 move into the reference set and 10 move out (exact McNemar p = 0.011), so the in-set rate rises
+    from **0.623 to 0.675**.
+  - Per class, F1 rises for Explicit (+0.095), General (+0.120) and Declining (+0.098), and falls for
+    Deflection (−0.035) and **Clarification (−0.143: one of its 4 dev items lost)**. That single item
+    costs ≈ 0.016 of macro-F1, as much as most of the gain.
+  - S2 differences at this size are dominated by the rarest classes. M3 also predicts Partial/half-answer
+    far less often (19 → 4 predictions; F1 0.231 → 0.222).
+  - Source: `raw/E15_dev_qwen38_27b_k0.txt`, end.
+- **Subtask 1 gains clearly** (+0.05 at δ ≥ 0.5). The largest changes are Implicit → Explicit (11 items at
+  δ = 0.3, 18 at δ = 1), which crosses from Ambivalent to Clear Reply, and Deflection → Implicit (11).
+  The fusion is fitted on S2, so this gain is a by-product.
+- **Examples hurt this model (H2).** Retrieved neighbours carry almost no label signal (10-NN in-set rate
+  0.33 on dev, below always-Explicit's 0.37), and longer prompts made Qwen worse on the screen.
+- **A bigger model is not better here.** DeepSeek V4 Flash (304B) is the weakest arm, both alone and fused.
+
+**Cost.** API spend for all of E15: **$0.262 (≈ ₹23)**, from the ledger `runs/M3/api_ledger.jsonl`:
+probe $0.016, smoke test $0.001, three screen arms $0.174, two secondary dev arms $0.071. The local runs
+were free (lab server GPU 0, ~20 min in total). Cap: $8.
+
+**Deviations.** vLLM 0.31.0 instead of 0.30.0; the λ grid gained finer steps near 1; the secondary
+dev-only arms. Each was recorded above before the runs it affects. Two analysis bugs were fixed before
+any reported number: λ = 1 produced NaN scores, and the 2-annotator column now refits per reference set,
+as in E14.
+
+**Open for the user (not decided overnight).**
+1. **Adopt M3 for the final system?** It costs 0.36 calls per item and gains S1 but not S2. Options:
+   - adopt it for S1 only;
+   - adopt it at δ = 1, which gives the best point estimates (S2 0.636 split 0 / 0.609 over 10 splits,
+     S1 0.798) at 1 call per item;
+   - keep M1 alone for S2.
+2. **M4 (distillation)** can go ahead: the train50 targets exist. The finding that the LLM alone matches
+   M1 suggests its q is a useful soft target.
+3. **Any further M3 variant needs a new registration:** e.g. a temperature on q fitted on cross-fitted
+   rows, or an S1-targeted fusion. None was run.
+
+
+### E15 correction: the fusion bug, and the corrected dev system *(2026-10-14)*
+
+**The bug.** In `fuse.decide`, the items that are *not* deferred were decided by log p̄ − τ log π with the
+**same τ** as the fused items, and that one τ was fitted jointly with λ. The fit could therefore choose a
+τ that suits the LLM-decided items (it chose τ = 0.0 at δ = 0.3) and thereby switch off M1's logit
+adjustment (τ ≈ 1.15) on the 64% of items that were meant to keep the M1 system's answer.
+- This contradicts the design: report §7 says "items not deferred keep M1's answer", and the registration
+  says "items outside the deferred set … keep M1's decision".
+- It was found on 2026-10-14 while explaining the flat S2 result. The fit's τ = 0.0 at δ = 0.3 against
+  M1's own 1.15 was the clue.
+
+**The fix.** Inside each nested-CV fold, M1's τ is fitted first, exactly as for the M1 system (the E4
+rule, which reproduces M1's 0.598). Then (λ, τ) of the deferred items are fitted with M1's decisions held
+fixed on the other items.
+- Nothing else changed: same responses, same folds, same grids and the same deferral thresholds.
+- **Unaffected:** δ = 1 (no item is kept; its numbers are identical to before, which is the check),
+  δ = 0, the screen and the slice (every row deferred), and therefore every decision taken from them.
+- Source: `raw/E15_dev_qwen38_27b_k0.txt` (regenerated), and the same for the two secondary arms.
+
+**Corrected dev system, adopted arm (local Qwen3.8-27B-FP8, k = 0):**
+
+| δ | calls/item | S2 | S2, 10 splits | Δ S2 vs M1, 95% | S1 | Δ S1 vs M1, 95% | 2-annotator S2 | in-set |
+|---|---|---|---|---|---|---|---|---|
+| 0 (M1) | 0 | 0.598 | 0.601 | — | 0.743 | — | 0.549 | 0.623 |
+| 0.1 | 0.110 | 0.597 | 0.602 | −0.001 [−0.037, +0.031] | 0.762 | +0.019 [−0.012, +0.051] | 0.549 | 0.630 |
+| 0.2 | 0.231 | 0.635 | 0.640 | +0.035 [−0.013, +0.080] | 0.775 | +0.032 [−0.012, +0.075] | 0.571 | 0.662 |
+| **0.3** | **0.357** | **0.669** | **0.660** | **+0.067 [+0.009, +0.124]** | **0.798** | **+0.055 [+0.004, +0.109]** | **0.589** | **0.701** |
+| 0.5 | 0.649 | 0.628 | 0.628 | +0.027 [−0.023, +0.078] | 0.800 | +0.057 [+0.011, +0.105] | 0.600 | 0.679 |
+| 1 | 1.000 | 0.636 | 0.609 | +0.033 [−0.030, +0.104] | 0.798 | +0.055 [+0.011, +0.100] | 0.584 | 0.669 |
+
+- **At the registered operating point δ = 0.3**, M3 changes 69 predictions: 33 move into the reference set
+  and 9 out of it (exact McNemar p = 0.0003).
+  - F1 rises for 7 of 9 classes, most for Partial/half-answer (+0.169), Declining (+0.131), Dodging
+    (+0.125), Explicit (+0.086) and General (+0.085).
+  - Claims ignorance falls (−0.031); Clarification is unchanged.
+- **Secondary arms, corrected** (not used for any choice):
+  - Gemma 4 31B at δ = 0.3: S2 0.625 (10 splits 0.620), +0.026 [−0.019, +0.071].
+  - DeepSeek V4 Flash: no gain at any δ (best 10-split 0.595 at δ = 0.1).
+- **Against the winning system:** TeleAI's multi-call pipeline scores dev S2 0.617 / S1 0.812 with 1.94
+  calls and ~7,300 input + ~380 output tokens per item. M1 + M3 scores **0.669 / 0.798 with 0.36 calls,
+  ~1.2k input tokens and 1 output token per call**: higher on S2, a little lower on S1, at about a fifth
+  of the calls and a tiny fraction of the tokens. This is a dev comparison on 308 items: the gain over
+  M1 has a wide interval, and the 2-annotator mean (the test regime) is 0.589.
+
+**Corrected verdicts.**
+| | prediction | corrected result | verdict |
+|---|---|---|---|
+| H5 dev S2 at δ = 0.3 | 0.61–0.64, CI excludes 0 if gain ≥ 0.025 | **0.669** (10 splits 0.660); +0.067 [+0.009, +0.124] | **held, and above the range** |
+| H6 M2 curve | most gain by δ = 0.3; δ = 1 ≤ δ = 0.5 + 0.01 | peak at δ = 0.3; 10 splits: δ = 1 0.609 < δ = 0.5 0.628 | held |
+| H7 S1 | +0.00 to +0.03 | +0.055 at δ = 0.3 (CI excludes 0) | **exceeded** |
+| report exit criterion | M3 beats M1 on deferred slice items | 0.346 vs 0.413 (unaffected by the bug) | failed; but the slice is 67% seen by M1, and on dev, where M1 saw 1% of answers, M3 wins clearly |
+
+**What the corrected results say.**
+- **The cascade works.** Deferring the 30% least confident items to a prompted 27B model, constrained to
+  M1's top four labels and fused with M1, raises dev S2 from 0.598 to 0.669 and S1 from 0.743 to 0.798, at
+  0.36 calls per item. The report's target (≥ 0.60 dev S2 at ≤ 0.3 calls per item) is met at δ = 0.2
+  (0.635 at 0.23 calls). δ = 0.3 uses 0.36 calls, a little over budget, because its threshold is set on
+  the slice.
+- **Deferral matters, not just the LLM.** Fusing every item (δ = 1) is worse than fusing the uncertain 30%
+  (10-split 0.609 vs 0.660). On confident items M1 is better than the LLM, and the router keeps them.
+- **The slice failure is a property of the slice.** On the slice M1 has seen most answers in training, so
+  it looks better there than it is on new interviews. Dev, with almost no answer overlap, is the honest
+  comparison.
+- **The screen's choices still stand** (no examples; the local 27B over DeepSeek): those analyses had all
+  rows deferred, so the bug could not touch them.
+- **The superseded section's claims about rare classes and Clarification were artefacts of the bug.**
+  With M1's logit adjustment switched off on the kept items, rare-class predictions were lost; with it
+  restored, the rare classes gain the most.
+
+**Updated open decisions for the user.**
+1. **Adopt M1 + M3 at δ = 0.3** as the system (the registered operating point; not chosen on dev). The
+   alternative is δ = 0.2 for 0.23 calls per item. The report's target was ≤ 0.3 calls.
+2. **M4 (distillation)** next; its inputs exist (`runs/M3/qwen38_27b_k0`, train50).
+3. **Test predictions** of the adopted system can be written from the saved test responses (no new calls).
 
 ---
 

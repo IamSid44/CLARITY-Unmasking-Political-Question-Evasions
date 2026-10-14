@@ -13,3 +13,4 @@ huggingface_hub
 python-dotenv
 wandb
 python-pptx
+openai          # M3 API arms (JarvisLabs Model API); local M3 runs use a separate vLLM 0.31 env

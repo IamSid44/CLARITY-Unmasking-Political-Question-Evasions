@@ -1,0 +1,27 @@
+screen: 300 rows; gold in top-4 0.810; M1 top-1 accuracy 0.293; random within C 0.203
+
+qwen38_27b_k0
+  LLM alone within C: 0.320   fused (5-fold CV): 0.353   M1: 0.293
+  NLL of gold under q (gold in C, n=243): 1.495
+  LLM right & M1 wrong 0.207;  LLM wrong & M1 right 0.180
+  argmax letter A-D [121, 59, 95, 25];  mean letter mass 0.995;  items with a letter missing from top-20 0.000
+  GPU-seconds per item 0.155; mean prompt tokens 1145
+
+qwen38_27b_k4
+  LLM alone within C: 0.320   fused (5-fold CV): 0.317   M1: 0.293
+  NLL of gold under q (gold in C, n=243): 1.546
+  LLM right & M1 wrong 0.200;  LLM wrong & M1 right 0.173
+  argmax letter A-D [115, 36, 138, 11];  mean letter mass 0.994;  items with a letter missing from top-20 0.000
+  GPU-seconds per item 0.470; mean prompt tokens 3353
+
+qwen38_27b_k10
+  LLM alone within C: 0.307   fused (5-fold CV): 0.330   M1: 0.293
+  NLL of gold under q (gold in C, n=243): 1.549
+  LLM right & M1 wrong 0.197;  LLM wrong & M1 right 0.183
+  argmax letter A-D [124, 42, 122, 12];  mean letter mass 0.994;  items with a letter missing from top-20 0.000
+  GPU-seconds per item 0.916; mean prompt tokens 6303
+
+paired differences in fused accuracy (bootstrap over rows)
+  qwen38_27b_k0 - qwen38_27b_k4: +0.037  95% [+0.000, +0.073]
+  qwen38_27b_k0 - qwen38_27b_k10: +0.023  95% [-0.013, +0.063]
+  qwen38_27b_k10 - qwen38_27b_k4: +0.013  95% [-0.023, +0.050]

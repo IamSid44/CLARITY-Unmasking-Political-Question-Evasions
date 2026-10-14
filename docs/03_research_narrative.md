@@ -1196,6 +1196,27 @@ the cascade's own target and 0.019 below TeleAI's multi-call pipeline. The gain 
   reach 0.727. Random choice within the same sets would lower the score, so M3 has to be genuinely
   better than chance among M1's top candidates.
 
+**E15 result: M3, the LLM adjudicator (2026-10-14).** An LLM now re-decides only the items M1 is unsure
+about, choosing among M1's top four labels, and its choice is fused with M1's probabilities.
+- **The model choice was made on train rows.** A 300-row screen on cross-fitted train rows picked:
+  - **no retrieved examples:** examples made the 27B model worse, and embedding neighbours carry almost
+    no label signal;
+  - **the local Qwen3.8-27B-FP8** over DeepSeek V4 Flash (304B) and Gemma 4 31B, both served through the
+    JarvisLabs API. The bigger model was the weakest.
+- **The LLM alone is as good as M1 on Subtask 2.** Constrained to M1's top four, with one output token,
+  it scores dev S2 0.603 against M1's 0.598, and its errors differ from M1's.
+- **The system, deferring the 30% least confident items (0.36 LLM calls per item):**
+  - **dev S2 0.669** (10 CV splits 0.660), +0.067 [+0.009, +0.124] over M1;
+  - **S1 0.798**, +0.055;
+  - the in-set rate rises from 0.623 to 0.701 (33 items fixed, 9 broken);
+  - the rare classes gain most.
+- **Against the winning system:** this is above TeleAI's 0.617 on S2 with a fifth of its calls; S1 is
+  0.798 against 0.812. Deferring every item does worse (0.609), so the router matters as much as the LLM.
+- **A mistake on the way.** The first write-up reported no S2 gain. That came from a bug: one
+  logit-adjustment strength was shared between the LLM-decided items and the items that keep M1's answer.
+  It is recorded in the log ("E15 correction").
+- **The total API cost of E15 was $0.26.**
+
 **Next steps, in order (plan at the mid-evaluation)** (the timeline in the Conclusion of `Report/Report.pdf`):
 1. **12 epochs at 10 seeds** → the new single-pass system. Then all of train with 12 epochs, as
    its own test.

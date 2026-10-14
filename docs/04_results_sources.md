@@ -237,3 +237,36 @@ that file.
 
 Per-run numbers (selected epoch, slice F1, dev S2/S1, time) are in `runs/<config>/<seed|fold>/metrics.json`,
 tabulated in the log under "E14 results".
+
+## 11. Phase 2, module M3: the LLM adjudicator (E15, done 2026-10-14)
+
+These numbers are not in the mid-evaluation report. The dev-system numbers are the corrected ones (see
+"E15 correction" in the log).
+
+Sources, all in `docs/raw/`, regenerated from the saved responses in `runs/M3/<tag>/responses.jsonl`
+(CPU, about 1 min each, from `code/`):
+- `E15_screen_local_k.txt`: `python -m cascade.fuse screen --tags qwen38_27b_k0,qwen38_27b_k4,qwen38_27b_k10`
+- `E15_screen_models.txt`: the same, with `--tags qwen38_27b_k0,qwen38_27b_api_k0,gemma4_31b_k0,deepseek_v4flash_k0`;
+  the faithfulness line at its end comes from the snippet logged in E15
+- `E15_slice_qwen_k0.txt`: `python -m cascade.fuse slice --tags qwen38_27b_k0`
+- `E15_dev_<tag>.txt`: `python -m cascade.fuse dev --tag <tag>`
+- `E15_api_probe.txt`, `E15_api_probe_long.txt`: `cascade.api_probe` (makes API calls)
+
+| Number | Value | Source |
+|---|---|---|
+| screen (300 cross-fitted train rows): M1 top-1 / gold in top 4 | 0.293 / 0.810 | `E15_screen_local_k.txt` |
+| screen, local Qwen fused accuracy at k = 0 / 4 / 10 examples | **0.353** / 0.317 / 0.330 | `E15_screen_local_k.txt` |
+| screen fused accuracy: Qwen API / Gemma 4 31B / DeepSeek V4 Flash (k = 0) | 0.373 / 0.363 / 0.317 | `E15_screen_models.txt` |
+| local vs API Qwen: argmax agreement, mean JS divergence | 0.933, 0.0035 | `E15_screen_models.txt` |
+| slice, 104 deferred items: M1 / LLM alone / fused accuracy | 0.413 / 0.337 / 0.346 | `E15_slice_qwen_k0.txt` |
+| dev, LLM alone within top 4: S2, in-set rate | 0.603, 0.643 | `E15_dev_qwen38_27b_k0.txt` |
+| **dev system, δ = 0.3 (0.357 calls/item): S2 split 0 / 10 splits** | **0.669 / 0.660** | `E15_dev_qwen38_27b_k0.txt` |
+| Δ S2 vs M1, bootstrap over items | +0.067, 95% [+0.009, +0.124] | same |
+| dev system, δ = 0.3: S1; Δ S1 vs M1 | **0.798**; +0.055 [+0.004, +0.109] | same |
+| dev system, δ = 0.3: 2-annotator S2 mean; in-set rate | 0.589; 0.701 (M1 0.623) | same |
+| δ = 0.3: items moved into / out of the reference set | 33 / 9 (exact McNemar p = 0.0003) | same, end |
+| M2 curve, 10-split S2 at δ = 0.1 / 0.2 / 0.5 / 1 | 0.602 / 0.640 / 0.628 / 0.609 | same |
+| secondary arms at δ = 0.3, S2 (10 splits): Gemma / DeepSeek | 0.625 (0.620) / 0.591 (0.590) | `E15_dev_gemma4_31b_k0.txt`, `E15_dev_deepseek_v4flash_k0.txt` |
+| cost: local GPU time per LLM call; prompt tokens | 0.155 GPU-s; ~1.2k in, 1 out | `E15_screen_local_k.txt`, `runs/M3/qwen38_27b_k0` |
+| API spend for all of E15 | $0.262 | `runs/M3/api_ledger.jsonl` |
+

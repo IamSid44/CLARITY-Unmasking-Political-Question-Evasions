@@ -1,0 +1,39 @@
+screen: 300 rows; gold in top-4 0.810; M1 top-1 accuracy 0.293; random within C 0.203
+
+qwen38_27b_k0
+  LLM alone within C: 0.320   fused (5-fold CV): 0.353   M1: 0.293
+  NLL of gold under q (gold in C, n=243): 1.495
+  LLM right & M1 wrong 0.207;  LLM wrong & M1 right 0.180
+  argmax letter A-D [121, 59, 95, 25];  mean letter mass 0.995;  items with a letter missing from top-20 0.000
+  GPU-seconds per item 0.155; mean prompt tokens 1145
+
+qwen38_27b_api_k0
+  LLM alone within C: 0.320   fused (5-fold CV): 0.373   M1: 0.293
+  NLL of gold under q (gold in C, n=243): 1.484
+  LLM right & M1 wrong 0.200;  LLM wrong & M1 right 0.173
+  argmax letter A-D [120, 55, 91, 34];  mean letter mass 0.996;  items with a letter missing from top-20 0.000
+  cost $0.1032 for 300 items; mean prompt tokens 1145, cached 8
+
+gemma4_31b_k0
+  LLM alone within C: 0.320   fused (5-fold CV): 0.363   M1: 0.293
+  NLL of gold under q (gold in C, n=243): 8.574
+  LLM right & M1 wrong 0.203;  LLM wrong & M1 right 0.177
+  argmax letter A-D [70, 50, 109, 71];  mean letter mass 0.995;  items with a letter missing from top-20 0.437
+  cost $0.0267 for 300 items; mean prompt tokens 1179, cached 583
+
+deepseek_v4flash_k0
+  LLM alone within C: 0.320   fused (5-fold CV): 0.317   M1: 0.293
+  NLL of gold under q (gold in C, n=243): 2.574
+  LLM right & M1 wrong 0.227;  LLM wrong & M1 right 0.200
+  argmax letter A-D [118, 19, 56, 107];  mean letter mass 1.000;  items with a letter missing from top-20 0.000
+  cost $0.0440 for 300 items; mean prompt tokens 1131, cached 4
+
+paired differences in fused accuracy (bootstrap over rows)
+  qwen38_27b_api_k0 - qwen38_27b_k0: +0.020  95% [-0.010, +0.047]
+  gemma4_31b_k0 - qwen38_27b_k0: +0.010  95% [-0.040, +0.053]
+  gemma4_31b_k0 - qwen38_27b_api_k0: -0.010  95% [-0.053, +0.030]
+  deepseek_v4flash_k0 - qwen38_27b_k0: -0.037  95% [-0.083, +0.007]
+  deepseek_v4flash_k0 - qwen38_27b_api_k0: -0.057  95% [-0.103, -0.013]
+  deepseek_v4flash_k0 - gemma4_31b_k0: -0.047  95% [-0.093, +0.000]
+
+H4 faithfulness, local vs API Qwen3.8-27B-FP8 (k=0, 300 rows): argmax agreement 0.933; mean JS divergence 0.0035; max 0.027
