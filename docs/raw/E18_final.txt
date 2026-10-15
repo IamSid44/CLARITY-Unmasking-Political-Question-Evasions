@@ -40,4 +40,4 @@ E18 (freeze), part A: final dev numbers. Nested CV: split 0 and mean of 10 split
    cost point: student + M3, δ = 0.5    0.608  0.790      0.57   0.111      1117       0.57       0.21x
    TeleAI (1st place; DeepSeek-V3 API)  0.617  0.812      1.94     n/a      7300        380         n/a
 
-5. Figure: /scratch/shlok/Temp/CLARITY-Unmasking-Political-Question-Evasions/docs/figures/E18_frontier.pdf (and .png)
+5. Figure: docs/figures/E18_frontier.pdf (and .png)

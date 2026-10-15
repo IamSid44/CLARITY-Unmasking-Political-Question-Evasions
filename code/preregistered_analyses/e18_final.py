@@ -185,7 +185,7 @@ def figure() -> None:
     FIGURES.mkdir(parents=True, exist_ok=True)
     for ext in ("pdf", "png"):
         fig.savefig(FIGURES / f"E18_frontier.{ext}", bbox_inches="tight")
-    print(f"\n5. Figure: {FIGURES / 'E18_frontier.pdf'} (and .png)")
+    print("\n5. Figure: docs/figures/E18_frontier.pdf (and .png)")
 
 
 if __name__ == "__main__":

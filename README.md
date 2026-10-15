@@ -102,7 +102,7 @@ CLARITY-Unmasking-Political-Question-Evasions/
 │   ├── slides/                      builds the mid-evaluation deck (python-pptx)
 │   ├── utils/                       checkpointing and experiment tracking
 │   ├── launch/                      lab-server queue (tmux) and rented-GPU (JarvisLabs) launchers
-│   ├── experiments/                 run lists of every queued experiment (E8–E12 encoder, E14 Qwen)
+│   ├── experiments/                 run lists of every queued experiment (E8–E12 encoder, E14 and E17 Qwen)
 │   └── .env.example                 template for optional W&B / Hugging Face keys
 │
 ├── data/                            evaluation CSV and fixed splits (train/dev download automatically)
@@ -195,6 +195,11 @@ Every path is defined once, in `code/qevasion/paths.py`. `CLARITY_RUNS` moves `r
 | `decision_rules.decode_variants`, `models.hier_combine`, `preregistered_analyses.mideval_analysis`, `preregistered_analyses.e11_replication`, `preregistered_analyses.e13_analysis`, `preregistered_analyses.qualitative_examples`, `figures.paper_figures`, `figures.paper_example`, `figures.e13_figures`, `cascade.candidates` | `decision_rules.decide` |
 | `figures.paper_example`, `preregistered_analyses.qualitative_examples` | `preregistered_analyses.e13_analysis` |
 | `preregistered_analyses.e14_m1_analysis` | `cascade.candidates`, `preregistered_analyses.e13_analysis` |
+| `cascade.adjudicate` | `cascade.prompts` |
+| `cascade.fuse` | `cascade.adjudicate`, `decision_rules.decide` |
+| `cascade.frontier` | `cascade.candidates`, `cascade.fuse`, `decision_rules.decide` |
+| `cascade.cost` | `models.llm_classifier` |
+| `preregistered_analyses.e18_final` | `cascade.frontier`, `cascade.fuse`, `decision_rules.decide` |
 
 ---
 
@@ -213,7 +218,7 @@ Every path is defined once, in `code/qevasion/paths.py`. `CLARITY_RUNS` moves `r
 | File | Purpose | Experiments |
 |---|---|---|
 | `encoder.py` | DeBERTa-v3-large cross-encoder. Options: input form (`qa` or `full` question), token budgets, loss (CE, Balanced Softmax, focal), flat or hierarchical head, sub-task heads (`--task gate/other6/nr3/pair:A,B`), all-data training (`--val-frac 0 --select last`) | E0–E12 |
-| `llm_classifier.py` | Qwen3-8B-Base with LoRA (r = 16, every linear layer) and a 9-way head on the last token; same data, input and selection rule as the encoder | E13, E13b, E13c |
+| `llm_classifier.py` | Qwen3-8B-Base with LoRA (r = 16, every linear layer) and a 9-way head on the last token; same data, input and selection rule as the encoder. `--soft-targets` trains on M4's distillation targets instead of the gold labels | E13, E13b, E13c, E14 (M1), E17 (M4 students) |
 | `rerank.py` | Second-stage cross-encoder that re-ranks the first stage's top-K labels using label definitions, with cross-fitted training candidates and fusion with the first stage | E6 |
 | `hier_combine.py` | Combines a Non-Reply gate, branch specialists and pair experts (all trained with `encoder.py --task ...`) into 9-way predictions; CPU only | E12b, E12c |
 | `soup.py` | Uniform and greedy weight averaging of trained encoders | E12d |
@@ -246,6 +251,8 @@ Every path is defined once, in `code/qevasion/paths.py`. `CLARITY_RUNS` moves `r
 | `e13_topk.py` | Top-k coverage and confidence vs correctness for Qwen | `docs/raw/E13_Q8_topk_confidence.txt` |
 | `qualitative_examples.py` | Side-by-side examples of the two 10-seed systems | `docs/raw/qualitative_examples.txt` |
 | `e14_m1_analysis.py` | E14 (M1): 12 vs 3 epochs, the seed-count curve, candidate-set coverage, uncertainty AUROC, headroom for the LLM stage | `docs/raw/E14_*.txt` |
+| `e17_m4_analysis.py` | E17 (M4): distilled student vs M1 single model (paired seeds), routing (top probability, AUROC), student + M3 against the undistilled frontier | `docs/raw/E17_m4_analysis.txt` |
+| `e18_final.py` | E18 (freeze): final dev numbers for both operating points (nested CV, 2-annotator, per class), the cost table, and the frontier figure | `docs/raw/E18_final.txt`, `docs/figures/E18_frontier.{pdf,png}` |
 
 ### `code/cascade/`
 
@@ -292,7 +299,7 @@ Every path is defined once, in `code/qevasion/paths.py`. `CLARITY_RUNS` moves `r
 
 ### `code/experiments/`
 
-One folder per queued experiment: E8, E8b, E9, E10, E11 and E12 are DeBERTa; E14 is Qwen3-8B.
+One folder per queued experiment: E8, E8b, E9, E10, E11 and E12 are DeBERTa; E14 (M1) and E17 (M4 students) are Qwen3-8B.
 - `common.args` holds the arguments shared by the experiment, plus queue directives (`@module`,
   `@hf-push`, `@need-gb`).
 - Each line of a `lane_gpu<N>_<x>.txt` file is one run: `<run name> <seed | fold<k>> <extra arguments>`.
@@ -314,7 +321,7 @@ One folder per queued experiment: E8, E8b, E9, E10, E11 and E12 are DeBERTa; E14
 |---|---|
 | `01_scorer_geometry.md` | What the multi-reference scorer rewards, and what that implies for decision rules |
 | `02_experiment_log.md` | Chronological log: every experiment's hypothesis and prediction (written before it ran), setup, result and analysis |
-| `03_research_narrative.md` | The same work as one argument, step by step from the first DeBERTa run to E13 |
+| `03_research_narrative.md` | The same work as one argument, step by step from the first DeBERTa run to the Phase 2 cascade (E14–E17) |
 | `04_results_sources.md` | Every number in the report with the script and output file it comes from (§10: Phase 2 numbers) |
 | `05_phase2_plan_and_budget.md` | Phase 2 (after the mid-evaluation): the cascade plan, protocol, compute ledger and budget, how to run on the lab server |
 | `raw/` | Raw text and CSV outputs of every analysis script |
@@ -435,6 +442,19 @@ python -m preregistered_analyses.e14_m1_analysis > ../docs/raw/E14_m1_analysis.t
 The E14 runs themselves: `bash code/launch/gpu_watch.sh E14 start` on the lab server (§5 of docs/05),
 or per run, for example `python -m models.llm_classifier --name Q8_fullq_lora_12ep --seed 3 --epochs 12`
 and `python -m models.llm_classifier --name Q8_12ep_crossfit --seed 0 --fold 2 --select last --epochs 12`.
+
+**Phase 2, modules M2, M4 and the freeze (E16–E18).** The full order, with the lab-server environments,
+is in `docs/05_phase2_plan_and_budget.md` §6. In short:
+
+```bash
+python -m cascade.frontier jobs                                    # (dev item, top-4) pairs for the frontier
+bash ../code/launch/e16_gpu.sh                                     # GPU: M3 on all train rows and frontier pairs, prompt ablation, cost timing
+python -m cascade.frontier analyse > ../docs/raw/E16_frontier.txt  # E16: accuracy vs cost over K seeds x deferral
+python -m cascade.distill_targets --alpha 0.5                      # E17: soft targets -> runs/M4/targets_a0.5.npy
+bash ../code/launch/start.sh E17                                   # the 10 distilled students (lab-server queue)
+bash ../code/launch/e17_post.sh 0,1,2,3,4,5,6,7,8,9                # M3 on the students' candidates, frontier, analysis, publishing
+python -m preregistered_analyses.e18_final > ../docs/raw/E18_final.txt   # final numbers and docs/figures/E18_frontier.pdf
+```
 
 **Keys (optional).** For W&B logging or Hugging Face uploads, copy `code/.env.example` to `code/.env`
 and fill it in. This submission contains no keys.
