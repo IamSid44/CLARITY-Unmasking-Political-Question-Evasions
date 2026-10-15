@@ -49,9 +49,18 @@ CONFUSION_GUIDE: tuple[str, ...] = (
 )
 
 
-def preamble() -> str:
-    defs = "\n".join(f"- {name}: {DEFINITIONS[name]}" for name in EVASION_LABELS)
+VARIANTS = ("full", "no_guide", "no_defs", "bare")  # E16 prompt-part ablation; E15 used "full"
+
+
+def preamble(variant: str = "full") -> str:
+    assert variant in VARIANTS, variant
+    if variant in ("no_defs", "bare"):
+        defs = "\n".join(f"- {name}" for name in EVASION_LABELS)
+    else:
+        defs = "\n".join(f"- {name}: {DEFINITIONS[name]}" for name in EVASION_LABELS)
     guide = "\n".join(f"- {rule}" for rule in CONFUSION_GUIDE)
+    guide_block = "" if variant in ("no_guide", "bare") else \
+        f"How to separate the labels that are most often confused:\n{guide}\n\n"
     return (
         "You are an expert annotator of political interviews. A journalist's turn may contain several "
         "questions; it has been split into sub-questions, and each sub-question is paired with the "
@@ -59,7 +68,7 @@ def preamble() -> str:
         "The same answer can respond explicitly to one sub-question and evade another, so judge only the "
         "given sub-question.\n\n"
         f"Labels:\n{defs}\n\n"
-        f"How to separate the labels that are most often confused:\n{guide}\n\n"
+        f"{guide_block}"
         "You will be shown labelled examples from other interviews, then the item to label and a short list "
         "of allowed labels, each with a letter. Reply with the letter of the correct label only."
     )
@@ -85,7 +94,8 @@ def approx_tokens(text: str) -> int:
     return int(len(text) / CHARS_PER_TOKEN) + 1
 
 
-def build_messages(item: Item, cand: list[int], examples: list[tuple[Item, int]]) -> tuple[list[dict], list[int]]:
+def build_messages(item: Item, cand: list[int], examples: list[tuple[Item, int]],
+                   variant: str = "full") -> tuple[list[dict], list[int]]:
     """Chat messages for one item.
 
     `cand` are label indices (any order; shown in taxonomy order with letters A, B, ...). `examples` are
@@ -100,7 +110,7 @@ def build_messages(item: Item, cand: list[int], examples: list[tuple[Item, int]]
             f"Reply with one letter ({', '.join(LETTERS[: len(cand)])}).")
     blocks = [f"Example {j + 1}:\n{render_item(ex)}\nLabel: {EVASION_LABELS[y]}" for j, (ex, y) in enumerate(examples)]
     keep = list(range(len(examples)))
-    sys_msg = preamble()
+    sys_msg = preamble(variant)
     while keep and approx_tokens(sys_msg) + sum(approx_tokens(blocks[j]) for j in keep) + approx_tokens(tail) > MAX_PROMPT_TOKENS:
         keep.pop(0)
     if keep:

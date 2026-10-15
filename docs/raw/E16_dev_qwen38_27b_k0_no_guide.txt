@@ -1,0 +1,43 @@
+M1 system (ensemble + LA, nested CV): S2 0.598 (10 splits 0.601), S1 0.743, 2-annotator mean 0.549
+
+delta calls/item     S2 S2 10sp     S1  2-ann  lam    tau   Δ S2 vs M1 (bootstrap)
+  0.0      0.000  0.598   0.601  0.743  0.549  0.000 -1.00   +0.000 [+0.000, +0.000] P(<=0) 1.000   in-set 0.623
+  0.1      0.110  0.607   0.620  0.762  0.552  0.100 +0.75   +0.009 [-0.017, +0.031] P(<=0) 0.229   in-set 0.636
+  0.2      0.231  0.623   0.622  0.780  0.556  0.100 -0.05   +0.024 [-0.020, +0.066] P(<=0) 0.141   in-set 0.656
+  0.3      0.357  0.645   0.637  0.793  0.574  0.400 -0.35   +0.045 [-0.005, +0.098] P(<=0) 0.041   in-set 0.682
+  0.5      0.649  0.646   0.627  0.791  0.585  0.400 +0.00   +0.044 [-0.013, +0.103] P(<=0) 0.074   in-set 0.675
+  1.0      1.000  0.643   0.623  0.815  0.594  0.100 +0.10   +0.042 [-0.024, +0.112] P(<=0) 0.105   in-set 0.679
+
+Subtask 1, paired bootstrap of the split-0 systems:
+  0.0  Δ S1 vs M1 +0.000 [+0.000, +0.000] P(<=0) 1.000
+  0.1  Δ S1 vs M1 +0.019 [+0.004, +0.040] P(<=0) 0.018
+  0.2  Δ S1 vs M1 +0.037 [-0.000, +0.076] P(<=0) 0.026
+  0.3  Δ S1 vs M1 +0.050 [+0.010, +0.092] P(<=0) 0.005
+  0.5  Δ S1 vs M1 +0.048 [+0.004, +0.092] P(<=0) 0.014
+  1.0  Δ S1 vs M1 +0.071 [+0.024, +0.119] P(<=0) 0.001
+
+δ = 0.3: 59 predictions changed; 27 move into the reference set, 9 out of it (exact McNemar p = 0.0039)
+   class                   M1 F1  M1+M3      Δ #pred M1 #pred M3
+   Explicit                0.667  0.744 +0.077       56       71
+   Implicit                0.575  0.604 +0.029       90       93
+   Dodging                 0.509  0.583 +0.074       39       50
+   General                 0.420  0.479 +0.059       30       31
+   Deflection              0.494  0.500 +0.006       44       36
+   Partial/half-answer     0.231  0.364 +0.133       19        4
+   Declining to answer     0.688  0.786 +0.098       17       12
+   Claims ignorance        0.800  0.750 -0.050        9        7
+   Clarification           1.000  1.000 +0.000        4        4
+
+δ = 1.0: 106 predictions changed; 42 move into the reference set, 25 out of it (exact McNemar p = 0.0498)
+   class                   M1 F1  M1+M3      Δ #pred M1 #pred M3
+   Explicit                0.667  0.766 +0.099       56       80
+   Implicit                0.575  0.551 -0.024       90       81
+   Dodging                 0.509  0.591 +0.082       39       43
+   General                 0.420  0.481 +0.061       30       36
+   Deflection              0.494  0.427 -0.067       44       42
+   Partial/half-answer     0.231  0.250 +0.019       19        1
+   Declining to answer     0.688  0.867 +0.179       17       15
+   Claims ignorance        0.800  0.857 +0.057        9        6
+   Clarification           1.000  1.000 +0.000        4        4
+
+LLM alone within C(x), all dev items: in-set rate 0.653, S2 0.620; per class predicted: {'Explicit': 86, 'Implicit': 76, 'Dodging': 46, 'General': 31, 'Deflection': 43, 'Partial/ha': 2, 'Declining ': 15, 'Claims ign': 5, 'Clarificat': 4}

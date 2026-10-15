@@ -1,0 +1,21 @@
+  done subset (0,)
+  done subset (1,)
+  done subset (2,)
+
+Q8_distill_a05 frontier: M1 seed 0.052 GPU-s/item, M3 call 0.103 GPU-s/call (runs/M3/cost.json); S2 = mean over seed subsets of the nested-CV score (1 split(s) each)
+
+  K    δ   n  calls   GPU-s  S2 mean   ± sd     S1  in-set
+  1  0.0   3  0.000   0.052    0.580  0.007  0.749   0.630
+  1  0.1   3  0.103   0.063    0.581  0.005  0.757   0.639
+  1  0.2   3  0.229   0.076    0.586  0.025  0.754   0.649
+  1  0.3   3  0.343   0.087    0.589  0.020  0.765   0.654
+  1  0.5   3  0.595   0.113    0.616  0.012  0.768   0.661
+  1  1.0   3  1.000   0.155    0.626  0.025  0.783   0.667
+
+Pareto points (no other point is both cheaper and at least as good on S2):
+   K=1  δ=0.0: 0.052 GPU-s/item, S2 0.580, S1 0.749
+   K=1  δ=0.1: 0.063 GPU-s/item, S2 0.581, S1 0.757
+   K=1  δ=0.2: 0.076 GPU-s/item, S2 0.586, S1 0.754
+   K=1  δ=0.3: 0.087 GPU-s/item, S2 0.589, S1 0.765
+   K=1  δ=0.5: 0.113 GPU-s/item, S2 0.616, S1 0.768
+   K=1  δ=1.0: 0.155 GPU-s/item, S2 0.626, S1 0.783

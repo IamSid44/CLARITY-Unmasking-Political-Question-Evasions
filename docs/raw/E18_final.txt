@@ -1,0 +1,43 @@
+E18 (freeze), part A: final dev numbers. Nested CV: split 0 and mean of 10 splits; 2-annotator = mean over the three 2-annotator reference sets, CV refitted on each (test regime).
+
+1. Accuracy operating point: 10-seed M1 + M3, δ = 0.3
+
+   system                                S2  10 sp     S1  2-ann  in-set  calls  GPU-s
+   M1, 10 seeds (E14)                 0.598  0.601  0.743  0.549   0.623  0.000  0.522
+   M1 + M3, δ = 0.3 (E15)             0.669  0.660  0.798  0.589   0.701  0.357  0.558
+   Δ S2 vs M1 (bootstrap over items): +0.067 [+0.009, +0.124]; 2-annotator sets: 0.538, 0.635, 0.593 (M1: 0.540, 0.571, 0.536)
+
+2. Cost operating point: one distilled student + M3, δ = 0.5 (each of the 10 students; mean ± sd)
+
+                           student + M3   undistilled 1 seed + M3     paired Δ (n up)   student alone
+   S2 (split 0)             0.608 ± 0.027           0.575 ± 0.033      +0.033 (8/10)       0.570 ± 0.022
+   S2 (10 splits)           0.610 ± 0.023           0.573 ± 0.030      +0.036 (7/10)       0.570 ± 0.022
+   S1                       0.790 ± 0.019           0.754 ± 0.019      +0.035 (9/10)       0.755 ± 0.017
+   2-annotator S2           0.567 ± 0.024           0.532 ± 0.032      +0.036 (7/10)       0.536 ± 0.021
+   in-set rate              0.658 ± 0.025           0.631 ± 0.021      +0.028 (9/10)       0.620 ± 0.030
+   LLM calls/item           0.574 ± 0.023           0.592 ± 0.059      -0.018 (4/10)       0.000 ± 0.000
+   GPU-s/item               0.111 ± 0.002           0.113 ± 0.006      -0.002 (4/10)       0.052 ± 0.000
+
+3. Per-class F1 on dev (S2 scorer), split-0 predictions; cost point averaged over the 10 students
+
+   class                    M1 (10 seeds)  accuracy point   student alone      cost point
+   Explicit                         0.667           0.753           0.706           0.743
+   Implicit                         0.575           0.615           0.518           0.545
+   Dodging                          0.509           0.634           0.477           0.503
+   General                          0.420           0.505           0.434           0.498
+   Deflection                       0.494           0.523           0.420           0.472
+   Partial/half-answer              0.231           0.400           0.212           0.170
+   Declining to answer              0.688           0.818           0.649           0.731
+   Claims ignorance                 0.800           0.769           0.729           0.812
+   Clarification                    1.000           1.000           0.989           1.000
+
+4. Cost per dev item (lab card: RTX PRO 6000 Max-Q, GPU 0 alone; runs/M3/cost.json)
+
+   system                                  S2     S1 LLM calls   GPU-s in tokens out tokens GPU-s vs M1
+   M1, 10 seeds                         0.598  0.743      0.00   0.522      4894       0.00       1.00x
+   accuracy point: M1 + M3, δ = 0.3     0.669  0.798      0.36   0.558      5284       0.36       1.07x
+   student alone (mean of 10)           0.570  0.755      0.00   0.052       489       0.00       0.10x
+   cost point: student + M3, δ = 0.5    0.608  0.790      0.57   0.111      1117       0.57       0.21x
+   TeleAI (1st place; DeepSeek-V3 API)  0.617  0.812      1.94     n/a      7300        380         n/a
+
+5. Figure: /scratch/shlok/Temp/CLARITY-Unmasking-Political-Question-Evasions/docs/figures/E18_frontier.pdf (and .png)

@@ -31,13 +31,15 @@ Two facts from the analysis decide what comes next (report §6):
 So most remaining errors are a choice among a few labels the model already ranks highly, on items it
 can flag as uncertain.
 
-## Status (2026-10-13)
+## Status (2026-10-15)
 
 | Module | State |
 |---|---|
 | **M1** | **done (E14).** 10-seed 12-epoch system S2 0.598 / S1 0.743; cross-fitted train probabilities for all 3,448 rows; C(x) and u(x) code; all runs on HF and W&B. Results against H1–H6 are in the log, §E14 results. |
 | **M3** | **done (E15, 2026-10-14; corrected for a fusion bug the same day).** Local Qwen3.8-27B-FP8 over M1's top 4, no examples, fused on the 30% least confident items: **dev S2 0.669 (10 splits 0.660), +0.067 [+0.009, +0.124]; S1 0.798; 0.36 calls/item**. δ = 0.2 gives 0.635 at 0.23 calls. DeepSeek V4 Flash and Gemma 4 31B (API) not adopted. API spend $0.26. Next: adopt δ = 0.3, then M4. |
-| M2, M4 | as planned |
+| **M2** | **done (E16, 2026-10-14).** Prompt-part ablation (the full prompt kept), measured cost per item (an M1 seed 0.052 GPU-s, an M3 call 0.103), and the accuracy-vs-cost frontier over seeds × deferral. |
+| **M4** | **done (E17, 2026-10-15).** A distilled student replaces the 10 seeds: student + M3 at δ = 0.5 scores 0.608 / 0.790 at 0.111 GPU-s per item, the cost operating point. |
+| **Freeze (E18)** | **numbers done (2026-10-15).** Final dev numbers for both operating points, incl. 2-annotator; cost table; frontier figure (`docs/figures/E18_frontier.pdf`). Ensembles of distilled students tested: no middle operating point. **Left for later (the user):** report §7, slides, submission files. |
 
 ## 2. The plan: a confidence-routed cascade (report §7, Figure 5)
 
@@ -105,18 +107,30 @@ feeds M3 is recorded in the E14 entry of the log. The options:
 | 2026-10-02 | E13x / E13b / E13c (4 VMs) | JarvisLabs | ₹1,518.79 |
 | 2026-10-06 | E14 (M1): 7 seeds + 5 folds, ~30 GPU-hours over 20 h of wall time (GPU 0 + two MIG slices) | lab server | free (≈ ₹2,300 at Jarvis rates) |
 | 2026-10-13 | E15 (M3): API probe, screen and secondary dev arms through the JarvisLabs Model API; local Qwen3.8-27B arms on the lab server (free) | Jarvis API + lab server | $0.262 ≈ ₹23 (ledger `runs/M3/api_ledger.jsonl`) |
-| **balance** | | | **≈ ₹4,006 of ₹5,880** (₹4,029.30 before E15; to be confirmed on the dashboard) |
+| **balance** | | | **₹4,001.81** (read through the JarvisLabs SDK on 2026-10-14 16:40; the API spend was charged to the same credit) |
 
-### 4.2 Plan for the remaining credit
+**JarvisLabs prices on 2026-10-14** (₹/h on demand, spot in brackets; the SDK's `account.gpu_availability()`):
+- RTX PRO 6000 96 GB: 207 (109);
+- H100 80 GB: 330 (146);
+- H200 141 GB: 435 (217);
+- A100 40 GB: 84 (75);
+- L4 / A30 24 GB: 41 / 39.
 
-| Phase | Work | Where | GPU-h | ₹ (estimate) |
+E17's training needs ≈ 53 GB without gradient checkpointing.
+- **Per seed:** about ₹250 on either an RTX PRO 6000 (~62 min) or an H100 (est. ~35–40 min).
+- **E17's confirmation (seeds 3–9)** runs on the free lab server (option A, chosen by the user). A move to
+  Jarvis spot GPUs is kept open if the server becomes busy.
+
+### 4.2 Plan for the remaining credit, and what was actually spent
+
+| Phase | Work | Where | Planned ₹ | **Actual** |
 |---|---|---|---|---|
-| M1 | 12-epoch seeds 3–9, 5 cross-fit folds | lab server | (~15–19 h wall) | 0 |
-| M3 | Qwen3.8-27B-FP8 locally (free); DeepSeek V4 Flash / Gemma 4 31B through the JarvisLabs Model API (per token: DeepSeek $0.13 in / $0.03 cached / $0.26 out per M) on screen, slice, dev, test and 50% of train | lab server + Jarvis API | 0 | ≈ 260–350 (cap $8 ≈ ₹700) |
-| M2 | router, δ sweep, ablations | CPU | 0 | 0 |
-| M4 | M3 on the 3,448 train rows; retrain M1 on soft targets (3-seed screen on the server, 7-seed extension on parallel Jarvis VMs if it passes) | mixed | 2–4 + 7 | 1,750–2,100 |
-| reserve | reruns, final freeze | | | ~600 |
-| **total** | | | | **≈ ₹3,150–3,850** |
+| M1 (E14) | 12-epoch seeds 3–9, 5 cross-fit folds | lab server | 0 | **0** |
+| M3 (E15) | local Qwen3.8-27B-FP8; API probe, screen and secondary arms (DeepSeek V4 Flash, Gemma 4 31B) | lab server + Jarvis Model API | 800–1,150 | **≈ ₹23 ($0.262)** |
+| M2 (E16) | prompt ablation, cost timing, frontier | lab server (GPU 0) + CPU | 0 | **0** |
+| M4 (E17) | M3 on all train rows; 10 distilled students | lab server (GPU 0, 10 × 76 min) | 1,750–2,100 | **0** (user chose the server over Jarvis) |
+| freeze (E18) | final numbers, figures, report | CPU, ~5 min GPU at most | ~600 reserve | — |
+| **balance** | | | | **₹4,001.81** (JarvisLabs SDK, 2026-10-14) |
 
 **Rules:**
 - Training that fits on the shared server runs there.
@@ -204,6 +218,118 @@ Code is in `code/cascade/`. Local runs use their own venv, `/scratch/shlok/Temp/
 limit is reached: the E15 cap of $8 (`cascade/api_budget.GLOBAL_CAP_USD`), or the run's own `--max-usd`
 (default $1). A run whose dry-run projection exceeds `--max-usd` refuses to start.
 
+**E16 and E17** (from the repository root):
+- `bash code/launch/e16_gpu.sh`: M3 on all train rows and the frontier pairs, the prompt ablation, and the
+  cost timing. Then `python -m cascade.frontier analyse`, from `code/`.
+- `bash code/launch/start.sh E17`: the distilled students (`code/experiments/E17/`; W&B + HF via the queue).
+- `bash code/launch/e17_post.sh 0,1,2`: waits for the students, then runs M3 on their candidates, the
+  frontier, `preregistered_analyses/e17_m4_analysis.py` and publishing.
+
+**Where things run, and logging (the user's rule, 2026-10-14).**
+- **Placement:** if the lab server's GPU is reasonably free and there is no real time pressure, use it, to
+  save credits. If the GPU is busy *and* time is short, move to JarvisLabs (parallel VMs are fine).
+- **Logging:** wherever a run happens, it is logged to `logs/`, HF and W&B.
+  - Training runs do this through the queue (`--track`, `@hf-push`).
+  - Everything else uses `python -m cascade.publish hf M3 M4` and `python -m cascade.publish wandb <EXP>`.
+
 **Resuming.** Outputs go to `runs/M3/<tag>/responses.jsonl`, one line per item, appended as results arrive.
 A rerun skips finished items and retries failed ones. A tag's `config.json` pins the model, k, the prompt
 version and the switches, so a changed configuration needs a new tag.
+
+## 7. Next phase: plan of action after M3 *(2026-10-14; registered as E16 and E17 in the log)*
+
+Decisions (2026-10-14): α = 0.5 fixed; M3's q as the teacher; bf16 (+ FP8 if supported), no 4-bit; the lab server's GPU 0 first, Jarvis in parallel where it saves time.
+
+### 7.1 Where we stand, and what is left of the report's plan
+
+| Module | Report plan | State |
+|---|---|---|
+| M1 | 12-epoch Qwen, 10 seeds, C(x), u(x) | done (E14): S2 0.598 / S1 0.743 |
+| M3 | LLM adjudicator over C(x), fused with M1 | done (E15): **S2 0.669 / S1 0.798 at 0.36 calls/item** |
+| M2 | router, δ sweep, **ablation of each prompt part**, accuracy-vs-calls curve | **done (E16, 2026-10-14)**: prompt ablation (`full` kept), measured cost, frontier over K × δ |
+| M4 | distil M3 into M1; measured cost per item | **done (E17, 2026-10-15)**: student + M3 is the cost operating point (δ = 0.5: 0.608 / 0.790 at 0.111 GPU-s per item, 4.7× cheaper than the 10-seed M1 alone, and better) |
+| freeze | final scores, 2-annotator scores, test predictions, release | not started |
+
+**Where the cost is.** Per dev item, the current system runs:
+- **M1, 10 seeds:** 10 forward passes of an 8B classifier. That is ≈ 0.2–0.3 GPU-s per seed with our HF
+  evaluation loop (E13 timing: 3–5 min per evaluation of ~890 items), so **≈ 2–3 GPU-s per item**.
+- **M3:** 0.36 calls of a 27B model at 0.155 GPU-s per call (vLLM, measured), so **≈ 0.06 GPU-s per item**.
+
+So more than 95% of the inference cost is M1's ensemble, not the LLM. *(Measured in E16: an M1 seed costs 0.052 GPU-s per item, not 0.2–0.3, and an M3 call 0.103. M1 is still ~93% of the cost.)* E14 showed that the ensemble cannot
+simply be shrunk: K = 1 / 3 / 5 / 10 seeds give S2 0.509 / 0.564 / 0.555 / 0.598. **The cost lever is K.**
+That is what M4 should attack: one distilled model in place of ten.
+
+### 7.2 E16: finish M2 (prompt ablation, and the accuracy-vs-cost frontier). Free, ~1 day.
+
+1. **Prompt-part ablation** (report §7 promises it). Local Qwen3.8-27B, k = 0, on the 300 screen rows:
+   - the full prompt;
+   - without the confusion guide;
+   - without the definitions (label names only);
+   - without both.
+
+   Each ablation is about 1 min of GPU. Each variant is then scored once on dev, with the fixed fusion
+   code, and reported. Nothing is chosen on dev: the adopted prompt stays the full one unless the screen
+   rule says otherwise.
+2. **Measured cost per item, in one harness on the lab card (GPU 0):** an M1 seed pass (HF, bf16, batched)
+   and an M3 call (vLLM). Reported as GPU-seconds per item, plus input/output tokens.
+3. **The accuracy-vs-cost frontier without distillation.**
+   - **Grid:** K ∈ {1, 2, 3, 5, 10} seeds × δ ∈ {0, 0.1, 0.2, 0.3, 0.5, 1}. For each K, the candidate
+     sets are that ensemble's own top 4.
+   - **New M3 scoring needed:** only for the (item, candidate set) pairs not already scored. It is local,
+     free and de-duplicated.
+   - **Output:** S2 / S1 against GPU-s per item; for K < 10, the mean over random seed subsets.
+   - **What it gives the story:** the baseline M4 must beat. The question is how far M3 alone lets K shrink.
+     For example, K = 3 + M3 at δ = 0.5 might match K = 10 + M3 at δ = 0.3 for a third of the cost.
+
+### 7.3 E17: M4, distillation for cost
+
+**Goal (the user's framing, 2026-10-14):** cut inference cost while keeping accuracy. An accuracy gain is
+not required.
+
+- **Teacher targets** for the 3,103 non-slice train rows: t = (1 − α)·gold + α·q, the report's design.
+  - q is M3's distribution over the row's cross-fitted top 4 (zero elsewhere).
+  - M3 is first run locally on the remaining ~1,700 train rows (≈ 5 min, free), so that every row has q.
+- **Student:** the M1 recipe unchanged (Qwen3-8B-Base + LoRA, 12 epochs, epoch chosen on the slice), with
+  the soft-target cross-entropy as the one change.
+- **Control:** M1 single models on the same seeds (E13b/E14 seeds 0–2, already trained).
+- **Protocol:**
+  - a **3-seed screen on the lab server** (free; ~1.5–2 h per run on GPU 0, plus the GPU-1 slices when
+    free);
+  - if it passes, **7 more seeds**, on Jarvis in parallel (≈ 7 × 70 min × ₹190/h ≈ ₹1,550) or on the
+    server (~12 h, free).
+- **Evaluated as a system:** student (K = 1) + M3. The student's own top 4 are the candidates (new M3
+  scoring, local and free), and its own confidence routes the items.
+
+**Hypotheses (numbers to be fixed at registration):**
+- **H1, cost:** student + M3 at K = 1 recovers at least half of the gap between M1(K = 1) + M3 and
+  M1(K = 10) + M3, at a tenth of M1's cost. That puts it on or above the E16 frontier.
+- **H2, routing:** soft targets make the student less overconfident (mean top probability below M1's 0.84),
+  and its u(x) separates errors at least as well (AUROC ≥ 0.71). So the same accuracy may need fewer
+  deferrals.
+- **H3, accuracy (secondary):** the student single model gains little on S2 (TeleAI: +0.014), and more on S1.
+
+**Decision rule (draft):** M4 is adopted as the *cost-efficient* operating point if student + M3 lies on the
+E16 frontier, i.e. no (K, δ) of the undistilled system is both cheaper and better. The K = 10 + M3 system
+remains the *accuracy* operating point. Both are reported.
+
+### 7.4 E18: freeze and release (Oct 26–31)
+
+- Final operating points: accuracy (M1 K = 10 + M3, δ = 0.3) and cost (from E16/E17), with 10-split
+  nested-CV, 2-annotator and bootstrap numbers.
+- Test predictions for both, from saved responses (`evaluation/make_submission.py`). No new API calls.
+- Upload `runs/M3/` and the student adapters to the HF repo; update the report's §7 and the slides.
+
+### 7.5 Decisions needed before registration
+
+1. **α (gold vs M3 mixing weight):** fixed at 0.5 a priori (recommended: no extra runs), or fitted on the
+   slice from runs at α ∈ {0.3, 0.7}. Fitting is what the report says, but it costs 2 more training runs
+   and slice F1 from single runs is noisy.
+2. **Teacher:** M3's q alone (the report; recommended, one change), or the fused M1 + M3 distribution.
+3. **Precision for the cost table:** bf16, plus an FP8 measurement of the student (near-lossless on this
+   card). **No 4-bit**, as decided for M3; this is a deviation from the report's "4-bit weights".
+4. **Compute for the 7-seed confirmation:** Jarvis (≈ ₹1,550, a few hours) or the lab server (free, ~12 h).
+
+### 7.6 Budget after this plan
+
+E16 is free. The E17 screen is free (server). The E17 confirmation costs ≈ ₹1,550 if run on Jarvis, and
+E18 is free. That leaves ≈ ₹2,450 of the ≈ ₹4,006 for reruns and the final freeze.

@@ -1217,6 +1217,21 @@ about, choosing among M1's top four labels, and its choice is fused with M1's pr
   It is recorded in the log ("E15 correction").
 - **The total API cost of E15 was $0.26.**
 
+**E16 and E17 results: the cost of the cascade, and making it cheap (2026-10-14/15).**
+- **Where the cost is.** Measured on the lab card, an M1 seed costs 0.052 GPU-s per item and an M3 call
+  0.103. So the 10-seed ensemble, not the LLM, is ~93% of the system's cost.
+- **E15's 0.669 is a lucky draw.** Averaged over random seed subsets, M3 adds a steady +0.02 to +0.03 at
+  every smaller ensemble size. The 10-seed point (+0.067) is likely optimistic.
+- **Distillation (M4).** M3 is run once over the training set, and one 8B student is trained on half gold,
+  half M3 labels, in place of ten seeds.
+  - **On its own,** the student is a better and steadier single model: S2 0.573 vs 0.525, 9/10 seeds up.
+  - **With M3 at δ = 0.5,** it reaches **0.608 / 0.790 at 0.111 GPU-s per item**. That beats the 10-seed M1
+    alone (0.598 / 0.743 at 0.522) at 4.7× less cost.
+  - **No undistilled configuration is both cheaper and better.**
+- **The final system has two operating points:**
+  - **accuracy:** 10-seed M1 + M3, δ = 0.3;
+  - **cost:** student + M3, δ = 0.5.
+
 **Next steps, in order (plan at the mid-evaluation)** (the timeline in the Conclusion of `Report/Report.pdf`):
 1. **12 epochs at 10 seeds** → the new single-pass system. Then all of train with 12 epochs, as
    its own test.

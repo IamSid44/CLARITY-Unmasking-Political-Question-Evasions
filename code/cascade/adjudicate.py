@@ -34,7 +34,7 @@ from qevasion.paths import ROOT, RUNS
 M1_INPUTS = RUNS / "M1" / "Q8_fullq_lora_12ep_fixed_a0.05" / "cascade_inputs.npz"
 TOP_K = 4
 SCREEN_N, SCREEN_SEED, SCREEN_DELTA = 300, 15, 0.3
-SPLITS = ("screen", "slice", "dev", "test", "train50")
+SPLITS = ("screen", "slice", "dev", "test", "train50", "trainall")
 
 
 @dataclass
@@ -46,7 +46,12 @@ class Job:
 
     @property
     def id(self) -> str:
-        return f"{self.split}:{self.i}"
+        # the registered splits have one candidate set per row; jobs-file items (E16/E17 frontiers) can have
+        # several, so their id includes the candidates (fixed 2026-10-14: without it, a later jobs file's new
+        # candidate sets for an item were skipped as "done")
+        if self.split in SPLITS:
+            return f"{self.split}:{self.i}"
+        return f"{self.split}:{self.i}:{'-'.join(map(str, self.cand))}"
 
 
 def topk(q: np.ndarray, k: int = TOP_K) -> np.ndarray:
@@ -65,6 +70,8 @@ def select(split: str, z=None) -> list[Job]:
     c = topk(q)
     if split == "train50":
         rows = np.where(u >= np.quantile(u, 0.5))[0]
+    elif split == "trainall":  # E17: every train row, for M4's soft targets
+        rows = np.arange(len(q))
     elif split == "screen":
         pool = np.setdiff1d(np.where(u >= np.quantile(u, 1 - SCREEN_DELTA))[0], z["val_idx"])
         rows = np.sort(np.random.default_rng(SCREEN_SEED).choice(pool, SCREEN_N, replace=False))
@@ -73,7 +80,13 @@ def select(split: str, z=None) -> list[Job]:
     return [Job(split, "train", int(i), sorted(map(int, c[i]))) for i in rows]
 
 
-def build_prompts(jobs: list[Job], k: int) -> list[tuple[list[dict], list[int]]]:
+def load_jobs(path: str) -> list[Job]:
+    """Jobs written by another module (E16 frontier): one JSON per line with split, frame, i, cand."""
+    return [Job(r["split"], r["frame"], int(r["i"]), sorted(map(int, r["cand"])))
+            for r in map(json.loads, Path(path).read_text().splitlines()) if r]
+
+
+def build_prompts(jobs: list[Job], k: int, variant: str = "full") -> list[tuple[list[dict], list[int]]]:
     from cascade.exemplars import Retriever
 
     r = Retriever()
@@ -82,7 +95,7 @@ def build_prompts(jobs: list[Job], k: int) -> list[tuple[list[dict], list[int]]]
     for j in jobs:
         ex = r.examples(j.frame, j.i, j.cand, k)
         exs = [(item_from_row(tr.iloc[e]), int(r.y[e])) for e in ex]
-        msgs, keep = build_messages(item_from_row(r.frames[j.frame].iloc[j.i]), j.cand, exs)
+        msgs, keep = build_messages(item_from_row(r.frames[j.frame].iloc[j.i]), j.cand, exs, variant)
         out.append((msgs, [ex[n] for n in keep]))
     return out
 
@@ -218,6 +231,8 @@ def main() -> None:
     p.add_argument("--tag", required=True, help="output folder runs/M3/<tag>")
     p.add_argument("--splits", default="screen", help=f"comma-separated, from {SPLITS}")
     p.add_argument("--k", type=int, default=10, help="number of retrieved examples")
+    p.add_argument("--prompt-variant", default="full", choices=("full", "no_guide", "no_defs", "bare"))
+    p.add_argument("--jobs-file", default="", help="extra jobs (jsonl: split, frame, i, cand), e.g. E16's frontier")
     p.add_argument("--limit", type=int, default=0, help="first N items per split only (smoke tests)")
     p.add_argument("--dry-run", action="store_true", help="build prompts, print token and cost estimates, no calls")
     # vLLM
@@ -240,9 +255,11 @@ def main() -> None:
     out = outdir / "responses.jsonl"
     z = np.load(M1_INPUTS)
     jobs = []
-    for s in a.splits.split(","):
+    for s in [s for s in a.splits.split(",") if s]:
         js = select(s, z)
         jobs += js[: a.limit] if a.limit else js
+    if a.jobs_file:
+        jobs += load_jobs(a.jobs_file)
     done = done_ids(out)
     jobs = [j for j in jobs if j.id not in done]
     # a row with the same candidates already scored under another split (screen rows are inside train50)
@@ -264,14 +281,15 @@ def main() -> None:
     print(f"{len(jobs)} items to score ({len(done)} already done) for {a.tag}", flush=True)
     if not jobs:
         return
-    prompts = build_prompts(jobs, a.k)
+    prompts = build_prompts(jobs, a.k, a.prompt_variant)
     toks = np.array([sum(approx_tokens(m["content"]) for m in pm) for pm, _ in prompts])
     nex = np.array([len(ex) for _, ex in prompts])
     pre = approx_tokens(prompts[0][0][0]["content"])
     print(f"prompt tokens (approx.): mean {toks.mean():.0f}, median {np.median(toks):.0f}, max {toks.max()}; "
           f"preamble {pre}; examples kept: mean {nex.mean():.1f}, min {nex.min()}", flush=True)
     (outdir / "prompt_sample.txt").write_text("\n\n=====\n\n".join(m["content"] for m in prompts[0][0]))
-    cfg = {"backend": a.backend, "model": a.model, "k": a.k, "prompt_version": PROMPT_VERSION, "top_k": TOP_K,
+    cfg = {"backend": a.backend, "model": a.model, "k": a.k, "prompt_version": PROMPT_VERSION,
+           "prompt_variant": a.prompt_variant, "top_k": TOP_K,
            "m1_inputs": str(M1_INPUTS.relative_to(ROOT)), "extra_body": json.loads(a.extra_body),
            "chat_template_kwargs": json.loads(a.chat_template_kwargs), "samples": a.samples,
            "started": time.strftime("%F %T")}
@@ -291,7 +309,8 @@ def main() -> None:
     cfg_path = outdir / "config.json"
     if cfg_path.exists():  # resuming: the scoring configuration must not change under the same tag
         old = json.loads(cfg_path.read_text())
-        diff = [key for key in cfg if key != "started" and old.get(key) != cfg[key]]
+        defaults = {"prompt_variant": "full"}  # keys added after E15's runs
+        diff = [key for key in cfg if key != "started" and old.get(key, defaults.get(key)) != cfg[key]]
         if diff:
             raise SystemExit(f"{cfg_path} differs in {diff}: use a new --tag")
     else:

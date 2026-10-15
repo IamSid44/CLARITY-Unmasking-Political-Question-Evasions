@@ -1,0 +1,12 @@
+# E17 screen on the lab server's GPU 0: seeds 0-2, paired with Q8_fullq_lora_12ep seeds 0-2 (the control).
+Q8_distill_a05 0
+Q8_distill_a05 1
+Q8_distill_a05 2
+# Confirmation (the screen passed: student + M3 beat control + M3 by +0.0151 >= 0.015 at δ = 0.3): seeds 3-9.
+Q8_distill_a05 3
+Q8_distill_a05 4
+Q8_distill_a05 5
+Q8_distill_a05 6
+Q8_distill_a05 7
+Q8_distill_a05 8
+Q8_distill_a05 9

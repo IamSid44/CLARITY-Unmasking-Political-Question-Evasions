@@ -56,6 +56,7 @@ class Cfg:
     log_every: int = 20
     track: bool = False
     save_epoch_adapters: bool = True
+    soft_targets: str = ""  # M4 (E17): .npy of (3448, 9) target distributions per train row; "" = gold labels
 
 
 def encode_row(tok, q: str, iq: str, a: str, cfg: Cfg) -> list[int]:
@@ -210,6 +211,13 @@ def run(cfg: Cfg, outroot: Path) -> None:
     if cfg.limit_eval:
         X_va, X_dev, X_te = X_va[: cfg.limit_eval], X_dev[: cfg.limit_eval], X_te[: cfg.limit_eval]
     y_tr, y_va = y[tr_idx], y[val_idx][: len(X_va)]
+    if cfg.soft_targets:  # M4: cross-entropy against soft targets instead of the gold label (the one change)
+        T = np.load(cfg.soft_targets).astype(np.float32)
+        assert T.shape == (len(train), N_EVASION) and np.allclose(T.sum(1), 1, atol=1e-4), "bad soft targets"
+        t_tr = T[tr_idx]
+        print(f"[data] soft targets {cfg.soft_targets}: mean target on gold {T[tr_idx, y_tr].mean():.3f}", flush=True)
+    target = (lambda b: torch.as_tensor(t_tr[b], device=cfg.device)) if cfg.soft_targets else \
+        (lambda b: torch.as_tensor(y_tr[b], device=cfg.device))
     len_tr = np.array([len(s) for s in X_tr])
     print(f"[data] train {len(X_tr)} (mean {len_tr.mean():.0f} tokens, max {len_tr.max()}), "
           f"slice {len(X_va)}, dev {len(X_dev)}, test {len(X_te)}", flush=True)
@@ -260,7 +268,7 @@ def run(cfg: Cfg, outroot: Path) -> None:
         ids, att = collate([X_tr[j] for j in longest], pad, cfg.device)
         with autocast(cfg):
             logits = model(input_ids=ids, attention_mask=att).logits
-        F.cross_entropy(logits.float(), torch.as_tensor(y_tr[longest], device=cfg.device)).backward()
+        F.cross_entropy(logits.float(), target(longest)).backward()
         opt.zero_grad(set_to_none=True)
         print(f"[pilot] longest micro-batch ({int(att.sum())} tokens): peak VRAM "
               f"{torch.cuda.max_memory_allocated() / 1024**3:.1f} GiB", flush=True)
@@ -273,7 +281,7 @@ def run(cfg: Cfg, outroot: Path) -> None:
             ids, att = collate([X_tr[j] for j in b], pad, cfg.device)
             with autocast(cfg):
                 logits = model(input_ids=ids, attention_mask=att).logits
-            loss = F.cross_entropy(logits.float(), torch.as_tensor(y_tr[b], device=cfg.device))
+            loss = F.cross_entropy(logits.float(), target(b))  # class indices, or probabilities (M4)
             (loss / cfg.grad_accum).backward()
             running, nb, tok_seen = running + loss.item(), nb + 1, tok_seen + int(att.sum())
             if (i + 1) % cfg.grad_accum == 0 or i + 1 == len(batches):

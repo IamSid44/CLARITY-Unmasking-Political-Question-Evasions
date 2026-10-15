@@ -1,0 +1,11 @@
+@module models.llm_classifier
+@hf-push
+@need-gb 60
+
+# E17 (module M4): the E14 recipe (Qwen3-8B-Base + LoRA, 12 epochs, epoch chosen on the train slice) with ONE
+# change: soft targets t = 0.5 * onehot(gold) + 0.5 * q, q = M3 (local Qwen3.8-27B-FP8, k = 0) over the row's
+# cross-fitted top 4 (cascade/distill_targets.py). Paths are relative to code/ (run_queue.sh runs from there).
+--epochs 12
+--no-grad-checkpoint
+--track
+--soft-targets ../runs/M4/targets_a0.5.npy

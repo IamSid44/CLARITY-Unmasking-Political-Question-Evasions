@@ -11,14 +11,18 @@ over seeds. Raw outputs behind the headline tables are in `docs/raw/`.
 
 | | |
 |---|---|
-| Period | 2026-09-19 → 2026-10-02 (mid-evaluation); Phase 2 from 2026-10-06 (E14 done 2026-10-06) |
-| Hardware | 1× RTX PRO 6000 (96 GB), shared with other users' jobs; E13 on JarvisLabs VMs with the same GPU; E14 on the lab server's GPU 0 plus two GPU-1 MIG slices (48 GB each) when free |
+| Period | 2026-09-19 → 2026-10-02 (mid-evaluation); Phase 2 from 2026-10-06: E14 (M1) 10-06, E15 (M3) 10-14, E16 (M2) 10-14, E17 (M4) 10-15 |
+| Hardware | 1× RTX PRO 6000 (96 GB), shared with other users' jobs; E13 on JarvisLabs VMs with the same GPU; E14 on the lab server's GPU 0 plus two GPU-1 MIG slices (48 GB each) when free; E15–E17 on the lab server's GPU 0 (vLLM for the 27B LLM), plus the JarvisLabs Model API for the API arms ($0.26) |
 | Backbone | `microsoft/deberta-v3-large` (435M parameters) through E12; `Qwen/Qwen3-8B-Base` + LoRA from E13 |
 | Final system (E11, by a rule fixed in advance) | full question + 16 epochs, **10-seed** ensemble + logit adjustment: dev S2 **0.405** (0.412 over CV splits), dev S1 **0.648**; the 10-seed baseline system scores 0.428 / 0.601 — not distinguishable on S2 |
 | Latest | E12: training on all of train is the one variant that helps (S2 +0.029 per model, 4/5 seeds; 5-seed system 0.489); the hierarchy of specialist encoders, boundary experts and model soups do not |
 | Latest | **E13: Qwen3-8B + LoRA, the backbone as the one change, 10 seeds.** Single model S2 0.476 ± 0.043 vs 0.384 (+0.092, 10/10 up); **10-seed system S2 0.543 / S1 0.746 vs DeBERTa 0.405 / 0.648** (+0.136, 95% [+0.054, +0.224]). 12 epochs adopted on the slice (3-seed screen); all of train +0.017 per model, not distinguishable |
 | Latest | **E14 (module M1, Phase 2 step 1) done 2026-10-06.** Qwen 12 epochs at 10 seeds: single model S2 0.525 ± 0.042 (+0.049 vs 3 epochs, 8/10 up); **10-seed system S2 0.598 / S1 0.743** (+0.057 vs 0.543, 95% [−0.003, +0.125]); 2-annotator mean 0.549. Cross-fitted train probabilities for all 3,448 rows. Candidate sets must be rank-based; u(x) = 1 − top prob; oracle headroom at δ = 0.3 is 0.727, so M3 goes ahead |
-| Latest | **E15 (module M3) done 2026-10-14; dev numbers corrected the same day (a fusion bug, see E15 correction).** Local Qwen3.8-27B-FP8 over M1's top 4, no examples, fused on the 30% least confident items: **dev S2 0.669 (10 splits 0.660), +0.067 [+0.009, +0.124] over M1; S1 0.798 (+0.055); 0.36 LLM calls/item**, against TeleAI's 0.617 / 0.812 at 1.94 calls. 2-annotator mean 0.589. API spend $0.26 |
+| Latest | **E15 (module M3) done 2026-10-14; dev numbers corrected the same day (a fusion bug, see E15 correction).** Local Qwen3.8-27B-FP8 over M1's top 4, no examples, fused on the 30% least confident items: **dev S2 0.669 (10 splits 0.660), +0.067 [+0.009, +0.124] over M1; S1 0.798 (+0.055); 0.36 LLM calls/item**, against TeleAI's 0.617 / 0.812 at 1.94 calls. 2-annotator mean 0.589. API spend $0.26 *E16 caveat: averaged over seed subsets, M3 adds +0.02 to +0.03; the 10-seed point is likely optimistic* |
+| Latest | **E16 (M2 completion) done 2026-10-14.** Prompt ablation: `full` kept (on dev, full > no guide > no definitions > bare; within noise). Measured cost: an M1 seed 0.052 GPU-s/item, an M3 call 0.103, so the 10-seed M1 is ~93% of the cost. Frontier: M3 adds +0.02 to +0.03 (δ = 0.3) at every K ≤ 5; K = 10's +0.071 is an outlier, so **E15's 0.669 is likely optimistic**. K = 1 + M3 at δ = 1 matches the 10-seed M1 alone (0.593 vs 0.598) at 3.4× less cost |
+| Latest | **E17 (M4) done 2026-10-15.** One distilled student (soft targets from M3) instead of 10 seeds: single model S2 0.573 vs 0.525 (+0.048, 9/10), S1 +0.031; **student + M3 at δ = 0.5: 0.608 / 0.790 at 0.111 GPU-s per item vs the 10-seed M1 alone at 0.598 / 0.743 and 0.522 GPU-s (4.7× cheaper)**. Adopted as the cost operating point: no undistilled point is cheaper and better |
+| **Current system (2026-10-15)** | Two operating points on dev. **Accuracy:** 10-seed M1 + M3 at δ = 0.3, S2 0.669 (10 splits 0.660) / S1 0.798, 0.36 LLM calls and 0.558 GPU-s per item. **Cost:** E17 student + M3 at δ = 0.5, S2 0.608 / S1 0.790 (mean of 10 students), 0.57 calls and 0.111 GPU-s per item. TeleAI (1st place): 0.617 / 0.812 at 1.94 calls |
+| Latest | **E18 (freeze numbers) done 2026-10-15.** Final dev numbers for both operating points: accuracy point (M1 × 10 + M3, δ = 0.3) S2 0.669 / 0.660 over 10 splits, S1 0.798, 2-annotator 0.589; cost point (student + M3, δ = 0.5) S2 0.608 ± 0.027, S1 0.790, 2-annotator 0.567, at 0.21× the GPU cost of M1. Ensembles of distilled students do not help (≤ +0.02; the students lack diversity), so there is no middle operating point. Figure: `docs/figures/E18_frontier.pdf` |
 | Running | nothing |
 
 ---
@@ -51,6 +55,7 @@ system takes.
 | E13c | Qwen, all of train, last epoch (10 seeds) | 0.492 ± 0.045 | 0.715 | 0.575 | +0.017 per model (6/10); system +0.028 [−0.026, +0.092]: not distinguishable |
 | **E14** | **M1: Qwen 12 epochs at 10 seeds** (+ 5-fold cross-fitting; C(x), u(x)) | **0.525 ± 0.042** | **0.729** | **0.598** (S1 0.743) | **new best system**: +0.057 vs E13x [−0.003, +0.125]; per model +0.049 (8/10); K = 5 is not enough |
 | E15 | **M3: + Qwen3.8-27B-FP8 adjudicator over M1's top 4, fused, δ = 0.3** (0.36 calls/item) | 0.603 *(LLM alone within C)* | | **0.669** (10 splits 0.660; S1 **0.798**) | **new best system**: +0.067 [+0.009, +0.124] over M1; corrected 2026-10-14 (fusion bug) |
+| E17 | **M4: one Qwen3-8B student trained on soft targets 0.5·gold + 0.5·M3's q** (10 seeds) | **0.573** | **0.761** | 0.608 with M3 at δ = 0.5 (S1 0.790; 0.111 GPU-s/item) | **cost operating point**: beats the 10-seed M1 alone at 4.7× less cost |
 | — | ChulaNLP's fine-tuned DeBERTa-large (published; checkpoint chosen on dev) | 0.46 | 0.65 | | for reference |
 
 **The three main systems at 10 seeds (E11)** — the numbers to quote. Single models:
@@ -2469,11 +2474,426 @@ fixed on the other items.
   With M1's logit adjustment switched off on the kept items, rare-class predictions were lost; with it
   restored, the rare classes gain the most.
 
-**Updated open decisions for the user.**
+**Updated open decisions for the user.** *(Resolved 2026-10-15: M1 + M3 at δ = 0.3 is the accuracy
+operating point; M4 was done as E17; no submission file is needed yet.)*
 1. **Adopt M1 + M3 at δ = 0.3** as the system (the registered operating point; not chosen on dev). The
    alternative is δ = 0.2 for 0.23 calls per item. The report's target was ≤ 0.3 calls.
 2. **M4 (distillation)** next; its inputs exist (`runs/M3/qwen38_27b_k0`, train50).
 3. **Test predictions** of the adopted system can be written from the saved test responses (no new calls).
+
+
+---
+
+## E16 — Finishing M2: the prompt-part ablation, measured cost, and the accuracy-vs-cost frontier *(registered 2026-10-14)*
+
+*Written before any E16 run.* Plan: `05_phase2_plan_and_budget.md` §7.2.
+
+**Why.**
+- **The report promises an ablation of each prompt part,** and E15 removed only the examples.
+- **The cascade's cost has never been measured per item.** By E13's evaluation timing, M1's 10-seed
+  ensemble is ≈ 2–3 GPU-s per item, while M3 at δ = 0.3 is ≈ 0.06. If that holds, the cost lever is the
+  number of seeds K, not the LLM.
+- **E14 showed K cannot be shrunk on its own** (K = 1 / 3 / 10: S2 0.509 / 0.564 / 0.598). Whether M3
+  lets K shrink is unknown, and it is the baseline any distillation (E17) must beat.
+
+**Runs** (all on the lab server, GPU 0; free; no API calls):
+1. **Prompt ablation.** Local Qwen3.8-27B-FP8, k = 0, with prompt variants `full` (E15's), `no_guide`
+   (no confusion guide), `no_defs` (label names only, no definitions) and `bare` (neither). Each is run on
+   the 300 screen rows, then on dev.
+2. **Cost harness.** GPU-seconds per item on dev, on GPU 0 alone:
+   - one M1 seed (HF transformers, bf16, batch 16, length-sorted: the code path of `llm_classifier.predict`);
+   - one M3 call (vLLM, as in E15).
+   - Also input and output tokens per item.
+3. **Frontier.** K ∈ {1, 2, 3, 5, 10} seeds of `Q8_fullq_lora_12ep`; 10 random seed subsets per K < 10
+   (seed 16), all 10 seeds for K = 10.
+   - Each subset gets its own calibration, candidate sets (top 4) and routing u = 1 − top q. These are
+     fitted on the slice, as in `cascade.candidates`.
+   - M3 scores every (dev item, candidate set) pair not already scored, with the same tag, so identical
+     pairs are reused.
+   - The system for each (subset, δ): M1's own τ, then fused (λ, τ) by nested CV, as in E15 after the
+     correction. Split 0 per subset, averaged over subsets.
+   - Cost of (K, δ) = K × (M1 seed cost) + realised calls × (M3 call cost).
+
+**Hypotheses.**
+- **H1, prompt parts** (fused screen accuracy; full = 0.353):
+  - `no_guide` is 0.00–0.03 lower;
+  - `no_defs` is 0.01–0.05 lower;
+  - `bare` is the lowest.
+  - Dev is reported for all four as the ablation table.
+- **H2, cost:**
+  - an M1 seed costs 0.15–0.35 GPU-s per item and an M3 call 0.12–0.20;
+  - so M1's 10 seeds are ≥ 90% of the system's cost at δ = 0.3.
+- **H3, frontier:**
+  - with M3 at δ = 0.3, S2 rises with K less steeply than M1 alone;
+  - K = 3 + M3 is within 0.03 of K = 10 + M3 (0.669);
+  - K = 1 + M3 scores 0.59–0.63.
+  - At least one (K ≤ 3, δ) point beats M1 alone with K = 10 (0.598) at under a third of its cost.
+
+**Decision rules.**
+- **The adopted M3 prompt stays `full`** unless a reduced variant beats it by ≥ 0.02 in fused screen
+  accuracy. The preamble is a negligible share of the cost (H2), so no shorter prompt is adopted for cost.
+- **The frontier's Pareto points are the candidates for the cost operating point** of the final system.
+  The accuracy operating point stays K = 10 + M3 at δ = 0.3 (E15).
+
+**Cost.** Free: about 30–40 min of GPU 0, plus CPU analysis.
+
+### E16 results *(2026-10-14, 12:10–12:40; free, lab server GPU 0)*
+
+Sources:
+- `raw/E16_prompt_ablation_screen.txt` and `raw/E16_dev_qwen38_27b_k0_<variant>.txt` (the prompt ablation;
+  `full` is `raw/E15_dev_qwen38_27b_k0.txt`);
+- `runs/M3/cost.json` and `logs/E16_cost.log` (cost);
+- `raw/E16_frontier.txt` and `runs/M3/frontier_Q8_fullq_lora_12ep.json` (frontier).
+
+M3 also scored all train rows (E17's targets) and the frontier's 1,773 (dev item, top-4) pairs: 3,150 new
+items, 2,071 reused.
+
+**1. Prompt-part ablation** (local Qwen3.8-27B, k = 0):
+
+| variant | screen fused | screen LLM alone | dev S2 at δ = 0.3 (10 splits) | dev S1 at δ = 0.3 | dev LLM alone S2 |
+|---|---|---|---|---|---|
+| full (E15) | 0.353 | 0.320 | 0.669 (0.660) | 0.798 | 0.603 |
+| no confusion guide | 0.370 | 0.353 | 0.645 (0.637) | 0.793 | 0.620 |
+| no definitions | 0.347 | 0.320 | 0.619 (0.628) | 0.787 | 0.563 |
+| neither (bare) | 0.367 | 0.323 | 0.617 (0.617) | 0.779 | 0.520 |
+
+- **On the screen, the variants are indistinguishable** (all paired CIs include 0). No variant beats `full`
+  by 0.02, so **`full` stays**, by the rule.
+- **On dev the expected order appears:** full > no guide > no definitions > bare (10 splits 0.660 / 0.637 /
+  0.628 / 0.617). Each step is within the noise, but the definitions matter most for the LLM alone (0.603
+  vs 0.563 without them).
+- **H1:** the order of the variants held on dev; the predicted screen differences did not appear.
+
+**2. Cost** (GPU 0 alone, RTX PRO 6000 Max-Q; `runs/M3/cost.json`):
+- **One M1 seed** (HF, bf16, batch 16): **0.052 GPU-s per item**, ~490 tokens. Its dev predictions
+  reproduce the saved ones exactly.
+- **One M3 call** (vLLM, batched): **0.103 GPU-s**, ~1.1k prompt tokens and 1 output token.
+- **FP8** was not measured: the transformers FP8 kernels package is missing, and it was not installed over
+  this server's unreliable network.
+- **Correction of the plan's estimate:** §7.1 of docs/05 put an M1 seed at 0.2–0.3 GPU-s, read from E13's
+  epoch timings, which include evaluation overhead. The measured cost is 4–6× lower. The conclusion holds:
+  the 10-seed M1 is 0.52 GPU-s per item and M3 at δ = 0.3 adds 0.04, so **M1 is ~93% of the cost**.
+- **H2:** an M1 seed was predicted at 0.15–0.35, measured 0.052 (failed: cheaper); an M3 call was
+  predicted at 0.12–0.20, measured 0.103 (failed, narrowly); M1's share was predicted ≥ 90%, measured 93%
+  (held).
+
+**3. The accuracy-vs-cost frontier** (dev; S2 is the mean over 10 seed subsets per K, nested-CV split 0;
+K = 10 is one ensemble):
+
+| K | M1 alone | δ = 0.3 | δ = 1 | GPU-s at δ = 0 / 0.3 / 1 |
+|---|---|---|---|---|
+| 1 | 0.533 ± 0.047 | 0.558 ± 0.037 | 0.593 ± 0.025 | 0.052 / 0.088 / 0.155 |
+| 2 | 0.549 ± 0.036 | 0.579 ± 0.027 | 0.609 ± 0.018 | 0.104 / 0.141 / 0.207 |
+| 3 | 0.562 ± 0.017 | 0.583 ± 0.014 | 0.607 ± 0.015 | 0.156 / 0.192 / 0.259 |
+| 5 | 0.563 ± 0.024 | 0.594 ± 0.013 | 0.602 ± 0.021 | 0.261 / 0.298 / 0.364 |
+| 10 | 0.598 | **0.669** | 0.636 | 0.522 / 0.558 / 0.624 |
+
+- **M3 helps at every K.** With K ≤ 5, it adds +0.021 to +0.031 at δ = 0.3 and +0.039 to +0.060 at δ = 1.
+  S1 rises with it.
+- **The K = 10 system is an outlier.** M3 adds +0.071 there, more than twice the gain at any smaller K. It
+  is a single ensemble scored on 308 items, and E14 already saw K = 10 sit above the K-curve (K = 9: 0.574
+  ± 0.020). So **E15's headline (0.669, +0.067) is likely optimistic.** M3's typical gain on this dev set is
+  +0.02 to +0.04 at δ = 0.3, consistent with E15's own interval [+0.009, +0.124].
+- **The cost result.** With K = 1, sending every item to M3 gives **S2 0.593 / S1 0.774 at 0.155 GPU-s per
+  item**. That equals the 10-seed M1 alone (0.598 / 0.743, 0.522 GPU-s) on S2, beats it on S1, and costs
+  **3.4× less**. In the subset means, smaller ensembles with M3 replace seeds by LLM calls almost one for one.
+- **Pareto points:** K = 1 at every δ, K = 2 at δ = 0.3 / 0.5 / 1, and K = 10 at δ = 0.2 / 0.3. No K = 3 or
+  K = 5 point is on the front.
+- **H3:**
+  - "S2 rises with K less steeply with M3": failed. K = 1 → 10 adds +0.065 alone and +0.111 with M3 at
+    δ = 0.3, driven by the K = 10 outlier; K = 1 → 5 adds +0.030 vs +0.036.
+  - "K = 3 + M3 within 0.03 of K = 10 + M3": failed (0.583 vs 0.669).
+  - "K = 1 + M3 at δ = 0.3 in 0.59–0.63": failed (0.558; 0.593 at δ = 1).
+  - "a K ≤ 3 point beats 0.598 at under a third of the cost (0.174)": not quite. K = 1 at δ = 1 reaches
+    0.593 at 0.155, and K = 2 at δ = 1 reaches 0.609 at 0.207.
+
+**What E16 changes.**
+- **The cascade's value is real but smaller than E15's single number suggests.** Report the frontier, not
+  only the K = 10 point. The final report should give M3's gain as the subset-averaged +0.02 to +0.04
+  alongside the K = 10 result.
+- **E17's target is clear:** the student (K = 1) + M3 must beat K = 1 + M3 (0.558 at δ = 0.3, 0.593 at
+  δ = 1) and move towards the K = 10 points. On seeds 0–2, the controls are those seeds' K = 1 rows
+  (`runs/M3/frontier_Q8_fullq_lora_12ep.json`, per_subset).
+
+## E17 — Module M4: distilling M3 into one M1 model, for cost *(registered 2026-10-14)*
+
+*Written before any E17 run.* Plan: `05_phase2_plan_and_budget.md` §7.3.
+
+**Why.** The aim is a cheaper system, not a more accurate one (the user, 2026-10-14). If a single
+student model with M3 matches the 10-seed M1 with M3, inference cost drops about tenfold (E16's H2). The
+report's M4 retrains M1 on soft targets from M3 (Hinton et al., 2015).
+
+**Decisions taken with the user (2026-10-14).**
+- **Targets:** t = (1 − α)·onehot(gold) + α·q, with **α = 0.5 fixed a priori**.
+  - q is M3's distribution (local Qwen3.8-27B-FP8, k = 0, full prompt) over the row's cross-fitted top 4.
+  - Every train row is scored: M3 is first run on the train rows not in train50. This is local and free.
+  - **Deviation from the report:** α is not fitted on the slice. That would need extra training runs, and
+    slice F1 from single runs is noisy.
+- **Teacher:** M3's q alone, the report's design (the fused M1 + M3 distribution is not used).
+- **Precision for the cost table:** bf16; an FP8 measurement of the student if transformers supports it
+  on this card. **No 4-bit**, a deviation from the report.
+- **Compute:** the lab server's GPU 0 first. JarvisLabs runs in parallel when that saves time. The GPU-1
+  MIG slices are used only when free, under the E14 rules.
+
+**Runs.**
+- **Student:** `Q8_distill_a05`, the E14 recipe (Qwen3-8B-Base + LoRA, 12 epochs, epoch selected on the
+  slice) with one change: `--soft-targets`, i.e. the cross-entropy against t instead of the gold label.
+- **Screen:** seeds 0–2. Control: `Q8_fullq_lora_12ep` seeds 0–2 (E13b, dev S2 0.531 / 0.560 / 0.539).
+- **Evaluated as a system:** student (K = 1) + M3.
+  - The candidates are the student's own top 4, calibrated on the slice as in M1, and its own u routes.
+  - M3 scores any new (item, candidate set) pairs, locally.
+
+**Hypotheses** (on seeds 0–2, then 10 if the screen passes):
+- **H1, cost (the primary question).** Student + M3 at δ = 0.3 recovers at least half of the gap between
+  M1(K = 1) + M3 and M1(K = 10) + M3, from E16, on the same seeds: student + M3 ≥ (K1 + K10) / 2.
+- **H2, routing.**
+  - The student is less overconfident: mean top probability on dev 0.60–0.80 (M1 single model 0.839).
+  - Its u separates errors at least as well (AUROC of 1 − top probability ≥ 0.70).
+- **H3, accuracy (secondary).** Single student S2 vs M1 single model, paired: −0.01 to +0.03; S1 +0.00
+  to +0.04.
+
+**Decision rules.**
+- **Screen:** run 7 more seeds if, on seeds 0–2, student + M3 beats M1(K = 1) + M3 by ≥ 0.015 (mean
+  over the 3 seeds) or meets H1. Otherwise M4 is reported as a negative result, and the cost operating
+  point comes from E16's frontier.
+- **Adoption, after 10 seeds:** student + M3 becomes the **cost operating point** if no undistilled
+  (K, δ) point of E16 is both cheaper and better. K = 10 + M3 stays the accuracy operating point.
+
+**Cost.**
+- **Screen:** free (GPU 0, ~1.5–2 h per run).
+- **Confirmation:** split between GPU 0 and Jarvis. Jarvis ≈ ₹220 per seed, at most ≈ ₹1,550.
+
+
+### E17 screen *(seeds 0–2, 2026-10-14 12:26–16:19; free, lab server GPU 0)*
+
+Sources: `raw/E17_m4_analysis_screen_seeds012.txt` (sections A–C) and `raw/E17_frontier_students_screen_seeds012.txt`. Runs:
+`Q8_distill_a05/seed0–2` (on HF; W&B group `Q8_distill_a05`); evaluation published as W&B `E17-results`.
+- Each run took 76 min, and epochs 5–8 were selected on the slice (seed 2: epoch 6).
+- One infrastructure pause: seed 0 was stopped 2 min in, at 12:26, so GPU 0 was idle for E16's cost
+  timing, and was then restarted from scratch.
+- One bug fixed before any number was read. Items from a jobs file had ids without their candidate set,
+  so the students' new (item, candidates) pairs were skipped as "done". Their ids now include the
+  candidates. E16 was unaffected: its pairs were all submitted in one run.
+
+| | student `Q8_distill_a05` | control `Q8_fullq_lora_12ep` (same seeds) |
+|---|---|---|
+| single model, dev S2 (per seed) | 0.557 / 0.596 / 0.572, mean **0.575** | 0.531 / 0.560 / 0.539, mean 0.543 |
+| single model, dev S1 | 0.749 | 0.742 |
+| mean top probability on dev | **0.581** | 0.873 |
+| AUROC of 1 − top probability for errors | 0.683 | 0.671 |
+| + M3, δ = 0 / 0.1 / 0.2 / 0.3 / 0.5 / 1 (S2) | 0.580 / 0.581 / 0.586 / 0.589 / **0.616** / **0.626** | 0.557 / 0.564 / 0.565 / 0.574 / 0.576 / 0.597 |
+| + M3, S1 at δ = 0.3 / 1 | 0.765 / 0.783 | 0.740 / 0.765 |
+| GPU-s per item at δ = 0 / 0.3 / 1 | 0.052 / 0.087 / 0.155 | same |
+
+**Against the predictions (3 seeds).**
+| | prediction | result | verdict |
+|---|---|---|---|
+| H1 student + M3 ≥ midpoint of control + M3 and K10 + M3 | δ = 0.3: ≥ 0.621 | 0.589 at δ = 0.3; met at δ = 0 (0.580 ≥ 0.578), δ = 0.5 (0.616 ≥ 0.602) and δ = 1 (0.626 ≥ 0.617) | failed at the registered δ, held at higher deferral |
+| H2 routing | top prob 0.60–0.80; AUROC ≥ 0.70 | 0.581 (less confident than predicted); 0.683 (control 0.671) | direction held, both thresholds missed |
+| H3 single model | S2 −0.01 to +0.03; S1 +0.00 to +0.04 | S2 **+0.032 (3/3 up)**; S1 +0.007 | S2 at the top of the range; S1 held |
+
+**Screen decision (the registered rule):** at δ = 0.3, student + M3 beats control + M3 by +0.0151, against
+a threshold of ≥ +0.015. **This passes by a hair, so 7 more seeds (3–9) run.**
+- **Placement:** by the compute rule, on the lab server's GPU 0. It is free, and there is no time pressure
+  (~9 h). The GPU-1 slices are in use by a lab-mate.
+- **What already looks clear on 3 seeds (the cost story):**
+  - the distilled student alone (0.052 GPU-s per item) is close to the 10-seed M1 (0.598 at 0.522);
+  - student + M3 on every item (0.626 / 0.783 at 0.155 GPU-s) beats the 10-seed M1 alone at 3.4× less
+    cost.
+  - Whether it beats the undistilled K = 1 + M3 frontier reliably is what the 10 seeds decide.
+
+
+### E17 results *(10 seeds; all runs finished 2026-10-15 01:13, evaluation 01:16; free, lab server GPU 0)*
+
+Sources:
+- `raw/E17_m4_analysis.txt` (sections A–D) and `raw/E17_frontier_students.txt`;
+- runs `Q8_distill_a05/seed0–9` (HF, W&B group `Q8_distill_a05`);
+- the evaluation on W&B as `E17-results` (run 5gj2t9lt, with the frontier tables);
+- the student frontier in `runs/M3/frontier_Q8_distill_a05.json` (on HF under `M3/`).
+
+All 10 runs took 76 min each on GPU 0, with no failures; selected epochs 6–9. For the students' own
+candidates, M3 scored 185 new (dev item, top-4) pairs; the rest were reused.
+
+**A. Single models (dev, paired seeds).** Student S2 0.510–0.601, mean **0.573**. Control
+(`Q8_fullq_lora_12ep`) 0.436–0.570, mean 0.525.
+- S2: **+0.048, 9/10 seeds up**.
+- S1: 0.761 vs 0.729, **+0.031, 8/10 up**.
+- The student is also steadier: its worst seed is 0.510, against the control's 0.436.
+
+**B. Routing.**
+- Mean top probability 0.578 vs 0.839: far less overconfident.
+- The AUROC of 1 − top probability for errors is equal, 0.686 vs 0.686.
+
+**C/D. Systems with M3, against E16's undistilled frontier** (S2 = mean over the 10 single-seed systems,
+nested-CV split 0):
+
+| δ | student + M3 | undistilled K = 1 + M3 | Δ | K = 10 + M3 | student S1 | GPU-s per item |
+|---|---|---|---|---|---|---|
+| 0 (no LLM) | 0.570 ± 0.022 | 0.533 | +0.038 | 0.598 | 0.755 | 0.052 |
+| 0.1 | 0.571 | 0.544 | +0.027 | 0.597 | 0.762 | 0.063 |
+| 0.2 | 0.580 | 0.552 | +0.028 | 0.635 | 0.766 | 0.074 |
+| 0.3 | 0.591 ± 0.016 | 0.558 | +0.032 | 0.669 | 0.776 | 0.087 |
+| 0.5 | **0.608** ± 0.027 | 0.575 | +0.033 | 0.628 | **0.790** | **0.111** |
+| 1 | **0.612** ± 0.022 | 0.593 | +0.019 | 0.636 | **0.792** | **0.155** |
+
+- **Adoption rule (registered): met.** No undistilled (K, δ) point is both cheaper and at least as good as
+  any student + M3 point. The students dominate 25 of the 30 undistilled points.
+- **The combined accuracy-vs-cost front** is the six student + M3 points (0.052 → 0.155 GPU-s), followed
+  only by the 10-seed M1 + M3 at δ = 0.2 / 0.3 (0.545 / 0.558 GPU-s).
+
+**Against the predictions.**
+| | prediction | result (10 seeds) | verdict |
+|---|---|---|---|
+| H1 student + M3 ≥ midpoint of K1 + M3 and K10 + M3 | at δ = 0.3: ≥ 0.614 | 0.591; met at δ = 0 (0.570 ≥ 0.565) and δ = 0.5 (0.608 ≥ 0.602), missed at δ = 1 by 0.003 | failed at the registered δ |
+| H2 routing | top prob 0.60–0.80; AUROC ≥ 0.70 | 0.578; 0.686 (control 0.686) | failed: calibration is far better, but error ranking does not improve |
+| H3 single model | S2 −0.01 to +0.03; S1 +0.00 to +0.04 | S2 **+0.048 (9/10)**; S1 +0.031 (8/10) | S2 **exceeded**; S1 held |
+| adoption rule | student + M3 on the undistilled frontier | not dominated anywhere; dominates 25/30 | **adopted as the cost operating point** |
+
+**What the results say.**
+- **Distillation does what M4 was for: it makes the cascade cheap.**
+  - **Student + M3 at δ = 0.5:** S2 0.608 / S1 0.790 at 0.111 GPU-s per item. That beats the 10-seed M1
+    alone (0.598 / 0.743 at 0.522 GPU-s) at **4.7× less cost**.
+  - **At δ = 0.3 (0.087 GPU-s, 6× cheaper):** about level with it on S2 (0.591), and better on S1 (0.776).
+  - **At δ = 1:** 0.612 / 0.792 at 0.155 GPU-s. That is close to TeleAI's 0.617 / 0.812, with one 8B pass
+    and one 27B call per item.
+- **It also gives a better single model,** against the prediction: +0.048 S2 with no LLM at inference.
+  - Its gain over the undistilled single model (+0.038 at δ = 0, with the E4 rule) is as large as what M3
+    adds on top of the student (+0.021 / +0.038 / +0.042 at δ = 0.3 / 0.5 / 1). So the soft targets carry
+    a good part of the LLM's knowledge into the 8B model, and M3 still adds about as much again.
+  - It also removes the bad-seed tail: the student's worst seed is 0.510, the control's 0.436.
+- **Calibration improved, error ranking did not.** The student's confidence is honest (top probability
+  0.58 vs 0.84), but 1 − top probability ranks its errors no better (AUROC 0.686 for both). The routing
+  gain therefore comes from a better model behind the router, not from a better router.
+- **The accuracy point is unchanged.** The 10-seed M1 + M3 at δ = 0.3 (0.669) is still the most accurate
+  system. The final system has two operating points:
+  - **accuracy:** 10-seed M1 + M3, δ = 0.3;
+  - **cost:** the student + M3, δ = 0.5 (or δ = 0.3 for the cheapest point at about the 10-seed M1's level).
+
+**Cost.** Free: 10 × 76 min on the lab server's GPU 0, plus a few minutes of M3 scoring. No Jarvis credit
+was used; the balance is ₹4,001.81.
+
+
+---
+
+## E18 — Freeze: final numbers for both operating points, and ensembles of distilled students *(registered 2026-10-15)*
+
+*Written before any E18 computation.* The report, the slides and the submission files are left for later
+(the user, 2026-10-15).
+
+**Part A. Final numbers (CPU; no new model runs).** All computed from saved probabilities and M3 responses,
+with the code paths of E15–E17, by `preregistered_analyses/e18_final.py` into `raw/E18_final.txt`.
+- **Accuracy point** (10-seed M1 + M3, δ = 0.3), with the cost-point numbers next to it:
+  - S2 and S1 on nested-CV split 0 and the mean of 10 splits;
+  - the bootstrap against M1;
+  - S2 on the three 2-annotator reference sets, with the nested CV refitted on each (the test regime, as in
+    E14);
+  - per-class F1.
+- **Cost point** (student + M3, δ = 0.5): the same numbers per student, reported as mean ± sd over the 10
+  students, plus the paired difference to the undistilled K = 1 + M3 on the same seeds.
+- **Cost table:** GPU-s, LLM calls and tokens per item for M1 (10 seeds), the student alone, both operating
+  points and TeleAI's published figures.
+- **The accuracy-vs-cost frontier figure** (E16 + E17 + Part B), in the report's grayscale style:
+  `docs/figures/E18_frontier.{pdf,png}`.
+
+**Part B. Ensembles of distilled students (the one new measurement).**
+- **Why:** between the cost point (one student, 0.111 GPU-s) and the accuracy point (ten M1 seeds, 0.558
+  GPU-s) there is no measured middle option. The 10 students already exist, so ensembles of K students
+  need no training.
+- **Runs:** `python -m cascade.frontier` with `--run Q8_distill_a05 --ks 1,2,3,5,10`, i.e. the E16
+  procedure: 10 random subsets per K < 10 (seed 16), one for K = 10. M3 (local Qwen3.8-27B-FP8, k = 0, full
+  prompt) scores the new (dev item, top-4) pairs on GPU 0 (free, minutes).
+- **Hypotheses:**
+  - **H1:** students gain less from ensembling than M1 seeds do. Distillation has already removed much of
+    the seed-to-seed variance (their spread is 0.022 vs 0.047 for single M1 seeds). Predicted: student
+    K = 10 alone 0.59–0.62 (one student 0.570; M1 K = 1 → 10: +0.065).
+  - **H2:** student K = 3 + M3 at δ = 0.5 scores 0.61–0.64 at ≈ 0.22 GPU-s, and lies on the combined front.
+  - **H3:** student K = 10 + M3 at δ = 0.3 does not beat M1 K = 10 + M3 (0.669) by more than the noise
+    (±0.03).
+- **Decision rules:**
+  - A student-ensemble point that is on the combined front (no point both cheaper and better) is reported
+    as a **middle operating point**.
+  - The **accuracy point** changes to student K = 10 + M3 only if that system beats 0.669 at δ = 0.3 by
+    ≥ 0.02 (the same cost).
+
+**Cost.** Free: CPU, plus a few minutes of the lab server's GPU 0. Everything is logged to `logs/`, HF
+(`M3/`) and W&B (`E18-results`).
+
+
+### E18 results *(2026-10-15, 08:40–08:50; free: CPU plus ~1 min of the lab server's GPU 0)*
+
+Sources:
+- `raw/E18_final.txt` (Part A; `preregistered_analyses/e18_final.py`);
+- `raw/E18_frontier_student_ensembles.txt` and `runs/M3/frontier_Q8_distill_a05_ensembles.json` (Part B);
+- the figure `docs/figures/E18_frontier.{pdf,png}`;
+- W&B `E18-results` (run 0cdgfq61, with the figure and tables); HF `M3/`.
+- For Part B, M3 scored 18 new (dev item, top-4) pairs; 45 were reused.
+- One code change: `cascade.frontier analyse --out`, so that E18 writes its own file and E17's
+  `frontier_Q8_distill_a05.json` stays as E17 used it.
+
+**Part A. Final dev numbers for both operating points.**
+
+| | M1, 10 seeds | **accuracy point**: M1 × 10 + M3, δ = 0.3 | student alone (10 students) | **cost point**: student + M3, δ = 0.5 (10 students) | TeleAI |
+|---|---|---|---|---|---|
+| S2, split 0 / 10 splits | 0.598 / 0.601 | **0.669 / 0.660** | 0.570 ± 0.022 | **0.608 ± 0.027 / 0.610 ± 0.023** | 0.617 |
+| S1 | 0.743 | **0.798** | 0.755 ± 0.017 | **0.790 ± 0.019** | 0.812 |
+| 2-annotator S2 (test regime) | 0.549 | **0.589** (0.538 / 0.635 / 0.593) | 0.536 ± 0.021 | **0.567 ± 0.024** | — |
+| in-set rate | 0.623 | 0.701 | 0.620 | 0.658 | — |
+| LLM calls per item | 0 | 0.36 | 0 | 0.57 | 1.94 |
+| GPU-s per item (vs M1) | 0.522 (1×) | 0.558 (1.07×) | 0.052 (0.10×) | **0.111 (0.21×)** | n/a |
+| input / output tokens per item | 4,894 / 0 | 5,284 / 0.36 | 489 / 0 | 1,117 / 0.57 | ~7,300 / ~380 |
+
+- **The accuracy point over M1:** +0.067, 95% [+0.009, +0.124], bootstrap over items.
+- **The cost point over the undistilled single model + M3, same seeds, paired over the 10 seeds:**
+  - S2 +0.033 (8/10), and +0.036 over 10 splits (7/10);
+  - S1 +0.035 (9/10);
+  - 2-annotator S2 +0.036 (7/10).
+- **Per-class F1:**
+  - **Accuracy point vs M1:** it gains on 7 of 9 classes (Partial +0.169, Declining +0.131, Dodging
+    +0.125), loses on Claims ignorance (−0.031), and Clarification is unchanged.
+  - **Cost point:** it is close to M1 on most classes, and better on Explicit (0.743 vs 0.667), General
+    (0.498 vs 0.420) and Declining (0.731 vs 0.688). It is weaker on Partial/half-answer (0.170 vs 0.231)
+    and Implicit (0.545 vs 0.575).
+
+**Part B. Ensembles of distilled students** (dev S2, mean over 10 random subsets per K; split 0):
+
+| K students | alone | + M3, δ = 0.3 | + M3, δ = 0.5 | + M3, δ = 1 | GPU-s at δ = 0.5 |
+|---|---|---|---|---|---|
+| 1 | 0.570 | 0.591 | **0.608** | 0.612 | 0.111 |
+| 2 | 0.591 | 0.596 | 0.603 | 0.596 | 0.164 |
+| 3 | 0.582 | 0.592 | 0.600 | 0.607 | 0.217 |
+| 5 | 0.587 | 0.596 | 0.601 | 0.603 | 0.322 |
+| 10 | 0.575 | 0.595 | 0.630 | 0.618 | 0.583 |
+
+**Against the predictions.**
+| | prediction | result | verdict |
+|---|---|---|---|
+| H1 students gain less from ensembling; student K = 10 alone 0.59–0.62 | | K = 1 → 2 / 3 / 5 / 10: +0.021 / +0.012 / +0.017 / +0.005 (M1 seeds: +0.065 for K = 1 → 10); K = 10 alone 0.575 | direction **held, strongly**; range failed (0.575) |
+| H2 student K = 3 + M3, δ = 0.5: 0.61–0.64, on the combined front | | 0.600; dominated by one student + M3 | failed |
+| H3 student K = 10 + M3, δ = 0.3 does not beat M1 K = 10 + M3 (0.669) by more than ±0.03 | | 0.595 | held |
+
+**Decisions, by the registered rules.**
+- **No middle operating point.** No student-ensemble point lies on the combined front:
+  - with K = 2–5, they cost more than one student + M3 and are no better;
+  - 10 students + M3 at δ = 0.5 (0.630 at 0.583 GPU-s) is dominated by M1 × 10 + M3 at δ = 0.3 (0.669 at
+    0.558).
+- **The accuracy point stays M1 × 10 + M3 at δ = 0.3.**
+- **The frozen system therefore has two operating points:**
+  - **accuracy:** M1 × 10 + M3, δ = 0.3;
+  - **cost:** one student + M3, δ = 0.5.
+
+**What the results say.**
+- **Distillation removes the diversity that ensembling feeds on.** All ten students are trained to match
+  the same soft targets, so they make nearly the same predictions. Averaging them adds little (≤ +0.02),
+  while averaging ten independently trained M1 seeds adds +0.065. One student keeps most of what a student
+  ensemble offers, which is why the single student is the efficient point.
+- **For more accuracy, use diverse members:** the independently trained M1 seeds with M3 (the accuracy
+  point), at about 5× the cost of the cost point.
+- **In the test regime (2-annotator reference sets):**
+  - the accuracy point scores 0.589 (M1 alone 0.549);
+  - the cost point scores 0.567 ± 0.024.
+  - Both rankings agree with the 3-annotator numbers.
+
+**Cost.** Free.
 
 ---
 

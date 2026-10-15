@@ -11,6 +11,16 @@ chooses among M1's top four labels for the 30% least confident items, and its ch
 This gives **dev S2 0.669 / S1 0.798 at 0.36 LLM calls per item**, +0.067 [+0.009, +0.124] over M1; TeleAI
 scores 0.617 / 0.812 at 1.94 calls. These numbers were corrected on 2026-10-14 for a fusion bug; see E15 in
 the log.
+E16 (2026-10-14) puts this number in context. Averaged over random seed subsets, M3 adds +0.02 to +0.03
+at every smaller ensemble size, so the 10-seed point (+0.067) is probably optimistic. M3 also lets one seed
+replace ten: 1 seed + M3 on every item scores 0.593 / 0.774 at 0.155 GPU-s per item, against 0.598 / 0.743
+for the 10-seed M1 alone at 0.52 GPU-s.
+The third, **M4 (E17, distillation), is done.** One Qwen3-8B student is trained on soft targets from M3, in place
+of 10 seeds. On its own it scores dev S2 0.573 (+0.048 over a single M1 seed, 9/10 seeds). With M3 at δ = 0.5 it
+reaches **0.608 / 0.790 at 0.111 GPU-s per item**: better than the 10-seed M1 alone, at 4.7× less cost. The system
+has two operating points: accuracy (10-seed M1 + M3) and cost (student + M3).
+Final numbers (E18): accuracy point S2 0.669 / S1 0.798 / 2-annotator 0.589; cost point 0.608 / 0.790 / 0.567
+at 0.21× the GPU cost of the 10-seed M1. Figure: `docs/figures/E18_frontier.pdf`.
 
 **Knowledge over Structure: A Controlled Study of Response Clarity Classification in Political Interviews**
 
@@ -245,6 +255,10 @@ Every path is defined once, in `code/qevasion/paths.py`. `CLARITY_RUNS` moves `r
 | `adjudicate.py` | Module M3: scores M1's top-4 candidates with an LLM (local vLLM or the JarvisLabs Model API), one request and one output token per item; resumable, never pays twice. Output: `runs/M3/<tag>/responses.jsonl` |
 | `api_budget.py`, `api_probe.py` | API prices and the spend ledger with E15's hard cap; the probe of what the API returns |
 | `fuse.py` | Fuses q with M1 over C(x), defers by confidence (the M2 curve), and scores the screen, the slice and the dev system |
+| `frontier.py` | E16: the accuracy-vs-cost frontier over seed subsets (K) × deferral rate (δ), for M1 or the E17 students |
+| `cost.py` | E16: measured GPU-seconds per item of an M1 seed (HF) and an M3 call (vLLM), written to `runs/M3/cost.json` |
+| `distill_targets.py` | E17 (M4): soft targets (1 − α)·gold + α·q from M3, for `llm_classifier --soft-targets` |
+| `publish.py` | Uploads non-training outputs (`runs/M3`, `runs/M4`) to HF and logs each experiment's results to W&B |
 | `candidates.py` | Module M1. From a seed ensemble's saved probabilities it builds candidate sets C(x) (adaptive, rank-conformal or fixed top-k, calibrated on the train slice after temperature scaling) and an uncertainty score u(x) (logistic regression on the slice), for slice, dev, test and the cross-fitted train rows. Output: `runs/M1/<config>_<method>_a<alpha>/` |
 
 ### `code/figures/`
@@ -272,6 +286,7 @@ Every path is defined once, in `code/qevasion/paths.py`. `CLARITY_RUNS` moves `r
 | `gpu_watch.sh` | Lab server: orchestrates an experiment from tmux. It finishes the model download, starts the lanes, and adds or removes a lane on our GPU-1 MIG slice when it is free or another user needs it (`start`, `status`, `release`, `allow`) |
 | `run_queue.sh` | Lab server: runs one lane's list of runs in order. It skips finished runs, resumes interrupted ones, uploads each finished run to HF, and guards GPU memory on the shared card (falls back to gradient checkpointing). Usage is in the file header and `docs/05_phase2_plan_and_budget.md` §5 |
 | `m3_local.sh`, `download_model.sh` | Lab server: E15's local LLM arms on GPU 0 (vLLM venv), and resumable model downloads |
+| `e16_gpu.sh`, `e17_post.sh` | Lab server: E16's GPU steps (M3 scoring, prompt ablation, cost timing), and E17's evaluation of the distilled students once they finish (M3 on their candidates, frontier, analysis, HF/W&B publishing) |
 | `jarvis_drive.sh` | Runs on a local machine. It packages the code, copies it to a rented GPU instance, starts training there inside tmux, copies logs and results back every 5 minutes, and pauses the instance when done |
 | `jarvis_setup.sh` | Runs on the instance. It creates the Python environment, downloads the model, runs a smoke test (including resume) and a timing pilot, then trains each seed and uploads the results |
 
@@ -335,6 +350,8 @@ adjustment, and the final DeBERTa system (`FINAL_fullq_16ep_10seed_logitadj`). E
 | Qwen3-8B-Base + LoRA, 12 epochs, single model (mean of 10 seeds; E14, after the mid-evaluation) | 0.525 ± 0.042 | 0.729 |
 | **Qwen3-8B-Base + LoRA, 12 epochs, 10-seed system (E14 = cascade module M1)** | **0.598** | **0.743** |
 | **M1 + M3: Qwen3.8-27B-FP8 over M1's top 4, fused, 30% deferred (0.36 calls/item; E15)** | **0.669** (10 CV splits 0.660) | **0.798** |
+| M4 student, single model (one Qwen3-8B on soft targets; mean of 10 seeds; E17) | 0.573 | 0.761 |
+| **Cost operating point: M4 student + M3, δ = 0.5 (0.57 calls, 0.111 GPU-s/item; E17)** | **0.608** | **0.790** |
 | TeleAI (1st place), multi-call DeepSeek-V3 pipeline | 0.617 | 0.812 |
 | Human annotator scored against the other two | 0.684 | — |
 

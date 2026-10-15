@@ -270,3 +270,42 @@ Sources, all in `docs/raw/`, regenerated from the saved responses in `runs/M3/<t
 | cost: local GPU time per LLM call; prompt tokens | 0.155 GPU-s; ~1.2k in, 1 out | `E15_screen_local_k.txt`, `runs/M3/qwen38_27b_k0` |
 | API spend for all of E15 | $0.262 | `runs/M3/api_ledger.jsonl` |
 
+## 12. Phase 2: M2 completion (E16) and M4 distillation (E17), done 2026-10-14/15
+
+Sources, in `docs/raw/` unless marked:
+- `E16_prompt_ablation_screen.txt`, `E16_dev_qwen38_27b_k0_<variant>.txt` (prompt ablation);
+- `runs/M3/cost.json` (cost);
+- `E16_frontier.txt` (`python -m cascade.frontier analyse`);
+- `E17_m4_analysis.txt` (`python -m preregistered_analyses.e17_m4_analysis`);
+- `E17_frontier_students.txt` (`python -m cascade.frontier analyse --run Q8_distill_a05 --ks 1`);
+- the 3-seed screen versions are `*_screen_seeds012.txt`.
+
+| Number | Value | Source |
+|---|---|---|
+| dev S2 at δ = 0.3, 10 splits: full / no guide / no definitions / bare prompt | 0.660 / 0.637 / 0.628 / 0.617 | `E16_dev_*`, `E15_dev_qwen38_27b_k0.txt` |
+| GPU-s per item: M1 seed / M3 call (lab card, GPU 0 alone) | 0.052 / 0.103 | `runs/M3/cost.json` |
+| frontier, S2 at δ = 0 / 0.3 / 1 for K = 1 (mean of 10 subsets) | 0.533 / 0.558 / 0.593 | `E16_frontier.txt` |
+| frontier, S2 at δ = 0.3 for K = 2 / 3 / 5 | 0.579 / 0.583 / 0.594 | same |
+| student single model S2 / S1 (10 seeds) vs control | 0.573 / 0.761 vs 0.525 / 0.729; +0.048 (9/10 up) | `E17_m4_analysis.txt` A |
+| student mean top probability; AUROC | 0.578 (control 0.839); 0.686 (0.686) | same, B |
+| student + M3, S2 at δ = 0 / 0.3 / 0.5 / 1 | 0.570 / 0.591 / **0.608** / 0.612 | same, C–D |
+| student + M3, S1 at δ = 0.5; GPU-s per item | **0.790**; 0.111 | same, D |
+| undistilled points dominated by a student point | 25 of 30 | same, D |
+
+## 13. Freeze: final numbers for both operating points (E18, done 2026-10-15)
+
+Sources:
+- `raw/E18_final.txt`, written by `python -m preregistered_analyses.e18_final` (CPU, ~2 min);
+- `raw/E18_frontier_student_ensembles.txt`, written by
+  `python -m cascade.frontier analyse --run Q8_distill_a05 --ks 1,2,3,5,10 --out _ensembles`;
+- the figure `docs/figures/E18_frontier.{pdf,png}`.
+
+| Number | Value | Section of `E18_final.txt` |
+|---|---|---|
+| accuracy point S2 split 0 / 10 splits / S1 / 2-annotator | 0.669 / 0.660 / 0.798 / 0.589 | 1 |
+| cost point S2 split 0 / 10 splits / S1 / 2-annotator (mean ± sd, 10 students) | 0.608 ± 0.027 / 0.610 ± 0.023 / 0.790 ± 0.019 / 0.567 ± 0.024 | 2 |
+| cost point minus undistilled single model + M3, paired over seeds (S2, S1) | +0.033 (8/10), +0.035 (9/10) | 2 |
+| GPU-s per item: M1 × 10 / accuracy point / student / cost point | 0.522 / 0.558 / 0.052 / 0.111 | 4 |
+| input tokens per item: M1 × 10 / accuracy point / cost point / TeleAI | 4,894 / 5,284 / 1,117 / ~7,300 | 4 |
+| student ensembles, S2 alone for K = 1 / 2 / 3 / 5 / 10 | 0.570 / 0.591 / 0.582 / 0.587 / 0.575 | `E18_frontier_student_ensembles.txt` |
+

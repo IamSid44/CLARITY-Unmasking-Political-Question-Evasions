@@ -1,0 +1,26 @@
+E17 (M4) analysis -- student Q8_distill_a05, control Q8_fullq_lora_12ep, paired seeds [0, 1, 2]
+
+A. Single models, dev, paired seeds (argmax of each model's own probabilities)
+
+   seed student S2 control S2       Δ   student S1 control S1       Δ
+      0      0.557      0.531  +0.026        0.748      0.751  -0.003
+      1      0.596      0.560  +0.036        0.759      0.740  +0.019
+      2      0.572      0.539  +0.033        0.740      0.735  +0.004
+   mean Δ S2 +0.032 (3/3 up), Δ S1 +0.007 (2/3 up)
+
+B. Routing: confidence and how well 1 - top probability flags the argmax's errors (dev, any reference)
+
+   Q8_distill_a05       mean top probability 0.581; AUROC 0.683 (per seed 0.692, 0.684, 0.674)
+   Q8_fullq_lora_12ep   mean top probability 0.873; AUROC 0.671 (per seed 0.661, 0.659, 0.693)
+
+C. Systems with M3 (cascade.frontier; dev S2, nested-CV split 0; K = 1 = one model's own top 4 and routing)
+
+      δ student+M3 control+M3       Δ  K10+M3 midpoint   student S1 control S1   GPU-s/item (student, K10)
+    0.0      0.580      0.557  +0.023   0.598    0.578        0.749      0.744   0.052, 0.522
+    0.1      0.581      0.564  +0.017   0.597    0.581        0.757      0.753   0.063, 0.533
+    0.2      0.586      0.565  +0.021   0.635    0.600        0.754      0.744   0.076, 0.545
+    0.3      0.589      0.574  +0.015   0.669    0.621        0.765      0.740   0.087, 0.558
+    0.5      0.616      0.576  +0.039   0.628    0.602        0.768      0.750   0.113, 0.588
+    1.0      0.626      0.597  +0.030   0.636    0.617        0.783      0.765   0.155, 0.624
+
+   Screen rule at δ = 0.3: student + M3 beats control + M3 by +0.015 (needs ≥ +0.015) and reaches the midpoint: False  ->  run 7 more seeds
