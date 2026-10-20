@@ -1232,7 +1232,7 @@ about, choosing among M1's top four labels, and its choice is fused with M1's pr
   - **accuracy:** 10-seed M1 + M3, δ = 0.3;
   - **cost:** student + M3, δ = 0.5.
 
-**Next steps, in order (plan at the mid-evaluation)** (the timeline in the Conclusion of `Report/Report.pdf`):
+**Next steps, in order (plan at the mid-evaluation)** (the timeline in the Conclusion of `report/mid_evaluation_report.pdf`):
 1. **12 epochs at 10 seeds** → the new single-pass system. Then all of train with 12 epochs, as
    its own test.
 2. **Cascade, the label-meaning test.** Uncertain items, with Qwen's top-k, go to a larger open

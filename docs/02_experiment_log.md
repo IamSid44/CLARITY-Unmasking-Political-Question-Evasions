@@ -1689,7 +1689,7 @@ interrupted epoch resumed from its checkpoint. Outputs follow `encoder.py`'s lay
    If it passes, extend to seeds 3–9 and compare 10-seed systems as in E11.
 2. **Size:** if knowledge is the gap, S2 single-model mean 0.43–0.50 (+0.05 to +0.12) and S1
    +0.02 to +0.05. A gain below +0.015 is read as: knowledge is not what the encoder lacks, and
-   the budget moves to the LLM-over-candidates cascade (the timeline in the Conclusion of `Report/Report.pdf`).
+   the budget moves to the LLM-over-candidates cascade (the timeline in the Conclusion of `report/mid_evaluation_report.pdf`).
 3. **Where:** the gain falls mostly on the commitment boundary (Explicit ↔ Implicit, General ↔
    Implicit/Explicit), the largest error pairs in the mid-eval analysis. It falls more on items
    annotators agreed on than on contested ones.

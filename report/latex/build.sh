@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Build the paper (MiKTeX or TeX Live): pdflatex -> bibtex -> pdflatex x2, then a log summary.
-#   bash Report/latex/build.sh     -> Report/latex/main.pdf (copy it to Report/Report.pdf to publish)
+#   bash report/latex/build.sh     -> report/latex/main.pdf (copy it to report/mid_evaluation_report.pdf to publish)
 set -u
 cd "$(dirname "$0")"
 J=${1:-main}

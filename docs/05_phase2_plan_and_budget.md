@@ -1,7 +1,7 @@
 # 05 — Phase 2: from the mid-evaluation to the final evaluation
 
 This document is the working plan after the mid-evaluation (submitted 2026-10-02 with
-`Report/Report.pdf`; slides `Slides/CLARITY_mideval.pptx`). It covers four things:
+`report/mid_evaluation_report.pdf`; slides `report/mid_evaluation_slides.pdf`). It covers four things:
 - what we are building, and why;
 - the protocol every experiment follows;
 - the compute budget and how it has been spent;
