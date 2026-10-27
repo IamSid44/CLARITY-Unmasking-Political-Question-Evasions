@@ -1,0 +1,8 @@
+2026-10-13 23:33:24 start qwen38_27b_k0 (k=0, screen)
+2026-10-13 23:35:11 done qwen38_27b_k0
+2026-10-13 23:35:11 start qwen38_27b_k4 (k=4, screen)
+2026-10-13 23:38:35 done qwen38_27b_k4
+2026-10-13 23:38:35 start qwen38_27b_k10 (k=10, screen)
+2026-10-13 23:44:12 done qwen38_27b_k10
+2026-10-13 23:46:40 start qwen38_27b_k0 (k=0, slice,dev,test,train50)
+2026-10-13 23:53:44 done qwen38_27b_k0

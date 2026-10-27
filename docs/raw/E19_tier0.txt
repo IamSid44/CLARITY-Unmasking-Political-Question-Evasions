@@ -1,0 +1,378 @@
+E19, Tier 0: CPU-only analyses of the E18 systems (dev = the 308-item QEvasion test split, 3 annotators;
+S2 = multi-reference macro-F1, S1 = clarity macro-F1). M1 = 10-seed Q8_fullq_lora_12ep; M3 = Qwen3.8-27B-FP8,
+k = 0 (tag qwen38_27b_k0); students = Q8_distill_a05; M3 candidates = each record's `cand` (the top 4 of the
+calibrated q).
+
+==============================================================================================================
+A. Headline re-statement (dev, 308 items): split 0, 10 nested-CV splits, and a bootstrap that refits
+==============================================================================================================
+
+   check: e19_lib's vectorised refit reproduces cascade.fuse.fit_system's split-0 predictions exactly
+
+   1. Point estimates. 'split 0' = the E18 numbers; '10 splits' = mean ± sd over nested-CV splits 0-9;
+      students: mean over the 10 students of each quantity (± sd over students in brackets for split 0).
+
+   system                                S2 sp0    S2 10 splits  S1 sp0    S1 10 splits  in-set  calls
+   M1, 10 seeds                           0.598    0.601 ± 0.013   0.743    0.741 ± 0.011   0.623  0.000
+   accuracy point: M1 + M3, δ = 0.3       0.669    0.660 ± 0.013   0.798    0.795 ± 0.008   0.701  0.357
+   student alone (10 students)            0.570    0.572 ± 0.010   0.755    0.756 ± 0.008   0.620  0.000 (± 0.022 over students)
+   cost point: student + M3, δ = 0.5      0.608    0.610 ± 0.014   0.790    0.786 ± 0.010   0.658  0.574 (± 0.027 over students)
+
+   Δ vs M1 (point differences)        S2 sp0   S2 10sp   S1 sp0   S1 10sp
+   accuracy point                      +0.071    +0.060   +0.055    +0.054
+   student alone                       -0.028    -0.029   +0.012    +0.015
+   cost point                          +0.010    +0.009   +0.047    +0.045
+   (the sd over splits is the spread from the CV fold assignment alone: same data, same models)
+
+   2. Paired bootstrap over items, 2000 replicates (328 s CPU).
+      'conditional' = E18's: split-0 held-out predictions fixed, items resampled.
+      'refit' = each replicate resamples items, assigns 5 CV folds over its DISTINCT items (a repeated item
+      never straddles a split), and refits M1's tau and the fused (lam, tau) inside every fold; the deferral
+      set is fixed by the slice threshold, so it needs no refit. Cost point: replicate b uses student b mod 10.
+
+   contrast                        conditional: mean [95% CI]  P(<=0)            refit: mean [95% CI]  P(<=0)
+   acc-M1 S2                          +0.067 [+0.009, +0.124]   0.013         +0.037 [-0.044, +0.120]   0.199
+   acc-M1 S1                          +0.055 [+0.004, +0.109]   0.021         +0.042 [-0.011, +0.100]   0.062
+   cost-M1 S2                         +0.008 [-0.074, +0.089]   0.411         +0.007 [-0.088, +0.123]   0.478
+   cost-M1 S1                         +0.046 [-0.022, +0.112]   0.094         +0.040 [-0.034, +0.114]   0.138
+   cost-student S2                    +0.037 [-0.040, +0.111]   0.170         +0.031 [-0.053, +0.126]   0.231
+
+   Refit bootstrap, each system's own score (mean [95% CI]; the bootstrap mean sits below the point estimate
+   because a resample has ~63% distinct items, so each fold is fitted on fewer distinct items):
+   M1         S2 0.586 [0.477, 0.659]   S1 0.742 [0.670, 0.810]
+   acc        S2 0.623 [0.515, 0.714]   S1 0.784 [0.709, 0.849]
+   student    S2 0.561 [0.463, 0.651]   S1 0.753 [0.673, 0.821]
+   cost       S2 0.593 [0.504, 0.680]   S1 0.782 [0.707, 0.846]
+
+==============================================================================================================
+B. Cost: M3's GPU-seconds per call, the E18 cost table recomputed, tokens, training cost
+==============================================================================================================
+
+   1. M3 (Qwen3.8-27B-FP8, vLLM, k = 0) records by frame / split. gpu_sec = the batch's wall time / items.
+      Copied records reuse an earlier identical request and carry ITS gpu_sec; frontier records re-score
+      dev items already scored with other candidates, so vLLM's prefix cache serves the shared item text.
+
+   frame split      copied     n  GPU-s/call  prompt tok
+   dev   dev         False   308      0.1510        1114
+   dev   frontier    False  1668      0.0874        1081
+   dev   frontier     True  1045      0.1183        1104
+   test  test        False   237      0.1435         856
+   train screen      False   300      0.1552        1145
+   train slice       False   345      0.1548        1129
+   train train50     False  1424      0.1608        1142
+   train train50      True   300      0.1552        1145
+   train trainall    False  1685      0.1369        1019
+   train trainall     True  1763      0.1597        1142
+
+   cost.json m3_call_gpu_s = 0.1028 (mean over all dev-frame records when cost.py ran;
+   now 0.1046 over 3021). Corrected: frame = split = dev, one pass over the 308 distinct items,
+   no prefix reuse: 0.1510 GPU-s/call (1.47x), 1114 prompt tokens (cost.json: 1094).
+   M1 seed: 0.0522 GPU-s/item, 489 tokens/item (cost.json; bf16, batch 16, GPU 0 alone).
+
+   2. The E18 cost table with the corrected M3 call (GPU-s per dev item; tokens per item)
+
+   system                                calls  GPU-s E18   x M1  GPU-s E19   x M1  in tokens   out
+   M1, 10 seeds                          0.000      0.522  1.00x      0.522  1.00x       4894  0.00
+   accuracy point: M1 + M3, δ = 0.3      0.357      0.558  1.07x      0.576  1.10x       5292  0.36
+   student alone (mean of 10)            0.000      0.052  0.10x      0.052  0.10x        489  0.00
+   cost point: student + M3, δ = 0.5     0.574      0.111  0.21x      0.139  0.27x       1129  0.57
+   The cost point's ratio moves from 0.21x to the E19 value above; the accuracy point's overhead over M1 from
+   +7% to the E19 value. The M3 call is the same prompt whatever the candidates (only the four option names
+   change), so one per-call cost applies to the student's candidates too.
+   On the official test set (shorter answers): 0.1435 GPU-s/call, 856 prompt tokens (n = 237).
+
+   3. One-off training / labelling cost (GPU-hours). 'recorded' = wall_minutes in metrics.json, which
+      includes contention (GPU 0 time-shared with lab-mates for E14 seeds 4-6, cross-fit folds) and
+      per-epoch dev/test inference; 'uncontended' = 75 min per 12-epoch run on 3,103 rows (E14 seeds 7, 8
+      on GPU 0 alone, and every student), scaled by training rows for the cross-fit folds (2,758 rows).
+      E13 seeds 0-2 ran on JarvisLabs RTX PRO 6000s (same GPU model).
+
+   component                                         recorded  uncontended
+   M1: 10 seeds x 12 epochs                             16.44        12.50
+   cross-fit: 5 folds x 12 epochs                       15.50         5.56
+   M3 relabelling of train (3409 calls)                  0.14         0.14
+   one student x 12 epochs (mean)                        1.27         1.25
+   10 students x 12 epochs                              12.67        12.50
+   M3 on dev, to fit (lam, tau) (308 calls)              0.01         0.01
+   M3 on the slice (E15 confirmation, 345 calls)         0.01         0.01
+
+   Per system (uncontended; M3 itself is an off-the-shelf model, so no M3 training):
+     M1 alone        : 10 M1 seeds                                    =  12.50 GPU-h
+     accuracy point  : 10 M1 seeds + M3 on dev                        =  12.51 GPU-h
+     cost point      : cross-fit + M3 relabel + 1 student + M3 on dev =   6.96 GPU-h   (the reported mean over 10 students trained 10: 18.21)
+
+   Amortised GPU-s per item = training / items served + inference per item:
+     items served          M1   acc point  cost point   cost/M1
+              237     190.395     190.645     105.840     0.56x
+            1,000      45.522      45.622      25.190     0.55x
+           10,000       5.022       5.080       2.644     0.53x
+          100,000       0.972       1.026       0.389     0.40x
+        1,000,000       0.567       0.621       0.164     0.29x
+   The cost point needs less one-off GPU time than M1's 10 seeds (7.0 vs 12.5 GPU-h) and
+   less per item, so it is cheaper at every volume; if all 10 students are counted (as in the E18 mean),
+   it overtakes M1 after ~53,692 items. Strictly, the cost point's cross-fitted candidates were
+   ranked with the 10-seed slice calibration (tau_C); refitting that on the student's own slice probabilities
+   costs nothing extra.
+
+==============================================================================================================
+C. The cascade on the cross-fitted train rows (n = 3,448, one gold label each)
+==============================================================================================================
+
+   M3 records: every row matched on its cross-fitted top 4 ({'screen': 300, 'slice': 90, 'train50': 1373, 'trainall': 1685}; copies dropped when an
+   original exists; the slice split's own records use the 10-seed candidates and are used only where
+   they coincide). Gold in top 4: 0.844.
+
+   δ = fraction deferred, by train's own quantile of u = 1 - top q (so the realised rate is exactly δ).
+   (lam, tau) and M1's tau fitted by 5-fold CV within train (macro-F1); CIs: 2,000 bootstrap draws of rows.
+
+   system                               macro-F1 [95% CI]         Δ vs M1+LA [95% CI]       accuracy [95% CI]    Δ acc  lam, tau (all train)
+   M1 argmax p-bar (no tau)        0.490 [0.470, 0.508]      +0.006 [+0.003, +0.010]   0.506 [0.489, 0.521]   +0.005
+   M1 + logit adj. (tau by CV)     0.484 [0.464, 0.502]      +0.000 [+0.000, +0.000]   0.501 [0.485, 0.516]   +0.000
+   M3 alone within C(x)            0.453 [0.432, 0.473]      -0.031 [-0.053, -0.009]   0.479 [0.462, 0.494]   -0.022
+   cascade δ = 0.1                 0.495 [0.475, 0.512]      +0.011 [+0.003, +0.018]   0.511 [0.494, 0.527]   +0.010  0.20, -0.40
+   cascade δ = 0.2                 0.497 [0.477, 0.515]      +0.014 [+0.005, +0.023]   0.515 [0.499, 0.531]   +0.014  0.20, +0.65
+   cascade δ = 0.3                 0.498 [0.477, 0.516]      +0.014 [+0.002, +0.026]   0.515 [0.498, 0.531]   +0.015  0.40, +0.55
+   cascade δ = 0.5                 0.503 [0.482, 0.522]      +0.019 [+0.004, +0.034]   0.523 [0.506, 0.538]   +0.022  0.20, -0.35
+   cascade δ = 1.0                 0.492 [0.471, 0.511]      +0.008 [-0.003, +0.020]   0.514 [0.497, 0.530]   +0.013  0.30, +0.15
+
+   For reference, the dev threshold (slice quantile of the 10-seed u) would defer 0.00 at δ = 0.1, 0.03 at δ = 0.3, 0.10 at δ = 0.5 of train rows: the single cross-fitted
+   model is less confident than the 10-seed ensemble.
+   Caveats: (1) train_pbar is ONE cross-fitted model per fold (5 folds), not the 10-seed ensemble, so M1 is
+   weaker and less calibrated here than on dev; (2) the calibration (tau_C, T) and the uncertainty model were
+   fitted on the 345-row slice, which is part of these rows; (3) M3's confusion guide was written from
+   deferred cross-fitted train rows (E15), so M3 is not blind to this population; (4) one gold label per
+   row: macro-F1 here is single-label, not the dev multi-reference score.
+
+==============================================================================================================
+D. Value map: M3 vs M1 (argmax p-bar, no tau) by M1-uncertainty fifth, Q1 = most confident
+==============================================================================================================
+
+   fixes = M3 right and M1 wrong; breaks = the reverse; net = fixes - breaks (95% CI: 2,000 bootstrap draws
+   of the fifth's items). M3 = argmax of q over M1's top 4 (no fusion), so this is M3's raw value.
+
+   Train (cross-fitted, n = 3,448, correct = the gold label; u = 1 - top q of the cross-fitted model):
+   fifth      n         u range  M1 ok  M3 ok  fixes breaks   net      net 95% CI
+   Q1       690       0.00-0.01  0.784  0.725     24     65   -41      [-59, -24]
+   Q2       690       0.01-0.06  0.622  0.512     51    127   -76     [-101, -51]
+   Q3       690       0.06-0.21  0.457  0.439    107    119   -12      [-41, +18]
+   Q4       689       0.21-0.43  0.366  0.373    123    118    +5      [-26, +36]
+   Q5       689       0.43-0.79  0.299  0.344    136    105   +31       [+2, +61]
+   deciles of net: [-11, -30, -53, -23, -17, 5, 3, 2, 8, 23]
+   δ* (best fraction to defer, least confident first): 0.50 (net +41); bootstrap 95% [0.07, 0.60]
+
+   Dev (n = 308, correct = in the reference set), u = 1 - top q (the routing signal):
+   fifth      n         u range  M1 ok  M3 ok  fixes breaks   net      net 95% CI
+   Q1        62       0.04-0.40  0.887  0.839      2      5    -3        [-8, +2]
+   Q2        62       0.41-0.55  0.774  0.710      4      8    -4       [-11, +3]
+   Q3        62       0.55-0.62  0.581  0.548     10     12    -2       [-11, +7]
+   Q4        61       0.62-0.68  0.475  0.590     14      7    +7       [-2, +16]
+   Q5        61       0.68-0.81  0.410  0.525     18     11    +7       [-3, +18]
+   deciles of net: [0, -3, 1, -5, -1, -1, 3, 3, 8, 0]
+   δ* = 0.44 (net +15); bootstrap 95% [0.21, 0.80]
+
+   Dev (n = 308, correct = in the reference set), u = logistic error model (dev_u in cascade_inputs.npz):
+   fifth      n         u range  M1 ok  M3 ok  fixes breaks   net      net 95% CI
+   Q1        62       0.05-0.38  0.903  0.839      1      5    -4        [-9, +1]
+   Q2        62       0.38-0.54  0.742  0.742      6      6    +0        [-7, +7]
+   Q3        62       0.54-0.59  0.565  0.452      8     15    -7       [-16, +3]
+   Q4        61       0.59-0.64  0.508  0.639     15      7    +8       [-1, +17]
+   Q5        61       0.64-0.75  0.410  0.541     18     10    +8       [-1, +18]
+   deciles of net: [0, -4, 2, -2, -5, -2, 4, 5, 2, 5]
+   δ* = 0.40 (net +16); bootstrap 95% [0.13, 0.81]
+
+   The preliminary numbers (train -41/-76/-11/+4/+31, dev -4/0/-7/+8/+8) are reproduced up to the train
+   record choice (here: the record whose candidates are the row's cross-fitted top 4) and, on dev, with the
+   logistic u; with the routing signal itself the dev fifths are as in the first dev table.
+
+==============================================================================================================
+E. Routing and fusion ablations on dev (10-seed M1 + M3; nested CV split 0 unless stated)
+==============================================================================================================
+
+   1. Routing at matched budget k = the number of items the slice threshold defers at δ (confidence routing's
+      realised count). Random: 200 draws (seeds 0-199), mean ± sd, and the share of draws >= confidence.
+      Gold-informed: defer first the items M3 alone fixes (M1's split-0 system wrong, M3's argmax right),
+      then those both get right, then those both get wrong, last those M3 breaks. It uses the gold labels
+      (a reference, not a system); with (lam, tau) refitted it is not a strict upper bound.
+      '10sp' = mean of 10 nested-CV splits; random and gold-informed: split 0.
+
+   δ = 0.1 (k = 34, 0.110 of dev)
+      routing                                S2  S2 10sp  in-set     S1
+      confidence 1 - top q (E15)          0.597    0.602   0.630  0.762
+      margin (low first)                  0.584    0.585   0.617  0.734
+      entropy (high first)                0.595    0.609   0.633  0.764
+      seed disagreement (ties by u)       0.604    0.612   0.643  0.769
+      logistic error model u              0.598    0.611   0.636  0.771
+      1 - top p-bar (uncalibrated)        0.592    0.600   0.627  0.753
+      random (200 draws)                  0.599            0.626  0.747   sd S2 0.009; P(random >= confidence) 0.530
+      gold-informed routing               0.685            0.731  0.792
+   δ = 0.2 (k = 71, 0.231 of dev)
+      routing                                S2  S2 10sp  in-set     S1
+      confidence 1 - top q (E15)          0.635    0.640   0.662  0.775
+      margin (low first)                  0.631    0.628   0.675  0.773
+      entropy (high first)                0.609    0.610   0.640  0.761
+      seed disagreement (ties by u)       0.619    0.620   0.656  0.779
+      logistic error model u              0.632    0.647   0.659  0.795
+      1 - top p-bar (uncalibrated)        0.614    0.618   0.653  0.791
+      random (200 draws)                  0.601            0.631  0.752   sd S2 0.014; P(random >= confidence) 0.005
+      gold-informed routing               0.733            0.766  0.811
+   δ = 0.3 (k = 110, 0.357 of dev)
+      routing                                S2  S2 10sp  in-set     S1
+      confidence 1 - top q (E15)          0.669    0.660   0.701  0.798
+      margin (low first)                  0.619    0.632   0.659  0.800
+      entropy (high first)                0.602    0.626   0.656  0.788
+      seed disagreement (ties by u)       0.632    0.623   0.672  0.790
+      logistic error model u              0.621    0.618   0.669  0.784
+      1 - top p-bar (uncalibrated)        0.647    0.636   0.685  0.788
+      random (200 draws)                  0.604            0.635  0.758   sd S2 0.015; P(random >= confidence) 0.000
+      gold-informed routing               0.732            0.766  0.812
+   δ = 0.5 (k = 200, 0.649 of dev)
+      routing                                S2  S2 10sp  in-set     S1
+      confidence 1 - top q (E15)          0.628    0.628   0.679  0.800
+      margin (low first)                  0.669    0.633   0.685  0.811
+      entropy (high first)                0.600    0.617   0.662  0.793
+      seed disagreement (ties by u)       0.670    0.634   0.685  0.811
+      logistic error model u              0.603    0.618   0.669  0.795
+      1 - top p-bar (uncalibrated)        0.655    0.627   0.682  0.811
+      random (200 draws)                  0.608            0.646  0.771   sd S2 0.018; P(random >= confidence) 0.130
+      gold-informed routing               0.728            0.769  0.819
+
+   δ = 1 (every item; routing is moot): S2 0.636, in-set 0.669; M1 alone (δ = 0): S2 0.598, in-set 0.623
+
+   Curve summary (S2, split 0):  δ   confidence   random mean ± sd   gold-informed
+                                0.1     0.597        0.599 ± 0.009     0.685
+                                0.2     0.635        0.601 ± 0.014     0.733
+                                0.3     0.669        0.604 ± 0.015     0.732
+                                0.5     0.628        0.608 ± 0.018     0.728
+
+   2. Fusion ablations (confidence routing, slice threshold; S2 split 0 and mean of 10 splits)
+
+       δ  calls      fitted lam, tau   lam = 0 (M3 only)   lam = 1 (M1 only)  M3 argmax (lam = 0, tau = 0)
+     0.1  0.110        0.597 / 0.602       0.601 / 0.604       0.596 / 0.594                 0.607 / 0.607
+     0.2  0.231        0.635 / 0.640       0.621 / 0.629       0.602 / 0.601                 0.623 / 0.623
+     0.3  0.357        0.669 / 0.660       0.631 / 0.632       0.581 / 0.583                 0.630 / 0.630
+     0.5  0.649        0.628 / 0.628       0.604 / 0.604       0.595 / 0.587                 0.604 / 0.604
+     1.0  1.000        0.636 / 0.609       0.610 / 0.608       0.598 / 0.601                 0.603 / 0.603
+   lam = 1 keeps M1's scores but restricts the deferred items to C(x) with their own tau: what the
+   routing + re-thresholding alone buys, without M3. lam = 0 lets M3 decide the deferred items alone.
+
+==============================================================================================================
+F. Strata on dev (split-0 held-out predictions; cost point = mean over the 10 students)
+==============================================================================================================
+
+   Interviews: 56 on dev, 39 of them also in train (118 dev items); official test: 0 of 237 items
+   from a train interview. Answer length (words): dev median 292 (shorter half <= 291), test median 59; 0.86 of test answers are
+   within the shorter half's range.
+
+   stratum                      n  defer M1 in-set acc in-set       Δ in-set [95% CI]  M1 S2 acc S2   Δ S2 cost in-set cost S2
+   interview also in train    118   0.40     0.602      0.695 +0.093 [+0.025, +0.169]  0.465  0.572 +0.107       0.681   0.539
+   interview not in train     190   0.33     0.637      0.705 +0.068 [+0.021, +0.116]  0.615  0.665 +0.050       0.644   0.575
+   shorter half of answers    154   0.31     0.649      0.727 +0.078 [+0.026, +0.136]  0.604  0.714 +0.110       0.670   0.595
+   longer half of answers     154   0.41     0.597      0.675 +0.078 [+0.019, +0.136]  0.490  0.438 -0.052       0.646   0.495
+   3 annotators agree         125   0.31     0.608      0.696 +0.088 [+0.024, +0.152]  0.601  0.709 +0.108       0.679   0.668
+   2 agree                    150   0.40     0.607      0.673 +0.067 [+0.013, +0.127]  0.432  0.477 +0.045       0.608   0.425
+   all 3 differ                33   0.33     0.758      0.848 +0.091 [+0.000, +0.212]  0.551  0.518 -0.033       0.806   0.441
+   all                        308   0.36     0.623      0.701 +0.078 [+0.039, +0.117]  0.598  0.669 +0.071       0.658   0.608
+   S2 within a stratum is the macro-F1 of that subset (classes absent from it score 0 for both systems), so
+   compare M1 and the system within a row, not across rows; the in-set rate is the per-item quantity.
+
+==============================================================================================================
+G. M3's letter-position and label bias
+==============================================================================================================
+
+   Candidates are shown in taxonomy (class-index) order, A = the lowest index (cascade.prompts.build_messages),
+   so position and class are confounded: A is Explicit whenever Explicit is a candidate.
+
+   Dev (308 items, the 10-seed top 4):
+   position   M3 picks  M1 top  class in ref   only in-ref (n=177)  mean q
+   A             0.516   0.445         0.487                 0.446   0.429
+   B             0.159   0.286         0.403                 0.282   0.195
+   C             0.188   0.110         0.302                 0.164   0.222
+   D             0.136   0.159         0.205                 0.107   0.154
+   ('class in ref' = share of items whose position-j candidate is in the reference set; 'only in-ref' = the
+   position of the single in-reference candidate on items that have exactly one)
+
+   Train (3,448 cross-fitted rows; gold in top 4 for 0.844):
+   position   M3 picks  M1 top  gold here  M3 right | picks j
+   A             0.457   0.409      0.433               0.572
+   B             0.194   0.286      0.259               0.442
+   C             0.262   0.168      0.176               0.328
+   D             0.088   0.137      0.132               0.521
+
+   Same class, different position (train): P(M3 picks class c | c is a candidate at position j). A pure
+   position bias would lower this for every class as j grows; n in brackets.
+   class                              A             B             C             D
+   Explicit                 0.55 (1811)             -             -             -
+   Implicit                 0.36 (1182)   0.16 (1566)             -             -
+   Dodging                   0.37 (347)    0.29 (885)    0.13 (522)             -
+   General                    0.23 (90)    0.17 (652)   0.19 (1265)    0.05 (191)
+   Deflection                         -    0.21 (179)    0.43 (941)    0.10 (787)
+   Partial/half-answer                -     0.04 (77)    0.11 (264)   0.00 (1199)
+   Declining to answer                -     0.20 (89)    0.39 (298)    0.20 (353)
+   Claims ignorance                   -             -    0.27 (158)    0.11 (500)
+   Clarification                      -             -             -    0.19 (418)
+
+   Per class (train): how often a class is a candidate, M3 picks it, the pick is right; gold count; recall
+   of M3 given gold in C(x); M1 (argmax p-bar) picks and precision for comparison
+   class                   cand  gold M3 picks  M3 prec M3 rec|C M1 picks  M1 prec
+   Explicit                1811  1052     1000    0.701    0.781      955    0.709
+   Implicit                2748   488      670    0.258    0.386      696    0.283
+   Dodging                 1754   706      449    0.661    0.503      581    0.661
+   General                 2198   386      387    0.279    0.353      380    0.287
+   Deflection              1917   381      525    0.263    0.457      417    0.305
+   Partial/half-answer     1548    79       36    0.222    0.151       62    0.161
+   Declining to answer      740   145      203    0.507    0.798      142    0.634
+   Claims ignorance         658   119       98    0.643    0.630      125    0.584
+   Clarification            418    92       80    0.738    0.694       90    0.844
+
+   Confusion of M3's picks on train, rows = gold (rows with gold in C only), columns = M3's pick
+                  Explic Implic Dodgin Genera Deflec Partia Declin Claims Clarif
+   Explicit          701     80     14     55     36      4      4      3      1
+   Implicit          119    173     22     52     71      3      4      4      0
+   Dodging            35     83    297     35     90      1     27      7     15
+   General            35     90     10    108     49      2      9      3      0
+   Deflection         15     71     32     35    138      1      8      2      0
+   Partial/hal        14      8      2      9     10      8      2      0      0
+   Declining t         1      5      8      4      5      2    103      0      1
+   Claims igno         2      2      4      7      7      2     11     63      2
+   Clarificati         0      0     15      0      1      0      6      4     59
+
+   Dev, per class picked by M3: n picked, share in the reference set (precision under S2's rule)
+   Explicit 84 (0.81), Implicit 89 (0.44), Dodging 28 (0.89), General 38 (0.63), Deflection 42 (0.45), Partial/hal 1 (0.00), Declining t 16 (0.81), Claims igno 6 (1.00), Clarificati 4 (1.00)
+
+==============================================================================================================
+H. Test-set predictions (evaluation.make_cascade_submission; written to submissions/E19_*)
+==============================================================================================================
+
+   E19_m1_10seed          10-seed M1 + logit adjustment; tau_m1 1.150, dev_s2_nested_cv_split0 0.598
+      -> submissions/E19_m1_10seed/ ; test S2 labels {'Explicit': 70, 'Implicit': 41, 'Dodging': 30, 'Claims ign': 20, 'Deflection': 19, 'Partial/ha': 16, 'Declining ': 15, 'Clarificat': 13, 'General': 13}
+   E19_accuracy_point     10-seed M1 + M3 (qwen38_27b_k0), delta 0.3; tau_m1 1.150, lam 0.500, tau -0.550, test_defer_rate 0.253, test_m3_calls 60, dev_s2_nested_cv_split0 0.669
+      -> submissions/E19_accuracy_point/ ; test S2 labels {'Explicit': 81, 'Implicit': 47, 'Dodging': 37, 'Deflection': 17, 'Claims ign': 16, 'Declining ': 14, 'Clarificat': 11, 'General': 10, 'Partial/ha': 4}
+   accuracy point changes 46 of 237 test labels relative to M1 (S1 labels: 18)
+   cost point: M3 has no test record for 57 of student 0's 95 deferred test items (its top 4 differs from the 10-seed top 4).
+   Needed for all 10 students: 277 distinct (item, top-4) pairs over 131 test items, written to
+   runs/M3/test_jobs_students.json (a JSON list; cascade.adjudicate --jobs-file reads one JSON object per
+   line, so convert with: python -c "import json;[print(json.dumps(j)) for j in json.load(open('...json'))]").
+   Per student: s0 57/95, s1 52/91, s2 59/98, s3 62/96, s4 60/87, s5 53/93, s6 48/86, s7 61/93, s8 50/85, s9 65/101
+   At 0.151 GPU-s/call that is ~0.7 GPU-min on GPU 0 (vLLM, Qwen3.8-27B-FP8, k = 0).
+
+==============================================================================================================
+I. Human ceiling: one annotator against the other two (the official test set's 2-annotator regime)
+==============================================================================================================
+
+   Every 2-annotator reference set; the human row scores the held-out annotator's labels against it; the
+   systems are refitted by nested CV on that same set (split 0, as E18's 2-annotator column), and also
+   scored with their 3-annotator-fitted predictions unchanged ('fixed').
+
+   reference set           human        human S2  in-set     M1 acc refit acc fixed cost refit cost fixed
+   annotator1+annotator2   annotator3      0.766   0.838  0.540     0.538     0.560      0.555      0.559
+   annotator1+annotator3   annotator2      0.644   0.682  0.571     0.635     0.648      0.574      0.581
+   annotator2+annotator3   annotator1      0.643   0.672  0.536     0.593     0.644      0.573      0.575
+   mean                                    0.684   0.731  0.549     0.589     0.618      0.567      0.572
+
+   The 0.684 'human ceiling' is the 2-annotator number (mean of the human column). The comparable system
+   number is the accuracy point on the same sets, 0.589 refitted (0.618 with its dev-fitted predictions),
+   not the 3-annotator 0.669; M1 alone 0.549; the cost point 0.567. Gap to humans: 0.095 (accuracy
+   point), 0.135 (M1). A human scored on a 3-annotator set would include their own label, so no
+   3-annotator human ceiling exists on dev.
+
+[E19 tier 0: 415 s wall, CPU only]

@@ -1,0 +1,78 @@
+[2026-10-06 01:33:38] [lane_gpu0_a] lane start (E14, GPU 0, models.llm_classifier): 12 run(s)
+[2026-10-06 01:33:38] [lane_gpu0_a] wait  GPU 0 has 29 GB free, a run without checkpointing needs 60 GB (up to 30 min)
+[2026-10-06 02:05:38] [lane_gpu0_a] note  GPU 0 has only 29 GB free: this run uses --grad-checkpoint (same computation, slower)
+[2026-10-06 02:05:38] [lane_gpu0_a] start Q8_fullq_lora_12ep 3 on GPU 0 (models.llm_classifier, --grad-checkpoint)
+[2026-10-06 04:06:52] [lane_gpu0_a] ok    Q8_fullq_lora_12ep 3  devS2=0.5553 devS1=0.7533
+[2026-10-06 04:06:52] [lane_gpu0_a] hf    upload queued: runs/Q8_fullq_lora_12ep/seed3 (logs/hf_uploads.log)
+[2026-10-06 04:06:52] [lane_gpu0_a] note  GPU 0 has only 29 GB free: this run uses --grad-checkpoint (same computation, slower)
+[2026-10-06 04:06:52] [lane_gpu0_a] start Q8_fullq_lora_12ep 4 on GPU 0 (models.llm_classifier, --grad-checkpoint)
+[2026-10-06 07:05:54] [lane_gpu0_a] ok    Q8_fullq_lora_12ep 4  devS2=0.5505 devS1=0.7409
+[2026-10-06 07:05:54] [lane_gpu0_a] hf    upload queued: runs/Q8_fullq_lora_12ep/seed4 (logs/hf_uploads.log)
+[2026-10-06 07:05:54] [lane_gpu0_a] note  GPU 0 has only 25 GB free: this run uses --grad-checkpoint (same computation, slower)
+[2026-10-06 07:05:54] [lane_gpu0_a] start Q8_fullq_lora_12ep 5 on GPU 0 (models.llm_classifier, --grad-checkpoint)
+[2026-10-06 09:54:27] [lane_gpu1_b] lane start (E14, GPU 1 slice 2, models.llm_classifier): 12 run(s)
+[2026-10-06 09:54:27] [lane_gpu1_b] note  device has 47 GB in all, less than the 60 GB a run without checkpointing needs: --grad-checkpoint
+[2026-10-06 09:54:27] [lane_gpu1_b] start Q8_12ep_crossfit fold0 on GPU 1 (models.llm_classifier, --grad-checkpoint)
+[2026-10-06 09:56:44] [lane_gpu0_a] ok    Q8_fullq_lora_12ep 5  devS2=0.4754 devS1=0.6677
+[2026-10-06 09:56:44] [lane_gpu0_a] hf    upload queued: runs/Q8_fullq_lora_12ep/seed5 (logs/hf_uploads.log)
+[2026-10-06 09:56:45] [lane_gpu0_a] note  GPU 0 has only 25 GB free: this run uses --grad-checkpoint (same computation, slower)
+[2026-10-06 09:56:45] [lane_gpu0_a] start Q8_fullq_lora_12ep 6 on GPU 0 (models.llm_classifier, --grad-checkpoint)
+[2026-10-06 12:36:56] [lane_gpu0_a] ok    Q8_fullq_lora_12ep 6  devS2=0.4673 devS1=0.6638
+[2026-10-06 12:36:56] [lane_gpu0_a] hf    upload queued: runs/Q8_fullq_lora_12ep/seed6 (logs/hf_uploads.log)
+[2026-10-06 12:36:56] [lane_gpu0_a] start Q8_fullq_lora_12ep 7 on GPU 0 (models.llm_classifier)
+[2026-10-06 13:15:24] [lane_gpu1_b] ok    Q8_12ep_crossfit fold0  epoch 11 selected; dev S2 0.5628248229249292, S1 0.7397906754024598; 201 min
+[2026-10-06 13:15:24] [lane_gpu1_b] hf    upload queued: runs/Q8_12ep_crossfit/fold0 (logs/hf_uploads.log)
+[2026-10-06 13:15:24] [lane_gpu1_b] note  device has 47 GB in all, less than the 60 GB a run without checkpointing needs: --grad-checkpoint
+[2026-10-06 13:15:24] [lane_gpu1_b] start Q8_12ep_crossfit fold1 on GPU 1 (models.llm_classifier, --grad-checkpoint)
+[2026-10-06 13:52:43] [lane_gpu0_a] ok    Q8_fullq_lora_12ep 7  devS2=0.5108 devS1=0.7424
+[2026-10-06 13:52:43] [lane_gpu0_a] hf    upload queued: runs/Q8_fullq_lora_12ep/seed7 (logs/hf_uploads.log)
+[2026-10-06 13:52:43] [lane_gpu0_a] start Q8_fullq_lora_12ep 8 on GPU 0 (models.llm_classifier)
+[2026-10-06 15:08:37] [lane_gpu0_a] ok    Q8_fullq_lora_12ep 8  devS2=0.5560 devS1=0.7736
+[2026-10-06 15:08:37] [lane_gpu0_a] hf    upload queued: runs/Q8_fullq_lora_12ep/seed8 (logs/hf_uploads.log)
+[2026-10-06 15:08:37] [lane_gpu0_a] start Q8_fullq_lora_12ep 9 on GPU 0 (models.llm_classifier)
+[2026-10-06 15:11:40] [lane_gpu1_a] lane start (E14, GPU 1 slice 1, models.llm_classifier): 12 run(s)
+[2026-10-06 15:11:40] [lane_gpu1_a] note  device has 47 GB in all, less than the 60 GB a run without checkpointing needs: --grad-checkpoint
+[2026-10-06 15:11:40] [lane_gpu1_a] start Q8_12ep_crossfit fold4 on GPU 1 (models.llm_classifier, --grad-checkpoint)
+[2026-10-06 16:05:48] [lane_gpu0_a] lane start (E14, GPU 0, models.llm_classifier): 12 run(s)
+[2026-10-06 16:05:48] [lane_gpu0_a] skip  Q8_fullq_lora_12ep 3 (finished)
+[2026-10-06 16:05:48] [lane_gpu0_a] skip  Q8_fullq_lora_12ep 4 (finished)
+[2026-10-06 16:05:48] [lane_gpu0_a] skip  Q8_fullq_lora_12ep 5 (finished)
+[2026-10-06 16:05:48] [lane_gpu0_a] skip  Q8_fullq_lora_12ep 6 (finished)
+[2026-10-06 16:05:48] [lane_gpu0_a] skip  Q8_fullq_lora_12ep 7 (finished)
+[2026-10-06 16:05:48] [lane_gpu0_a] skip  Q8_fullq_lora_12ep 8 (finished)
+[2026-10-06 16:05:48] [lane_gpu0_a] resume Q8_fullq_lora_12ep 9 from its last checkpoint
+[2026-10-06 16:05:48] [lane_gpu0_a] note  device has 95 GB in all, less than the 999 GB a run without checkpointing needs: --grad-checkpoint
+[2026-10-06 16:05:48] [lane_gpu0_a] start Q8_fullq_lora_12ep 9 on GPU 0 (models.llm_classifier, --grad-checkpoint)
+[2026-10-06 16:32:31] [lane_gpu0_a] ok    Q8_fullq_lora_12ep 9  epoch 4 selected; dev S2 0.5153632599284772, S1 0.7202635511406394; 27 min
+[2026-10-06 16:32:31] [lane_gpu0_a] hf    upload queued: runs/Q8_fullq_lora_12ep/seed9 (logs/hf_uploads.log)
+[2026-10-06 16:32:31] [lane_gpu0_a] skip  Q8_12ep_crossfit fold0 (finished)
+[2026-10-06 16:32:31] [lane_gpu0_a] skip  Q8_12ep_crossfit fold1 (another lane is running it)
+[2026-10-06 16:32:31] [lane_gpu0_a] note  device has 95 GB in all, less than the 999 GB a run without checkpointing needs: --grad-checkpoint
+[2026-10-06 16:32:31] [lane_gpu0_a] start Q8_12ep_crossfit fold2 on GPU 0 (models.llm_classifier, --grad-checkpoint)
+[2026-10-06 16:33:02] [lane_gpu1_b] ok    Q8_12ep_crossfit fold1  epoch 11 selected; dev S2 0.5598477804616416, S1 0.7196727299291402; 198 min
+[2026-10-06 16:33:02] [lane_gpu1_b] hf    upload queued: runs/Q8_12ep_crossfit/fold1 (logs/hf_uploads.log)
+[2026-10-06 16:33:02] [lane_gpu1_b] skip  Q8_12ep_crossfit fold2 (another lane is running it)
+[2026-10-06 16:33:02] [lane_gpu1_b] note  device has 47 GB in all, less than the 60 GB a run without checkpointing needs: --grad-checkpoint
+[2026-10-06 16:33:02] [lane_gpu1_b] start Q8_12ep_crossfit fold3 on GPU 1 (models.llm_classifier, --grad-checkpoint)
+[2026-10-06 19:25:12] [lane_gpu0_a] ok    Q8_12ep_crossfit fold2  epoch 11 selected; dev S2 0.5780250963646043, S1 0.7408514436349295; 173 min
+[2026-10-06 19:25:12] [lane_gpu0_a] hf    upload queued: runs/Q8_12ep_crossfit/fold2 (logs/hf_uploads.log)
+[2026-10-06 19:25:12] [lane_gpu0_a] skip  Q8_12ep_crossfit fold3 (another lane is running it)
+[2026-10-06 19:25:12] [lane_gpu0_a] note  device has 95 GB in all, less than the 999 GB a run without checkpointing needs: --grad-checkpoint
+[2026-10-06 19:25:12] [lane_gpu0_a] start Q8_12ep_crossfit fold4 on GPU 0 (models.llm_classifier, --grad-checkpoint)
+[2026-10-06 19:51:54] [lane_gpu1_b] ok    Q8_12ep_crossfit fold3  epoch 11 selected; dev S2 0.4935763501964689, S1 0.7132766350704981; 199 min
+[2026-10-06 19:51:54] [lane_gpu1_b] hf    upload queued: runs/Q8_12ep_crossfit/fold3 (logs/hf_uploads.log)
+[2026-10-06 19:51:54] [lane_gpu1_b] skip  Q8_12ep_crossfit fold4 (another lane is running it)
+[2026-10-06 19:51:54] [lane_gpu1_b] skip  Q8_fullq_lora_12ep 9 (finished)
+[2026-10-06 19:51:54] [lane_gpu1_b] skip  Q8_fullq_lora_12ep 8 (finished)
+[2026-10-06 19:51:54] [lane_gpu1_b] skip  Q8_fullq_lora_12ep 7 (finished)
+[2026-10-06 19:51:54] [lane_gpu1_b] skip  Q8_fullq_lora_12ep 6 (finished)
+[2026-10-06 19:51:54] [lane_gpu1_b] skip  Q8_fullq_lora_12ep 5 (finished)
+[2026-10-06 19:51:54] [lane_gpu1_b] skip  Q8_fullq_lora_12ep 4 (finished)
+[2026-10-06 19:51:54] [lane_gpu1_b] skip  Q8_fullq_lora_12ep 3 (finished)
+[2026-10-06 19:51:54] [lane_gpu1_b] pass  unfinished runs remain (another lane holds them); re-checking every 10 min to pick up any it drops
+[2026-10-06 22:05:43] [lane_gpu0_a] ok    Q8_12ep_crossfit fold4  epoch 11 selected; dev S2 0.5119347670400698, S1 0.755889766833099; 160 min
+[2026-10-06 22:05:43] [lane_gpu0_a] hf    upload queued: runs/Q8_12ep_crossfit/fold4 (logs/hf_uploads.log)
+[2026-10-06 22:06:05] [lane_gpu0_a] hf    92 run folders marked uploaded
+[2026-10-06 22:06:05] [lane_gpu0_a] lane finished
+[2026-10-06 22:11:55] [lane_gpu1_b] hf    92 run folders marked uploaded
+[2026-10-06 22:11:55] [lane_gpu1_b] lane finished

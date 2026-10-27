@@ -23,7 +23,7 @@ over seeds. Raw outputs behind the headline tables are in `docs/raw/`.
 | Latest | **E17 (M4) done 2026-10-15.** One distilled student (soft targets from M3) instead of 10 seeds: single model S2 0.573 vs 0.525 (+0.048, 9/10), S1 +0.031; **student + M3 at δ = 0.5: 0.608 / 0.790 at 0.111 GPU-s per item vs the 10-seed M1 alone at 0.598 / 0.743 and 0.522 GPU-s (4.7× cheaper)**. Adopted as the cost operating point: no undistilled point is cheaper and better |
 | **Current system (2026-10-15)** | Two operating points on dev. **Accuracy:** 10-seed M1 + M3 at δ = 0.3, S2 0.669 (10 splits 0.660) / S1 0.798, 0.36 LLM calls and 0.558 GPU-s per item. **Cost:** E17 student + M3 at δ = 0.5, S2 0.608 / S1 0.790 (mean of 10 students), 0.57 calls and 0.111 GPU-s per item. TeleAI (1st place): 0.617 / 0.812 at 1.94 calls |
 | Latest | **E18 (freeze numbers) done 2026-10-15.** Final dev numbers for both operating points: accuracy point (M1 × 10 + M3, δ = 0.3) S2 0.669 / 0.660 over 10 splits, S1 0.798, 2-annotator 0.589; cost point (student + M3, δ = 0.5) S2 0.608 ± 0.027, S1 0.790, 2-annotator 0.567, at 0.21× the GPU cost of M1. Ensembles of distilled students do not help (≤ +0.02; the students lack diversity), so there is no middle operating point. Figure: `docs/figures/E18_frontier.pdf` |
-| Running | nothing |
+| Running | **E19** (robustness, baselines, controls: Tier 0 + arms A, B, D, E, F) and **E20** (spotlight: value-of-compute map and learned router), registered 2026-10-27 18:55; JarvisLabs spot |
 
 ---
 
@@ -2896,6 +2896,131 @@ Sources:
 **Cost.** Free.
 
 ---
+
+## E19 — Robustness, baselines and controls for the final submission *(registered 2026-10-27 18:55)*
+
+*Written before any E19 run.* Deadline: all experiments done by 2026-10-30; 2026-10-31 is for the report
+and slides. Compute: JarvisLabs **spot** instances (user, 2026-10-27), ≈ ₹3,400 of ₹4,001.81; if over
+budget, F is cut first, then E to 2 seeds. The lab server is fully occupied by other users.
+
+**Why.** A reviewer's read of E14–E18 (2026-10-27) raised these threats, and E19 answers them:
+- **The 308 "dev" items are the only evaluation set**, and several design decisions were made on them:
+  - the Qwen backbone and 10 seeds;
+  - K = 10 (E14 H6);
+  - the go decision for M3 (E14 H5);
+  - the E17 screen bar;
+  - **the cost point's δ = 0.5, chosen after the registered δ = 0.3 failed**.
+
+  The official ranking used a new 237-item set with 2 annotators. Its labels are unpublished.
+- **The headline 0.669 is a favourable draw.**
+  - It is split 0; the mean over 10 splits is 0.660.
+  - At K ≤ 5, M3 adds only +0.02 to +0.03 (E16).
+  - The bootstrap holds both the seeds and the fitted parameters fixed.
+- **The cost of an M3 call is understated.**
+  - `cost.json`'s 0.103 GPU-s averages over frontier calls that ran in larger batches, plus copied records.
+  - The system's own dev calls cost 0.151 GPU-s.
+  - The cost point becomes ≈ 0.26× M1, not 0.21×.
+- **Missing comparisons:**
+  - the LLM alone, without M1;
+  - random routing;
+  - a candidate-order control (the letters follow class order, so A is mostly Explicit);
+  - controls for distillation;
+  - a larger backbone.
+
+**Tier 0 (CPU, existing outputs; `preregistered_analyses/e19_tier0.py` → `raw/E19_tier0.txt`).**
+1. Report the 10-split mean as primary, with its spread, and the bootstrap with refitted parameters.
+2. Correct the cost table.
+3. Evaluate the cascade on all 3,448 train rows: cross-fitted M1, single gold label.
+4. Ablations on dev:
+   - routing: random routing at matched δ, other router signals, and an oracle;
+   - fusion: λ = 0 and λ = 1.
+5. Strata on dev: interview seen in train or not, answer length, and annotator agreement.
+6. Letter-position bias of M3.
+7. Test-set prediction files for both operating points.
+8. The comparable human ceiling (2-annotator regime).
+
+**GPU arms (Jarvis spot).**
+- **A. The LLM without M1, on dev:**
+  - Qwen3.8-27B-FP8 over all 9 labels, 1 token, no thinking;
+  - the same with thinking;
+  - TeleAI's published pipeline (CAMSR-CoT, github ther7777/semeval-2026-task6-camsr-cot) run on the same 27B (also E20 S5);
+  - DeepSeek-V4-Flash with thinking over 9 labels, through the API.
+
+  *Expectation:* every LLM-alone arm scores below M1 alone (0.598 S2). *Read-out:* the S2 / S1 table plus calls and tokens per item.
+- **B. Candidate order and set size:**
+  - M3 over all dev items and the 300 screen rows, with the candidates in reverse order and two cyclic shifts.
+  - **Permutation-averaged q** (the mean over 4 cyclic orders) is adopted in place of single-order q **only if** it beats single-order q on the 300 screen rows (train, single gold) in both accuracy within C(x) and NLL. The decision is not made on dev; dev is reported either way.
+  - Set sizes 2, 3, 6 and 9 on dev (δ = 1): reported only.
+- **D. Five new M1 seeds (10–14).** Same recipe as E14 (`Q8_fullq_lora_12ep`).
+  - Draw 200 random 10-of-15 seed subsets. For each, build M1, top-4 candidates and M3 (local and de-duplicated), then the fused system at δ = 0.3.
+  - **H-D:** the median accuracy point over subsets lies below 0.669, and 0.669 lies within the subsets' 5–95% range.
+  - The median and the 5–95% range become the primary statement of the accuracy point.
+- **E. Distillation controls.**
+  - Two students, seeds 0–2, paired with `Q8_distill_a05` seeds 0–2.
+  - Each uses the same candidate set per row (M3's) and the same α = 0.5. Only the distribution over C(x) changes:
+    - `Q8_distill_a05_m1`: M1's own calibrated cross-fitted q (self-distillation; mean target on gold 0.739, entropy 0.56);
+    - `Q8_distill_a05_unif`: uniform over C(x) (candidate-aware label smoothing; 0.606 / 1.12).
+  - The M3 targets sit in between (0.713 / 0.73). Targets: `cascade/distill_targets.py --teacher m1|uniform`.
+  - **H-E:**
+    - the M3-taught student beats both controls on single-model S2 by ≥ 0.015, as a mean over the 3 paired seeds;
+    - as a system (+ M3, δ = 0.5), by ≥ 0.01.
+  - If a control comes within 0.015, the claim that the student learns "the LLM's knowledge" is dropped. The student is then described as a soft-target / candidate-smoothing effect.
+- **F. Backbone scale.** `Q14_fullq_lora_12ep`: Qwen3-14B-Base + LoRA, the E14 recipe otherwise, seeds 0–2.
+  - **H-F:** single-model S2 ≥ the 8B's seeds 0–2 (mean 0.543) + 0.02.
+  - Reported as a third point on the encoder → 8B → 14B axis. No system-level claim (3 seeds).
+
+## E20 — Spotlight: where should the LLM think? A value-of-compute map and a learned router *(registered 2026-10-27 18:55)*
+
+*Written before any E20 run.*
+
+**Why.** We have the 1-token M3 decision for every train row. Comparing it with the cross-fitted M1
+(`/tmp`-scratch analysis, 2026-10-27 18:30) shows the following:
+- **Overall**, the LLM is a worse classifier than M1 (accuracy 0.479 vs 0.506).
+- **By M1-uncertainty quintile** (Q1 = most confident), the LLM's net effect (fixes − breaks) is:
+  - train: −41, −76, −11, +4, +31;
+  - dev: −4, 0, −7, +8, +8.
+
+So the LLM's value changes sign with M1's uncertainty. A uniform-reasoning pipeline (TeleAI: CoT on
+~90% of items, 1.94 calls) spends most of its compute where it cannot help. The question is where test-time
+compute should go, and whether that can be learned from train.
+
+**Rungs** (all within M1's top-4 C(x) unless stated):
+- **R0:** keep M1.
+- **R1:** 27B, 1 token (M3 as now).
+- **R2:** 27B with thinking (local vLLM, `enable_thinking=True`). The answer letter's distribution is read at the answer token. Thinking is capped at 4,096 tokens.
+- **R3:** DeepSeek-V4-Flash with thinking (Jarvis Model API). It runs on the least-confident 40% of train rows and on all dev and test rows.
+
+Cost per rung is measured in GPU-s on the RTX PRO 6000 (R1, R2) and in tokens / USD (R3).
+
+**Mini-experiments.**
+- **S1 — value map.**
+  - Net, fix and break counts per M1-u quintile, for each rung, on train (cross-fitted, n = 3,448) and dev, with bootstrap CIs.
+  - Also: where the net value crosses zero.
+- **S2 — reasoning.** R2 on all 3,448 train rows, 308 dev and 237 test, with a timing pilot first on the 300 screen rows.
+- **S3 — frontier rung.** R3 as above; API cap $10.
+- **S4 — learned value router.**
+  - **Model:** for each rung r ≥ 1, a cross-fitted (5-fold, train) multinomial logistic regression predicts {fix, break, neither} relative to M1.
+  - **Features**, all available before any call:
+    - quantile-normalised top probability, margin and entropy (quantiles within each set, because train has single-model cross-fitted probabilities and dev has the 10-seed mean);
+    - M1's top class (one-hot);
+    - answer length and question length (log).
+  - **Allocation:** expected net gain = P(fix) − P(break). Under a budget B (GPU-s per item), a greedy gain-per-cost allocation over the rungs.
+  - **Evaluation:** on held-out train folds and on dev. Dev uses the frozen nested-CV fusion; the routed items replace "the δ least confident".
+- **S5 — uniform-reasoning anchor.** TeleAI's pipeline on the same 27B (arm A). All systems go on one figure: dev S2 against GPU-s per item.
+
+**Hypotheses.**
+- **S-H1 (value map).** For R1 and R2, the net value per quintile rises with M1's uncertainty (Spearman ρ > 0 over the 5 quintiles, on train), and it is negative in Q1–Q2.
+- **S-H2 (overthinking).** On train:
+  - R2 beats R1 by ≥ 2 accuracy points in Q4–Q5;
+  - R2 is not better than R1 in Q1–Q2.
+
+  On dev, uniform R2 (all items) scores below the routed system at the same number of calls.
+- **S-H3 (learned router).**
+  - On held-out train folds, the value router beats confidence routing (deferring by u) in S2 at ≥ 3 of the 4 budgets matching δ ∈ {0.1, 0.2, 0.3, 0.5} of R1 calls.
+  - The multi-rung allocation dominates every single-rung policy at matched GPU-s.
+
+**Decision rule.** The value router replaces confidence routing in the final system **only if S-H3 holds
+on held-out train folds**: selection is on train, not dev. Dev numbers are reported either way.
 
 ## Deferred
 

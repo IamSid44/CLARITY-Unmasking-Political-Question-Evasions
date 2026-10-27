@@ -1,0 +1,50 @@
+{
+  "system": "10-seed M1 + M3 (qwen38_27b_k0), delta 0.3",
+  "m3_tag": "qwen38_27b_k0",
+  "m1_run": "Q8_fullq_lora_12ep",
+  "dev_fit": "all 308 dev items (3-annotator reference sets)",
+  "routing": "u = 1 - top calibrated q; threshold = (1 - delta) quantile of u on the train slice",
+  "delta": 0.3,
+  "lam": 0.5,
+  "tau": -0.55,
+  "tau_m1": 1.15,
+  "dev_in_sample_s2": 0.6893571477426296,
+  "slice_threshold_u": 0.637954752978454,
+  "dev_defer_rate": 0.35714285714285715,
+  "test_defer_rate": 0.25316455696202533,
+  "test_m3_calls": 60,
+  "dev_s2_nested_cv_split0": 0.6686916446336517,
+  "dev_s1_nested_cv_split0": 0.7975698607002016,
+  "seeds": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9
+  ],
+  "test_distribution_subtask2": {
+    "Explicit": 81,
+    "Implicit": 47,
+    "Dodging": 37,
+    "Deflection": 17,
+    "Claims ignorance": 16,
+    "Declining to answer": 14,
+    "Clarification": 11,
+    "General": 10,
+    "Partial/half-answer": 4
+  },
+  "test_distribution_subtask1": {
+    "Ambivalent": 115,
+    "Clear Reply": 81,
+    "Clear Non-Reply": 41
+  },
+  "sha256": {
+    "submissions/E19_accuracy_point/subtask1_clarity/prediction.zip": "f8404408c3431579",
+    "submissions/E19_accuracy_point/subtask2_evasion/prediction.zip": "9498a418eb56b0f9"
+  }
+}

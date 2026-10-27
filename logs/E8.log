@@ -1,0 +1,36 @@
+[2026-09-25 11:10:56] [lane_gpu0_a] lane start (E8, GPU 0): 1 run(s)
+[2026-09-25 11:10:56] [lane_gpu0_a] start E8_fullq_bal_focal seed2 on GPU 0
+[2026-09-25 11:11:16] [lane_gpu1_a] lane start (E8, GPU 1): 2 run(s)
+[2026-09-25 11:11:16] [lane_gpu1_a] start E8_fullq_bal_focal seed0 on GPU 1
+[2026-09-25 11:11:36] [lane_gpu1_b] lane start (E8, GPU 1): 2 run(s)
+[2026-09-25 11:11:36] [lane_gpu1_b] start E8_fullq_bal_focal seed1 on GPU 1
+[2026-09-25 12:41:43] [lane_gpu0_a] ok    E8_fullq_bal_focal seed2  devS2=0.3352 devS1=0.5220
+[hf] upload queued in background: /scratch/shlok/Temp/CLARITY-Unmasking-Political-Question-Evasions/clarity/runs/E8_fullq_bal_focal/seed2 (progress: /scratch/shlok/Temp/CLARITY-Unmasking-Political-Question-Evasions/clarity/logs/hf_uploads.log)
+[2026-09-25 12:41:43] [lane_gpu0_a] lane finished
+[2026-09-25 12:56:39] [lane_gpu0_a] lane start (E8, GPU 0): 3 run(s)
+[2026-09-25 12:56:39] [lane_gpu0_a] skip  E8_fullq_bal_focal seed2 (finished)
+[2026-09-25 12:56:39] [lane_gpu0_a] start E8_fullq_bal_focal seed4 on GPU 0
+[2026-09-25 12:56:59] [lane_gpu1_a] lane start (E8, GPU 1): 1 run(s)
+[2026-09-25 12:56:59] [lane_gpu1_a] resume E8_fullq_bal_focal seed0 from its last checkpoint
+[2026-09-25 12:56:59] [lane_gpu1_a] start E8_fullq_bal_focal seed0 on GPU 1
+[2026-09-25 12:57:19] [lane_gpu1_b] lane start (E8, GPU 1): 1 run(s)
+[2026-09-25 12:57:19] [lane_gpu1_b] resume E8_fullq_bal_focal seed1 from its last checkpoint
+[2026-09-25 12:57:19] [lane_gpu1_b] start E8_fullq_bal_focal seed1 on GPU 1
+[2026-09-25 14:30:39] [lane_gpu0_a] ok    E8_fullq_bal_focal seed4  devS2=0.3513 devS1=0.5353
+[2026-09-25 14:30:40] [lane_gpu0_a] start E8_fullq_bal_focal seed3 on GPU 0
+[2026-09-25 14:39:56] [lane_gpu1_a] ok    E8_fullq_bal_focal seed0  devS2=0.3026 devS1=0.5038
+[hf] upload queued in background: /scratch/shlok/Temp/CLARITY-Unmasking-Political-Question-Evasions/clarity/runs/E8_fullq_bal_focal/seed0 (progress: /scratch/shlok/Temp/CLARITY-Unmasking-Political-Question-Evasions/clarity/logs/hf_uploads.log)
+[2026-09-25 14:39:56] [lane_gpu1_a] lane finished
+[2026-09-25 14:40:28] [lane_gpu1_b] ok    E8_fullq_bal_focal seed1  devS2=0.3049 devS1=0.5529
+[hf] upload queued in background: /scratch/shlok/Temp/CLARITY-Unmasking-Political-Question-Evasions/clarity/runs/E8_fullq_bal_focal/seed0 (progress: /scratch/shlok/Temp/CLARITY-Unmasking-Political-Question-Evasions/clarity/logs/hf_uploads.log)
+[hf] upload queued in background: /scratch/shlok/Temp/CLARITY-Unmasking-Political-Question-Evasions/clarity/runs/E8_fullq_bal_focal/seed1 (progress: /scratch/shlok/Temp/CLARITY-Unmasking-Political-Question-Evasions/clarity/logs/hf_uploads.log)
+[2026-09-25 14:40:28] [lane_gpu1_b] lane finished
+[2026-09-25 16:02:49] [lane_gpu0_a] ok    E8_fullq_bal_focal seed3  devS2=0.3139 devS1=0.5809
+[2026-09-25 16:02:49] [lane_gpu0_a] post  E8_fullq_bal_focal: all 5 seeds finished -- analysis, decision rules, submission
+[submission] E8_fullq_bal_focal_logitadj: seed-ensemble, logit-adjusted tau=-0.15, 5 seed(s), dev S2 mean 0.3216
+  Subtask 2 (evasion) : /scratch/shlok/Temp/CLARITY-Unmasking-Political-Question-Evasions/clarity/submissions/E8_fullq_bal_focal_logitadj/subtask2_evasion/prediction.zip
+  Subtask 1 (clarity) : /scratch/shlok/Temp/CLARITY-Unmasking-Political-Question-Evasions/clarity/submissions/E8_fullq_bal_focal_logitadj/subtask1_clarity/prediction.zip
+  test distribution   : {'Explicit': 72, 'General': 49, 'Implicit': 39, 'Claims ignorance': 30, 'Dodging': 21, 'Clarification': 11, 'Declining to answer': 10, 'Deflection': 5}
+[2026-09-25 16:02:58] [lane_gpu0_a] ok    E8_fullq_bal_focal post-processing -> reports/raw/E8_fullq_bal_focal_{analysis,decision_rules}.txt, submissions/E8_fullq_bal_focal_logitadj/
+[hf] upload queued in background: /scratch/shlok/Temp/CLARITY-Unmasking-Political-Question-Evasions/clarity/runs/E8_fullq_bal_focal/seed3 (progress: /scratch/shlok/Temp/CLARITY-Unmasking-Political-Question-Evasions/clarity/logs/hf_uploads.log)
+[2026-09-25 16:02:58] [lane_gpu0_a] lane finished

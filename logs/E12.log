@@ -1,0 +1,186 @@
+[2026-09-28 11:29:21] [lane_gpu0_a] lane start (E12, GPU 0): 21 run(s)
+[2026-09-28 11:29:21] [lane_gpu0_a] start E12b_gate seed0 on GPU 0
+[2026-09-28 11:29:41] [lane_gpu1_a] lane start (E12, GPU 1): 21 run(s)
+[2026-09-28 11:29:41] [lane_gpu1_a] wait  for E12d_soup_greedy seed(s) 0 to finish before starting this lane's next run
+[2026-09-28 11:34:41] [lane_gpu1_a] done  waiting: E12d_soup_greedy seed(s) 0 finished
+[2026-09-28 11:34:41] [lane_gpu1_a] skip  E12b_gate seed0 (another lane is running it)
+[2026-09-28 11:34:41] [lane_gpu1_a] start E12b_other6 seed0 on GPU 1
+[2026-09-28 14:00:43] [lane_gpu1_a] ok    E12b_other6 seed0  
+[2026-09-28 14:00:43] [lane_gpu1_a] start E12b_nr3 seed0 on GPU 1
+[2026-09-28 14:12:14] [lane_gpu1_b] lane start (E12, GPU 1): 21 run(s)
+[2026-09-28 14:12:14] [lane_gpu1_b] skip  E12b_gate seed0 (another lane is running it)
+[2026-09-28 14:12:14] [lane_gpu1_b] skip  E12b_other6 seed0 (finished)
+[2026-09-28 14:12:14] [lane_gpu1_b] skip  E12b_nr3 seed0 (another lane is running it)
+[2026-09-28 14:12:14] [lane_gpu1_b] start E12a_alldata seed0 on GPU 1
+[2026-09-28 14:23:11] [lane_gpu1_a] ok    E12b_nr3 seed0  
+[2026-09-28 14:23:11] [lane_gpu1_a] skip  E12a_alldata seed0 (another lane is running it)
+[2026-09-28 14:23:11] [lane_gpu1_a] start E12b_gate seed1 on GPU 1
+[2026-09-28 15:08:24] [manual] stopped lane_gpu1_b and released GPU 1's second MIG slice to a lab-mate; E12a_alldata seed0 resumes later from its epoch-3 checkpoint in another lane
+[2026-09-28 15:10:27] [lane_gpu0_b] lane start (E12, GPU 0): 21 run(s)
+[2026-09-28 15:10:27] [lane_gpu0_b] skip  E12b_gate seed0 (another lane is running it)
+[2026-09-28 15:10:27] [lane_gpu0_b] skip  E12b_other6 seed0 (finished)
+[2026-09-28 15:10:27] [lane_gpu0_b] skip  E12b_nr3 seed0 (finished)
+[2026-09-28 15:10:27] [lane_gpu0_b] resume E12a_alldata seed0 from its last checkpoint
+[2026-09-28 15:10:27] [lane_gpu0_b] start E12a_alldata seed0 on GPU 0
+[2026-09-28 15:25:00] [lane_gpu0_a] ok    E12b_gate seed0  
+[2026-09-28 15:25:00] [lane_gpu0_a] skip  E12b_other6 seed0 (finished)
+[2026-09-28 15:25:00] [lane_gpu0_a] skip  E12b_nr3 seed0 (finished)
+[2026-09-28 15:25:01] [lane_gpu0_a] skip  E12a_alldata seed0 (another lane is running it)
+[2026-09-28 15:25:01] [lane_gpu0_a] skip  E12b_gate seed1 (another lane is running it)
+[2026-09-28 15:25:01] [lane_gpu0_a] start E12b_other6 seed1 on GPU 0
+[2026-09-28 17:16:58] [lane_gpu1_a] ok    E12b_gate seed1  
+[2026-09-28 17:16:58] [lane_gpu1_a] skip  E12b_other6 seed1 (another lane is running it)
+[2026-09-28 17:16:58] [lane_gpu1_a] start E12b_nr3 seed1 on GPU 1
+[2026-09-28 17:41:45] [lane_gpu1_a] ok    E12b_nr3 seed1  
+[2026-09-28 17:41:45] [lane_gpu1_a] start E12a_alldata seed1 on GPU 1
+[2026-09-28 18:52:53] [lane_gpu0_b] ok    E12a_alldata seed0  devS2=0.4146 devS1=0.6324
+[2026-09-28 18:52:53] [lane_gpu0_b] skip  E12b_gate seed1 (finished)
+[2026-09-28 18:52:53] [lane_gpu0_b] skip  E12b_other6 seed1 (another lane is running it)
+[2026-09-28 18:52:53] [lane_gpu0_b] skip  E12b_nr3 seed1 (finished)
+[2026-09-28 18:52:53] [lane_gpu0_b] skip  E12a_alldata seed1 (another lane is running it)
+[2026-09-28 18:52:53] [lane_gpu0_b] start E12b_gate seed2 on GPU 0
+[2026-09-28 19:35:32] [lane_gpu0_a] ok    E12b_other6 seed1  
+[2026-09-28 19:35:32] [lane_gpu0_a] skip  E12b_nr3 seed1 (finished)
+[2026-09-28 19:35:32] [lane_gpu0_a] skip  E12a_alldata seed1 (another lane is running it)
+[2026-09-28 19:35:32] [lane_gpu0_a] skip  E12b_gate seed2 (another lane is running it)
+[2026-09-28 19:35:32] [lane_gpu0_a] start E12b_other6 seed2 on GPU 0
+[2026-09-28 22:34:26] [lane_gpu1_a] ok    E12a_alldata seed1  devS2=0.4047 devS1=0.6193
+[2026-09-28 22:34:26] [lane_gpu1_a] skip  E12b_gate seed2 (another lane is running it)
+[2026-09-28 22:34:26] [lane_gpu1_a] skip  E12b_other6 seed2 (another lane is running it)
+[2026-09-28 22:34:26] [lane_gpu1_a] start E12b_nr3 seed2 on GPU 1
+[2026-09-28 22:34:32] [lane_gpu1_a] wait  E12b_nr3 seed2: GPU 1 memory held by another job, retry 1/12 in 10 min
+[2026-09-28 22:44:32] [lane_gpu1_a] start E12b_nr3 seed2 on GPU 1
+[2026-09-28 22:44:37] [lane_gpu1_a] wait  E12b_nr3 seed2: GPU 1 memory held by another job, retry 2/12 in 10 min
+[2026-09-28 22:54:37] [lane_gpu1_a] start E12b_nr3 seed2 on GPU 1
+[2026-09-28 22:54:43] [lane_gpu1_a] wait  E12b_nr3 seed2: GPU 1 memory held by another job, retry 3/12 in 10 min
+[2026-09-28 23:04:43] [lane_gpu1_a] start E12b_nr3 seed2 on GPU 1
+[2026-09-28 23:04:48] [lane_gpu1_a] wait  E12b_nr3 seed2: GPU 1 memory held by another job, retry 4/12 in 10 min
+[2026-09-28 23:14:48] [lane_gpu1_a] start E12b_nr3 seed2 on GPU 1
+[2026-09-28 23:14:54] [lane_gpu1_a] wait  E12b_nr3 seed2: GPU 1 memory held by another job, retry 5/12 in 10 min
+[2026-09-28 23:24:54] [lane_gpu1_a] start E12b_nr3 seed2 on GPU 1
+[2026-09-28 23:35:14] [manual] stopped lane_gpu1_a and released GPU 1's first MIG slice (GI 1) to a lab-mate; E12b_nr3 seed2 resumes from its checkpoint on GPU 0; E12 continues on GPU 0 only
+[2026-09-29 00:04:28] [lane_gpu0_b] ok    E12b_gate seed2  
+[2026-09-29 00:04:28] [lane_gpu0_b] skip  E12b_other6 seed2 (another lane is running it)
+[2026-09-29 00:04:28] [lane_gpu0_b] resume E12b_nr3 seed2 from its last checkpoint
+[2026-09-29 00:04:28] [lane_gpu0_b] start E12b_nr3 seed2 on GPU 0
+[2026-09-29 00:04:34] [lane_gpu0_b] wait  E12b_nr3 seed2: GPU 0 memory held by another job, retry 1/12 in 10 min
+[2026-09-29 00:14:34] [lane_gpu0_b] start E12b_nr3 seed2 on GPU 0
+[2026-09-29 00:14:40] [lane_gpu0_b] wait  E12b_nr3 seed2: GPU 0 memory held by another job, retry 2/12 in 10 min
+[2026-09-29 00:21:55] [lane_gpu0_a] ok    E12b_other6 seed2  
+[2026-09-29 00:21:55] [lane_gpu0_a] skip  E12b_nr3 seed2 (another lane is running it)
+[2026-09-29 00:21:55] [lane_gpu0_a] start E12a_alldata seed2 on GPU 0
+[2026-09-29 00:24:40] [lane_gpu0_b] start E12b_nr3 seed2 on GPU 0
+[2026-09-29 00:49:46] [lane_gpu0_b] ok    E12b_nr3 seed2  
+[2026-09-29 00:49:46] [lane_gpu0_b] skip  E12a_alldata seed2 (another lane is running it)
+[2026-09-29 00:49:46] [lane_gpu0_b] start E12c_pair_impl_dodg seed0 on GPU 0
+[2026-09-29 01:45:46] [lane_gpu0_c] lane start (E12, GPU 0): 21 run(s)
+[2026-09-29 01:45:46] [lane_gpu0_c] skip  E12b_gate seed0 (finished)
+[2026-09-29 01:45:46] [lane_gpu0_c] skip  E12b_other6 seed0 (finished)
+[2026-09-29 01:45:46] [lane_gpu0_c] skip  E12b_nr3 seed0 (finished)
+[2026-09-29 01:45:46] [lane_gpu0_c] skip  E12a_alldata seed0 (finished)
+[2026-09-29 01:45:46] [lane_gpu0_c] skip  E12b_gate seed1 (finished)
+[2026-09-29 01:45:46] [lane_gpu0_c] skip  E12b_other6 seed1 (finished)
+[2026-09-29 01:45:46] [lane_gpu0_c] skip  E12b_nr3 seed1 (finished)
+[2026-09-29 01:45:46] [lane_gpu0_c] skip  E12a_alldata seed1 (finished)
+[2026-09-29 01:45:46] [lane_gpu0_c] skip  E12b_gate seed2 (finished)
+[2026-09-29 01:45:46] [lane_gpu0_c] skip  E12b_other6 seed2 (finished)
+[2026-09-29 01:45:46] [lane_gpu0_c] skip  E12b_nr3 seed2 (finished)
+[2026-09-29 01:45:46] [lane_gpu0_c] skip  E12a_alldata seed2 (another lane is running it)
+[2026-09-29 01:45:46] [lane_gpu0_c] skip  E12c_pair_impl_dodg seed0 (another lane is running it)
+[2026-09-29 01:45:46] [lane_gpu0_c] start E12c_pair_expl_impl seed0 on GPU 0
+[2026-09-29 01:47:15] [lane_gpu0_c] lane start (E12, GPU 0): 25 run(s)
+[2026-09-29 01:47:15] [lane_gpu0_c] start E12b_other6 seed3 on GPU 0
+[2026-09-29 02:53:06] [lane_gpu0_b] ok    E12c_pair_impl_dodg seed0  
+[2026-09-29 02:53:06] [lane_gpu0_b] start E12c_pair_expl_impl seed0 on GPU 0
+[2026-09-29 05:51:38] [lane_gpu0_b] ok    E12c_pair_expl_impl seed0  
+[2026-09-29 05:51:38] [lane_gpu0_b] start E12c_pair_gen_defl seed0 on GPU 0
+[2026-09-29 06:35:46] [lane_gpu0_a] ok    E12a_alldata seed2  devS2=0.3928 devS1=0.6063
+[2026-09-29 06:35:46] [lane_gpu0_a] post  E12a_alldata: all 3 seeds finished -- analysis, decision rules, submission
+[submission] E12a_alldata_logitadj: seed-ensemble, logit-adjusted tau=0.0, 3 seed(s), dev S2 mean 0.4041
+  Subtask 2 (evasion) : /scratch/shlok/Temp/CLARITY-Unmasking-Political-Question-Evasions/clarity/submissions/E12a_alldata_logitadj/subtask2_evasion/prediction.zip
+  Subtask 1 (clarity) : /scratch/shlok/Temp/CLARITY-Unmasking-Political-Question-Evasions/clarity/submissions/E12a_alldata_logitadj/subtask1_clarity/prediction.zip
+  test distribution   : {'Explicit': 104, 'Dodging': 40, 'Implicit': 35, 'Claims ignorance': 17, 'General': 15, 'Deflection': 14, 'Declining to answer': 10, 'Clarification': 2}
+[2026-09-29 06:35:53] [lane_gpu0_a] ok    E12a_alldata post-processing -> reports/raw/E12a_alldata_{analysis,decision_rules}.txt, submissions/E12a_alldata_logitadj/
+[2026-09-29 06:35:53] [lane_gpu0_a] skip  E12c_pair_impl_dodg seed0 (finished)
+[2026-09-29 06:35:53] [lane_gpu0_a] skip  E12c_pair_expl_impl seed0 (finished)
+[2026-09-29 06:35:53] [lane_gpu0_a] skip  E12c_pair_gen_defl seed0 (another lane is running it)
+[2026-09-29 06:35:53] [lane_gpu0_a] start E12c_pair_impl_dodg seed1 on GPU 0
+[2026-09-29 06:36:46] [lane_gpu0_a] lane start (E12, GPU 0): 23 run(s)
+[2026-09-29 06:36:46] [lane_gpu0_a] start E12a_alldata seed3 on GPU 0
+[2026-09-29 07:24:57] [lane_gpu0_c] ok    E12b_other6 seed3  
+[2026-09-29 07:24:57] [lane_gpu0_c] start E12b_nr3 seed3 on GPU 0
+[2026-09-29 07:29:46] [lane_gpu0_b] ok    E12c_pair_gen_defl seed0  
+[2026-09-29 07:29:46] [lane_gpu0_b] start E12c_pair_impl_dodg seed1 on GPU 0
+[2026-09-29 08:11:13] [lane_gpu0_c] ok    E12b_nr3 seed3  
+[2026-09-29 08:11:13] [lane_gpu0_c] start E12b_other6 seed4 on GPU 0
+[2026-09-29 09:52:04] [lane_gpu0_b] ok    E12c_pair_impl_dodg seed1  
+[2026-09-29 09:52:04] [lane_gpu0_b] start E12c_pair_expl_impl seed1 on GPU 0
+[2026-09-29 12:50:01] [lane_gpu0_b] ok    E12c_pair_expl_impl seed1  
+[2026-09-29 12:50:01] [lane_gpu0_b] start E12c_pair_gen_defl seed1 on GPU 0
+[2026-09-29 13:15:28] [lane_gpu0_a] ok    E12a_alldata seed3  devS2=0.4461 devS1=0.6213
+[2026-09-29 13:15:28] [lane_gpu0_a] start E12a_alldata seed4 on GPU 0
+[2026-09-29 13:48:17] [lane_gpu0_c] ok    E12b_other6 seed4  
+[2026-09-29 13:48:17] [lane_gpu0_c] start E12b_nr3 seed4 on GPU 0
+[2026-09-29 14:27:48] [lane_gpu0_b] ok    E12c_pair_gen_defl seed1  
+[2026-09-29 14:27:48] [lane_gpu0_b] start E12c_pair_impl_dodg seed2 on GPU 0
+[2026-09-29 14:34:18] [lane_gpu0_c] ok    E12b_nr3 seed4  
+[2026-09-29 14:34:18] [lane_gpu0_c] skip  E12b_gate seed0 (finished)
+[2026-09-29 14:34:18] [lane_gpu0_c] skip  E12b_other6 seed0 (finished)
+[2026-09-29 14:34:18] [lane_gpu0_c] skip  E12b_nr3 seed0 (finished)
+[2026-09-29 14:34:18] [lane_gpu0_c] skip  E12a_alldata seed0 (finished)
+[2026-09-29 14:34:18] [lane_gpu0_c] skip  E12b_gate seed1 (finished)
+[2026-09-29 14:34:18] [lane_gpu0_c] skip  E12b_other6 seed1 (finished)
+[2026-09-29 14:34:18] [lane_gpu0_c] skip  E12b_nr3 seed1 (finished)
+[2026-09-29 14:34:18] [lane_gpu0_c] skip  E12a_alldata seed1 (finished)
+[2026-09-29 14:34:18] [lane_gpu0_c] skip  E12b_gate seed2 (finished)
+[2026-09-29 14:34:18] [lane_gpu0_c] skip  E12b_other6 seed2 (finished)
+[2026-09-29 14:34:18] [lane_gpu0_c] skip  E12b_nr3 seed2 (finished)
+[2026-09-29 14:34:18] [lane_gpu0_c] skip  E12a_alldata seed2 (finished)
+[2026-09-29 14:34:18] [lane_gpu0_c] skip  E12c_pair_impl_dodg seed0 (finished)
+[2026-09-29 14:34:18] [lane_gpu0_c] skip  E12c_pair_expl_impl seed0 (finished)
+[2026-09-29 14:34:18] [lane_gpu0_c] skip  E12c_pair_gen_defl seed0 (finished)
+[2026-09-29 14:34:18] [lane_gpu0_c] skip  E12c_pair_impl_dodg seed1 (finished)
+[2026-09-29 14:34:18] [lane_gpu0_c] skip  E12c_pair_expl_impl seed1 (finished)
+[2026-09-29 14:34:18] [lane_gpu0_c] skip  E12c_pair_gen_defl seed1 (finished)
+[2026-09-29 14:34:18] [lane_gpu0_c] skip  E12c_pair_impl_dodg seed2 (another lane is running it)
+[2026-09-29 14:34:18] [lane_gpu0_c] start E12c_pair_expl_impl seed2 on GPU 0
+[2026-09-29 16:50:29] [lane_gpu0_b] ok    E12c_pair_impl_dodg seed2  
+[2026-09-29 16:50:29] [lane_gpu0_b] skip  E12c_pair_expl_impl seed2 (another lane is running it)
+[2026-09-29 16:50:29] [lane_gpu0_b] start E12c_pair_gen_defl seed2 on GPU 0
+[2026-09-29 17:31:29] [lane_gpu0_c] ok    E12c_pair_expl_impl seed2  
+[2026-09-29 17:31:29] [lane_gpu0_c] skip  E12c_pair_gen_defl seed2 (another lane is running it)
+[hf] upload queued in background: /scratch/shlok/Temp/CLARITY-Unmasking-Political-Question-Evasions/clarity/runs/E12c_pair_expl_impl/seed2 (progress: /scratch/shlok/Temp/CLARITY-Unmasking-Political-Question-Evasions/clarity/logs/hf_uploads.log)
+[2026-09-29 17:31:29] [lane_gpu0_c] lane finished
+[2026-09-29 18:14:18] [lane_gpu0_b] ok    E12c_pair_gen_defl seed2  
+[hf] upload queued in background: /scratch/shlok/Temp/CLARITY-Unmasking-Political-Question-Evasions/clarity/runs/E12c_pair_gen_defl/seed2 (progress: /scratch/shlok/Temp/CLARITY-Unmasking-Political-Question-Evasions/clarity/logs/hf_uploads.log)
+[2026-09-29 18:14:18] [lane_gpu0_b] lane finished
+[2026-09-29 18:52:47] [lane_gpu0_a] ok    E12a_alldata seed4  devS2=0.4215 devS1=0.5894
+[2026-09-29 18:52:47] [lane_gpu0_a] post  E12a_alldata: all 5 seeds finished -- analysis, decision rules, submission
+[submission] E12a_alldata_logitadj: seed-ensemble, logit-adjusted tau=0.1, 5 seed(s), dev S2 mean 0.4159
+  Subtask 2 (evasion) : /scratch/shlok/Temp/CLARITY-Unmasking-Political-Question-Evasions/clarity/submissions/E12a_alldata_logitadj/subtask2_evasion/prediction.zip
+  Subtask 1 (clarity) : /scratch/shlok/Temp/CLARITY-Unmasking-Political-Question-Evasions/clarity/submissions/E12a_alldata_logitadj/subtask1_clarity/prediction.zip
+  test distribution   : {'Explicit': 104, 'Dodging': 38, 'Implicit': 34, 'General': 18, 'Claims ignorance': 15, 'Declining to answer': 12, 'Deflection': 12, 'Clarification': 4}
+[2026-09-29 18:52:57] [lane_gpu0_a] ok    E12a_alldata post-processing -> reports/raw/E12a_alldata_{analysis,decision_rules}.txt, submissions/E12a_alldata_logitadj/
+[2026-09-29 18:52:57] [lane_gpu0_a] skip  E12b_gate seed0 (finished)
+[2026-09-29 18:52:57] [lane_gpu0_a] skip  E12b_other6 seed0 (finished)
+[2026-09-29 18:52:57] [lane_gpu0_a] skip  E12b_nr3 seed0 (finished)
+[2026-09-29 18:52:57] [lane_gpu0_a] skip  E12a_alldata seed0 (finished)
+[2026-09-29 18:52:57] [lane_gpu0_a] skip  E12b_gate seed1 (finished)
+[2026-09-29 18:52:57] [lane_gpu0_a] skip  E12b_other6 seed1 (finished)
+[2026-09-29 18:52:57] [lane_gpu0_a] skip  E12b_nr3 seed1 (finished)
+[2026-09-29 18:52:57] [lane_gpu0_a] skip  E12a_alldata seed1 (finished)
+[2026-09-29 18:52:57] [lane_gpu0_a] skip  E12b_gate seed2 (finished)
+[2026-09-29 18:52:57] [lane_gpu0_a] skip  E12b_other6 seed2 (finished)
+[2026-09-29 18:52:57] [lane_gpu0_a] skip  E12b_nr3 seed2 (finished)
+[2026-09-29 18:52:57] [lane_gpu0_a] skip  E12a_alldata seed2 (finished)
+[2026-09-29 18:52:57] [lane_gpu0_a] skip  E12c_pair_impl_dodg seed0 (finished)
+[2026-09-29 18:52:57] [lane_gpu0_a] skip  E12c_pair_expl_impl seed0 (finished)
+[2026-09-29 18:52:57] [lane_gpu0_a] skip  E12c_pair_gen_defl seed0 (finished)
+[2026-09-29 18:52:57] [lane_gpu0_a] skip  E12c_pair_impl_dodg seed1 (finished)
+[2026-09-29 18:52:57] [lane_gpu0_a] skip  E12c_pair_expl_impl seed1 (finished)
+[2026-09-29 18:52:57] [lane_gpu0_a] skip  E12c_pair_gen_defl seed1 (finished)
+[2026-09-29 18:52:57] [lane_gpu0_a] skip  E12c_pair_impl_dodg seed2 (finished)
+[2026-09-29 18:52:57] [lane_gpu0_a] skip  E12c_pair_expl_impl seed2 (finished)
+[2026-09-29 18:52:57] [lane_gpu0_a] skip  E12c_pair_gen_defl seed2 (finished)
+[hf] upload queued in background: /scratch/shlok/Temp/CLARITY-Unmasking-Political-Question-Evasions/clarity/runs/E12a_alldata/seed4 (progress: /scratch/shlok/Temp/CLARITY-Unmasking-Political-Question-Evasions/clarity/logs/hf_uploads.log)
+[2026-09-29 18:52:57] [lane_gpu0_a] lane finished

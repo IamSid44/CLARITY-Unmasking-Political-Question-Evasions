@@ -1,0 +1,204 @@
+Using CPython 3.12.3 interpreter at: /usr/bin/python3.12
+Creating virtual environment at: .venv-vllm
+Activate with: source .venv-vllm/bin/activate
+Using Python 3.12.3 environment at: .venv-vllm
+Resolved 206 packages in 5m 43s
+Downloading sympy (6.0MiB)
+Downloading cryptography (4.5MiB)
+Downloading uvloop (4.3MiB)
+Downloading hf-xet (4.0MiB)
+Downloading grpcio (6.8MiB)
+Downloading opencv-python-headless (58.4MiB)
+Downloading pycountry (7.7MiB)
+Downloading cuda-bindings (6.8MiB)
+Downloading pillow (6.6MiB)
+Downloading numpy (15.8MiB)
+Downloading nvidia-cuda-nvdisasm (5.0MiB)
+Downloading instanttensor (6.2MiB)
+Downloading tokenspeed-triton (89.0MiB)
+Downloading nvidia-cutlass-dsl-libs-cu13 (84.2MiB)
+Downloading torchcodec (9.5MiB)
+Downloading llvmlite (53.7MiB)
+Downloading cuda-core (6.3MiB)
+Downloading vllm (300.3MiB)
+Downloading nccl4py (3.5MiB)
+Downloading nvidia-cuda-cccl (3.7MiB)
+Downloading numba (3.6MiB)
+Downloading nvidia-nccl-cu13 (196.4MiB)
+Downloading nvidia-cuda-cupti (10.2MiB)
+Downloading nvidia-cublas (403.5MiB)
+Downloading nvidia-nvshmem-cu13 (57.6MiB)
+Downloading torch (502.2MiB)
+Downloading mistral-common (6.3MiB)
+Downloading nvidia-cufft (204.2MiB)
+Downloading flashinfer-python (17.5MiB)
+Downloading nvidia-cusolver (191.6MiB)
+Downloading torchvision (7.3MiB)
+Downloading z3-solver (27.9MiB)
+Downloading nvidia-cuda-nvcc (45.5MiB)
+Downloading pynvvideocodec (41.2MiB)
+Downloading pandas (10.3MiB)
+Downloading nvidia-nvjitlink (40.5MiB)
+Downloading nvidia-cusparselt-cu13 (162.3MiB)
+Downloading nvidia-cudnn-frontend (9.7MiB)
+Downloading nvidia-cudnn-cu13 (349.2MiB)
+Downloading nvidia-cutlass-dsl-libs-cu12 (84.6MiB)
+Downloading nvidia-cuda-nvrtc (86.0MiB)
+Downloading triton (188.6MiB)
+Downloading tilelang (48.2MiB)
+Downloading nvidia-cusparse (139.2MiB)
+Downloading scipy (33.7MiB)
+Downloading transformers (12.0MiB)
+Downloading nvidia-nvvm (69.2MiB)
+Downloading scikit-learn (8.7MiB)
+Downloading nvidia-curand (56.8MiB)
+Downloading pyarrow (51.4MiB)
+error: Failed to download `cuda-bindings==13.4.3`
+  cause: Request failed after 4 retries in 44.6s
+  cause: Failed to fetch:
+         `https://files.pythonhosted.org/packages/b8/c3/efb6bbb7307bf5c83dc4acca650280b210c67ed1a1a60f898a90e7c82e38/cuda_bindings-13.4.3-cp312-cp312-manylinux_2_24_x86_64.manylinux_2_28_x86_64.whl`
+  cause: error sending request for url
+         (https://files.pythonhosted.org/packages/b8/c3/efb6bbb7307bf5c83dc4acca650280b210c67ed1a1a60f898a90e7c82e38/cuda_bindings-13.4.3-cp312-cp312-manylinux_2_24_x86_64.manylinux_2_28_x86_64.whl)
+  cause: client error (Connect)
+  cause: operation timed out
+
+hint: `cuda-bindings` (v13.4.3) was included because `vllm` (v0.30.0) depends on `torch` (v2.13.0) which depends on `cuda-bindings`
+EXIT 2
+Using Python 3.12.3 environment at: /scratch/shlok/Temp/.venv-vllm
+error: Request failed after 3 retries in 50.0s
+  cause: Failed to fetch:
+         `https://files.pythonhosted.org/packages/60/d1/38f3a3405989a89ac18390803e70c6ad7c7760da4f9b83cbeca0c44a0c72/python_dotenv-1.2.4-py3-none-any.whl.metadata`
+  cause: error sending request for url
+         (https://files.pythonhosted.org/packages/60/d1/38f3a3405989a89ac18390803e70c6ad7c7760da4f9b83cbeca0c44a0c72/python_dotenv-1.2.4-py3-none-any.whl.metadata)
+  cause: client error (Connect)
+  cause: operation timed out
+RETRY 1
+Using Python 3.12.3 environment at: /scratch/shlok/Temp/.venv-vllm
+Resolved 206 packages in 2m 26s
+Downloading nvidia-cudnn-cu13 (349.2MiB)
+Downloading nvidia-cublas (403.5MiB)
+Downloading torch (502.2MiB)
+Downloading vllm (300.3MiB)
+ Downloaded vllm
+Downloading nvidia-cufft (204.2MiB)
+ Downloaded nvidia-cudnn-cu13
+Downloading nvidia-nccl-cu13 (196.4MiB)
+ Downloaded nvidia-cufft
+Downloading nvidia-cusolver (191.6MiB)
+ Downloaded nvidia-cublas
+Downloading triton (188.6MiB)
+ Downloaded torch
+Downloading nvidia-cusparselt-cu13 (162.3MiB)
+error: Failed to download `triton==3.7.1`
+  cause: Failed to extract archive:
+         triton-3.7.1-cp312-cp312-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl
+  cause: I/O operation failed during extraction
+  cause: failed to write to file
+         `/tmp/.tmpC9Jckq/.tmplt6P35/triton/_C/libtriton.so`: No space left on
+         device (os error 28)
+
+hint: `triton` (v3.7.1) was included because `vllm` (v0.30.0) depends on `torch` (v2.13.0) which depends on `triton`
+RETRY2 1
+Using Python 3.12.3 environment at: /scratch/shlok/Temp/.venv-vllm
+Resolved 206 packages in 27.77s
+Downloading nvidia-cublas (403.5MiB)
+Downloading torch (502.2MiB)
+Downloading vllm (300.3MiB)
+Downloading nvidia-cudnn-cu13 (349.2MiB)
+RETRY3 1
+Using Python 3.12.3 environment at: /scratch/shlok/Temp/.venv-vllm
+Resolved 206 packages in 4.23s
+Downloading nvidia-cuda-runtime (2.1MiB)
+Downloading torch (502.2MiB)
+Downloading nvidia-cublas (403.5MiB)
+Downloading nvidia-cutlass-dsl-libs-base (2.7MiB)
+ Downloaded nvidia-cuda-runtime
+Downloading nvidia-cudnn-cu13 (349.2MiB)
+ Downloaded nvidia-cutlass-dsl-libs-base
+Downloading vllm (300.3MiB)
+--- switching to vllm==0.31.0 from the existing uv cache 2026-10-13 22:49:54
+Using Python 3.12.3 environment at: /scratch/shlok/Temp/.venv-vllm
+Resolved 207 packages in 19.04s
+Downloading pydantic-core (2.1MiB)
+Downloading nvidia-nvjitlink (40.5MiB)
+Downloading z3-solver (27.9MiB)
+Downloading pynvvideocodec (41.2MiB)
+Downloading nvidia-nccl-cu13 (196.4MiB)
+Downloading llvmlite (53.7MiB)
+Downloading tilelang (48.2MiB)
+Downloading nvidia-cusolver (191.6MiB)
+Downloading aiohttp (1.8MiB)
+Downloading opencv-python-headless (58.4MiB)
+Downloading nvidia-curand (56.8MiB)
+Downloading nvidia-cutlass-dsl-libs-cu13 (84.2MiB)
+Downloading pandas (10.3MiB)
+Downloading nvidia-cuda-nvcc (45.5MiB)
+Downloading vllm (305.7MiB)
+Downloading tokenspeed-triton (89.0MiB)
+Downloading nvidia-cublas (403.5MiB)
+Downloading nvidia-cufft (204.2MiB)
+Downloading openai (2.1MiB)
+Downloading nvidia-nvshmem-cu13 (57.6MiB)
+Downloading nvidia-cusparselt-cu13 (162.3MiB)
+Downloading triton (188.6MiB)
+Downloading nvidia-cuda-nvrtc (86.0MiB)
+Downloading torch (502.2MiB)
+Downloading nvidia-nvvm (69.2MiB)
+Downloading pyarrow (51.4MiB)
+Downloading nvidia-cusparse (139.2MiB)
+Downloading nvidia-cudnn-cu13 (349.2MiB)
+Downloading flashinfer-python (32.1MiB)
+Downloading nvidia-cutlass-dsl-libs-cu12 (84.6MiB)
+Downloading instanttensor (6.2MiB)
+ Downloaded aiohttp
+ Downloaded pydantic-core
+ Downloaded openai
+Using Python 3.12.3 environment at: /scratch/shlok/Temp/.venv-vllm
+Resolved 207 packages in 1.07s
+Downloading pynvvideocodec (41.2MiB)
+Downloading pyarrow (51.4MiB)
+Downloading z3-solver (27.9MiB)
+Downloading nvidia-nvjitlink (40.5MiB)
+Downloading flashinfer-python (32.1MiB)
+Downloading tilelang (48.2MiB)
+Downloading triton (188.6MiB)
+Downloading nvidia-cuda-nvcc (45.5MiB)
+Downloading nvidia-cusolver (191.6MiB)
+Downloading nvidia-cufft (204.2MiB)
+Downloading nvidia-cusparse (139.2MiB)
+Downloading llvmlite (53.7MiB)
+Downloading nvidia-cuda-nvrtc (86.0MiB)
+Downloading opencv-python-headless (58.4MiB)
+Downloading nvidia-cudnn-cu13 (349.2MiB)
+Downloading pandas (10.3MiB)
+Downloading nvidia-nvvm (69.2MiB)
+Downloading nvidia-curand (56.8MiB)
+Downloading nvidia-cusparselt-cu13 (162.3MiB)
+Downloading torch (502.2MiB)
+Downloading nvidia-cutlass-dsl-libs-cu13 (84.2MiB)
+Downloading nvidia-cutlass-dsl-libs-cu12 (84.6MiB)
+Downloading nvidia-nccl-cu13 (196.4MiB)
+Downloading tokenspeed-triton (89.0MiB)
+Downloading nvidia-nvshmem-cu13 (57.6MiB)
+Downloading nvidia-cublas (403.5MiB)
+Downloading vllm (305.7MiB)
+Using Python 3.12.3 environment at: /scratch/shlok/Temp/.venv-vllm
+Resolved 12 packages in 8.72s
+Downloading pandas (10.3MiB)
+Downloading pyarrow (51.4MiB)
+Downloading scikit-learn (8.7MiB)
+Downloading scipy (33.7MiB)
+ Downloaded scikit-learn
+ Downloaded pandas
+ Downloaded scipy
+ Downloaded pyarrow
+Prepared 8 packages in 13m 18s
+Installed 8 packages in 24ms
+ + joblib==1.6.0
+ + narwhals==2.27.1
+ + pandas==3.0.6
+ + pyarrow==26.0.0
+ + python-dateutil==2.9.0.post0
+ + scikit-learn==1.9.1
+ + scipy==1.18.1
+ + threadpoolctl==3.7.0

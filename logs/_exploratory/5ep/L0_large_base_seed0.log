@@ -1,0 +1,66 @@
+wandb: Tracking run with wandb version 0.28.2
+wandb: W&B syncing is set to `offline` in this directory. Run `wandb online` or set WANDB_MODE=online to enable cloud syncing.
+wandb: Run data is saved locally in /scratch/shlok/Temp/CLARITY-Unmasking-Political-Question-Evasions/clarity/wandb/offline-run-20260919_131236-9r3g8w70
+wandb: View this run in the terminal with `wandb leet`
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+[vram] 43.3 GB free of 95.0 GB
+[wandb] offline run L0_large_base-s0 (group=L0_large_base)
+Loading weights:   0%|          | 0/390 [00:00<?, ?it/s]Loading weights: 100%|██████████| 390/390 [00:00<00:00, 8371.61it/s]
+[transformers] [1mDebertaV2Model LOAD REPORT[0m from: microsoft/deberta-v3-large
+Key                                     | Status     |  | 
+----------------------------------------+------------+--+-
+lm_predictions.lm_head.LayerNorm.bias   | UNEXPECTED |  | 
+mask_predictions.LayerNorm.bias         | UNEXPECTED |  | 
+mask_predictions.LayerNorm.weight       | UNEXPECTED |  | 
+mask_predictions.dense.bias             | UNEXPECTED |  | 
+lm_predictions.lm_head.bias             | UNEXPECTED |  | 
+mask_predictions.classifier.bias        | UNEXPECTED |  | 
+mask_predictions.classifier.weight      | UNEXPECTED |  | 
+mask_predictions.dense.weight           | UNEXPECTED |  | 
+lm_predictions.lm_head.LayerNorm.weight | UNEXPECTED |  | 
+lm_predictions.lm_head.dense.weight     | UNEXPECTED |  | 
+lm_predictions.lm_head.dense.bias       | UNEXPECTED |  | 
+
+Notes:
+- UNEXPECTED:	can be ignored when loading from different task/architecture; not ok if you expect identical arch.
+/scratch/shlok/Temp/CLARITY-Unmasking-Political-Question-Evasions/clarity/encoder.py:648: UserWarning: Converting a tensor with requires_grad=True to a scalar may lead to unexpected behavior.
+Consider using tensor.detach() first. (Triggered internally at /pytorch/torch/csrc/autograd/generated/python_variable_methods.cpp:836.)
+  running += float(loss)
+[L0_large_base s0] ep0 loss=1.9067 val=0.0887 devS2=0.1308 devS1=0.1957 inset=0.380 named=3/9 (5.5m)
+[L0_large_base s0] ep1 loss=1.7813 val=0.2468 devS2=0.1713 devS1=0.4240 inset=0.481 named=5/9 (10.5m)
+[L0_large_base s0] ep2 loss=1.5767 val=0.3098 devS2=0.2507 devS1=0.5226 inset=0.519 named=7/9 (16.2m)
+[L0_large_base s0] ep3 loss=1.3856 val=0.3530 devS2=0.3670 devS1=0.5619 inset=0.575 named=8/9 (21.7m)
+[L0_large_base s0] ep4 loss=1.2847 val=0.3654 devS2=0.2771 devS1=0.5245 inset=0.519 named=8/9 (27.3m)
+wandb: 
+wandb: Run history:
+wandb:     dev_classes_named ▁▄▇██
+wandb:        dev_inset_rate ▁▅▆█▆
+wandb: dev_subtask1_macro_f1 ▁▅▇█▇
+wandb: dev_subtask2_macro_f1 ▁▂▅█▅
+wandb:                 epoch ▁▃▅▆█
+wandb:               minutes ▁▃▄▆█
+wandb:            train_loss █▇▄▂▁
+wandb:          val_macro_f1 ▁▅▇██
+wandb: 
+wandb: Run summary:
+wandb:     best_val_macro_f1 0.36536
+wandb:     dev_classes_named 8
+wandb:        dev_inset_rate 0.51948
+wandb: dev_subtask1_macro_f1 0.52446
+wandb: dev_subtask2_macro_f1 0.27708
+wandb:                 epoch 4
+wandb:               minutes 27.25075
+wandb:          peak_vram_gb 8.59396
+wandb:        selected_epoch 4
+wandb:            train_loss 1.28469
+wandb:                    +1 ...
+wandb: 
+wandb: You can sync this run to the cloud by running:
+wandb: wandb sync /scratch/shlok/Temp/CLARITY-Unmasking-Political-Question-Evasions/clarity/wandb/offline-run-20260919_131236-9r3g8w70
+wandb: Find logs at: ./wandb/offline-run-20260919_131236-9r3g8w70/logs
+[hf] upload failed (run is unaffected): HfHubHTTPError: (Request ID: Root=1-6aae4357-1b4c14ea688cc21901ef1c0c;0c37a996-e175-44de-a2f7-59a1eceee19a)
+
+403 Forbidden: You don't have the rights to create a model under the namespace "your-hf-username".
+Cannot access content at: https://huggingface.co/api/repos/create.
+Make sure your token has the correct permissions.
+[L0_large_base s0] DONE  devS2=0.2771 devS1=0.5245 peak=8.6GB  27.3m

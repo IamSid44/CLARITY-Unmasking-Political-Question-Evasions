@@ -1,0 +1,79 @@
+FAIL FAST: 9.0 GB free, need 20.0 GB. Not starting rather than OOM-ing a shared card.
+FAIL FAST: 9.0 GB free, need 20.0 GB. Not starting rather than OOM-ing a shared card.
+FAIL FAST: 9.0 GB free, need 20.0 GB. Not starting rather than OOM-ing a shared card.
+FAIL FAST: 9.0 GB free, need 20.0 GB. Not starting rather than OOM-ing a shared card.
+FAIL FAST: 6.5 GB free, need 20.0 GB. Not starting rather than OOM-ing a shared card.
+wandb: [wandb.login()] Loaded credentials for https://api.wandb.ai from WANDB_API_KEY.
+wandb: Currently logged in as: iamsid44 (iamsid44-iiit-hyderabad) to https://api.wandb.ai. Use `wandb login --relogin` to force relogin
+wandb: setting up run d4c41c4b
+wandb: Tracking run with wandb version 0.28.2
+wandb: Run data is saved locally in /scratch/shlok/Temp/CLARITY-Unmasking-Political-Question-Evasions/clarity/wandb/run-20260919_184455-d4c41c4b
+wandb: Run `wandb offline` to turn off syncing.
+wandb: Syncing run L0_large_base-s2
+wandb: ⭐️ View project at https://wandb.ai/iamsid44-iiit-hyderabad/clarity-semeval26
+wandb: 🚀 View run at https://wandb.ai/iamsid44-iiit-hyderabad/clarity-semeval26/runs/d4c41c4b
+[vram] 48.4 GB free of 95.0 GB
+[wandb] online run L0_large_base-s2 (group=L0_large_base)
+Loading weights:   0%|          | 0/390 [00:00<?, ?it/s]Loading weights: 100%|██████████| 390/390 [00:00<00:00, 7675.57it/s]
+[transformers] [1mDebertaV2Model LOAD REPORT[0m from: microsoft/deberta-v3-large
+Key                                     | Status     |  | 
+----------------------------------------+------------+--+-
+mask_predictions.classifier.weight      | UNEXPECTED |  | 
+mask_predictions.LayerNorm.bias         | UNEXPECTED |  | 
+lm_predictions.lm_head.bias             | UNEXPECTED |  | 
+lm_predictions.lm_head.dense.weight     | UNEXPECTED |  | 
+mask_predictions.dense.bias             | UNEXPECTED |  | 
+lm_predictions.lm_head.dense.bias       | UNEXPECTED |  | 
+mask_predictions.dense.weight           | UNEXPECTED |  | 
+lm_predictions.lm_head.LayerNorm.weight | UNEXPECTED |  | 
+lm_predictions.lm_head.LayerNorm.bias   | UNEXPECTED |  | 
+mask_predictions.classifier.bias        | UNEXPECTED |  | 
+mask_predictions.LayerNorm.weight       | UNEXPECTED |  | 
+
+Notes:
+- UNEXPECTED:	can be ignored when loading from different task/architecture; not ok if you expect identical arch.
+/scratch/shlok/Temp/CLARITY-Unmasking-Political-Question-Evasions/clarity/encoder.py:659: UserWarning: Converting a tensor with requires_grad=True to a scalar may lead to unexpected behavior.
+Consider using tensor.detach() first. (Triggered internally at /pytorch/torch/csrc/autograd/generated/python_variable_methods.cpp:836.)
+  running += float(loss)
+[L0_large_base s2] ep0 loss=1.9193 val=0.0742 devS2=0.1050 devS1=0.1642 inset=0.377 named=2/9 (4.0m)
+[L0_large_base s2] ep1 loss=1.7963 val=0.1812 devS2=0.1351 devS1=0.2238 inset=0.409 named=4/9 (6.0m)
+[L0_large_base s2] ep2 loss=1.6916 val=0.2417 devS2=0.1917 devS1=0.3428 inset=0.429 named=5/9 (8.4m)
+[L0_large_base s2] ep3 loss=1.5081 val=0.3233 devS2=0.2577 devS1=0.5012 inset=0.494 named=8/9 (12.5m)
+[L0_large_base s2] ep4 loss=1.3616 val=0.3499 devS2=0.2794 devS1=0.5323 inset=0.497 named=8/9 (16.6m)
+[L0_large_base s2] ep5 loss=1.2136 val=0.3313 devS2=0.2894 devS1=0.5440 inset=0.484 named=8/9 (20.7m)
+[L0_large_base s2] ep6 loss=1.1282 val=0.3415 devS2=0.2914 devS1=0.5543 inset=0.497 named=8/9 (24.7m)
+[L0_large_base s2] ep7 loss=1.0903 val=0.3439 devS2=0.2935 devS1=0.5478 inset=0.494 named=8/9 (28.5m)
+wandb: updating run metadata
+wandb: uploading output.log; uploading wandb-summary.json; uploading config.yaml
+wandb: uploading output.log; uploading wandb-summary.json
+wandb: uploading history steps 7-7, summary
+wandb: 
+wandb: Run history:
+wandb:     dev_classes_named ▁▃▅█████
+wandb:        dev_inset_rate ▁▃▄██▇██
+wandb: dev_subtask1_macro_f1 ▁▂▄▇████
+wandb: dev_subtask2_macro_f1 ▁▂▄▇▇███
+wandb:                 epoch ▁▂▃▄▅▆▇█
+wandb:               minutes ▁▂▂▃▅▆▇█
+wandb:            train_loss █▇▆▅▃▂▁▁
+wandb:          val_macro_f1 ▁▄▅▇████
+wandb: 
+wandb: Run summary:
+wandb:     best_val_macro_f1 0.34993
+wandb:     dev_classes_named 8
+wandb:        dev_inset_rate 0.49351
+wandb: dev_subtask1_macro_f1 0.54777
+wandb: dev_subtask2_macro_f1 0.29351
+wandb:                 epoch 7
+wandb:               minutes 28.45802
+wandb:          peak_vram_gb 8.59396
+wandb:        selected_epoch 4
+wandb:            train_loss 1.09032
+wandb:                    +1 ...
+wandb: 
+wandb: 🚀 View run L0_large_base-s2 at: https://wandb.ai/iamsid44-iiit-hyderabad/clarity-semeval26/runs/d4c41c4b
+wandb: ⭐️ View project at: https://wandb.ai/iamsid44-iiit-hyderabad/clarity-semeval26
+wandb: Synced 5 W&B file(s), 0 media file(s), 0 artifact file(s) and 0 other file(s)
+wandb: Find logs at: ./wandb/run-20260919_184455-d4c41c4b/logs
+[hf] upload queued in background: /scratch/shlok/Temp/CLARITY-Unmasking-Political-Question-Evasions/clarity/runs/L0_large_base/seed2 (progress: /scratch/shlok/Temp/CLARITY-Unmasking-Political-Question-Evasions/clarity/logs/hf_uploads.log)
+[L0_large_base s2] DONE  devS2=0.2794 devS1=0.5323 peak=8.6GB  28.6m

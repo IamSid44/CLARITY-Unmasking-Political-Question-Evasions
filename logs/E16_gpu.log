@@ -1,0 +1,11 @@
+2026-10-14 12:10:33 start M3 qwen38_27b_k0 --splits trainall --jobs-file ../runs/M3/frontier_jobs.jsonl
+2026-10-14 12:17:25 done M3 qwen38_27b_k0
+2026-10-14 12:17:25 start M3 qwen38_27b_k0_no_guide --prompt-variant no_guide --splits screen,dev
+2026-10-14 12:19:44 done M3 qwen38_27b_k0_no_guide
+2026-10-14 12:19:44 start M3 qwen38_27b_k0_no_defs --prompt-variant no_defs --splits screen,dev
+2026-10-14 12:22:07 done M3 qwen38_27b_k0_no_defs
+2026-10-14 12:22:07 start M3 qwen38_27b_k0_bare --prompt-variant bare --splits screen,dev
+2026-10-14 12:24:11 done M3 qwen38_27b_k0_bare
+2026-10-14 12:24:11 start cost harness
+2026-10-14 12:24:28 FAILED cost harness (logs/E16_cost.log)
+2026-10-14 12:24:28 ALL DONE

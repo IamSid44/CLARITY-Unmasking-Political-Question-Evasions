@@ -1,0 +1,6 @@
+Fetching 7 files:   0%|          | 0/7 [00:00<?, ?it/s]Fetching 7 files: 100%|██████████| 7/7 [00:00<00:00,  9.13it/s]Fetching 7 files: 100%|██████████| 7/7 [00:00<00:00,  9.12it/s]
+complete: /scratch/shlok/.cache/huggingface/hub/models--Qwen--Qwen3-0.6B-Base/snapshots/da87bfb608c14b7cf20ba1ce41287e8de496c0cd
+Fetching 12 files:   0%|          | 0/12 [00:00<?, ?it/s]Fetching 12 files:  75%|███████▌  | 9/12 [49:57<16:39, 333.00s/it]Fetching 12 files:  83%|████████▎ | 10/12 [55:58<11:13, 336.94s/it]Fetching 12 files:  92%|█████████▏| 11/12 [57:59<05:01, 301.53s/it]Fetching 12 files: 100%|██████████| 12/12 [59:22<00:00, 260.13s/it]Fetching 12 files: 100%|██████████| 12/12 [59:22<00:00, 296.87s/it]
+complete: /scratch/shlok/.cache/huggingface/hub/models--Qwen--Qwen3-8B-Base/snapshots/49e3418fbbbca6ecbdf9608b4d22e5a407081db4
+Fetching 12 files:   0%|          | 0/12 [00:00<?, ?it/s]Fetching 12 files: 100%|██████████| 12/12 [00:00<00:00, 3215.67it/s]
+complete: /scratch/shlok/.cache/huggingface/hub/models--Qwen--Qwen3-8B-Base/snapshots/49e3418fbbbca6ecbdf9608b4d22e5a407081db4

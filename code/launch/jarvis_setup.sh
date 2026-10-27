@@ -39,7 +39,8 @@ bundle() {
     code/launch/jarvis_setup.sh \
     code/models/__init__.py code/models/llm_classifier.py code/utils/__init__.py code/utils/tracking.py code/qevasion \
     data/cache/train.parquet data/cache/dev.parquet data/clarity_task_evaluation_dataset.csv \
-    data/splits/train_internal_val_index.json
+    data/splits/train_internal_val_index.json \
+    $(ls runs/M4/targets_*.npy 2>/dev/null)  # E17/E19 soft targets (--soft-targets ../runs/M4/...)
   ls -lh jarvis_bundle.tgz && tar tzf jarvis_bundle.tgz
 }
 

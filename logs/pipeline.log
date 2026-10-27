@@ -1,0 +1,135 @@
+[2026-09-19 13:12:31] pipeline start
+[2026-09-19 13:40:01] ok    L0_large_base seed0
+wandb: [clarity-semeval26/9r3g8w70] uploading wandb-metadata.json; uploading requirements.txt; uploading output.log; uploading wandb-summary.json
+wandb: [clarity-semeval26/9r3g8w70] uploading requirements.txt; uploading output.log; uploading wandb-summary.json
+wandb: [clarity-semeval26/9r3g8w70] uploading requirements.txt; uploading wandb-summary.json
+wandb: [clarity-semeval26/9r3g8w70] uploading history steps 0-4, summary, console lines 1-27
+wandb: [clarity-semeval26/9r3g8w70] Finished syncing wandb/offline-run-20260919_131236-9r3g8w70
+[2026-09-19 13:53:40] STOPPED for server shutdown. L0_large_base seed0 COMPLETE (kept; its offline W&B log was deleted by mistake, metrics.json has the full history). seed1 was mid-run (removed, will rerun). HF upload of seed0 FAILED (HfHubHTTPError) -- investigate before relying on uploads. Resume: tmux new-session -d -s clarity "bash /scratch/shlok/Temp/CLARITY-Unmasking-Political-Question-Evasions/clarity/run_pipeline.sh"
+[2026-09-19 15:37:08] pipeline start
+[wandb] disabled for this run: AttributeError: module 'wandb.util' has no attribute 'generate_id'
+[wandb] relogged 5 epochs for L0_large_base seed 0
+[2026-09-19 15:52:13] skip  L0_large_base seed0
+[2026-09-19 16:12:20] ok    L0_large_base seed1
+[2026-09-19 16:32:34] ok    L0_large_base seed2
+[2026-09-19 16:36:31] RESTART: 5-epoch baseline was undertrained (see run_pipeline.sh comment); archived to runs/_exploratory/L0_large_base_5ep_undertrained; rerunning with 8 epochs
+[2026-09-19 16:36:31] pipeline start
+[2026-09-19 17:08:16] ok    L0_large_base seed0
+[2026-09-19 17:08:21] wait  L0_large_base seed1: GPU memory taken by another job, retry 1/12 in 10 min
+[2026-09-19 17:54:24] ok    L0_large_base seed1
+[2026-09-19 17:54:29] wait  L0_large_base seed2: GPU memory taken by another job, retry 1/12 in 10 min
+[2026-09-19 18:04:34] wait  L0_large_base seed2: GPU memory taken by another job, retry 2/12 in 10 min
+[2026-09-19 18:14:39] wait  L0_large_base seed2: GPU memory taken by another job, retry 3/12 in 10 min
+[2026-09-19 18:24:44] wait  L0_large_base seed2: GPU memory taken by another job, retry 4/12 in 10 min
+[2026-09-19 18:34:49] wait  L0_large_base seed2: GPU memory taken by another job, retry 5/12 in 10 min
+[2026-09-19 19:13:55] ok    L0_large_base seed2
+[2026-09-19 19:14:00] wait  L0_large_base seed3: GPU memory taken by another job, retry 1/12 in 10 min
+[2026-09-19 20:10:06] ok    L0_large_base seed3
+[2026-09-19 21:00:41] ok    L0_large_base seed4
+[submission] L0_large_base: seed-ensemble argmax, 5 seed(s), dev S2 mean 0.3372
+  Subtask 2 (evasion) : /scratch/shlok/Temp/CLARITY-Unmasking-Political-Question-Evasions/clarity/submissions/L0_large_base/subtask2_evasion/prediction.zip
+  Subtask 1 (clarity) : /scratch/shlok/Temp/CLARITY-Unmasking-Political-Question-Evasions/clarity/submissions/L0_large_base/subtask1_clarity/prediction.zip
+  test distribution   : {'Explicit': 130, 'Dodging': 46, 'Implicit': 19, 'Claims ignorance': 12, 'Declining to answer': 9, 'Deflection': 8, 'General': 8, 'Clarification': 5}
+[2026-09-19 21:00:41] ok    submission L0_large_base
+[2026-09-19 21:00:54] ok    E0 analysis -> reports/E0_analysis.txt, reports/E0_decision_rules.txt
+[hf] upload queued in background: /scratch/shlok/Temp/CLARITY-Unmasking-Political-Question-Evasions/clarity/runs/L0_large_base/seed4 (progress: /scratch/shlok/Temp/CLARITY-Unmasking-Political-Question-Evasions/clarity/logs/hf_uploads.log)
+[2026-09-19 21:01:00] wait  F0_oof fold0: GPU memory taken by another job, retry 1/12 in 10 min
+[2026-09-19 21:11:07] wait  F0_oof fold0: GPU memory taken by another job, retry 2/12 in 10 min
+[2026-09-19 21:21:14] wait  F0_oof fold0: GPU memory taken by another job, retry 3/12 in 10 min
+[2026-09-19 21:31:21] wait  F0_oof fold0: GPU memory taken by another job, retry 4/12 in 10 min
+[2026-09-19 22:12:05] ok    F0_oof fold0
+[2026-09-19 22:53:37] ok    F0_oof fold1
+[2026-09-19 23:31:38] ok    F0_oof fold2
+[2026-09-20 00:02:06] ok    F0_oof fold3
+[2026-09-20 00:33:26] ok    F0_oof fold4
+[2026-09-20 01:19:08] ok    R1_rerank seed0
+[submission] R1_rerank_s0_prior: seed-mean re-ranker scores, beta=2.0, 1 seed(s), dev S2 mean 0.3170
+  Subtask 2 (evasion) : /scratch/shlok/Temp/CLARITY-Unmasking-Political-Question-Evasions/clarity/submissions/R1_rerank_s0_prior/subtask2_evasion/prediction.zip
+  Subtask 1 (clarity) : /scratch/shlok/Temp/CLARITY-Unmasking-Political-Question-Evasions/clarity/submissions/R1_rerank_s0_prior/subtask1_clarity/prediction.zip
+  test distribution   : {'Explicit': 138, 'Dodging': 55, 'Claims ignorance': 12, 'Deflection': 9, 'Implicit': 9, 'Declining to answer': 8, 'Clarification': 5, 'General': 1}
+[2026-09-20 01:19:08] ok    submission R1_rerank_s0_prior (1 seed)
+[2026-09-20 02:03:46] ok    R1_rerank seed1
+[2026-09-20 02:03:51] wait  R1_rerank seed2: GPU memory taken by another job, retry 1/12 in 10 min
+[2026-09-20 02:13:56] wait  R1_rerank seed2: GPU memory taken by another job, retry 2/12 in 10 min
+[2026-09-20 02:24:02] wait  R1_rerank seed2: GPU memory taken by another job, retry 3/12 in 10 min
+[2026-09-20 02:34:07] wait  R1_rerank seed2: GPU memory taken by another job, retry 4/12 in 10 min
+[2026-09-20 03:26:35] ok    R1_rerank seed2
+[2026-09-20 04:01:00] ok    R1_rerank seed3
+[2026-09-20 04:34:09] ok    R1_rerank seed4
+[hf] upload queued in background: /scratch/shlok/Temp/CLARITY-Unmasking-Political-Question-Evasions/clarity/runs/R1_rerank/seed4 (progress: /scratch/shlok/Temp/CLARITY-Unmasking-Political-Question-Evasions/clarity/logs/hf_uploads.log)
+[submission] R1_rerank: seed-mean re-ranker scores, beta=0.0, 5 seed(s), dev S2 mean 0.2418
+  Subtask 2 (evasion) : /scratch/shlok/Temp/CLARITY-Unmasking-Political-Question-Evasions/clarity/submissions/R1_rerank/subtask2_evasion/prediction.zip
+  Subtask 1 (clarity) : /scratch/shlok/Temp/CLARITY-Unmasking-Political-Question-Evasions/clarity/submissions/R1_rerank/subtask1_clarity/prediction.zip
+  test distribution   : {'Explicit': 158, 'Dodging': 44, 'Deflection': 12, 'Declining to answer': 10, 'Clarification': 10, 'Claims ignorance': 2, 'Partial/half-answer': 1}
+[2026-09-20 04:34:09] ok    submission R1_rerank
+[submission] R1_rerank_prior: seed-mean re-ranker scores, beta=2.0, 5 seed(s), dev S2 mean 0.3225
+  Subtask 2 (evasion) : /scratch/shlok/Temp/CLARITY-Unmasking-Political-Question-Evasions/clarity/submissions/R1_rerank_prior/subtask2_evasion/prediction.zip
+  Subtask 1 (clarity) : /scratch/shlok/Temp/CLARITY-Unmasking-Political-Question-Evasions/clarity/submissions/R1_rerank_prior/subtask1_clarity/prediction.zip
+  test distribution   : {'Explicit': 135, 'Dodging': 53, 'Implicit': 14, 'Claims ignorance': 12, 'Declining to answer': 9, 'Deflection': 8, 'Clarification': 5, 'General': 1}
+[2026-09-20 04:34:09] ok    submission R1_rerank_prior
+[2026-09-20 04:34:09] pipeline finished
+[2026-09-20 08:42:07] RESTART rerank: 3-epoch re-ranker was undertrained (0.249 vs stage-1 0.365) and the beta grid was truncated at its edge; archived to runs/_exploratory/R1_rerank_3ep_undertrained. Rerunning with 8 epochs and beta up to 64.
+[2026-09-20 08:44:05] pipeline start
+[2026-09-20 08:44:05] skip  L0_large_base seed0
+[2026-09-20 08:44:05] skip  L0_large_base seed1
+[2026-09-20 08:44:05] skip  L0_large_base seed2
+[2026-09-20 08:44:05] skip  L0_large_base seed3
+[2026-09-20 08:44:05] skip  L0_large_base seed4
+[submission] L0_large_base: seed-ensemble argmax, 5 seed(s), dev S2 mean 0.3372
+  Subtask 2 (evasion) : /scratch/shlok/Temp/CLARITY-Unmasking-Political-Question-Evasions/clarity/submissions/L0_large_base/subtask2_evasion/prediction.zip
+  Subtask 1 (clarity) : /scratch/shlok/Temp/CLARITY-Unmasking-Political-Question-Evasions/clarity/submissions/L0_large_base/subtask1_clarity/prediction.zip
+  test distribution   : {'Explicit': 130, 'Dodging': 46, 'Implicit': 19, 'Claims ignorance': 12, 'Declining to answer': 9, 'Deflection': 8, 'General': 8, 'Clarification': 5}
+[2026-09-20 08:44:05] ok    submission L0_large_base
+[2026-09-20 08:44:15] ok    E0 analysis -> reports/E0_analysis.txt, reports/E0_decision_rules.txt
+[2026-09-20 08:44:15] skip  F0_oof fold0
+[2026-09-20 08:44:15] skip  F0_oof fold1
+[2026-09-20 08:44:15] skip  F0_oof fold2
+[2026-09-20 08:44:15] skip  F0_oof fold3
+[2026-09-20 08:44:15] skip  F0_oof fold4
+[2026-09-20 09:26:10] ok    R1_rerank seed0
+[submission] R1_rerank_s0_prior: seed-mean re-ranker scores, beta=16.0, 1 seed(s), dev S2 mean 0.3588
+  Subtask 2 (evasion) : /scratch/shlok/Temp/CLARITY-Unmasking-Political-Question-Evasions/clarity/submissions/R1_rerank_s0_prior/subtask2_evasion/prediction.zip
+  Subtask 1 (clarity) : /scratch/shlok/Temp/CLARITY-Unmasking-Political-Question-Evasions/clarity/submissions/R1_rerank_s0_prior/subtask1_clarity/prediction.zip
+  test distribution   : {'Explicit': 130, 'Dodging': 46, 'Implicit': 20, 'Claims ignorance': 12, 'Declining to answer': 9, 'Deflection': 9, 'General': 6, 'Clarification': 5}
+[2026-09-20 09:26:10] ok    submission R1_rerank_s0_prior (1 seed)
+[2026-09-20 10:11:19] ok    R1_rerank seed1
+[2026-09-20 10:46:54] RESTART rerank again: run_pipeline.sh passed --epochs 3 explicitly, overriding the fixed default; attempt 2 archived
+[2026-09-20 10:46:54] pipeline start
+[2026-09-20 10:46:54] skip  L0_large_base seed0
+[2026-09-20 10:46:54] skip  L0_large_base seed1
+[2026-09-20 10:46:54] skip  L0_large_base seed2
+[2026-09-20 10:46:54] skip  L0_large_base seed3
+[2026-09-20 10:46:54] skip  L0_large_base seed4
+[submission] L0_large_base: seed-ensemble argmax, 5 seed(s), dev S2 mean 0.3372
+  Subtask 2 (evasion) : /scratch/shlok/Temp/CLARITY-Unmasking-Political-Question-Evasions/clarity/submissions/L0_large_base/subtask2_evasion/prediction.zip
+  Subtask 1 (clarity) : /scratch/shlok/Temp/CLARITY-Unmasking-Political-Question-Evasions/clarity/submissions/L0_large_base/subtask1_clarity/prediction.zip
+  test distribution   : {'Explicit': 130, 'Dodging': 46, 'Implicit': 19, 'Claims ignorance': 12, 'Declining to answer': 9, 'Deflection': 8, 'General': 8, 'Clarification': 5}
+[2026-09-20 10:46:54] ok    submission L0_large_base
+[2026-09-20 10:47:04] ok    E0 analysis -> reports/E0_analysis.txt, reports/E0_decision_rules.txt
+[2026-09-20 10:47:04] skip  F0_oof fold0
+[2026-09-20 10:47:04] skip  F0_oof fold1
+[2026-09-20 10:47:04] skip  F0_oof fold2
+[2026-09-20 10:47:04] skip  F0_oof fold3
+[2026-09-20 10:47:04] skip  F0_oof fold4
+[2026-09-20 12:42:00] ok    R1_rerank seed0
+[submission] R1_rerank_s0_prior: seed-mean re-ranker scores, beta=16.0, 1 seed(s), dev S2 mean 0.3579
+  Subtask 2 (evasion) : /scratch/shlok/Temp/CLARITY-Unmasking-Political-Question-Evasions/clarity/submissions/R1_rerank_s0_prior/subtask2_evasion/prediction.zip
+  Subtask 1 (clarity) : /scratch/shlok/Temp/CLARITY-Unmasking-Political-Question-Evasions/clarity/submissions/R1_rerank_s0_prior/subtask1_clarity/prediction.zip
+  test distribution   : {'Explicit': 130, 'Dodging': 46, 'Implicit': 20, 'Claims ignorance': 12, 'Declining to answer': 9, 'Deflection': 8, 'General': 7, 'Clarification': 5}
+[2026-09-20 12:42:00] ok    submission R1_rerank_s0_prior (1 seed)
+[2026-09-20 14:33:20] ok    R1_rerank seed1
+[2026-09-20 16:25:20] ok    R1_rerank seed2
+[2026-09-20 17:47:55] ok    R1_rerank seed3
+[2026-09-20 19:44:09] ok    R1_rerank seed4
+[hf] upload queued in background: /scratch/shlok/Temp/CLARITY-Unmasking-Political-Question-Evasions/clarity/runs/R1_rerank/seed4 (progress: /scratch/shlok/Temp/CLARITY-Unmasking-Political-Question-Evasions/clarity/logs/hf_uploads.log)
+[submission] R1_rerank: seed-mean re-ranker scores, beta=0.0, 5 seed(s), dev S2 mean 0.3287
+  Subtask 2 (evasion) : /scratch/shlok/Temp/CLARITY-Unmasking-Political-Question-Evasions/clarity/submissions/R1_rerank/subtask2_evasion/prediction.zip
+  Subtask 1 (clarity) : /scratch/shlok/Temp/CLARITY-Unmasking-Political-Question-Evasions/clarity/submissions/R1_rerank/subtask1_clarity/prediction.zip
+  test distribution   : {'Explicit': 142, 'Dodging': 60, 'Declining to answer': 12, 'Deflection': 12, 'Claims ignorance': 8, 'Clarification': 3}
+[2026-09-20 19:44:09] ok    submission R1_rerank
+[submission] R1_rerank_prior: seed-mean re-ranker scores, beta=16.0, 5 seed(s), dev S2 mean 0.3536
+  Subtask 2 (evasion) : /scratch/shlok/Temp/CLARITY-Unmasking-Political-Question-Evasions/clarity/submissions/R1_rerank_prior/subtask2_evasion/prediction.zip
+  Subtask 1 (clarity) : /scratch/shlok/Temp/CLARITY-Unmasking-Political-Question-Evasions/clarity/submissions/R1_rerank_prior/subtask1_clarity/prediction.zip
+  test distribution   : {'Explicit': 130, 'Dodging': 46, 'Implicit': 20, 'Claims ignorance': 12, 'Declining to answer': 9, 'Deflection': 9, 'General': 6, 'Clarification': 5}
+[2026-09-20 19:44:09] ok    submission R1_rerank_prior
+[2026-09-20 19:44:09] pipeline finished

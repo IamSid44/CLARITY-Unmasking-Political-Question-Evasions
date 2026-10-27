@@ -1,0 +1,75 @@
+wandb: [wandb.login()] Loaded credentials for https://api.wandb.ai from WANDB_API_KEY.
+wandb: Currently logged in as: iamsid44 (iamsid44-iiit-hyderabad) to https://api.wandb.ai. Use `wandb login --relogin` to force relogin
+wandb: setting up run 9777d63c
+wandb: Tracking run with wandb version 0.28.2
+wandb: Run data is saved locally in /scratch/shlok/Temp/CLARITY-Unmasking-Political-Question-Evasions/clarity/wandb/run-20260928_060756-9777d63c
+wandb: Run `wandb offline` to turn off syncing.
+wandb: Syncing run E11_base_8ep-s6
+wandb: ⭐️ View project at https://wandb.ai/iamsid44-iiit-hyderabad/clarity-semeval26
+wandb: 🚀 View run at https://wandb.ai/iamsid44-iiit-hyderabad/clarity-semeval26/runs/9777d63c
+[vram] 58.7 GB free of 95.0 GB
+[wandb] online run E11_base_8ep-s6 (group=E11_base_8ep)
+Loading weights:   0%|          | 0/390 [00:00<?, ?it/s]Loading weights: 100%|██████████| 390/390 [00:00<00:00, 6806.64it/s]
+[transformers] [1mDebertaV2Model LOAD REPORT[0m from: microsoft/deberta-v3-large
+Key                                     | Status     |  | 
+----------------------------------------+------------+--+-
+mask_predictions.LayerNorm.weight       | UNEXPECTED |  | 
+lm_predictions.lm_head.dense.weight     | UNEXPECTED |  | 
+mask_predictions.classifier.bias        | UNEXPECTED |  | 
+lm_predictions.lm_head.dense.bias       | UNEXPECTED |  | 
+mask_predictions.dense.weight           | UNEXPECTED |  | 
+mask_predictions.dense.bias             | UNEXPECTED |  | 
+lm_predictions.lm_head.LayerNorm.bias   | UNEXPECTED |  | 
+mask_predictions.LayerNorm.bias         | UNEXPECTED |  | 
+lm_predictions.lm_head.bias             | UNEXPECTED |  | 
+mask_predictions.classifier.weight      | UNEXPECTED |  | 
+lm_predictions.lm_head.LayerNorm.weight | UNEXPECTED |  | 
+
+Notes:
+- UNEXPECTED:	can be ignored when loading from different task/architecture; not ok if you expect identical arch.
+/scratch/shlok/Temp/CLARITY-Unmasking-Political-Question-Evasions/clarity/encoder.py:714: UserWarning: Converting a tensor with requires_grad=True to a scalar may lead to unexpected behavior.
+Consider using tensor.detach() first. (Triggered internally at /pytorch/torch/csrc/autograd/generated/python_variable_methods.cpp:836.)
+  running += float(loss)
+[E11_base_8ep s6] ep0 loss=1.9436 val=0.0694 devS2=0.0607 devS1=0.1368 inset=0.373 named=2/9 (4.8m)
+[E11_base_8ep s6] ep1 loss=1.8129 val=0.1566 devS2=0.1177 devS1=0.2854 inset=0.451 named=2/9 (8.5m)
+[E11_base_8ep s6] ep2 loss=1.6536 val=0.2262 devS2=0.1815 devS1=0.3491 inset=0.477 named=4/9 (12.3m)
+[E11_base_8ep s6] ep3 loss=1.4916 val=0.2716 devS2=0.2435 devS1=0.4916 inset=0.532 named=6/9 (16.0m)
+[E11_base_8ep s6] ep4 loss=1.3194 val=0.3748 devS2=0.2547 devS1=0.6097 inset=0.510 named=7/9 (19.8m)
+[E11_base_8ep s6] ep5 loss=1.1618 val=0.3653 devS2=0.2934 devS1=0.5785 inset=0.529 named=8/9 (23.5m)
+[E11_base_8ep s6] ep6 loss=1.0617 val=0.3734 devS2=0.2951 devS1=0.5652 inset=0.516 named=8/9 (27.2m)
+[E11_base_8ep s6] ep7 loss=1.0215 val=0.3869 devS2=0.2967 devS1=0.5601 inset=0.510 named=8/9 (30.9m)
+wandb: updating run metadata
+wandb: uploading output.log; uploading wandb-summary.json; uploading config.yaml
+wandb: uploading output.log; uploading wandb-summary.json
+wandb: uploading history steps 7-7, summary
+wandb: uploading data
+wandb: 
+wandb: Run history:
+wandb:     dev_classes_named ▁▁▃▆▇███
+wandb:        dev_inset_rate ▁▄▆█▇█▇▇
+wandb: dev_subtask1_macro_f1 ▁▃▄▆██▇▇
+wandb: dev_subtask2_macro_f1 ▁▃▅▆▇███
+wandb:                 epoch ▁▂▃▄▅▆▇█
+wandb:               minutes ▁▂▃▄▅▆▇█
+wandb:            train_loss █▇▆▅▃▂▁▁
+wandb:          val_macro_f1 ▁▃▄▅████
+wandb: 
+wandb: Run summary:
+wandb:     best_val_macro_f1 0.38691
+wandb:     dev_classes_named 8
+wandb:        dev_inset_rate 0.50974
+wandb: dev_subtask1_macro_f1 0.5601
+wandb: dev_subtask2_macro_f1 0.29665
+wandb:                 epoch 7
+wandb:               minutes 30.89741
+wandb:          peak_vram_gb 8.59396
+wandb:        selected_epoch 7
+wandb:            train_loss 1.02152
+wandb:                    +1 ...
+wandb: 
+wandb: 🚀 View run E11_base_8ep-s6 at: https://wandb.ai/iamsid44-iiit-hyderabad/clarity-semeval26/runs/9777d63c
+wandb: ⭐️ View project at: https://wandb.ai/iamsid44-iiit-hyderabad/clarity-semeval26
+wandb: Synced 5 W&B file(s), 0 media file(s), 0 artifact file(s) and 0 other file(s)
+wandb: Find logs at: ./wandb/run-20260928_060756-9777d63c/logs
+[hf] upload queued in background: /scratch/shlok/Temp/CLARITY-Unmasking-Political-Question-Evasions/clarity/runs/E11_base_8ep/seed6 (progress: /scratch/shlok/Temp/CLARITY-Unmasking-Political-Question-Evasions/clarity/logs/hf_uploads.log)
+[E11_base_8ep s6] DONE  devS2=0.2967 devS1=0.5601 peak=8.6GB  31.1m

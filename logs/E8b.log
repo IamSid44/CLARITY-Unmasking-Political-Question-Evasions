@@ -1,0 +1,43 @@
+[2026-09-25 17:08:39] [lane_gpu0_b] lane start (E8b, GPU 0): 1 run(s)
+[2026-09-25 17:08:39] [lane_gpu0_b] start E8b_fullq_ce seed4 on GPU 0
+[2026-09-25 17:08:59] [lane_gpu1_a] lane start (E8b, GPU 1): 2 run(s)
+[2026-09-25 17:08:59] [lane_gpu1_a] start E8b_fullq_ce seed0 on GPU 1
+[2026-09-25 17:09:19] [lane_gpu1_b] lane start (E8b, GPU 1): 2 run(s)
+[2026-09-25 17:09:19] [lane_gpu1_b] start E8b_fullq_ce seed1 on GPU 1
+[2026-09-25 18:22:59] [lane_gpu1_c] lane start (E8b, GPU 1): 1 run(s)
+[2026-09-25 18:22:59] [lane_gpu1_c] resume E8b_fullq_ce seed4 from its last checkpoint
+[2026-09-25 18:22:59] [lane_gpu1_c] start E8b_fullq_ce seed4 on GPU 1
+[2026-09-25 18:23:04] [lane_gpu1_c] wait  E8b_fullq_ce seed4: GPU 1 memory held by another job, retry 1/12 in 10 min
+[2026-09-25 18:27:25] [lane_gpu1_a] lane start (E8b, GPU 1): 3 run(s)
+[2026-09-25 18:27:25] [lane_gpu1_a] resume E8b_fullq_ce seed4 from its last checkpoint
+[2026-09-25 18:27:25] [lane_gpu1_a] start E8b_fullq_ce seed4 on GPU 1
+[2026-09-25 18:27:45] [lane_gpu1_b] lane start (E8b, GPU 1): 2 run(s)
+[2026-09-25 18:27:45] [lane_gpu1_b] resume E8b_fullq_ce seed1 from its last checkpoint
+[2026-09-25 18:27:45] [lane_gpu1_b] start E8b_fullq_ce seed1 on GPU 1
+[2026-09-25 19:44:42] [lane_gpu1_a] ok    E8b_fullq_ce seed4  devS2=0.3178 devS1=0.5143
+[2026-09-25 19:44:42] [lane_gpu1_a] resume E8b_fullq_ce seed0 from its last checkpoint
+[2026-09-25 19:44:42] [lane_gpu1_a] start E8b_fullq_ce seed0 on GPU 1
+[2026-09-25 22:19:11] [lane_gpu1_b] ok    E8b_fullq_ce seed1  devS2=0.2523 devS1=0.4380
+[2026-09-25 22:19:11] [lane_gpu1_b] start E8b_fullq_ce seed3 on GPU 1
+[2026-09-25 22:36:22] [lane_gpu0_a] lane start (E8b, GPU 0): 1 run(s)
+[2026-09-25 22:36:22] [lane_gpu0_a] start E8b_fullq_ce seed3 on GPU 0
+[2026-09-25 22:36:42] [lane_gpu0_b] lane start (E8b, GPU 0): 1 run(s)
+[2026-09-25 22:36:42] [lane_gpu0_b] start E8b_fullq_ce seed2 on GPU 0
+[2026-09-25 22:37:02] [lane_gpu1_a] lane start (E8b, GPU 1): 2 run(s)
+[2026-09-25 22:37:02] [lane_gpu1_a] skip  E8b_fullq_ce seed4 (finished)
+[2026-09-25 22:37:02] [lane_gpu1_a] resume E8b_fullq_ce seed0 from its last checkpoint
+[2026-09-25 22:37:02] [lane_gpu1_a] start E8b_fullq_ce seed0 on GPU 1
+[2026-09-25 22:37:22] [lane_gpu1_b] lane start (E8b, GPU 1): 1 run(s)
+[2026-09-25 22:37:22] [lane_gpu1_b] skip  E8b_fullq_ce seed1 (finished)
+[2026-09-25 22:37:22] [lane_gpu1_b] lane finished
+[2026-09-25 23:21:44] [lane_gpu1_a] ok    E8b_fullq_ce seed0  devS2=0.3142 devS1=0.5132
+[hf] upload queued in background: /scratch/shlok/Temp/CLARITY-Unmasking-Political-Question-Evasions/clarity/runs/E8b_fullq_ce/seed0 (progress: /scratch/shlok/Temp/CLARITY-Unmasking-Political-Question-Evasions/clarity/logs/hf_uploads.log)
+[2026-09-25 23:21:44] [lane_gpu1_a] lane finished
+[2026-09-26 01:32:45] [lane_gpu0_a] ok    E8b_fullq_ce seed3  devS2=0.2200 devS1=0.4403
+[2026-09-26 01:32:45] [lane_gpu0_a] post  E8b_fullq_ce: all 5 seeds finished -- analysis, decision rules, submission
+[2026-09-26 01:32:46] [lane_gpu0_b] ok    E8b_fullq_ce seed2  devS2=0.3037 devS1=0.5046
+[submission] E8b_fullq_ce_logitadj: seed-ensemble, logit-adjusted tau=0.6, 5 seed(s), dev S2 mean 0.2816
+  Subtask 2 (evasion) : /scratch/shlok/Temp/CLARITY-Unmasking-Political-Question-Evasions/clarity/submissions/E8b_fullq_ce_logitadj/subtask2_evasion/prediction.zip
+  Subtask 1 (clarity) : /scratch/shlok/Temp/CLARITY-Unmasking-Political-Question-Evasions/clarity/submissions/E8b_fullq_ce_logitadj/subtask1_clarity/prediction.zip
+  test distribution   : {'Explicit': 117, 'Dodging': 46, 'General': 23, 'Claims ignorance': 14, 'Deflection': 14, 'Clarification': 10, 'Implicit': 7, 'Declining to answer': 6}
+[2026-09-26 01:32:59] [lane_gpu0_a] ok    E8b_fullq_ce post-processing -> reports/raw/E8b_fullq_ce_{analysis,decision_rules}.txt, submissions/E8b_fullq_ce_logitadj/

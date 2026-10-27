@@ -1,0 +1,15 @@
+300 items to score (0 already done) for qwen38_27b_api_k0
+prompt tokens (approx.): mean 1483, median 1340, max 4198; preamble 747; examples kept: mean 0.0, min 0
+projected cost $0.085 (E15 spent so far $0.088 of $8.00; run cap $0.50)
+23:45:20 25/300  run $0.0089  E15 total $0.0971
+23:45:22 50/300  run $0.0158  E15 total $0.1040
+23:45:24 75/300  run $0.0222  E15 total $0.1104
+23:45:26 100/300  run $0.0297  E15 total $0.1178
+23:45:28 125/300  run $0.0364  E15 total $0.1246
+23:45:30 150/300  run $0.0484  E15 total $0.1366
+23:45:32 175/300  run $0.0574  E15 total $0.1456
+23:45:35 200/300  run $0.0670  E15 total $0.1552
+23:45:37 225/300  run $0.0761  E15 total $0.1642
+23:45:39 250/300  run $0.0853  E15 total $0.1735
+23:45:41 275/300  run $0.0951  E15 total $0.1833
+23:45:43 300/300  run $0.1032  E15 total $0.1914

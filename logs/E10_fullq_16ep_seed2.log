@@ -1,0 +1,80 @@
+wandb: [wandb.login()] Loaded credentials for https://api.wandb.ai from WANDB_API_KEY.
+wandb: Currently logged in as: iamsid44 (iamsid44-iiit-hyderabad) to https://api.wandb.ai. Use `wandb login --relogin` to force relogin
+wandb: setting up run 924d1e46
+wandb: Tracking run with wandb version 0.28.2
+wandb: Run data is saved locally in /scratch/shlok/Temp/CLARITY-Unmasking-Political-Question-Evasions/clarity/wandb/run-20260926_074224-924d1e46
+wandb: Run `wandb offline` to turn off syncing.
+wandb: Syncing run E10_fullq_16ep-s2
+wandb: ⭐️ View project at https://wandb.ai/iamsid44-iiit-hyderabad/clarity-semeval26
+wandb: 🚀 View run at https://wandb.ai/iamsid44-iiit-hyderabad/clarity-semeval26/runs/924d1e46
+[vram] 39.3 GB free of 95.0 GB
+[wandb] online run E10_fullq_16ep-s2 (group=E10_fullq_16ep)
+Loading weights:   0%|          | 0/390 [00:00<?, ?it/s]Loading weights: 100%|██████████| 390/390 [00:00<00:00, 6795.84it/s]
+[transformers] [1mDebertaV2Model LOAD REPORT[0m from: microsoft/deberta-v3-large
+Key                                     | Status     |  | 
+----------------------------------------+------------+--+-
+mask_predictions.classifier.weight      | UNEXPECTED |  | 
+lm_predictions.lm_head.dense.bias       | UNEXPECTED |  | 
+mask_predictions.classifier.bias        | UNEXPECTED |  | 
+lm_predictions.lm_head.LayerNorm.bias   | UNEXPECTED |  | 
+mask_predictions.LayerNorm.bias         | UNEXPECTED |  | 
+lm_predictions.lm_head.bias             | UNEXPECTED |  | 
+lm_predictions.lm_head.LayerNorm.weight | UNEXPECTED |  | 
+lm_predictions.lm_head.dense.weight     | UNEXPECTED |  | 
+mask_predictions.LayerNorm.weight       | UNEXPECTED |  | 
+mask_predictions.dense.bias             | UNEXPECTED |  | 
+mask_predictions.dense.weight           | UNEXPECTED |  | 
+
+Notes:
+- UNEXPECTED:	can be ignored when loading from different task/architecture; not ok if you expect identical arch.
+/scratch/shlok/Temp/CLARITY-Unmasking-Political-Question-Evasions/clarity/encoder.py:714: UserWarning: Converting a tensor with requires_grad=True to a scalar may lead to unexpected behavior.
+Consider using tensor.detach() first. (Triggered internally at /pytorch/torch/csrc/autograd/generated/python_variable_methods.cpp:836.)
+  running += float(loss)
+[E10_fullq_16ep s2] ep0 loss=1.9519 val=0.0519 devS2=0.0604 devS1=0.1361 inset=0.373 named=1/9 (27.1m)
+[E10_fullq_16ep s2] ep1 loss=1.8615 val=0.0762 devS2=0.0859 devS1=0.1749 inset=0.367 named=2/9 (49.1m)
+[E10_fullq_16ep s2] ep2 loss=1.8179 val=0.1384 devS2=0.1777 devS1=0.2541 inset=0.396 named=3/9 (69.5m)
+[E10_fullq_16ep s2] ep3 loss=1.7349 val=0.1940 devS2=0.1856 devS1=0.3253 inset=0.409 named=3/9 (91.6m)
+[E10_fullq_16ep s2] ep4 loss=1.6497 val=0.1846 devS2=0.1728 devS1=0.2595 inset=0.419 named=4/9 (113.3m)
+[E10_fullq_16ep s2] ep5 loss=1.5382 val=0.2516 devS2=0.2378 devS1=0.5342 inset=0.471 named=6/9 (133.6m)
+[E10_fullq_16ep s2] ep6 loss=1.4171 val=0.2778 devS2=0.2880 devS1=0.4368 inset=0.494 named=8/9 (154.6m)
+[E10_fullq_16ep s2] ep7 loss=1.2872 val=0.3245 devS2=0.3182 devS1=0.4701 inset=0.484 named=7/9 (175.7m)
+[E10_fullq_16ep s2] ep8 loss=1.1779 val=0.3293 devS2=0.3711 devS1=0.5297 inset=0.506 named=8/9 (196.3m)
+[E10_fullq_16ep s2] ep9 loss=1.0781 val=0.3520 devS2=0.4021 devS1=0.5918 inset=0.545 named=8/9 (217.0m)
+[E10_fullq_16ep s2] ep10 loss=0.9837 val=0.3851 devS2=0.4280 devS1=0.6402 inset=0.545 named=8/9 (238.2m)
+[E10_fullq_16ep s2] ep11 loss=0.9072 val=0.3628 devS2=0.4394 devS1=0.5973 inset=0.562 named=8/9 (260.4m)
+[E10_fullq_16ep s2] ep12 loss=0.8691 val=0.3669 devS2=0.4067 devS1=0.5911 inset=0.526 named=8/9 (281.7m)
+[E10_fullq_16ep s2] ep13 loss=0.8273 val=0.3596 devS2=0.3961 devS1=0.5909 inset=0.532 named=8/9 (303.1m)
+[E10_fullq_16ep s2] ep14 loss=0.7841 val=0.3639 devS2=0.4135 devS1=0.5974 inset=0.532 named=8/9 (325.0m)
+[E10_fullq_16ep s2] ep15 loss=0.7819 val=0.3666 devS2=0.4135 devS1=0.5995 inset=0.532 named=8/9 (345.9m)
+wandb: updating run metadata
+wandb: uploading output.log; uploading wandb-summary.json; uploading config.yaml
+wandb: 
+wandb: Run history:
+wandb:     dev_classes_named ▁▂▃▃▄▆█▇████████
+wandb:        dev_inset_rate ▁▁▂▃▃▅▆▅▆▇▇█▇▇▇▇
+wandb: dev_subtask1_macro_f1 ▁▂▃▄▃▇▅▆▆▇█▇▇▇▇▇
+wandb: dev_subtask2_macro_f1 ▁▁▃▃▃▄▅▆▇▇██▇▇██
+wandb:                 epoch ▁▁▂▂▃▃▄▄▅▅▆▆▇▇██
+wandb:               minutes ▁▁▂▂▃▃▄▄▅▅▆▆▇▇██
+wandb:            train_loss █▇▇▇▆▆▅▄▃▃▂▂▂▁▁▁
+wandb:          val_macro_f1 ▁▂▃▄▄▅▆▇▇▇███▇██
+wandb: 
+wandb: Run summary:
+wandb:     best_val_macro_f1 0.38506
+wandb:     dev_classes_named 8
+wandb:        dev_inset_rate 0.53247
+wandb: dev_subtask1_macro_f1 0.59952
+wandb: dev_subtask2_macro_f1 0.41352
+wandb:                 epoch 15
+wandb:               minutes 345.87946
+wandb:          peak_vram_gb 14.90505
+wandb:        selected_epoch 10
+wandb:            train_loss 0.78189
+wandb:                    +1 ...
+wandb: 
+wandb: 🚀 View run E10_fullq_16ep-s2 at: https://wandb.ai/iamsid44-iiit-hyderabad/clarity-semeval26/runs/924d1e46
+wandb: ⭐️ View project at: https://wandb.ai/iamsid44-iiit-hyderabad/clarity-semeval26
+wandb: Synced 5 W&B file(s), 0 media file(s), 0 artifact file(s) and 0 other file(s)
+wandb: Find logs at: ./wandb/run-20260926_074224-924d1e46/logs
+[hf] upload queued in background: /scratch/shlok/Temp/CLARITY-Unmasking-Political-Question-Evasions/clarity/runs/E10_fullq_16ep/seed2 (progress: /scratch/shlok/Temp/CLARITY-Unmasking-Political-Question-Evasions/clarity/logs/hf_uploads.log)
+[E10_fullq_16ep s2] DONE  devS2=0.4280 devS1=0.6402 peak=14.9GB  346.1m

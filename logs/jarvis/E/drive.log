@@ -1,0 +1,6 @@
+2026-10-27 18:58:18 create failed: 
+2026-10-27 18:59:20 create: machine 549953 (Running) -- ssh -o StrictHostKeyChecking=no root@151.185.34.159
+2026-10-27 18:59:20 connect: E -> root@151.185.34.159 port 22, machine 549953
+2026-10-27 19:08:49 connect: E -> root@151.185.34.159 port 22, machine 549953
+2026-10-27 19:15:40 create: machine 549967 (Running) -- ssh -o StrictHostKeyChecking=no root@151.185.34.154
+2026-10-27 19:15:40 connect: E -> root@151.185.34.154 port 22, machine 549967

@@ -1,0 +1,32 @@
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+[vram] 20.9 GB free of 95.0 GB
+Loading weights:   0%|          | 0/390 [00:00<?, ?it/s]Loading weights: 100%|██████████| 390/390 [00:00<00:00, 8149.88it/s]
+[transformers] [1mDebertaV2Model LOAD REPORT[0m from: microsoft/deberta-v3-large
+Key                                     | Status     |  | 
+----------------------------------------+------------+--+-
+mask_predictions.LayerNorm.bias         | UNEXPECTED |  | 
+lm_predictions.lm_head.LayerNorm.bias   | UNEXPECTED |  | 
+lm_predictions.lm_head.dense.bias       | UNEXPECTED |  | 
+mask_predictions.classifier.bias        | UNEXPECTED |  | 
+lm_predictions.lm_head.LayerNorm.weight | UNEXPECTED |  | 
+mask_predictions.dense.weight           | UNEXPECTED |  | 
+lm_predictions.lm_head.dense.weight     | UNEXPECTED |  | 
+mask_predictions.dense.bias             | UNEXPECTED |  | 
+lm_predictions.lm_head.bias             | UNEXPECTED |  | 
+mask_predictions.LayerNorm.weight       | UNEXPECTED |  | 
+mask_predictions.classifier.weight      | UNEXPECTED |  | 
+
+Notes:
+- UNEXPECTED:	can be ignored when loading from different task/architecture; not ok if you expect identical arch.
+/scratch/shlok/Temp/CLARITY-Unmasking-Political-Question-Evasions/clarity/encoder.py:591: UserWarning: Converting a tensor with requires_grad=True to a scalar may lead to unexpected behavior.
+Consider using tensor.detach() first. (Triggered internally at /pytorch/torch/csrc/autograd/generated/python_variable_methods.cpp:836.)
+  running += float(loss)
+[L0_large_base s0] ep0 loss=1.9193 val=0.0668 devS2=0.0884 devS1=0.1717 inset=0.393 named=2/9 (5.3m)
+[L0_large_base s0] ep1 loss=1.7461 val=0.2398 devS2=0.1581 devS1=0.3659 inset=0.445 named=6/9 (10.5m)
+[L0_large_base s0] ep2 loss=1.4637 val=0.3866 devS2=0.3573 devS1=0.6125 inset=0.571 named=8/9 (15.7m)
+[L0_large_base s0] ep3 loss=1.2056 val=0.4271 devS2=0.3714 devS1=0.6163 inset=0.529 named=8/9 (20.9m)
+[L0_large_base s0] ep4 loss=0.9449 val=0.4028 devS2=0.3585 devS1=0.5975 inset=0.500 named=8/9 (25.3m)
+[L0_large_base s0] ep5 loss=0.7764 val=0.4245 devS2=0.3490 devS1=0.5911 inset=0.477 named=8/9 (30.2m)
+[L0_large_base s0] ep6 loss=0.6510 val=0.4119 devS2=0.3627 devS1=0.5941 inset=0.506 named=8/9 (35.5m)
+[L0_large_base s0] ep7 loss=0.5810 val=0.4146 devS2=0.3676 devS1=0.5972 inset=0.510 named=8/9 (40.9m)
+[L0_large_base s0] DONE  devS2=0.3714 devS1=0.6163 peak=8.6GB  40.9m

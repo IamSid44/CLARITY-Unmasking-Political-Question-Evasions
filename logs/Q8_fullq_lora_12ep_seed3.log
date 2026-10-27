@@ -1,0 +1,182 @@
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+Loading weights:   0%|          | 0/398 [00:00<?, ?it/s]Loading weights:   0%|          | 1/398 [00:00<00:46,  8.59it/s]Loading weights:   7%|▋         | 26/398 [00:00<00:02, 140.52it/s]Loading weights:  15%|█▍        | 58/398 [00:00<00:01, 213.34it/s]Loading weights:  21%|██        | 82/398 [00:00<00:01, 221.72it/s]Loading weights:  28%|██▊       | 113/398 [00:00<00:01, 251.30it/s]Loading weights:  35%|███▍      | 139/398 [00:00<00:01, 242.79it/s]Loading weights:  42%|████▏     | 169/398 [00:00<00:00, 253.28it/s]Loading weights:  50%|█████     | 200/398 [00:00<00:00, 263.39it/s]Loading weights:  57%|█████▋    | 227/398 [00:00<00:00, 254.84it/s]Loading weights:  65%|██████▍   | 257/398 [00:01<00:00, 260.74it/s]Loading weights:  73%|███████▎  | 289/398 [00:01<00:00, 272.51it/s]Loading weights:  80%|███████▉  | 317/398 [00:01<00:00, 268.15it/s]Loading weights:  87%|████████▋ | 345/398 [00:01<00:00, 264.87it/s]Loading weights:  94%|█████████▍| 376/398 [00:01<00:00, 274.30it/s]Loading weights: 100%|██████████| 398/398 [00:01<00:00, 252.45it/s]
+[transformers] [1mQwen3ForSequenceClassification LOAD REPORT[0m from: Qwen/Qwen3-8B-Base
+Key            | Status     | 
+---------------+------------+-
+lm_head.weight | UNEXPECTED | 
+score.weight   | MISSING    | 
+
+Notes:
+- UNEXPECTED:	can be ignored when loading from different task/architecture; not ok if you expect identical arch.
+- MISSING:	those params were newly initialized because missing from the checkpoint. Consider training on your downstream task.
+[data] train 3103 (mean 434 tokens, max 1024), slice 345, dev 308, test 237
+[model] Qwen/Qwen3-8B-Base: trainable 43.7M parameters
+[transformers] `use_return_dict` is deprecated! Use `return_dict` instead!
+[check] padded vs alone: max |logit difference| / mean |logit| = 0.0212 (should be << 1)
+wandb: [wandb.login()] Loaded credentials for https://api.wandb.ai from WANDB_API_KEY.
+wandb: Currently logged in as: iamsid44 (iamsid44-iiit-hyderabad) to https://api.wandb.ai. Use `wandb login --relogin` to force relogin
+wandb: setting up run a763a624
+wandb: Tracking run with wandb version 0.28.2
+wandb: Run data is saved locally in /scratch/shlok/Temp/CLARITY-Unmasking-Political-Question-Evasions/wandb/run-20261006_020552-a763a624
+wandb: Run `wandb offline` to turn off syncing.
+wandb: Syncing run Q8_fullq_lora_12ep-s3
+wandb: ⭐️ View project at https://wandb.ai/iamsid44-iiit-hyderabad/clarity-semeval26
+wandb: 🚀 View run at https://wandb.ai/iamsid44-iiit-hyderabad/clarity-semeval26/runs/a763a624
+[transformers] `use_cache=True` is incompatible with gradient checkpointing. Setting `use_cache=False`.
+[wandb] online run Q8_fullq_lora_12ep-s3 (group=Q8_fullq_lora_12ep)
+  ep0 step 20/194 loss 15.2928 2852 tok/s  epoch ETA 7.0 min
+  ep0 step 40/194 loss 10.2966 2849 tok/s  epoch ETA 6.2 min
+  ep0 step 60/194 loss 7.6135 2822 tok/s  epoch ETA 5.5 min
+  ep0 step 80/194 loss 6.2155 2798 tok/s  epoch ETA 4.7 min
+  ep0 step 100/194 loss 5.3661 2787 tok/s  epoch ETA 3.9 min
+  ep0 step 120/194 loss 4.8062 2770 tok/s  epoch ETA 3.1 min
+  ep0 step 140/194 loss 4.3868 2767 tok/s  epoch ETA 2.2 min
+  ep0 step 160/194 loss 4.0525 2768 tok/s  epoch ETA 1.4 min
+  ep0 step 180/194 loss 3.7862 2770 tok/s  epoch ETA 0.6 min
+[Q8_fullq_lora_12ep seed3] ep0 loss=3.6432 val=0.2436 devS2=0.2618 devS1=0.5800 (8.8m)
+  ep1 step 20/194 loss 1.7147 2760 tok/s  epoch ETA 7.5 min
+  ep1 step 40/194 loss 1.6487 2750 tok/s  epoch ETA 6.6 min
+  ep1 step 60/194 loss 1.6317 2746 tok/s  epoch ETA 5.7 min
+  ep1 step 80/194 loss 1.5984 2745 tok/s  epoch ETA 4.8 min
+  ep1 step 100/194 loss 1.5940 2752 tok/s  epoch ETA 4.0 min
+  ep1 step 120/194 loss 1.5832 2775 tok/s  epoch ETA 3.2 min
+  ep1 step 140/194 loss 1.5780 2773 tok/s  epoch ETA 2.3 min
+  ep1 step 160/194 loss 1.5802 2766 tok/s  epoch ETA 1.5 min
+  ep1 step 180/194 loss 1.5742 2764 tok/s  epoch ETA 0.6 min
+[Q8_fullq_lora_12ep seed3] ep1 loss=1.5625 val=0.3678 devS2=0.3966 devS1=0.6685 (8.8m)
+  ep2 step 20/194 loss 1.3950 2768 tok/s  epoch ETA 6.9 min
+  ep2 step 40/194 loss 1.2197 2763 tok/s  epoch ETA 6.4 min
+  ep2 step 60/194 loss 1.2866 2777 tok/s  epoch ETA 5.7 min
+  ep2 step 80/194 loss 1.2691 2775 tok/s  epoch ETA 4.8 min
+  ep2 step 100/194 loss 1.2626 2761 tok/s  epoch ETA 3.9 min
+  ep2 step 120/194 loss 1.2697 2764 tok/s  epoch ETA 3.2 min
+  ep2 step 140/194 loss 1.2512 2672 tok/s  epoch ETA 2.4 min
+  ep2 step 160/194 loss 1.2365 2421 tok/s  epoch ETA 1.6 min
+  ep2 step 180/194 loss 1.2523 2194 tok/s  epoch ETA 0.7 min
+[Q8_fullq_lora_12ep seed3] ep2 loss=1.2613 val=0.4137 devS2=0.4964 devS1=0.7648 (12.2m)
+  ep3 step 20/194 loss 1.0012 1294 tok/s  epoch ETA 16.5 min
+  ep3 step 40/194 loss 0.9436 1295 tok/s  epoch ETA 14.2 min
+  ep3 step 60/194 loss 0.9196 1297 tok/s  epoch ETA 12.1 min
+  ep3 step 80/194 loss 0.8910 1294 tok/s  epoch ETA 9.9 min
+  ep3 step 100/194 loss 0.9097 1397 tok/s  epoch ETA 7.9 min
+  ep3 step 120/194 loss 0.9185 1518 tok/s  epoch ETA 5.7 min
+  ep3 step 140/194 loss 0.9294 1634 tok/s  epoch ETA 3.9 min
+  ep3 step 160/194 loss 0.9284 1712 tok/s  epoch ETA 2.3 min
+  ep3 step 180/194 loss 0.9194 1782 tok/s  epoch ETA 0.9 min
+[Q8_fullq_lora_12ep seed3] ep3 loss=0.9124 val=0.4301 devS2=0.5372 devS1=0.7492 (12.9m)
+  ep4 step 20/194 loss 0.5323 2776 tok/s  epoch ETA 6.9 min
+  ep4 step 40/194 loss 0.5218 2742 tok/s  epoch ETA 5.9 min
+  ep4 step 60/194 loss 0.5446 2757 tok/s  epoch ETA 5.4 min
+  ep4 step 80/194 loss 0.5512 2750 tok/s  epoch ETA 4.7 min
+  ep4 step 100/194 loss 0.5806 2756 tok/s  epoch ETA 3.9 min
+  ep4 step 120/194 loss 0.5842 2757 tok/s  epoch ETA 3.1 min
+  ep4 step 140/194 loss 0.5817 2758 tok/s  epoch ETA 2.2 min
+  ep4 step 160/194 loss 0.5930 2750 tok/s  epoch ETA 1.4 min
+  ep4 step 180/194 loss 0.5996 2750 tok/s  epoch ETA 0.6 min
+[Q8_fullq_lora_12ep seed3] ep4 loss=0.5999 val=0.4671 devS2=0.4815 devS1=0.7141 (8.8m)
+  ep5 step 20/194 loss 0.3447 2759 tok/s  epoch ETA 7.6 min
+  ep5 step 40/194 loss 0.3177 2759 tok/s  epoch ETA 6.4 min
+  ep5 step 60/194 loss 0.3191 2750 tok/s  epoch ETA 5.6 min
+  ep5 step 80/194 loss 0.3322 2746 tok/s  epoch ETA 4.8 min
+  ep5 step 100/194 loss 0.3387 2747 tok/s  epoch ETA 4.0 min
+  ep5 step 120/194 loss 0.3520 2748 tok/s  epoch ETA 3.1 min
+  ep5 step 140/194 loss 0.3546 2756 tok/s  epoch ETA 2.3 min
+  ep5 step 160/194 loss 0.3581 2763 tok/s  epoch ETA 1.4 min
+  ep5 step 180/194 loss 0.3566 2762 tok/s  epoch ETA 0.6 min
+[Q8_fullq_lora_12ep seed3] ep5 loss=0.3585 val=0.4791 devS2=0.5697 devS1=0.7691 (8.8m)
+  ep6 step 20/194 loss 0.1328 2779 tok/s  epoch ETA 7.4 min
+  ep6 step 40/194 loss 0.1947 2752 tok/s  epoch ETA 6.4 min
+  ep6 step 60/194 loss 0.1689 2761 tok/s  epoch ETA 5.6 min
+  ep6 step 80/194 loss 0.1728 2762 tok/s  epoch ETA 4.7 min
+  ep6 step 100/194 loss 0.1839 2767 tok/s  epoch ETA 3.9 min
+  ep6 step 120/194 loss 0.1939 2762 tok/s  epoch ETA 3.1 min
+  ep6 step 140/194 loss 0.1968 2766 tok/s  epoch ETA 2.3 min
+  ep6 step 160/194 loss 0.2040 2761 tok/s  epoch ETA 1.4 min
+  ep6 step 180/194 loss 0.2041 2763 tok/s  epoch ETA 0.6 min
+[Q8_fullq_lora_12ep seed3] ep6 loss=0.1987 val=0.4686 devS2=0.5443 devS1=0.7278 (8.8m)
+  ep7 step 20/194 loss 0.0491 2833 tok/s  epoch ETA 7.8 min
+  ep7 step 40/194 loss 0.0491 2804 tok/s  epoch ETA 6.9 min
+  ep7 step 60/194 loss 0.0840 2777 tok/s  epoch ETA 5.8 min
+  ep7 step 80/194 loss 0.1009 2753 tok/s  epoch ETA 4.8 min
+  ep7 step 100/194 loss 0.1049 2756 tok/s  epoch ETA 4.0 min
+  ep7 step 120/194 loss 0.1198 2760 tok/s  epoch ETA 3.2 min
+  ep7 step 140/194 loss 0.1296 2770 tok/s  epoch ETA 2.3 min
+  ep7 step 160/194 loss 0.1222 2769 tok/s  epoch ETA 1.4 min
+  ep7 step 180/194 loss 0.1267 2762 tok/s  epoch ETA 0.6 min
+[Q8_fullq_lora_12ep seed3] ep7 loss=0.1289 val=0.4775 devS2=0.5834 devS1=0.7607 (8.8m)
+  ep8 step 20/194 loss 0.0348 2788 tok/s  epoch ETA 7.3 min
+  ep8 step 40/194 loss 0.0407 2742 tok/s  epoch ETA 6.3 min
+  ep8 step 60/194 loss 0.0393 2739 tok/s  epoch ETA 5.4 min
+  ep8 step 80/194 loss 0.0507 2733 tok/s  epoch ETA 4.7 min
+  ep8 step 100/194 loss 0.0646 2743 tok/s  epoch ETA 3.9 min
+  ep8 step 120/194 loss 0.0633 2482 tok/s  epoch ETA 3.4 min
+  ep8 step 140/194 loss 0.0619 2196 tok/s  epoch ETA 2.8 min
+  ep8 step 160/194 loss 0.0634 2010 tok/s  epoch ETA 1.9 min
+  ep8 step 180/194 loss 0.0652 1889 tok/s  epoch ETA 0.9 min
+[Q8_fullq_lora_12ep seed3] ep8 loss=0.0703 val=0.4345 devS2=0.5694 devS1=0.7593 (13.7m)
+  ep9 step 20/194 loss 0.0634 1311 tok/s  epoch ETA 16.6 min
+  ep9 step 40/194 loss 0.0500 1303 tok/s  epoch ETA 14.0 min
+  ep9 step 60/194 loss 0.0359 1421 tok/s  epoch ETA 10.9 min
+  ep9 step 80/194 loss 0.0390 1590 tok/s  epoch ETA 8.0 min
+  ep9 step 100/194 loss 0.0338 1733 tok/s  epoch ETA 6.1 min
+  ep9 step 120/194 loss 0.0344 1866 tok/s  epoch ETA 4.6 min
+  ep9 step 140/194 loss 0.0375 1966 tok/s  epoch ETA 3.2 min
+  ep9 step 160/194 loss 0.0388 2039 tok/s  epoch ETA 1.9 min
+  ep9 step 180/194 loss 0.0371 2095 tok/s  epoch ETA 0.8 min
+[Q8_fullq_lora_12ep seed3] ep9 loss=0.0410 val=0.4502 devS2=0.5761 devS1=0.7557 (11.2m)
+  ep10 step 20/194 loss 0.0197 2729 tok/s  epoch ETA 7.1 min
+  ep10 step 40/194 loss 0.0185 2741 tok/s  epoch ETA 6.4 min
+  ep10 step 60/194 loss 0.0169 2746 tok/s  epoch ETA 5.7 min
+  ep10 step 80/194 loss 0.0209 2753 tok/s  epoch ETA 4.8 min
+  ep10 step 100/194 loss 0.0207 2757 tok/s  epoch ETA 4.0 min
+  ep10 step 120/194 loss 0.0221 2760 tok/s  epoch ETA 3.1 min
+  ep10 step 140/194 loss 0.0240 2766 tok/s  epoch ETA 2.3 min
+  ep10 step 160/194 loss 0.0264 2759 tok/s  epoch ETA 1.4 min
+  ep10 step 180/194 loss 0.0281 2761 tok/s  epoch ETA 0.6 min
+[Q8_fullq_lora_12ep seed3] ep10 loss=0.0275 val=0.4527 devS2=0.5737 devS1=0.7533 (8.8m)
+  ep11 step 20/194 loss 0.0190 2743 tok/s  epoch ETA 6.8 min
+  ep11 step 40/194 loss 0.0191 2733 tok/s  epoch ETA 6.2 min
+  ep11 step 60/194 loss 0.0203 2722 tok/s  epoch ETA 5.3 min
+  ep11 step 80/194 loss 0.0207 2724 tok/s  epoch ETA 4.6 min
+  ep11 step 100/194 loss 0.0228 2721 tok/s  epoch ETA 3.8 min
+  ep11 step 120/194 loss 0.0198 2737 tok/s  epoch ETA 3.0 min
+  ep11 step 140/194 loss 0.0199 2742 tok/s  epoch ETA 2.2 min
+  ep11 step 160/194 loss 0.0208 2747 tok/s  epoch ETA 1.4 min
+  ep11 step 180/194 loss 0.0234 2757 tok/s  epoch ETA 0.6 min
+[Q8_fullq_lora_12ep seed3] ep11 loss=0.0221 val=0.4490 devS2=0.5553 devS1=0.7533 (8.8m)
+wandb: updating run metadata
+wandb: uploading output.log; uploading wandb-summary.json; uploading config.yaml
+wandb: uploading output.log; uploading wandb-summary.json
+wandb: uploading history steps 118-119, summary, console lines 121-121
+wandb: 
+wandb: Run history:
+wandb:     epoch/dev_classes_named ▁▆▆▆████████
+wandb:        epoch/dev_inset_rate ▁▆▆█▆▇▆▇▆▆▆▆
+wandb: epoch/dev_subtask1_macro_f1 ▁▄█▇▆█▆███▇▇
+wandb: epoch/dev_subtask2_macro_f1 ▁▄▆▇▆█▇████▇
+wandb:                 epoch/epoch ▁▂▂▃▄▄▅▅▆▇▇█
+wandb:               epoch/minutes ▁▁▆▇▁▁▁▁█▄▁▁
+wandb:          epoch/peak_vram_gb ▁▁▁▃▃▃▆▆▆▆▆█
+wandb:            epoch/train_loss █▄▃▃▂▂▁▁▁▁▁▁
+wandb:         epoch/train_minutes ▁▁▅█▁▁▁▁█▅▁▁
+wandb:          epoch/val_macro_f1 ▁▅▆▇████▇▇▇▇
+wandb:                          +5 ...
+wandb: 
+wandb: Run summary:
+wandb:       dev_subtask1_macro_f1 0.76914
+wandb:       dev_subtask2_macro_f1 0.56966
+wandb:     epoch/dev_classes_named 9
+wandb:        epoch/dev_inset_rate 0.60065
+wandb: epoch/dev_subtask1_macro_f1 0.75327
+wandb: epoch/dev_subtask2_macro_f1 0.55526
+wandb:                 epoch/epoch 11
+wandb:               epoch/minutes 8.79747
+wandb:          epoch/peak_vram_gb 19.26115
+wandb:            epoch/train_loss 0.02214
+wandb:                         +11 ...
+wandb: 
+wandb: 🚀 View run Q8_fullq_lora_12ep-s3 at: https://wandb.ai/iamsid44-iiit-hyderabad/clarity-semeval26/runs/a763a624
+wandb: ⭐️ View project at: https://wandb.ai/iamsid44-iiit-hyderabad/clarity-semeval26
+wandb: Synced 5 W&B file(s), 0 media file(s), 0 artifact file(s) and 0 other file(s)
+wandb: Find logs at: /scratch/shlok/Temp/CLARITY-Unmasking-Political-Question-Evasions/wandb/run-20261006_020552-a763a624/logs
+[done] Q8_fullq_lora_12ep seed3: epoch 5 selected; dev S2 0.5696605702052325, S1 0.7691416992328847; 121 min

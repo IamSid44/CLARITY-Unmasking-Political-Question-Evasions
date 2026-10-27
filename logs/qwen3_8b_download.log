@@ -1,0 +1,3 @@
+Fetching 12 files:   0%|          | 0/12 [00:00<?, ?it/s]Error while downloading from https://huggingface.co/Qwen/Qwen3-8B-Base/resolve/49e3418fbbbca6ecbdf9608b4d22e5a407081db4/model-00002-of-00005.safetensors: peer closed connection without sending complete message body (received 680915816 bytes, expected 3993160032)
+Trying to resume download...
+Fetching 12 files:  67%|██████▋   | 8/12 [30:23<15:11, 227.89s/it]

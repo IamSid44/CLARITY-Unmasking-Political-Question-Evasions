@@ -1,0 +1,36 @@
+[2026-10-06 00:32:29] [watch] watcher start (E14; slice lanes: lane_gpu1_a.txt )
+[2026-10-06 00:32:29] [watch] model Qwen/Qwen3-8B-Base: checking the HF cache (resumes a partial download; ~2-8 MB/s here)
+[2026-10-06 01:31:52] [watch] model Qwen/Qwen3-8B-Base: complete
+[2026-10-06 01:31:52] [watch] start E14 normal lanes
+[2026-10-06 01:33:37] [watch] watcher start (E14; slice lanes: lane_gpu1_a.txt )
+[2026-10-06 01:33:37] [watch] model Qwen/Qwen3-8B-Base: checking the HF cache (resumes a partial download; ~2-8 MB/s here)
+[2026-10-06 01:33:38] [watch] model Qwen/Qwen3-8B-Base: complete
+[2026-10-06 01:33:38] [watch] start E14 normal lanes
+started E14: 1 lane(s) in tmux session clarity-E14
+watch: tmux attach -t clarity-E14   |   tail -f /scratch/shlok/Temp/CLARITY-Unmasking-Political-Question-Evasions/logs/E14.log
+[2026-10-06 01:33:59] [watch] hourly: GPU 0 free/util: 29730 MiB, 0 %; lane_gpu1_a idle, slice 7 GB free, other users: lmw(pid 1249256) lmw(pid 1302886) 
+[2026-10-06 02:34:03] [watch] hourly: GPU 0 free/util: 8793 MiB, 100 %; lane_gpu1_a idle, slice 8 GB free, other users: lmw(pid 1302886) lmw(pid 1408948) 
+[2026-10-06 03:34:07] [watch] hourly: GPU 0 free/util: 8733 MiB, 100 %; lane_gpu1_a idle, slice 29 GB free, other users: lmw(pid 1439972) 
+[2026-10-06 04:34:10] [watch] hourly: GPU 0 free/util: 8773 MiB, 95 %; lane_gpu1_a idle, slice 29 GB free, other users: lmw(pid 1482426) 
+[2026-10-06 05:34:13] [watch] hourly: GPU 0 free/util: 3855 MiB, 100 %; lane_gpu1_a idle, slice 26 GB free, other users: lmw(pid 1519119) 
+[2026-10-06 06:34:17] [watch] hourly: GPU 0 free/util: 48215 MiB, 100 %; lane_gpu1_a idle, slice 28 GB free, other users: lmw(pid 1575974) lmw(pid 1589468) 
+[2026-10-06 07:34:20] [watch] hourly: GPU 0 free/util: 3809 MiB, 100 %; lane_gpu1_a idle, slice 17 GB free, other users: lmw(pid 1605821) 
+[2026-10-06 08:34:23] [watch] hourly: GPU 0 free/util: 4981 MiB, 100 %; lane_gpu1_a idle, slice 23 GB free, other users: lmw(pid 1662213) 
+[2026-10-06 09:34:26] [watch] hourly: GPU 0 free/util: 4813 MiB, 100 %; lane_gpu1_a idle, slice 22 GB free, other users: lmw(pid 1705640) 
+[2026-10-06 09:54:27] [watch] start lane_gpu1_b: GPU 1 slice 2 is free (47 GB, no other users)
+[2026-10-06 10:34:53] [watch] hourly: GPU 0 free/util: 71755 MiB, 100 %; lane_gpu1_a idle, slice 20 GB free, other users: lmw(pid 1705640) ; lane_gpu1_b running, slice 27 GB free, other users: none
+[2026-10-06 11:35:29] [watch] hourly: GPU 0 free/util: 5459 MiB, 100 %; lane_gpu1_a idle, slice 16 GB free, other users: lmw(pid 1705640) ; lane_gpu1_b running, slice 27 GB free, other users: none
+[2026-10-06 12:36:06] [watch] hourly: GPU 0 free/util: 76270 MiB, 94 %; lane_gpu1_a idle, slice 16 GB free, other users: lmw(pid 1705640) ; lane_gpu1_b running, slice 26 GB free, other users: none
+[2026-10-06 13:36:44] [watch] hourly: GPU 0 free/util: 41364 MiB, 95 %; lane_gpu1_a idle, slice 15 GB free, other users: lmw(pid 1705640) ; lane_gpu1_b running, slice 27 GB free, other users: none
+[2026-10-06 14:37:20] [watch] hourly: GPU 0 free/util: 41582 MiB, 100 %; lane_gpu1_a idle, slice 15 GB free, other users: lmw(pid 1705640) ; lane_gpu1_b running, slice 27 GB free, other users: none
+[2026-10-06 15:11:40] [watch] start lane_gpu1_a: GPU 1 slice 1 is free (47 GB, no other users)
+[2026-10-06 15:13:41] [watch] stop  lane_gpu1_a: contention: lmw(pid 1897186) on GPU 1 slice 1
+[2026-10-06 15:14:01] [watch] stop  lane_gpu1_a: done; its run resumes from its last finished epoch on the next free lane
+[2026-10-06 15:38:17] [watch] hourly: GPU 0 free/util: 41578 MiB, 94 %; lane_gpu1_a idle, slice 21 GB free, other users: lmw(pid 1897186) ; lane_gpu1_b running, slice 27 GB free, other users: none
+[2026-10-06 16:38:55] [watch] hourly: GPU 0 free/util: 78278 MiB, 67 %; lane_gpu1_a idle, slice 20 GB free, other users: lmw(pid 1897186) ; lane_gpu1_b running, slice 29 GB free, other users: none
+[2026-10-06 17:39:33] [watch] hourly: GPU 0 free/util: 5027 MiB, 100 %; lane_gpu1_a idle, slice 16 GB free, other users: lmw(pid 1897186) ; lane_gpu1_b running, slice 27 GB free, other users: none
+[2026-10-06 18:40:09] [watch] hourly: GPU 0 free/util: 4947 MiB, 100 %; lane_gpu1_a idle, slice 16 GB free, other users: lmw(pid 1897186) ; lane_gpu1_b running, slice 27 GB free, other users: none
+[2026-10-06 19:40:45] [watch] hourly: GPU 0 free/util: 76312 MiB, 100 %; lane_gpu1_a idle, slice 1 GB free, other users: lmw(pid 2033962) ; lane_gpu1_b running, slice 27 GB free, other users: none
+[2026-10-06 20:41:13] [watch] hourly: GPU 0 free/util: 5359 MiB, 100 %; lane_gpu1_a idle, slice 16 GB free, other users: lmw(pid 2047825) ; lane_gpu1_b running, slice 47 GB free, other users: none
+[2026-10-06 21:41:39] [watch] hourly: GPU 0 free/util: 7849 MiB, 95 %; lane_gpu1_a idle, slice 22 GB free, other users: lmw(pid 2108373) ; lane_gpu1_b running, slice 47 GB free, other users: none
+[2026-10-06 22:13:52] [watch] every run of E14 finished; watcher exits

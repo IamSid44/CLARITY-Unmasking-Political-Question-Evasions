@@ -1,0 +1,169 @@
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+Loading weights:   0%|          | 0/398 [00:00<?, ?it/s]Loading weights:   0%|          | 1/398 [00:00<00:45,  8.80it/s]Loading weights:   7%|▋         | 27/398 [00:00<00:02, 140.97it/s]Loading weights:  14%|█▍        | 55/398 [00:00<00:01, 192.03it/s]Loading weights:  22%|██▏       | 88/398 [00:00<00:01, 240.61it/s]Loading weights:  29%|██▊       | 114/398 [00:00<00:01, 244.36it/s]Loading weights:  35%|███▍      | 139/398 [00:00<00:01, 245.86it/s]Loading weights:  42%|████▏     | 169/398 [00:00<00:00, 255.26it/s]Loading weights:  49%|████▉     | 195/398 [00:00<00:00, 254.20it/s]Loading weights:  56%|█████▌    | 223/398 [00:00<00:00, 260.34it/s]Loading weights:  63%|██████▎   | 250/398 [00:01<00:00, 257.85it/s]Loading weights:  70%|███████   | 279/398 [00:01<00:00, 261.11it/s]Loading weights:  77%|███████▋  | 308/398 [00:01<00:00, 268.91it/s]Loading weights:  84%|████████▍ | 335/398 [00:01<00:00, 254.73it/s]Loading weights:  92%|█████████▏| 366/398 [00:01<00:00, 269.75it/s]Loading weights:  99%|█████████▉| 394/398 [00:01<00:00, 268.58it/s]Loading weights: 100%|██████████| 398/398 [00:01<00:00, 248.40it/s]
+[transformers] [1mQwen3ForSequenceClassification LOAD REPORT[0m from: Qwen/Qwen3-8B-Base
+Key            | Status     | 
+---------------+------------+-
+lm_head.weight | UNEXPECTED | 
+score.weight   | MISSING    | 
+
+Notes:
+- UNEXPECTED:	can be ignored when loading from different task/architecture; not ok if you expect identical arch.
+- MISSING:	those params were newly initialized because missing from the checkpoint. Consider training on your downstream task.
+[data] train 2757 (mean 438 tokens, max 1024), slice 691, dev 308, test 237
+[model] Qwen/Qwen3-8B-Base: trainable 43.7M parameters
+[transformers] `use_return_dict` is deprecated! Use `return_dict` instead!
+[check] padded vs alone: max |logit difference| / mean |logit| = 0.0261 (should be << 1)
+wandb: [wandb.login()] Loaded credentials for https://api.wandb.ai from WANDB_API_KEY.
+wandb: Currently logged in as: iamsid44 (iamsid44-iiit-hyderabad) to https://api.wandb.ai. Use `wandb login --relogin` to force relogin
+wandb: setting up run 2c6a60b4
+wandb: Tracking run with wandb version 0.28.2
+wandb: Run data is saved locally in /scratch/shlok/Temp/CLARITY-Unmasking-Political-Question-Evasions/wandb/run-20261006_131536-2c6a60b4
+wandb: Run `wandb offline` to turn off syncing.
+wandb: Syncing run Q8_12ep_crossfit-fold1
+wandb: ⭐️ View project at https://wandb.ai/iamsid44-iiit-hyderabad/clarity-semeval26
+wandb: 🚀 View run at https://wandb.ai/iamsid44-iiit-hyderabad/clarity-semeval26/runs/2c6a60b4
+[transformers] `use_cache=True` is incompatible with gradient checkpointing. Setting `use_cache=False`.
+[wandb] online run Q8_12ep_crossfit-fold1 (group=Q8_12ep_crossfit)
+  ep0 step 20/173 loss 7.1068 1405 tok/s  epoch ETA 12.3 min
+  ep0 step 40/173 loss 5.1817 1390 tok/s  epoch ETA 10.6 min
+  ep0 step 60/173 loss 4.1895 1393 tok/s  epoch ETA 9.1 min
+  ep0 step 80/173 loss 3.6327 1391 tok/s  epoch ETA 7.7 min
+  ep0 step 100/173 loss 3.2887 1395 tok/s  epoch ETA 6.1 min
+  ep0 step 120/173 loss 3.0258 1391 tok/s  epoch ETA 4.5 min
+  ep0 step 140/173 loss 2.8453 1394 tok/s  epoch ETA 2.8 min
+  ep0 step 160/173 loss 2.7123 1395 tok/s  epoch ETA 1.1 min
+[Q8_12ep_crossfit fold1] ep0 loss=2.6471 val=0.1923 devS2=0.2196 devS1=0.4409 (16.2m)
+  ep1 step 20/173 loss 1.7257 1395 tok/s  epoch ETA 12.3 min
+  ep1 step 40/173 loss 1.6326 1403 tok/s  epoch ETA 11.1 min
+  ep1 step 60/173 loss 1.6283 1399 tok/s  epoch ETA 9.7 min
+  ep1 step 80/173 loss 1.6209 1396 tok/s  epoch ETA 8.0 min
+  ep1 step 100/173 loss 1.6030 1400 tok/s  epoch ETA 6.2 min
+  ep1 step 120/173 loss 1.6134 1398 tok/s  epoch ETA 4.6 min
+  ep1 step 140/173 loss 1.6000 1397 tok/s  epoch ETA 2.8 min
+  ep1 step 160/173 loss 1.5808 1398 tok/s  epoch ETA 1.1 min
+[Q8_12ep_crossfit fold1] ep1 loss=1.5760 val=0.4117 devS2=0.4688 devS1=0.6888 (16.2m)
+  ep2 step 20/173 loss 1.1926 1411 tok/s  epoch ETA 11.5 min
+  ep2 step 40/173 loss 1.2418 1402 tok/s  epoch ETA 11.1 min
+  ep2 step 60/173 loss 1.2771 1395 tok/s  epoch ETA 9.5 min
+  ep2 step 80/173 loss 1.3011 1401 tok/s  epoch ETA 7.9 min
+  ep2 step 100/173 loss 1.2789 1404 tok/s  epoch ETA 6.0 min
+  ep2 step 120/173 loss 1.2938 1401 tok/s  epoch ETA 4.4 min
+  ep2 step 140/173 loss 1.3043 1401 tok/s  epoch ETA 2.7 min
+  ep2 step 160/173 loss 1.3068 1399 tok/s  epoch ETA 1.1 min
+[Q8_12ep_crossfit fold1] ep2 loss=1.2878 val=0.4098 devS2=0.4326 devS1=0.6629 (16.2m)
+  ep3 step 20/173 loss 0.9676 1410 tok/s  epoch ETA 10.9 min
+  ep3 step 40/173 loss 0.9850 1402 tok/s  epoch ETA 10.6 min
+  ep3 step 60/173 loss 0.9619 1393 tok/s  epoch ETA 9.4 min
+  ep3 step 80/173 loss 0.9531 1394 tok/s  epoch ETA 7.8 min
+  ep3 step 100/173 loss 0.9637 1396 tok/s  epoch ETA 6.0 min
+  ep3 step 120/173 loss 0.9671 1397 tok/s  epoch ETA 4.3 min
+  ep3 step 140/173 loss 0.9680 1398 tok/s  epoch ETA 2.7 min
+  ep3 step 160/173 loss 0.9652 1396 tok/s  epoch ETA 1.1 min
+[Q8_12ep_crossfit fold1] ep3 loss=0.9591 val=0.4528 devS2=0.4680 devS1=0.6853 (16.2m)
+  ep4 step 20/173 loss 0.6072 1408 tok/s  epoch ETA 12.7 min
+  ep4 step 40/173 loss 0.5912 1392 tok/s  epoch ETA 11.4 min
+  ep4 step 60/173 loss 0.5720 1397 tok/s  epoch ETA 9.7 min
+  ep4 step 80/173 loss 0.5892 1402 tok/s  epoch ETA 7.9 min
+  ep4 step 100/173 loss 0.5829 1396 tok/s  epoch ETA 6.3 min
+  ep4 step 120/173 loss 0.5739 1397 tok/s  epoch ETA 4.5 min
+  ep4 step 140/173 loss 0.5960 1398 tok/s  epoch ETA 2.8 min
+  ep4 step 160/173 loss 0.5839 1396 tok/s  epoch ETA 1.1 min
+[Q8_12ep_crossfit fold1] ep4 loss=0.5929 val=0.4655 devS2=0.4617 devS1=0.7232 (16.2m)
+  ep5 step 20/173 loss 0.2511 1388 tok/s  epoch ETA 11.2 min
+  ep5 step 40/173 loss 0.2954 1393 tok/s  epoch ETA 10.2 min
+  ep5 step 60/173 loss 0.3009 1402 tok/s  epoch ETA 9.3 min
+  ep5 step 80/173 loss 0.2784 1399 tok/s  epoch ETA 7.6 min
+  ep5 step 100/173 loss 0.2995 1394 tok/s  epoch ETA 6.0 min
+  ep5 step 120/173 loss 0.3180 1398 tok/s  epoch ETA 4.4 min
+  ep5 step 140/173 loss 0.3251 1396 tok/s  epoch ETA 2.8 min
+  ep5 step 160/173 loss 0.3177 1397 tok/s  epoch ETA 1.1 min
+[Q8_12ep_crossfit fold1] ep5 loss=0.3197 val=0.4503 devS2=0.4102 devS1=0.6442 (16.2m)
+  ep6 step 20/173 loss 0.1923 1410 tok/s  epoch ETA 13.6 min
+  ep6 step 40/173 loss 0.1761 1404 tok/s  epoch ETA 11.2 min
+  ep6 step 60/173 loss 0.1674 1404 tok/s  epoch ETA 9.6 min
+  ep6 step 80/173 loss 0.1671 1401 tok/s  epoch ETA 7.9 min
+  ep6 step 100/173 loss 0.1613 1399 tok/s  epoch ETA 6.2 min
+  ep6 step 120/173 loss 0.1678 1397 tok/s  epoch ETA 4.5 min
+  ep6 step 140/173 loss 0.1566 1396 tok/s  epoch ETA 2.8 min
+  ep6 step 160/173 loss 0.1865 1399 tok/s  epoch ETA 1.1 min
+[Q8_12ep_crossfit fold1] ep6 loss=0.1838 val=0.4837 devS2=0.4535 devS1=0.6689 (16.2m)
+  ep7 step 20/173 loss 0.0711 1440 tok/s  epoch ETA 13.0 min
+  ep7 step 40/173 loss 0.0742 1451 tok/s  epoch ETA 11.3 min
+  ep7 step 60/173 loss 0.0930 1420 tok/s  epoch ETA 9.5 min
+  ep7 step 80/173 loss 0.0825 1404 tok/s  epoch ETA 7.9 min
+  ep7 step 100/173 loss 0.1023 1392 tok/s  epoch ETA 6.3 min
+  ep7 step 120/173 loss 0.0969 1387 tok/s  epoch ETA 4.6 min
+  ep7 step 140/173 loss 0.1079 1384 tok/s  epoch ETA 2.9 min
+  ep7 step 160/173 loss 0.1145 1379 tok/s  epoch ETA 1.1 min
+[Q8_12ep_crossfit fold1] ep7 loss=0.1135 val=0.5041 devS2=0.5779 devS1=0.7570 (16.5m)
+  ep8 step 20/173 loss 0.0488 1349 tok/s  epoch ETA 12.8 min
+  ep8 step 40/173 loss 0.0492 1349 tok/s  epoch ETA 11.5 min
+  ep8 step 60/173 loss 0.0620 1343 tok/s  epoch ETA 10.0 min
+  ep8 step 80/173 loss 0.0605 1346 tok/s  epoch ETA 8.1 min
+  ep8 step 100/173 loss 0.0632 1348 tok/s  epoch ETA 6.2 min
+  ep8 step 120/173 loss 0.0661 1348 tok/s  epoch ETA 4.5 min
+  ep8 step 140/173 loss 0.0672 1346 tok/s  epoch ETA 2.8 min
+  ep8 step 160/173 loss 0.0675 1350 tok/s  epoch ETA 1.1 min
+[Q8_12ep_crossfit fold1] ep8 loss=0.0703 val=0.4887 devS2=0.5644 devS1=0.7083 (16.7m)
+  ep9 step 20/173 loss 0.0410 1355 tok/s  epoch ETA 14.5 min
+  ep9 step 40/173 loss 0.0218 1358 tok/s  epoch ETA 11.4 min
+  ep9 step 60/173 loss 0.0388 1352 tok/s  epoch ETA 9.7 min
+  ep9 step 80/173 loss 0.0387 1354 tok/s  epoch ETA 7.9 min
+  ep9 step 100/173 loss 0.0408 1355 tok/s  epoch ETA 6.2 min
+  ep9 step 120/173 loss 0.0401 1354 tok/s  epoch ETA 4.6 min
+  ep9 step 140/173 loss 0.0402 1353 tok/s  epoch ETA 2.9 min
+  ep9 step 160/173 loss 0.0427 1352 tok/s  epoch ETA 1.1 min
+[Q8_12ep_crossfit fold1] ep9 loss=0.0424 val=0.4877 devS2=0.5718 devS1=0.7177 (16.8m)
+  ep10 step 20/173 loss 0.0313 1358 tok/s  epoch ETA 14.4 min
+  ep10 step 40/173 loss 0.0295 1357 tok/s  epoch ETA 12.4 min
+  ep10 step 60/173 loss 0.0344 1358 tok/s  epoch ETA 10.3 min
+  ep10 step 80/173 loss 0.0331 1357 tok/s  epoch ETA 8.6 min
+  ep10 step 100/173 loss 0.0312 1354 tok/s  epoch ETA 6.4 min
+  ep10 step 120/173 loss 0.0294 1354 tok/s  epoch ETA 4.6 min
+  ep10 step 140/173 loss 0.0286 1355 tok/s  epoch ETA 2.8 min
+  ep10 step 160/173 loss 0.0289 1353 tok/s  epoch ETA 1.1 min
+[Q8_12ep_crossfit fold1] ep10 loss=0.0292 val=0.5031 devS2=0.5744 devS1=0.7261 (16.7m)
+  ep11 step 20/173 loss 0.0198 1347 tok/s  epoch ETA 15.3 min
+  ep11 step 40/173 loss 0.0171 1350 tok/s  epoch ETA 12.8 min
+  ep11 step 60/173 loss 0.0188 1354 tok/s  epoch ETA 10.6 min
+  ep11 step 80/173 loss 0.0181 1356 tok/s  epoch ETA 8.8 min
+  ep11 step 100/173 loss 0.0168 1354 tok/s  epoch ETA 6.6 min
+  ep11 step 120/173 loss 0.0173 1355 tok/s  epoch ETA 4.6 min
+  ep11 step 140/173 loss 0.0215 1353 tok/s  epoch ETA 2.8 min
+  ep11 step 160/173 loss 0.0208 1354 tok/s  epoch ETA 1.1 min
+[Q8_12ep_crossfit fold1] ep11 loss=0.0236 val=0.5032 devS2=0.5598 devS1=0.7197 (16.7m)
+wandb: updating run metadata
+wandb: uploading output.log; uploading wandb-summary.json; uploading config.yaml
+wandb: uploading output.log; uploading wandb-summary.json
+wandb: 
+wandb: Run history:
+wandb:     epoch/dev_classes_named ▁▆▆▆▆███████
+wandb:        epoch/dev_inset_rate ▁▆▇▇▇▅▅▇███▇
+wandb: epoch/dev_subtask1_macro_f1 ▁▆▆▆▇▆▆█▇▇▇▇
+wandb: epoch/dev_subtask2_macro_f1 ▁▆▅▆▆▅▆█████
+wandb:                 epoch/epoch ▁▂▂▃▄▄▅▅▆▇▇█
+wandb:               epoch/minutes ▁▁▁▁▁▁▁▅████
+wandb:          epoch/peak_vram_gb ▁▁██████████
+wandb:            epoch/train_loss █▅▄▃▃▂▁▁▁▁▁▁
+wandb:         epoch/train_minutes ▂▁▁▁▁▁▁▄████
+wandb:          epoch/val_macro_f1 ▁▆▆▇▇▇██████
+wandb:                          +5 ...
+wandb: 
+wandb: Run summary:
+wandb:       dev_subtask1_macro_f1 0.71967
+wandb:       dev_subtask2_macro_f1 0.55985
+wandb:     epoch/dev_classes_named 9
+wandb:        epoch/dev_inset_rate 0.62987
+wandb: epoch/dev_subtask1_macro_f1 0.71967
+wandb: epoch/dev_subtask2_macro_f1 0.55985
+wandb:                 epoch/epoch 11
+wandb:               epoch/minutes 16.73388
+wandb:          epoch/peak_vram_gb 19.25883
+wandb:            epoch/train_loss 0.02362
+wandb:                         +11 ...
+wandb: 
+wandb: 🚀 View run Q8_12ep_crossfit-fold1 at: https://wandb.ai/iamsid44-iiit-hyderabad/clarity-semeval26/runs/2c6a60b4
+wandb: ⭐️ View project at: https://wandb.ai/iamsid44-iiit-hyderabad/clarity-semeval26
+wandb: Synced 5 W&B file(s), 0 media file(s), 0 artifact file(s) and 0 other file(s)
+wandb: Find logs at: /scratch/shlok/Temp/CLARITY-Unmasking-Political-Question-Evasions/wandb/run-20261006_131536-2c6a60b4/logs
+[done] Q8_12ep_crossfit fold1: epoch 11 selected; dev S2 0.5598477804616416, S1 0.7196727299291402; 198 min

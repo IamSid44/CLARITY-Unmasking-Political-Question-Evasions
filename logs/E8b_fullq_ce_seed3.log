@@ -1,0 +1,106 @@
+wandb: [wandb.login()] Loaded credentials for https://api.wandb.ai from WANDB_API_KEY.
+wandb: Currently logged in as: iamsid44 (iamsid44-iiit-hyderabad) to https://api.wandb.ai. Use `wandb login --relogin` to force relogin
+wandb: setting up run 711027ed
+wandb: Tracking run with wandb version 0.28.2
+wandb: Run data is saved locally in /scratch/shlok/Temp/CLARITY-Unmasking-Political-Question-Evasions/clarity/wandb/run-20260925_221917-711027ed
+wandb: Run `wandb offline` to turn off syncing.
+wandb: Syncing run E8b_fullq_ce-s3
+wandb: ⭐️ View project at https://wandb.ai/iamsid44-iiit-hyderabad/clarity-semeval26
+wandb: 🚀 View run at https://wandb.ai/iamsid44-iiit-hyderabad/clarity-semeval26/runs/711027ed
+[vram] 21.9 GB free of 47.4 GB
+[wandb] online run E8b_fullq_ce-s3 (group=E8b_fullq_ce)
+Loading weights:   0%|          | 0/390 [00:00<?, ?it/s]Loading weights: 100%|██████████| 390/390 [00:00<00:00, 7714.77it/s]
+[transformers] [1mDebertaV2Model LOAD REPORT[0m from: microsoft/deberta-v3-large
+Key                                     | Status     |  | 
+----------------------------------------+------------+--+-
+lm_predictions.lm_head.LayerNorm.weight | UNEXPECTED |  | 
+lm_predictions.lm_head.dense.bias       | UNEXPECTED |  | 
+lm_predictions.lm_head.LayerNorm.bias   | UNEXPECTED |  | 
+mask_predictions.classifier.bias        | UNEXPECTED |  | 
+lm_predictions.lm_head.dense.weight     | UNEXPECTED |  | 
+mask_predictions.classifier.weight      | UNEXPECTED |  | 
+mask_predictions.dense.bias             | UNEXPECTED |  | 
+lm_predictions.lm_head.bias             | UNEXPECTED |  | 
+mask_predictions.dense.weight           | UNEXPECTED |  | 
+mask_predictions.LayerNorm.weight       | UNEXPECTED |  | 
+mask_predictions.LayerNorm.bias         | UNEXPECTED |  | 
+
+Notes:
+- UNEXPECTED:	can be ignored when loading from different task/architecture; not ok if you expect identical arch.
+/scratch/shlok/Temp/CLARITY-Unmasking-Political-Question-Evasions/clarity/encoder.py:714: UserWarning: Converting a tensor with requires_grad=True to a scalar may lead to unexpected behavior.
+Consider using tensor.detach() first. (Triggered internally at /pytorch/torch/csrc/autograd/generated/python_variable_methods.cpp:836.)
+  running += float(loss)
+wandb: [wandb.login()] Loaded credentials for https://api.wandb.ai from WANDB_API_KEY.
+wandb: Currently logged in as: iamsid44 (iamsid44-iiit-hyderabad) to https://api.wandb.ai. Use `wandb login --relogin` to force relogin
+wandb: setting up run 711027ed
+wandb: Tracking run with wandb version 0.28.2
+wandb: Run data is saved locally in /scratch/shlok/Temp/CLARITY-Unmasking-Political-Question-Evasions/clarity/wandb/run-20260925_223627-711027ed
+wandb: Run `wandb offline` to turn off syncing.
+wandb: Resuming run E8b_fullq_ce-s3
+wandb: ⭐️ View project at https://wandb.ai/iamsid44-iiit-hyderabad/clarity-semeval26
+wandb: 🚀 View run at https://wandb.ai/iamsid44-iiit-hyderabad/clarity-semeval26/runs/711027ed
+[vram] 43.3 GB free of 95.0 GB
+[wandb] online run E8b_fullq_ce-s3 (group=E8b_fullq_ce)
+Loading weights:   0%|          | 0/390 [00:00<?, ?it/s]Loading weights: 100%|██████████| 390/390 [00:00<00:00, 7828.11it/s]
+[transformers] [1mDebertaV2Model LOAD REPORT[0m from: microsoft/deberta-v3-large
+Key                                     | Status     |  | 
+----------------------------------------+------------+--+-
+mask_predictions.dense.bias             | UNEXPECTED |  | 
+mask_predictions.classifier.weight      | UNEXPECTED |  | 
+mask_predictions.dense.weight           | UNEXPECTED |  | 
+mask_predictions.classifier.bias        | UNEXPECTED |  | 
+mask_predictions.LayerNorm.bias         | UNEXPECTED |  | 
+lm_predictions.lm_head.dense.weight     | UNEXPECTED |  | 
+mask_predictions.LayerNorm.weight       | UNEXPECTED |  | 
+lm_predictions.lm_head.dense.bias       | UNEXPECTED |  | 
+lm_predictions.lm_head.LayerNorm.bias   | UNEXPECTED |  | 
+lm_predictions.lm_head.LayerNorm.weight | UNEXPECTED |  | 
+lm_predictions.lm_head.bias             | UNEXPECTED |  | 
+
+Notes:
+- UNEXPECTED:	can be ignored when loading from different task/architecture; not ok if you expect identical arch.
+/scratch/shlok/Temp/CLARITY-Unmasking-Political-Question-Evasions/clarity/encoder.py:714: UserWarning: Converting a tensor with requires_grad=True to a scalar may lead to unexpected behavior.
+Consider using tensor.detach() first. (Triggered internally at /pytorch/torch/csrc/autograd/generated/python_variable_methods.cpp:836.)
+  running += float(loss)
+[E8b_fullq_ce s3] ep0 loss=1.9334 val=0.0550 devS2=0.0596 devS1=0.1333 inset=0.367 named=2/9 (22.5m)
+[E8b_fullq_ce s3] ep1 loss=1.8583 val=0.0590 devS2=0.0680 devS1=0.1485 inset=0.377 named=2/9 (45.4m)
+[E8b_fullq_ce s3] ep2 loss=1.7924 val=0.1663 devS2=0.1875 devS1=0.2647 inset=0.412 named=3/9 (68.4m)
+[E8b_fullq_ce s3] ep3 loss=1.7500 val=0.1651 devS2=0.1950 devS1=0.2696 inset=0.422 named=3/9 (91.7m)
+[E8b_fullq_ce s3] ep4 loss=1.6739 val=0.1541 devS2=0.1934 devS1=0.3279 inset=0.442 named=3/9 (113.2m)
+[E8b_fullq_ce s3] ep5 loss=1.6002 val=0.2470 devS2=0.2200 devS1=0.4403 inset=0.458 named=7/9 (135.1m)
+[E8b_fullq_ce s3] ep6 loss=1.5359 val=0.2308 devS2=0.2111 devS1=0.4346 inset=0.461 named=5/9 (157.3m)
+[E8b_fullq_ce s3] ep7 loss=1.4974 val=0.2344 devS2=0.2162 devS1=0.4221 inset=0.458 named=5/9 (175.7m)
+wandb: updating run metadata
+wandb: uploading output.log; uploading wandb-summary.json; uploading config.yaml
+wandb: uploading output.log; uploading config.yaml
+wandb: uploading history steps 7-7, summary
+wandb: 
+wandb: Run history:
+wandb:     dev_classes_named ▁▁▂▂▂█▅▅
+wandb:        dev_inset_rate ▁▂▄▅▇███
+wandb: dev_subtask1_macro_f1 ▁▁▄▄▅███
+wandb: dev_subtask2_macro_f1 ▁▁▇▇▇███
+wandb:                 epoch ▁▂▃▄▅▆▇█
+wandb:               minutes ▁▂▃▄▅▆▇█
+wandb:            train_loss █▇▆▅▄▃▂▁
+wandb:          val_macro_f1 ▁▁▅▅▅█▇█
+wandb: 
+wandb: Run summary:
+wandb:     best_val_macro_f1 0.24697
+wandb:     dev_classes_named 5
+wandb:        dev_inset_rate 0.45779
+wandb: dev_subtask1_macro_f1 0.42215
+wandb: dev_subtask2_macro_f1 0.21622
+wandb:                 epoch 7
+wandb:               minutes 175.71986
+wandb:          peak_vram_gb 14.90505
+wandb:        selected_epoch 5
+wandb:            train_loss 1.4974
+wandb:                    +1 ...
+wandb: 
+wandb: 🚀 View run E8b_fullq_ce-s3 at: https://wandb.ai/iamsid44-iiit-hyderabad/clarity-semeval26/runs/711027ed
+wandb: ⭐️ View project at: https://wandb.ai/iamsid44-iiit-hyderabad/clarity-semeval26
+wandb: Synced 5 W&B file(s), 0 media file(s), 0 artifact file(s) and 0 other file(s)
+wandb: Find logs at: ./wandb/run-20260925_223627-711027ed/logs
+[hf] upload queued in background: /scratch/shlok/Temp/CLARITY-Unmasking-Political-Question-Evasions/clarity/runs/E8b_fullq_ce/seed3 (progress: /scratch/shlok/Temp/CLARITY-Unmasking-Political-Question-Evasions/clarity/logs/hf_uploads.log)
+[E8b_fullq_ce s3] DONE  devS2=0.2200 devS1=0.4403 peak=14.9GB  176.0m

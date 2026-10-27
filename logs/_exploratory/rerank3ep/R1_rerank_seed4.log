@@ -1,0 +1,69 @@
+[vram] 43.9 GB free of 95.0 GB
+[stage1] 5 OOF folds, 5-seed ensemble for dev/test
+[cands] train: gold outside top-3 for 28.7% (injected); internal-val hit@3 = 0.742
+Loading weights:   0%|          | 0/390 [00:00<?, ?it/s]Loading weights:  79%|███████▉  | 309/390 [00:00<00:00, 3073.09it/s]Loading weights: 100%|██████████| 390/390 [00:00<00:00, 3261.05it/s]
+[transformers] [1mDebertaV2Model LOAD REPORT[0m from: microsoft/deberta-v3-large
+Key                                     | Status     |  | 
+----------------------------------------+------------+--+-
+mask_predictions.dense.bias             | UNEXPECTED |  | 
+mask_predictions.LayerNorm.weight       | UNEXPECTED |  | 
+mask_predictions.LayerNorm.bias         | UNEXPECTED |  | 
+mask_predictions.classifier.weight      | UNEXPECTED |  | 
+lm_predictions.lm_head.dense.weight     | UNEXPECTED |  | 
+lm_predictions.lm_head.LayerNorm.bias   | UNEXPECTED |  | 
+mask_predictions.classifier.bias        | UNEXPECTED |  | 
+lm_predictions.lm_head.bias             | UNEXPECTED |  | 
+lm_predictions.lm_head.dense.bias       | UNEXPECTED |  | 
+lm_predictions.lm_head.LayerNorm.weight | UNEXPECTED |  | 
+mask_predictions.dense.weight           | UNEXPECTED |  | 
+
+Notes:
+- UNEXPECTED:	can be ignored when loading from different task/architecture; not ok if you expect identical arch.
+wandb: [wandb.login()] Loaded credentials for https://api.wandb.ai from WANDB_API_KEY.
+wandb: Currently logged in as: iamsid44 (iamsid44-iiit-hyderabad) to https://api.wandb.ai. Use `wandb login --relogin` to force relogin
+wandb: setting up run 1e1b5ba1
+wandb: Tracking run with wandb version 0.28.2
+wandb: Run data is saved locally in /scratch/shlok/Temp/CLARITY-Unmasking-Political-Question-Evasions/clarity/wandb/run-20260920_040118-1e1b5ba1
+wandb: Run `wandb offline` to turn off syncing.
+wandb: Syncing run R1_rerank-s4
+wandb: ⭐️ View project at https://wandb.ai/iamsid44-iiit-hyderabad/clarity-semeval26
+wandb: 🚀 View run at https://wandb.ai/iamsid44-iiit-hyderabad/clarity-semeval26/runs/1e1b5ba1
+[wandb] online run R1_rerank-s4 (group=R1_rerank)
+[R1_rerank s4] ep0 loss=1.0334 val=0.1854 devS2=0.1913 devS1=0.4932 inset=0.510 named=5/9 (10.6m)
+[R1_rerank s4] ep1 loss=0.9827 val=0.2779 devS2=0.2441 devS1=0.5578 inset=0.497 named=6/9 (21.5m)
+[R1_rerank s4] ep2 loss=0.9704 val=0.2054 devS2=0.2433 devS1=0.5180 inset=0.516 named=6/9 (32.5m)
+wandb: updating run metadata
+wandb: uploading wandb-summary.json; uploading config.yaml; uploading output.log
+wandb: uploading wandb-summary.json; uploading config.yaml
+wandb: uploading wandb-summary.json; uploading config.yaml; uploading history steps 1-2, summary, console lines 3-3
+wandb: uploading data
+wandb: 
+wandb: Run history:
+wandb:     dev_classes_named ▁██
+wandb:        dev_inset_rate ▆▁█
+wandb: dev_subtask1_macro_f1 ▁█▄
+wandb: dev_subtask2_macro_f1 ▁██
+wandb:                 epoch ▁▅█
+wandb:               minutes ▁▄█
+wandb:            train_loss █▂▁
+wandb:          val_macro_f1 ▁█▃
+wandb: 
+wandb: Run summary:
+wandb:        dev_classes_named 6
+wandb:             dev_hit_at_k 0.8961
+wandb:           dev_inset_rate 0.51623
+wandb:            dev_s2_rerank 0.24407
+wandb: dev_s2_rerank_plus_prior 0.31802
+wandb:            dev_s2_stage1 0.36518
+wandb:    dev_subtask1_macro_f1 0.51795
+wandb:    dev_subtask2_macro_f1 0.24329
+wandb:                    epoch 2
+wandb:                  minutes 32.50349
+wandb:                       +4 ...
+wandb: 
+wandb: 🚀 View run R1_rerank-s4 at: https://wandb.ai/iamsid44-iiit-hyderabad/clarity-semeval26/runs/1e1b5ba1
+wandb: ⭐️ View project at: https://wandb.ai/iamsid44-iiit-hyderabad/clarity-semeval26
+wandb: Synced 5 W&B file(s), 0 media file(s), 0 artifact file(s) and 0 other file(s)
+wandb: Find logs at: ./wandb/run-20260920_040118-1e1b5ba1/logs
+[R1_rerank s4] DONE  stage1 devS2=0.3652 | rerank devS2=0.2441 | +prior(b=2.0) devS2=0.3180 | hit@3=0.896  32.7m
+[hf] upload queued in background: /scratch/shlok/Temp/CLARITY-Unmasking-Political-Question-Evasions/clarity/runs/R1_rerank/seed4 (progress: /scratch/shlok/Temp/CLARITY-Unmasking-Political-Question-Evasions/clarity/logs/hf_uploads.log)

@@ -1,0 +1,75 @@
+wandb: [wandb.login()] Loaded credentials for https://api.wandb.ai from WANDB_API_KEY.
+wandb: Currently logged in as: iamsid44 (iamsid44-iiit-hyderabad) to https://api.wandb.ai. Use `wandb login --relogin` to force relogin
+wandb: setting up run 7b264f15
+wandb: Tracking run with wandb version 0.28.2
+wandb: Run data is saved locally in /scratch/shlok/Temp/CLARITY-Unmasking-Political-Question-Evasions/clarity/wandb/run-20260929_142754-7b264f15
+wandb: Run `wandb offline` to turn off syncing.
+wandb: Syncing run E12c_pair_impl_dodg-s2
+wandb: ⭐️ View project at https://wandb.ai/iamsid44-iiit-hyderabad/clarity-semeval26
+wandb: 🚀 View run at https://wandb.ai/iamsid44-iiit-hyderabad/clarity-semeval26/runs/7b264f15
+[vram] 35.0 GB free of 95.0 GB
+[wandb] online run E12c_pair_impl_dodg-s2 (group=E12c_pair_impl_dodg)
+Loading weights:   0%|          | 0/390 [00:00<?, ?it/s]Loading weights: 100%|██████████| 390/390 [00:00<00:00, 6131.52it/s]
+[transformers] [1mDebertaV2Model LOAD REPORT[0m from: microsoft/deberta-v3-large
+Key                                     | Status     |  | 
+----------------------------------------+------------+--+-
+lm_predictions.lm_head.bias             | UNEXPECTED |  | 
+lm_predictions.lm_head.dense.bias       | UNEXPECTED |  | 
+mask_predictions.LayerNorm.bias         | UNEXPECTED |  | 
+lm_predictions.lm_head.LayerNorm.bias   | UNEXPECTED |  | 
+mask_predictions.classifier.weight      | UNEXPECTED |  | 
+lm_predictions.lm_head.LayerNorm.weight | UNEXPECTED |  | 
+mask_predictions.LayerNorm.weight       | UNEXPECTED |  | 
+lm_predictions.lm_head.dense.weight     | UNEXPECTED |  | 
+mask_predictions.classifier.bias        | UNEXPECTED |  | 
+mask_predictions.dense.bias             | UNEXPECTED |  | 
+mask_predictions.dense.weight           | UNEXPECTED |  | 
+
+Notes:
+- UNEXPECTED:	can be ignored when loading from different task/architecture; not ok if you expect identical arch.
+/scratch/shlok/Temp/CLARITY-Unmasking-Political-Question-Evasions/clarity/encoder.py:783: UserWarning: Converting a tensor with requires_grad=True to a scalar may lead to unexpected behavior.
+Consider using tensor.detach() first. (Triggered internally at /pytorch/torch/csrc/autograd/generated/python_variable_methods.cpp:836.)
+  running += float(loss)
+[E12c_pair_impl_dodg s2] ep0 loss=0.6794 val=0.3717 task=pair:Implicit,Dodging (8.4m)
+[E12c_pair_impl_dodg s2] ep1 loss=0.6922 val=0.5699 task=pair:Implicit,Dodging (17.4m)
+[E12c_pair_impl_dodg s2] ep2 loss=0.6629 val=0.5996 task=pair:Implicit,Dodging (26.6m)
+[E12c_pair_impl_dodg s2] ep3 loss=0.6356 val=0.3684 task=pair:Implicit,Dodging (35.5m)
+[E12c_pair_impl_dodg s2] ep4 loss=0.5859 val=0.5750 task=pair:Implicit,Dodging (44.4m)
+[E12c_pair_impl_dodg s2] ep5 loss=0.5444 val=0.6205 task=pair:Implicit,Dodging (53.1m)
+[E12c_pair_impl_dodg s2] ep6 loss=0.4444 val=0.6543 task=pair:Implicit,Dodging (62.0m)
+[E12c_pair_impl_dodg s2] ep7 loss=0.3613 val=0.6416 task=pair:Implicit,Dodging (70.9m)
+[E12c_pair_impl_dodg s2] ep8 loss=0.2977 val=0.6332 task=pair:Implicit,Dodging (79.6m)
+[E12c_pair_impl_dodg s2] ep9 loss=0.3222 val=0.6499 task=pair:Implicit,Dodging (88.5m)
+[E12c_pair_impl_dodg s2] ep10 loss=0.2568 val=0.6078 task=pair:Implicit,Dodging (97.5m)
+[E12c_pair_impl_dodg s2] ep11 loss=0.2214 val=0.6500 task=pair:Implicit,Dodging (106.3m)
+[E12c_pair_impl_dodg s2] ep12 loss=0.1630 val=0.6500 task=pair:Implicit,Dodging (115.4m)
+[E12c_pair_impl_dodg s2] ep13 loss=0.1469 val=0.6744 task=pair:Implicit,Dodging (124.4m)
+[E12c_pair_impl_dodg s2] ep14 loss=0.1802 val=0.6500 task=pair:Implicit,Dodging (133.3m)
+[E12c_pair_impl_dodg s2] ep15 loss=0.1410 val=0.6500 task=pair:Implicit,Dodging (142.2m)
+wandb: updating run metadata
+wandb: uploading output.log; uploading wandb-summary.json; uploading config.yaml
+wandb: uploading output.log; uploading wandb-summary.json
+wandb: uploading history steps 14-15, summary, console lines 37-37
+wandb: uploading data
+wandb: 
+wandb: Run history:
+wandb:        epoch ▁▁▂▂▃▃▄▄▅▅▆▆▇▇██
+wandb:      minutes ▁▁▂▂▃▃▄▄▅▅▆▆▇▇██
+wandb:   train_loss ███▇▇▆▅▄▃▃▂▂▁▁▁▁
+wandb: val_macro_f1 ▁▆▆▁▆▇█▇▇▇▆▇▇█▇▇
+wandb: 
+wandb: Run summary:
+wandb: best_val_macro_f1 0.67443
+wandb:             epoch 15
+wandb:           minutes 142.16388
+wandb:      peak_vram_gb 14.90467
+wandb:    selected_epoch 13
+wandb:        train_loss 0.14104
+wandb:      val_macro_f1 0.65
+wandb: 
+wandb: 🚀 View run E12c_pair_impl_dodg-s2 at: https://wandb.ai/iamsid44-iiit-hyderabad/clarity-semeval26/runs/7b264f15
+wandb: ⭐️ View project at: https://wandb.ai/iamsid44-iiit-hyderabad/clarity-semeval26
+wandb: Synced 5 W&B file(s), 0 media file(s), 0 artifact file(s) and 0 other file(s)
+wandb: Find logs at: ./wandb/run-20260929_142754-7b264f15/logs
+[hf] upload queued in background: /scratch/shlok/Temp/CLARITY-Unmasking-Political-Question-Evasions/clarity/runs/E12c_pair_impl_dodg/seed2 (progress: /scratch/shlok/Temp/CLARITY-Unmasking-Political-Question-Evasions/clarity/logs/hf_uploads.log)
+[E12c_pair_impl_dodg s2] DONE  task=pair:Implicit,Dodging peak=14.9GB  142.3m

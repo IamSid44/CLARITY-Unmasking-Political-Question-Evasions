@@ -1,0 +1,4 @@
+2026-10-13 20:00:29 try 1
+Fetching 10 files:   0%|          | 0/10 [00:00<?, ?it/s]Fetching 10 files:  10%|█         | 1/10 [00:00<00:07,  1.27it/s]Fetching 10 files:  30%|███       | 3/10 [00:01<00:03,  2.30it/s]Fetching 10 files:  40%|████      | 4/10 [00:01<00:02,  2.54it/s]Fetching 10 files:  50%|█████     | 5/10 [00:01<00:01,  3.10it/s]Fetching 10 files:  60%|██████    | 6/10 [00:02<00:02,  1.80it/s]Fetching 10 files:  70%|███████   | 7/10 [00:03<00:01,  1.81it/s]Fetching 10 files:  80%|████████  | 8/10 [00:05<00:01,  1.17it/s]Fetching 10 files:  90%|█████████ | 9/10 [01:05<00:19, 19.18s/it]Fetching 10 files: 100%|██████████| 10/10 [36:46<00:00, 665.70s/it]Fetching 10 files: 100%|██████████| 10/10 [36:46<00:00, 220.61s/it]
+complete: /scratch/shlok/.cache/huggingface/hub/models--Qwen--Qwen3-Embedding-0.6B/snapshots/97b0c614be4d77ee51c0cef4e5f07c00f9eb65b3
+2026-10-13 20:37:22 COMPLETE

@@ -1,0 +1,2 @@
+2026-10-27 19:28:36 create: machine 549973 (Running) -- ssh -o StrictHostKeyChecking=no ubuntu@217.18.55.18
+2026-10-27 19:28:36 connect: D1 -> ubuntu@217.18.55.18 port 22, machine 549973

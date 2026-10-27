@@ -1,0 +1,42 @@
+[2026-10-14 12:24:46] [lane_gpu0_a] lane start (E17, GPU 0, models.llm_classifier): 3 run(s)
+[2026-10-14 12:24:46] [lane_gpu0_a] start Q8_distill_a05 0 on GPU 0 (models.llm_classifier)
+[2026-10-14 12:26:11] paused by hand for the E16 cost timing (GPU 0 must be idle); restarted after it
+[2026-10-14 12:26:50] [lane_gpu0_a] lane start (E17, GPU 0, models.llm_classifier): 3 run(s)
+[2026-10-14 12:26:50] [lane_gpu0_a] start Q8_distill_a05 0 on GPU 0 (models.llm_classifier)
+[2026-10-14 13:42:45] [lane_gpu0_a] ok    Q8_distill_a05 0  epoch 9 selected; dev S2 0.5565746695274849, S1 0.7482651697186765; 76 min
+[2026-10-14 13:42:45] [lane_gpu0_a] hf    upload queued: runs/Q8_distill_a05/seed0 (logs/hf_uploads.log)
+[2026-10-14 13:42:45] [lane_gpu0_a] start Q8_distill_a05 1 on GPU 0 (models.llm_classifier)
+[2026-10-14 14:59:08] [lane_gpu0_a] ok    Q8_distill_a05 1  epoch 9 selected; dev S2 0.5958961256802516, S1 0.7586364652232915; 76 min
+[2026-10-14 14:59:08] [lane_gpu0_a] hf    upload queued: runs/Q8_distill_a05/seed1 (logs/hf_uploads.log)
+[2026-10-14 14:59:08] [lane_gpu0_a] start Q8_distill_a05 2 on GPU 0 (models.llm_classifier)
+[2026-10-14 16:15:17] [lane_gpu0_a] ok    Q8_distill_a05 2  epoch 6 selected; dev S2 0.5722760945028271, S1 0.7396776084103956; 76 min
+[2026-10-14 16:15:17] [lane_gpu0_a] hf    upload queued: runs/Q8_distill_a05/seed2 (logs/hf_uploads.log)
+[2026-10-14 16:16:29] [lane_gpu0_a] hf    95 run folders marked uploaded
+[2026-10-14 16:16:29] [lane_gpu0_a] lane finished
+[2026-10-14 16:19:42] [lane_gpu0_a] lane start (E17, GPU 0, models.llm_classifier): 10 run(s)
+[2026-10-14 16:19:42] [lane_gpu0_a] skip  Q8_distill_a05 0 (finished)
+[2026-10-14 16:19:42] [lane_gpu0_a] skip  Q8_distill_a05 1 (finished)
+[2026-10-14 16:19:42] [lane_gpu0_a] skip  Q8_distill_a05 2 (finished)
+[2026-10-14 16:19:42] [lane_gpu0_a] start Q8_distill_a05 3 on GPU 0 (models.llm_classifier)
+[2026-10-14 17:35:56] [lane_gpu0_a] ok    Q8_distill_a05 3  epoch 6 selected; dev S2 0.5694628563485308, S1 0.7835375690797378; 76 min
+[2026-10-14 17:35:56] [lane_gpu0_a] hf    upload queued: runs/Q8_distill_a05/seed3 (logs/hf_uploads.log)
+[2026-10-14 17:35:56] [lane_gpu0_a] start Q8_distill_a05 4 on GPU 0 (models.llm_classifier)
+[2026-10-14 18:51:59] [lane_gpu0_a] ok    Q8_distill_a05 4  epoch 7 selected; dev S2 0.6009829315986308, S1 0.7855121639899382; 76 min
+[2026-10-14 18:51:59] [lane_gpu0_a] hf    upload queued: runs/Q8_distill_a05/seed4 (logs/hf_uploads.log)
+[2026-10-14 18:51:59] [lane_gpu0_a] start Q8_distill_a05 5 on GPU 0 (models.llm_classifier)
+[2026-10-14 20:08:04] [lane_gpu0_a] ok    Q8_distill_a05 5  epoch 8 selected; dev S2 0.5830258677378781, S1 0.7700220916808195; 76 min
+[2026-10-14 20:08:04] [lane_gpu0_a] hf    upload queued: runs/Q8_distill_a05/seed5 (logs/hf_uploads.log)
+[2026-10-14 20:08:04] [lane_gpu0_a] start Q8_distill_a05 6 on GPU 0 (models.llm_classifier)
+[2026-10-14 21:24:08] [lane_gpu0_a] ok    Q8_distill_a05 6  epoch 9 selected; dev S2 0.510166453498956, S1 0.7502217242175275; 76 min
+[2026-10-14 21:24:08] [lane_gpu0_a] hf    upload queued: runs/Q8_distill_a05/seed6 (logs/hf_uploads.log)
+[2026-10-14 21:24:09] [lane_gpu0_a] start Q8_distill_a05 7 on GPU 0 (models.llm_classifier)
+[2026-10-14 22:40:18] [lane_gpu0_a] ok    Q8_distill_a05 7  epoch 7 selected; dev S2 0.5933907116201816, S1 0.7631855746650403; 76 min
+[2026-10-14 22:40:18] [lane_gpu0_a] hf    upload queued: runs/Q8_distill_a05/seed7 (logs/hf_uploads.log)
+[2026-10-14 22:40:18] [lane_gpu0_a] start Q8_distill_a05 8 on GPU 0 (models.llm_classifier)
+[2026-10-14 23:56:47] [lane_gpu0_a] ok    Q8_distill_a05 8  epoch 8 selected; dev S2 0.5653875655514641, S1 0.766283545929774; 76 min
+[2026-10-14 23:56:47] [lane_gpu0_a] hf    upload queued: runs/Q8_distill_a05/seed8 (logs/hf_uploads.log)
+[2026-10-14 23:56:47] [lane_gpu0_a] start Q8_distill_a05 9 on GPU 0 (models.llm_classifier)
+[2026-10-15 01:12:56] [lane_gpu0_a] ok    Q8_distill_a05 9  epoch 5 selected; dev S2 0.5787181495330846, S1 0.741834402418344; 76 min
+[2026-10-15 01:12:56] [lane_gpu0_a] hf    upload queued: runs/Q8_distill_a05/seed9 (logs/hf_uploads.log)
+[2026-10-15 01:13:58] [lane_gpu0_a] hf    102 run folders marked uploaded
+[2026-10-15 01:13:58] [lane_gpu0_a] lane finished

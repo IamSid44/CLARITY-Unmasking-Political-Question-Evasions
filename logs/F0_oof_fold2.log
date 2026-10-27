@@ -1,0 +1,74 @@
+wandb: [wandb.login()] Loaded credentials for https://api.wandb.ai from WANDB_API_KEY.
+wandb: Currently logged in as: iamsid44 (iamsid44-iiit-hyderabad) to https://api.wandb.ai. Use `wandb login --relogin` to force relogin
+wandb: setting up run 32435527
+wandb: Tracking run with wandb version 0.28.2
+wandb: Run data is saved locally in /scratch/shlok/Temp/CLARITY-Unmasking-Political-Question-Evasions/clarity/wandb/run-20260919_225343-32435527
+wandb: Run `wandb offline` to turn off syncing.
+wandb: Syncing run F0_oof-fold2
+wandb: ⭐️ View project at https://wandb.ai/iamsid44-iiit-hyderabad/clarity-semeval26
+wandb: 🚀 View run at https://wandb.ai/iamsid44-iiit-hyderabad/clarity-semeval26/runs/32435527
+[vram] 28.7 GB free of 95.0 GB
+[wandb] online run F0_oof-fold2 (group=F0_oof)
+Loading weights:   0%|          | 0/390 [00:00<?, ?it/s]Loading weights: 100%|██████████| 390/390 [00:00<00:00, 7587.42it/s]
+[transformers] [1mDebertaV2Model LOAD REPORT[0m from: microsoft/deberta-v3-large
+Key                                     | Status     |  | 
+----------------------------------------+------------+--+-
+lm_predictions.lm_head.dense.weight     | UNEXPECTED |  | 
+mask_predictions.classifier.weight      | UNEXPECTED |  | 
+mask_predictions.dense.bias             | UNEXPECTED |  | 
+lm_predictions.lm_head.bias             | UNEXPECTED |  | 
+mask_predictions.dense.weight           | UNEXPECTED |  | 
+lm_predictions.lm_head.LayerNorm.weight | UNEXPECTED |  | 
+lm_predictions.lm_head.dense.bias       | UNEXPECTED |  | 
+mask_predictions.LayerNorm.bias         | UNEXPECTED |  | 
+lm_predictions.lm_head.LayerNorm.bias   | UNEXPECTED |  | 
+mask_predictions.classifier.bias        | UNEXPECTED |  | 
+mask_predictions.LayerNorm.weight       | UNEXPECTED |  | 
+
+Notes:
+- UNEXPECTED:	can be ignored when loading from different task/architecture; not ok if you expect identical arch.
+/scratch/shlok/Temp/CLARITY-Unmasking-Political-Question-Evasions/clarity/encoder.py:659: UserWarning: Converting a tensor with requires_grad=True to a scalar may lead to unexpected behavior.
+Consider using tensor.detach() first. (Triggered internally at /pytorch/torch/csrc/autograd/generated/python_variable_methods.cpp:836.)
+  running += float(loss)
+[F0_oof f2] ep0 loss=1.9313 val=0.0577 devS2=0.0715 devS1=0.3392 inset=0.318 named=2/9 (4.2m)
+[F0_oof f2] ep1 loss=1.7903 val=0.1917 devS2=0.1778 devS1=0.4035 inset=0.503 named=5/9 (8.9m)
+[F0_oof f2] ep2 loss=1.5460 val=0.3386 devS2=0.2709 devS1=0.5395 inset=0.542 named=8/9 (14.0m)
+[F0_oof f2] ep3 loss=1.3299 val=0.3404 devS2=0.2862 devS1=0.5124 inset=0.529 named=7/9 (19.1m)
+[F0_oof f2] ep4 loss=1.1160 val=0.3917 devS2=0.2811 devS1=0.5605 inset=0.513 named=8/9 (24.2m)
+[F0_oof f2] ep5 loss=0.9565 val=0.4044 devS2=0.3800 devS1=0.6043 inset=0.562 named=8/9 (27.6m)
+[F0_oof f2] ep6 loss=0.8375 val=0.3953 devS2=0.3702 devS1=0.5922 inset=0.545 named=8/9 (32.5m)
+[F0_oof f2] ep7 loss=0.7910 val=0.3953 devS2=0.3511 devS1=0.5877 inset=0.539 named=8/9 (37.4m)
+wandb: updating run metadata
+wandb: updating run metadata; uploading history steps 6-7, summary, console lines 29-29
+wandb: uploading output.log; uploading wandb-summary.json; uploading config.yaml
+wandb: uploading output.log; uploading config.yaml
+wandb: uploading data
+wandb: 
+wandb: Run history:
+wandb:     dev_classes_named ▁▅█▇████
+wandb:        dev_inset_rate ▁▆▇▇▇██▇
+wandb: dev_subtask1_macro_f1 ▁▃▆▆▇███
+wandb: dev_subtask2_macro_f1 ▁▃▆▆▆██▇
+wandb:                 epoch ▁▂▃▄▅▆▇█
+wandb:               minutes ▁▂▃▄▅▆▇█
+wandb:            train_loss █▇▆▄▃▂▁▁
+wandb:          val_macro_f1 ▁▄▇▇████
+wandb: 
+wandb: Run summary:
+wandb:     best_val_macro_f1 0.39526
+wandb:     dev_classes_named 8
+wandb:        dev_inset_rate 0.53896
+wandb: dev_subtask1_macro_f1 0.58769
+wandb: dev_subtask2_macro_f1 0.35107
+wandb:                 epoch 7
+wandb:               minutes 37.44553
+wandb:          peak_vram_gb 8.59387
+wandb:        selected_epoch 7
+wandb:            train_loss 0.79097
+wandb:                    +1 ...
+wandb: 
+wandb: 🚀 View run F0_oof-fold2 at: https://wandb.ai/iamsid44-iiit-hyderabad/clarity-semeval26/runs/32435527
+wandb: ⭐️ View project at: https://wandb.ai/iamsid44-iiit-hyderabad/clarity-semeval26
+wandb: Synced 5 W&B file(s), 0 media file(s), 0 artifact file(s) and 0 other file(s)
+wandb: Find logs at: ./wandb/run-20260919_225343-32435527/logs
+[F0_oof f2] DONE  devS2=0.3511 devS1=0.5877 peak=8.6GB  37.6m

@@ -1,0 +1,24 @@
+[2026-09-25 17:08:19] [lane_gpu0_a] lane start (E9, GPU 0): 5 run(s)
+[2026-09-25 17:08:19] [lane_gpu0_a] start E9_hier seed0 on GPU 0
+[2026-09-25 17:41:37] [lane_gpu0_a] ok    E9_hier seed0  devS2=0.3773 devS1=0.6012
+[2026-09-25 17:41:37] [lane_gpu0_a] start E9_hier seed1 on GPU 0
+[2026-09-25 18:15:01] [lane_gpu0_a] ok    E9_hier seed1  devS2=0.3085 devS1=0.5882
+[2026-09-25 18:15:01] [lane_gpu0_a] start E9_hier seed2 on GPU 0
+[2026-09-25 18:24:56] [lane_gpu1_a] lane start (E9, GPU 1): 5 run(s)
+[2026-09-25 18:24:56] [lane_gpu1_a] skip  E9_hier seed0 (finished)
+[2026-09-25 18:24:56] [lane_gpu1_a] skip  E9_hier seed1 (finished)
+[2026-09-25 18:24:56] [lane_gpu1_a] resume E9_hier seed2 from its last checkpoint
+[2026-09-25 18:24:56] [lane_gpu1_a] start E9_hier seed2 on GPU 1
+[2026-09-25 19:49:15] [lane_gpu1_a] ok    E9_hier seed2  devS2=0.2844 devS1=0.5891
+[2026-09-25 19:49:15] [lane_gpu1_a] start E9_hier seed3 on GPU 1
+[2026-09-25 21:33:10] [lane_gpu1_a] ok    E9_hier seed3  devS2=0.3352 devS1=0.6046
+[2026-09-25 21:33:10] [lane_gpu1_a] start E9_hier seed4 on GPU 1
+[2026-09-25 23:04:20] [lane_gpu1_a] ok    E9_hier seed4  devS2=0.2928 devS1=0.6465
+[2026-09-25 23:04:20] [lane_gpu1_a] post  E9_hier: all 5 seeds finished -- analysis, decision rules, submission
+[submission] E9_hier_logitadj: seed-ensemble, logit-adjusted tau=1.0, 5 seed(s), dev S2 mean 0.3196
+  Subtask 2 (evasion) : /scratch/shlok/Temp/CLARITY-Unmasking-Political-Question-Evasions/clarity/submissions/E9_hier_logitadj/subtask2_evasion/prediction.zip
+  Subtask 1 (clarity) : /scratch/shlok/Temp/CLARITY-Unmasking-Political-Question-Evasions/clarity/submissions/E9_hier_logitadj/subtask1_clarity/prediction.zip
+  test distribution   : {'Explicit': 88, 'Claims ignorance': 35, 'Deflection': 28, 'Dodging': 25, 'Implicit': 23, 'Declining to answer': 18, 'General': 10, 'Clarification': 10}
+[2026-09-25 23:04:31] [lane_gpu1_a] ok    E9_hier post-processing -> reports/raw/E9_hier_{analysis,decision_rules}.txt, submissions/E9_hier_logitadj/
+[hf] upload queued in background: /scratch/shlok/Temp/CLARITY-Unmasking-Political-Question-Evasions/clarity/runs/E9_hier/seed4 (progress: /scratch/shlok/Temp/CLARITY-Unmasking-Political-Question-Evasions/clarity/logs/hf_uploads.log)
+[2026-09-25 23:04:31] [lane_gpu1_a] lane finished

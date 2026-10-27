@@ -1,0 +1,10 @@
+{
+  "tag": "qwen38_27b_k0",
+  "teacher": "uniform",
+  "alpha": 0.5,
+  "n_rows": 3448,
+  "m3_argmax_equals_gold": 0.36571925754060325,
+  "gold_in_candidates": 0.8442575406032483,
+  "mean_target_on_gold": 0.605532192575406,
+  "mean_target_entropy": 1.1222515364855752
+}

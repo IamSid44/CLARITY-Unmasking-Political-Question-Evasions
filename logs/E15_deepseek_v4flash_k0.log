@@ -1,0 +1,31 @@
+300 items to score (0 already done) for deepseek_v4flash_k0
+prompt tokens (approx.): mean 1483, median 1340, max 4198; preamble 747; examples kept: mean 0.0, min 0
+projected cost $0.035 (E15 spent so far $0.017 of $8.00; run cap $0.50)
+23:44:35 25/300  run $0.0040  E15 total $0.0214
+23:44:37 50/300  run $0.0069  E15 total $0.0243
+23:44:39 75/300  run $0.0096  E15 total $0.0270
+23:44:40 100/300  run $0.0126  E15 total $0.0301
+23:44:42 125/300  run $0.0155  E15 total $0.0329
+23:44:44 150/300  run $0.0208  E15 total $0.0383
+23:44:46 175/300  run $0.0245  E15 total $0.0420
+23:44:48 200/300  run $0.0286  E15 total $0.0460
+23:44:49 225/300  run $0.0325  E15 total $0.0499
+23:44:51 250/300  run $0.0364  E15 total $0.0538
+23:44:53 275/300  run $0.0406  E15 total $0.0580
+23:44:55 300/300  run $0.0440  E15 total $0.0615
+308 items to score (300 already done) for deepseek_v4flash_k0
+prompt tokens (approx.): mean 1444, median 1402, max 2939; preamble 747; examples kept: mean 0.0, min 0
+projected cost $0.035 (E15 spent so far $0.191 of $8.00; run cap $0.50)
+23:46:55 25/308  run $0.0035  E15 total $0.1950
+23:46:57 50/308  run $0.0072  E15 total $0.1987
+23:46:59 75/308  run $0.0104  E15 total $0.2019
+23:47:00 100/308  run $0.0141  E15 total $0.2055
+23:47:02 125/308  run $0.0179  E15 total $0.2094
+23:47:04 150/308  run $0.0216  E15 total $0.2131
+23:47:06 175/308  run $0.0250  E15 total $0.2164
+23:47:07 200/308  run $0.0286  E15 total $0.2200
+23:47:09 225/308  run $0.0322  E15 total $0.2236
+23:47:11 250/308  run $0.0357  E15 total $0.2271
+23:47:13 275/308  run $0.0394  E15 total $0.2309
+23:47:15 300/308  run $0.0430  E15 total $0.2345
+23:47:15 308/308  run $0.0441  E15 total $0.2355

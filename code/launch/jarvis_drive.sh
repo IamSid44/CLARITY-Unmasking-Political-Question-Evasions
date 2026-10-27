@@ -12,6 +12,9 @@ NAME=${RUN_NAME:-Q8_fullq_lora}
 SEEDS=${SEEDS:-"0 1 2"}
 EXTRA_ARGS=${EXTRA_ARGS:-}
 MAX_TOTAL_HOURS=${MAX_TOTAL_HOURS:-5}
+MODEL=${MODEL:-Qwen/Qwen3-8B-Base}
+SPOT=${SPOT:-0}  # 1 = spot instance (E19/E20, 2026-10-27): about half price, may be preempted; containers only
+TEMPLATE=${TEMPLATE:-vm}  # vm, or a container template such as pytorch (spot needs a container)
 INTERVAL=${INTERVAL:-300}
 RBASE=${RBASE:-/home/clarity_llm}
 LOCAL_LOGS=$REPO/logs/jarvis${PROFILE:+/$PROFILE}
@@ -89,13 +92,14 @@ create|resume)
   load; need_uv
   [ -n "${JL_API_KEY:-}" ] || { echo "run: bash code/launch/jarvis_drive.sh keys"; exit 2; }
   [ "$1" = resume ] && [ -z "${JL_MACHINE_ID:-}" ] && { echo "no machine id for profile ${PROFILE:-default}"; exit 2; }
-  out=$(JL_API_KEY=$JL_API_KEY ACTION=$1 MID=${JL_MACHINE_ID:-0} GPU=$GPU_TYPE LABEL="clarity-${PROFILE:-a}" \
+  out=$(JL_API_KEY=$JL_API_KEY ACTION=$1 MID=${JL_MACHINE_ID:-0} GPU=$GPU_TYPE LABEL="clarity-${PROFILE:-a}" SPOT=$SPOT TEMPLATE=$TEMPLATE \
     "$UVX" --quiet --from jarvislabs python -c '
 import os
 from jarvislabs import Client
 c = Client()
 if os.environ["ACTION"] == "create":
-    i = c.instances.create(gpu_type=os.environ["GPU"], template="vm", storage=100, name=os.environ["LABEL"])
+    i = c.instances.create(gpu_type=os.environ["GPU"], template=os.environ["TEMPLATE"], storage=100, name=os.environ["LABEL"],
+                           is_spot=os.environ["SPOT"] == "1")
 else:
     i = c.instances.resume(int(os.environ["MID"]))
 print("RESULT", i.machine_id, i.status, "|", i.ssh_command)') || { note "$1 failed: $out"; exit 1; }
@@ -120,7 +124,7 @@ push)
 start)
   need_host
   R "umask 077; printf 'JL_API_KEY=%s\nJL_MACHINE_ID=%s\n' '${JL_API_KEY:-}' '${JL_MACHINE_ID:-}' > $RBASE/keys.env"
-  R "NAME='$NAME' SEEDS='$SEEDS' EXTRA_ARGS='$EXTRA_ARGS' MAX_TOTAL_HOURS=$MAX_TOTAL_HOURS AUTO_PAUSE=1 PAUSE_DELAY=1800 NO_PROMPT=1 \
+  R "NAME='$NAME' SEEDS='$SEEDS' MODEL='$MODEL' EXTRA_ARGS='$EXTRA_ARGS' MAX_TOTAL_HOURS=$MAX_TOTAL_HOURS AUTO_PAUSE=1 PAUSE_DELAY=1800 NO_PROMPT=1 \
      bash $RBASE/code/code/launch/jarvis_setup.sh all" && note "start: pipeline launched on the instance (tmux clarity-llm)"
   ;;
 

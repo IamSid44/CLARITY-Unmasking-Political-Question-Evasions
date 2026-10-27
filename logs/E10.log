@@ -1,0 +1,57 @@
+[2026-09-26 01:25:42] [lane_gpu0_a] lane start (E10, GPU 0): 4 run(s)
+[2026-09-26 01:25:42] [lane_gpu0_a] wait  for E8b_fullq_ce seed(s) 2 3 to finish before starting this lane's next run
+[2026-09-26 01:26:02] [lane_gpu1_a] lane start (E10, GPU 1): 6 run(s)
+[2026-09-26 01:26:02] [lane_gpu1_a] start E10_base_16ep seed0 on GPU 1
+[2026-09-26 01:35:42] [lane_gpu0_a] done  waiting: E8b_fullq_ce seed(s) 2 3 finished
+[2026-09-26 01:35:42] [lane_gpu0_a] start E10_fullq_16ep seed0 on GPU 0
+[2026-09-26 01:58:20] [lane_gpu0_a] lane start (E10, GPU 0): 5 run(s)
+[2026-09-26 01:58:20] [lane_gpu0_a] resume E10_fullq_16ep seed0 from its last checkpoint
+[2026-09-26 01:58:20] [lane_gpu0_a] start E10_fullq_16ep seed0 on GPU 0
+[2026-09-26 01:58:40] [lane_gpu0_b] lane start (E10, GPU 0): 5 run(s)
+[2026-09-26 01:58:40] [lane_gpu0_b] skip  E10_fullq_16ep seed0 (another lane is running it)
+[2026-09-26 01:58:40] [lane_gpu0_b] start E10_fullq_16ep seed1 on GPU 0
+[2026-09-26 01:59:00] [lane_gpu1_a] lane start (E10, GPU 1): 10 run(s)
+[2026-09-26 01:59:00] [lane_gpu1_a] resume E10_base_16ep seed0 from its last checkpoint
+[2026-09-26 01:59:00] [lane_gpu1_a] start E10_base_16ep seed0 on GPU 1
+[2026-09-26 02:35:56] [lane_gpu1_a] ok    E10_base_16ep seed0  devS2=0.3589 devS1=0.6174
+[2026-09-26 02:35:56] [lane_gpu1_a] start E10_base_16ep seed1 on GPU 1
+[2026-09-26 03:41:36] [lane_gpu1_a] ok    E10_base_16ep seed1  devS2=0.3662 devS1=0.6121
+[2026-09-26 03:41:36] [lane_gpu1_a] start E10_base_16ep seed2 on GPU 1
+[2026-09-26 04:47:11] [lane_gpu1_a] ok    E10_base_16ep seed2  devS2=0.3979 devS1=0.5924
+[2026-09-26 04:47:11] [lane_gpu1_a] start E10_base_16ep seed3 on GPU 1
+[2026-09-26 05:52:49] [lane_gpu1_a] ok    E10_base_16ep seed3  devS2=0.3630 devS1=0.6091
+[2026-09-26 05:52:49] [lane_gpu1_a] start E10_base_16ep seed4 on GPU 1
+[2026-09-26 06:58:19] [lane_gpu1_a] ok    E10_base_16ep seed4  devS2=0.4005 devS1=0.5894
+[2026-09-26 06:58:19] [lane_gpu1_a] post  E10_base_16ep: all 5 seeds finished -- analysis, decision rules, submission
+[submission] E10_base_16ep_logitadj: seed-ensemble, logit-adjusted tau=0.85, 5 seed(s), dev S2 mean 0.3773
+  Subtask 2 (evasion) : /scratch/shlok/Temp/CLARITY-Unmasking-Political-Question-Evasions/clarity/submissions/E10_base_16ep_logitadj/subtask2_evasion/prediction.zip
+  Subtask 1 (clarity) : /scratch/shlok/Temp/CLARITY-Unmasking-Political-Question-Evasions/clarity/submissions/E10_base_16ep_logitadj/subtask1_clarity/prediction.zip
+  test distribution   : {'Explicit': 95, 'Implicit': 28, 'Dodging': 25, 'Claims ignorance': 18, 'Deflection': 17, 'Partial/half-answer': 17, 'Clarification': 14, 'General': 14, 'Declining to answer': 9}
+[2026-09-26 06:58:29] [lane_gpu1_a] ok    E10_base_16ep post-processing -> reports/raw/E10_base_16ep_{analysis,decision_rules}.txt, submissions/E10_base_16ep_logitadj/
+[2026-09-26 06:58:29] [lane_gpu1_a] start E10_fullq_16ep seed4 on GPU 1
+[2026-09-26 07:42:18] [lane_gpu0_a] ok    E10_fullq_16ep seed0  devS2=0.3443 devS1=0.5913
+[2026-09-26 07:42:18] [lane_gpu0_a] skip  E10_fullq_16ep seed1 (another lane is running it)
+[2026-09-26 07:42:18] [lane_gpu0_a] start E10_fullq_16ep seed2 on GPU 0
+[2026-09-26 08:08:34] [lane_gpu0_b] ok    E10_fullq_16ep seed1  devS2=0.3700 devS1=0.6268
+[2026-09-26 08:08:34] [lane_gpu0_b] skip  E10_fullq_16ep seed2 (another lane is running it)
+[2026-09-26 08:08:34] [lane_gpu0_b] start E10_fullq_16ep seed3 on GPU 0
+[2026-09-26 08:10:52] [manual] stopped lane_gpu0_b (seed 3, 2 min in) -- seed 3 moves to the GPU-1 slice after seed 4; GPU 0 keeps one lane for the day
+[2026-09-26 10:10:53] [lane_gpu1_a] ok    E10_fullq_16ep seed4  devS2=0.3686 devS1=0.6550
+[2026-09-26 10:10:53] [lane_gpu1_a] start E10_fullq_16ep seed3 on GPU 1
+[2026-09-26 13:28:42] [lane_gpu0_a] ok    E10_fullq_16ep seed2  devS2=0.4280 devS1=0.6402
+[2026-09-26 13:28:42] [lane_gpu0_a] skip  E10_fullq_16ep seed3 (another lane is running it)
+[2026-09-26 13:28:42] [lane_gpu0_a] skip  E10_fullq_16ep seed4 (finished)
+[hf] upload queued in background: /scratch/shlok/Temp/CLARITY-Unmasking-Political-Question-Evasions/clarity/runs/E10_fullq_16ep/seed2 (progress: /scratch/shlok/Temp/CLARITY-Unmasking-Political-Question-Evasions/clarity/logs/hf_uploads.log)
+[2026-09-26 13:28:43] [lane_gpu0_a] lane finished
+[2026-09-26 13:35:14] [lane_gpu1_a] ok    E10_fullq_16ep seed3  devS2=0.4213 devS1=0.6406
+[2026-09-26 13:35:14] [lane_gpu1_a] post  E10_fullq_16ep: all 5 seeds finished -- analysis, decision rules, submission
+[submission] E10_fullq_16ep_logitadj: seed-ensemble, logit-adjusted tau=0.85, 5 seed(s), dev S2 mean 0.3865
+  Subtask 2 (evasion) : /scratch/shlok/Temp/CLARITY-Unmasking-Political-Question-Evasions/clarity/submissions/E10_fullq_16ep_logitadj/subtask2_evasion/prediction.zip
+  Subtask 1 (clarity) : /scratch/shlok/Temp/CLARITY-Unmasking-Political-Question-Evasions/clarity/submissions/E10_fullq_16ep_logitadj/subtask1_clarity/prediction.zip
+  test distribution   : {'Explicit': 84, 'Implicit': 40, 'Claims ignorance': 29, 'General': 27, 'Deflection': 18, 'Dodging': 17, 'Clarification': 12, 'Declining to answer': 10}
+[2026-09-26 13:35:26] [lane_gpu1_a] ok    E10_fullq_16ep post-processing -> reports/raw/E10_fullq_16ep_{analysis,decision_rules}.txt, submissions/E10_fullq_16ep_logitadj/
+[2026-09-26 13:35:26] [lane_gpu1_a] skip  E10_fullq_16ep seed2 (finished)
+[2026-09-26 13:35:26] [lane_gpu1_a] skip  E10_fullq_16ep seed1 (finished)
+[2026-09-26 13:35:26] [lane_gpu1_a] skip  E10_fullq_16ep seed0 (finished)
+[hf] upload queued in background: /scratch/shlok/Temp/CLARITY-Unmasking-Political-Question-Evasions/clarity/runs/E10_fullq_16ep/seed3 (progress: /scratch/shlok/Temp/CLARITY-Unmasking-Political-Question-Evasions/clarity/logs/hf_uploads.log)
+[2026-09-26 13:35:26] [lane_gpu1_a] lane finished

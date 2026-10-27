@@ -1,0 +1,74 @@
+wandb: [wandb.login()] Loaded credentials for https://api.wandb.ai from WANDB_API_KEY.
+wandb: Currently logged in as: iamsid44 (iamsid44-iiit-hyderabad) to https://api.wandb.ai. Use `wandb login --relogin` to force relogin
+wandb: setting up run 5d25b828
+wandb: Tracking run with wandb version 0.28.2
+wandb: Run data is saved locally in /scratch/shlok/Temp/CLARITY-Unmasking-Political-Question-Evasions/clarity/wandb/run-20260928_185258-5d25b828
+wandb: Run `wandb offline` to turn off syncing.
+wandb: Syncing run E12b_gate-s2
+wandb: ⭐️ View project at https://wandb.ai/iamsid44-iiit-hyderabad/clarity-semeval26
+wandb: 🚀 View run at https://wandb.ai/iamsid44-iiit-hyderabad/clarity-semeval26/runs/5d25b828
+[vram] 51.4 GB free of 95.0 GB
+[wandb] online run E12b_gate-s2 (group=E12b_gate)
+Loading weights:   0%|          | 0/390 [00:00<?, ?it/s]Loading weights: 100%|██████████| 390/390 [00:00<00:00, 7498.55it/s]
+[transformers] [1mDebertaV2Model LOAD REPORT[0m from: microsoft/deberta-v3-large
+Key                                     | Status     |  | 
+----------------------------------------+------------+--+-
+mask_predictions.dense.weight           | UNEXPECTED |  | 
+mask_predictions.LayerNorm.weight       | UNEXPECTED |  | 
+mask_predictions.LayerNorm.bias         | UNEXPECTED |  | 
+lm_predictions.lm_head.LayerNorm.weight | UNEXPECTED |  | 
+lm_predictions.lm_head.dense.weight     | UNEXPECTED |  | 
+lm_predictions.lm_head.dense.bias       | UNEXPECTED |  | 
+lm_predictions.lm_head.LayerNorm.bias   | UNEXPECTED |  | 
+mask_predictions.dense.bias             | UNEXPECTED |  | 
+lm_predictions.lm_head.bias             | UNEXPECTED |  | 
+mask_predictions.classifier.bias        | UNEXPECTED |  | 
+mask_predictions.classifier.weight      | UNEXPECTED |  | 
+
+Notes:
+- UNEXPECTED:	can be ignored when loading from different task/architecture; not ok if you expect identical arch.
+/scratch/shlok/Temp/CLARITY-Unmasking-Political-Question-Evasions/clarity/encoder.py:783: UserWarning: Converting a tensor with requires_grad=True to a scalar may lead to unexpected behavior.
+Consider using tensor.detach() first. (Triggered internally at /pytorch/torch/csrc/autograd/generated/python_variable_methods.cpp:836.)
+  running += float(loss)
+[E12b_gate s2] ep0 loss=0.3674 val=0.4733 task=gate (17.1m)
+[E12b_gate s2] ep1 loss=0.3272 val=0.5018 task=gate (34.3m)
+[E12b_gate s2] ep2 loss=0.2548 val=0.6641 task=gate (51.1m)
+[E12b_gate s2] ep3 loss=0.2224 val=0.5721 task=gate (68.4m)
+[E12b_gate s2] ep4 loss=0.1850 val=0.7627 task=gate (85.5m)
+[E12b_gate s2] ep5 loss=0.1506 val=0.7862 task=gate (102.5m)
+[E12b_gate s2] ep6 loss=0.1228 val=0.6652 task=gate (119.9m)
+[E12b_gate s2] ep7 loss=0.1043 val=0.7992 task=gate (136.9m)
+[E12b_gate s2] ep8 loss=0.0932 val=0.7683 task=gate (154.2m)
+[E12b_gate s2] ep9 loss=0.0663 val=0.8325 task=gate (175.4m)
+[E12b_gate s2] ep10 loss=0.0481 val=0.8251 task=gate (197.8m)
+[E12b_gate s2] ep11 loss=0.0436 val=0.7333 task=gate (220.2m)
+[E12b_gate s2] ep12 loss=0.0344 val=0.7990 task=gate (243.0m)
+[E12b_gate s2] ep13 loss=0.0298 val=0.7696 task=gate (265.6m)
+[E12b_gate s2] ep14 loss=0.0263 val=0.7817 task=gate (288.4m)
+[E12b_gate s2] ep15 loss=0.0233 val=0.7817 task=gate (311.1m)
+wandb: updating run metadata
+wandb: uploading output.log; uploading wandb-summary.json; uploading config.yaml
+wandb: uploading output.log; uploading config.yaml
+wandb: uploading history steps 15-15, summary
+wandb: 
+wandb: Run history:
+wandb:        epoch ▁▁▂▂▃▃▄▄▅▅▆▆▇▇██
+wandb:      minutes ▁▁▂▂▃▃▃▄▄▅▅▆▆▇▇█
+wandb:   train_loss █▇▆▅▄▄▃▃▂▂▂▁▁▁▁▁
+wandb: val_macro_f1 ▁▂▅▃▇▇▅▇▇██▆▇▇▇▇
+wandb: 
+wandb: Run summary:
+wandb: best_val_macro_f1 0.83246
+wandb:             epoch 15
+wandb:           minutes 311.10586
+wandb:      peak_vram_gb 14.90496
+wandb:    selected_epoch 9
+wandb:        train_loss 0.02334
+wandb:      val_macro_f1 0.78165
+wandb: 
+wandb: 🚀 View run E12b_gate-s2 at: https://wandb.ai/iamsid44-iiit-hyderabad/clarity-semeval26/runs/5d25b828
+wandb: ⭐️ View project at: https://wandb.ai/iamsid44-iiit-hyderabad/clarity-semeval26
+wandb: Synced 5 W&B file(s), 0 media file(s), 0 artifact file(s) and 0 other file(s)
+wandb: Find logs at: ./wandb/run-20260928_185258-5d25b828/logs
+[hf] upload queued in background: /scratch/shlok/Temp/CLARITY-Unmasking-Political-Question-Evasions/clarity/runs/E12b_gate/seed2 (progress: /scratch/shlok/Temp/CLARITY-Unmasking-Political-Question-Evasions/clarity/logs/hf_uploads.log)
+[E12b_gate s2] DONE  task=gate peak=14.9GB  311.3m

@@ -1,0 +1,32 @@
+[soup] 10 members from E10_fullq_16ep,E11_fullq_16ep
+Loading weights:   0%|          | 0/390 [00:00<?, ?it/s]Loading weights: 100%|██████████| 390/390 [00:00<00:00, 8200.05it/s]
+[transformers] [1mDebertaV2Model LOAD REPORT[0m from: microsoft/deberta-v3-large
+Key                                     | Status     |  | 
+----------------------------------------+------------+--+-
+mask_predictions.classifier.bias        | UNEXPECTED |  | 
+lm_predictions.lm_head.LayerNorm.bias   | UNEXPECTED |  | 
+lm_predictions.lm_head.dense.weight     | UNEXPECTED |  | 
+lm_predictions.lm_head.bias             | UNEXPECTED |  | 
+mask_predictions.dense.weight           | UNEXPECTED |  | 
+lm_predictions.lm_head.LayerNorm.weight | UNEXPECTED |  | 
+mask_predictions.LayerNorm.bias         | UNEXPECTED |  | 
+mask_predictions.classifier.weight      | UNEXPECTED |  | 
+mask_predictions.LayerNorm.weight       | UNEXPECTED |  | 
+lm_predictions.lm_head.dense.bias       | UNEXPECTED |  | 
+mask_predictions.dense.bias             | UNEXPECTED |  | 
+
+Notes:
+- UNEXPECTED:	can be ignored when loading from different task/architecture; not ok if you expect identical arch.
+[soup] greedy start E11_fullq_16ep/seed5 val=0.4111
+[soup]   + E11_fullq_16ep/seed9: val=0.3341 rejected
+[soup]   + E10_fullq_16ep/seed1: val=0.3149 rejected
+[soup]   + E11_fullq_16ep/seed7: val=0.3198 rejected
+[soup]   + E11_fullq_16ep/seed8: val=0.2989 rejected
+[soup]   + E10_fullq_16ep/seed0: val=0.3337 rejected
+[soup]   + E10_fullq_16ep/seed4: val=0.2889 rejected
+[soup]   + E10_fullq_16ep/seed2: val=0.3322 rejected
+[soup]   + E11_fullq_16ep/seed6: val=0.3561 rejected
+[soup]   + E10_fullq_16ep/seed3: val=0.3576 rejected
+[soup] uniform: 10 members  val=0.2481 devS2=0.2673 devS1=0.4706
+[soup] greedy: 1 members  val=0.4111 devS2=0.3807 devS1=0.5815
+[soup] DONE 4.2m

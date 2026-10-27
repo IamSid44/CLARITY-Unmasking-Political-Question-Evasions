@@ -1,0 +1,72 @@
+[vram] 20.9 GB free of 95.0 GB
+[stage1] 5 OOF folds, 5-seed ensemble for dev/test
+[cands] train: gold outside top-3 for 28.7% (injected); internal-val hit@3 = 0.742
+Loading weights:   0%|          | 0/390 [00:00<?, ?it/s]Loading weights: 100%|██████████| 390/390 [00:00<00:00, 7107.51it/s]
+[transformers] [1mDebertaV2Model LOAD REPORT[0m from: microsoft/deberta-v3-large
+Key                                     | Status     |  | 
+----------------------------------------+------------+--+-
+lm_predictions.lm_head.LayerNorm.weight | UNEXPECTED |  | 
+mask_predictions.LayerNorm.weight       | UNEXPECTED |  | 
+lm_predictions.lm_head.LayerNorm.bias   | UNEXPECTED |  | 
+lm_predictions.lm_head.dense.bias       | UNEXPECTED |  | 
+mask_predictions.classifier.weight      | UNEXPECTED |  | 
+lm_predictions.lm_head.bias             | UNEXPECTED |  | 
+lm_predictions.lm_head.dense.weight     | UNEXPECTED |  | 
+mask_predictions.dense.weight           | UNEXPECTED |  | 
+mask_predictions.dense.bias             | UNEXPECTED |  | 
+mask_predictions.classifier.bias        | UNEXPECTED |  | 
+mask_predictions.LayerNorm.bias         | UNEXPECTED |  | 
+
+Notes:
+- UNEXPECTED:	can be ignored when loading from different task/architecture; not ok if you expect identical arch.
+wandb: [wandb.login()] Loaded credentials for https://api.wandb.ai from WANDB_API_KEY.
+wandb: Currently logged in as: iamsid44 (iamsid44-iiit-hyderabad) to https://api.wandb.ai. Use `wandb login --relogin` to force relogin
+wandb: setting up run 21ee6796
+wandb: Tracking run with wandb version 0.28.2
+wandb: Run data is saved locally in /scratch/shlok/Temp/CLARITY-Unmasking-Political-Question-Evasions/clarity/wandb/run-20260920_162535-21ee6796
+wandb: Run `wandb offline` to turn off syncing.
+wandb: Syncing run R1_rerank-s3
+wandb: ⭐️ View project at https://wandb.ai/iamsid44-iiit-hyderabad/clarity-semeval26
+wandb: 🚀 View run at https://wandb.ai/iamsid44-iiit-hyderabad/clarity-semeval26/runs/21ee6796
+[wandb] online run R1_rerank-s3 (group=R1_rerank)
+[R1_rerank s3] ep0 loss=1.0589 val=0.2057 devS2=0.1968 devS1=0.5056 inset=0.516 named=6/9 (10.4m)
+[R1_rerank s3] ep1 loss=0.9903 val=0.2318 devS2=0.2055 devS1=0.5448 inset=0.506 named=5/9 (20.3m)
+[R1_rerank s3] ep2 loss=0.9799 val=0.2751 devS2=0.2507 devS1=0.5167 inset=0.513 named=7/9 (30.2m)
+[R1_rerank s3] ep3 loss=0.9714 val=0.2063 devS2=0.2076 devS1=0.4967 inset=0.510 named=6/9 (40.3m)
+[R1_rerank s3] ep4 loss=0.9553 val=0.2618 devS2=0.2548 devS1=0.4906 inset=0.523 named=5/9 (50.4m)
+[R1_rerank s3] ep5 loss=0.9238 val=0.2933 devS2=0.3539 devS1=0.5546 inset=0.523 named=7/9 (59.3m)
+[R1_rerank s3] ep6 loss=0.8822 val=0.3023 devS2=0.3517 devS1=0.5700 inset=0.523 named=7/9 (69.0m)
+[R1_rerank s3] ep7 loss=0.8646 val=0.3106 devS2=0.3546 devS1=0.5520 inset=0.516 named=7/9 (81.9m)
+wandb: updating run metadata
+wandb: uploading output.log; uploading wandb-summary.json; uploading config.yaml
+wandb: uploading history steps 7-7, summary
+wandb: 
+wandb: Run history:
+wandb:     dev_classes_named ▅▁█▅▁███
+wandb:        dev_inset_rate ▅▁▄▂███▅
+wandb: dev_subtask1_macro_f1 ▂▆▃▂▁▇█▆
+wandb: dev_subtask2_macro_f1 ▁▁▃▁▄███
+wandb:                 epoch ▁▂▃▄▅▆▇█
+wandb:               minutes ▁▂▃▄▅▆▇█
+wandb:            train_loss █▆▅▅▄▃▂▁
+wandb:          val_macro_f1 ▁▃▆▁▅▇▇█
+wandb: 
+wandb: Run summary:
+wandb:        dev_classes_named 7
+wandb:             dev_hit_at_k 0.8961
+wandb:           dev_inset_rate 0.51623
+wandb:            dev_s2_rerank 0.35462
+wandb: dev_s2_rerank_plus_prior 0.35277
+wandb:            dev_s2_stage1 0.36518
+wandb:    dev_subtask1_macro_f1 0.55205
+wandb:    dev_subtask2_macro_f1 0.35462
+wandb:                    epoch 7
+wandb:                  minutes 81.94096
+wandb:                       +4 ...
+wandb: 
+wandb: 🚀 View run R1_rerank-s3 at: https://wandb.ai/iamsid44-iiit-hyderabad/clarity-semeval26/runs/21ee6796
+wandb: ⭐️ View project at: https://wandb.ai/iamsid44-iiit-hyderabad/clarity-semeval26
+wandb: Synced 5 W&B file(s), 0 media file(s), 0 artifact file(s) and 0 other file(s)
+wandb: Find logs at: ./wandb/run-20260920_162535-21ee6796/logs
+[R1_rerank s3] DONE  stage1 devS2=0.3652 | rerank devS2=0.3546 | +prior(b=16.0) devS2=0.3528 | hit@3=0.896  82.1m
+[hf] upload queued in background: /scratch/shlok/Temp/CLARITY-Unmasking-Political-Question-Evasions/clarity/runs/R1_rerank/seed3 (progress: /scratch/shlok/Temp/CLARITY-Unmasking-Political-Question-Evasions/clarity/logs/hf_uploads.log)

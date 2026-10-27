@@ -1,0 +1,31 @@
+300 items to score (0 already done) for gemma4_31b_k0
+prompt tokens (approx.): mean 1483, median 1340, max 4198; preamble 747; examples kept: mean 0.0, min 0
+projected cost $0.033 (E15 spent so far $0.061 of $8.00; run cap $0.50)
+23:44:58 25/300  run $0.0024  E15 total $0.0639
+23:44:59 50/300  run $0.0040  E15 total $0.0655
+23:45:01 75/300  run $0.0055  E15 total $0.0670
+23:45:02 100/300  run $0.0073  E15 total $0.0687
+23:45:03 125/300  run $0.0089  E15 total $0.0704
+23:45:06 150/300  run $0.0123  E15 total $0.0737
+23:45:08 175/300  run $0.0148  E15 total $0.0763
+23:45:09 200/300  run $0.0173  E15 total $0.0788
+23:45:11 225/300  run $0.0196  E15 total $0.0811
+23:45:13 250/300  run $0.0220  E15 total $0.0835
+23:45:15 275/300  run $0.0247  E15 total $0.0862
+23:45:17 300/300  run $0.0267  E15 total $0.0882
+308 items to score (300 already done) for gemma4_31b_k0
+prompt tokens (approx.): mean 1444, median 1402, max 2939; preamble 747; examples kept: mean 0.0, min 0
+projected cost $0.033 (E15 spent so far $0.236 of $8.00; run cap $0.50)
+23:47:18 25/308  run $0.0021  E15 total $0.2376
+23:47:20 50/308  run $0.0044  E15 total $0.2400
+23:47:21 75/308  run $0.0061  E15 total $0.2416
+23:47:23 100/308  run $0.0084  E15 total $0.2439
+23:47:25 125/308  run $0.0108  E15 total $0.2463
+23:47:26 150/308  run $0.0130  E15 total $0.2485
+23:47:28 175/308  run $0.0150  E15 total $0.2505
+23:47:29 200/308  run $0.0172  E15 total $0.2527
+23:47:31 225/308  run $0.0194  E15 total $0.2549
+23:47:32 250/308  run $0.0215  E15 total $0.2570
+23:47:34 275/308  run $0.0237  E15 total $0.2593
+23:47:36 300/308  run $0.0258  E15 total $0.2613
+23:47:36 308/308  run $0.0265  E15 total $0.2620
