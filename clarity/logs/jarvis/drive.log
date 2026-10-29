@@ -1,0 +1,31 @@
+2026-10-02 02:52:19 connect: ubuntu@151.185.34.53 port 22, machine 523670
+2026-10-02 02:52:25 push: bundle unpacked into /home/clarity_llm/code
+2026-10-02 02:52:26 start: pipeline launched on the instance (tmux clarity-llm)
+2026-10-02 02:52:26 watch: every 300 s
+2026-10-02 02:52:27 watch: instance unreachable (1)
+2026-10-02 02:54:21 start: pipeline launched on the instance (tmux clarity-llm)
+2026-10-02 02:54:21 watch: every 300 s
+2026-10-02 02:54:22 watch: 2026-10-01 21:24:21 setup: start
+2026-10-02 02:59:23 watch: 2026-10-01 21:24:23 setup: downloading Qwen/Qwen3-8B-Base and Qwen/Qwen3-0.6B-Base to /home/clarity_llm/hf
+2026-10-02 03:04:24 watch: 2026-10-01 21:24:23 setup: downloading Qwen/Qwen3-8B-Base and Qwen/Qwen3-0.6B-Base to /home/clarity_llm/hf
+2026-10-02 03:22:38 push: bundle unpacked into /home/clarity_llm/code
+2026-10-02 03:22:40 start: pipeline launched on the instance (tmux clarity-llm)
+2026-10-02 03:22:40 watch: every 300 s
+2026-10-02 03:22:41 watch: 2026-10-01 21:52:39 setup: start
+2026-10-02 03:27:42 watch: 2026-10-01 21:54:07 train: seed 0 attempt 1
+2026-10-02 03:32:43 watch: 2026-10-01 21:54:07 train: seed 0 attempt 1
+2026-10-02 03:37:45 watch: 2026-10-01 21:54:07 train: seed 0 attempt 1
+2026-10-02 03:42:46 watch: 2026-10-01 21:54:07 train: seed 0 attempt 1
+2026-10-02 03:47:49 watch: 2026-10-01 22:15:26 train: seed 1 attempt 1
+2026-10-02 03:52:50 watch: 2026-10-01 22:15:26 train: seed 1 attempt 1
+2026-10-02 03:57:51 watch: 2026-10-01 22:15:26 train: seed 1 attempt 1
+2026-10-02 04:02:53 watch: 2026-10-01 22:15:26 train: seed 1 attempt 1
+2026-10-02 04:07:54 watch: 2026-10-01 22:36:43 train: seed 2 attempt 1
+2026-10-02 04:12:56 watch: 2026-10-01 22:36:43 train: seed 2 attempt 1
+2026-10-02 04:17:58 watch: 2026-10-01 22:36:43 train: seed 2 attempt 1
+2026-10-02 04:22:59 watch: 2026-10-01 22:36:43 train: seed 2 attempt 1
+2026-10-02 04:28:05 watch: instance unreachable (1)
+2026-10-02 04:34:09 watch: 2026-10-01 22:58:15 pausing instance 523670 (finished) in 1800 s -- Ctrl-C in tmux to keep it running
+2026-10-02 04:36:22 watch: final results copied to clarity/runs/Q8_fullq_lora and /mnt/c/Users/vidva/OneDrive - International Institute of Information Technology/Desktop/Course_Work_4-1/ANLP/Project/Course_Project/CLARITY-Unmasking-Political-Question-Evasions/clarity/logs/jarvis
+pause: True
+2026-10-02 04:36:47 watch: finished

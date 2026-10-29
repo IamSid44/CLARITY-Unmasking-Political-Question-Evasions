@@ -1,0 +1,14 @@
+2026-10-29 12:42:03 create failed: 
+2026-10-29 12:43:19 create: machine 552623 (Running) -- ssh -o StrictHostKeyChecking=no root@217.18.55.187
+2026-10-29 12:43:20 connect: E1 -> root@217.18.55.187 port 22, machine 552623
+2026-10-29 12:43:46 push: bundle unpacked into /home/clarity_llm/code
+2026-10-29 12:43:48 push: code/.env copied (mode 600)
+2026-10-29 12:43:53 start: pipeline launched on the instance (tmux clarity-llm)
+2026-10-29 12:46:58 push: bundle unpacked into /home/clarity_llm/code
+2026-10-29 12:47:00 push: code/.env copied (mode 600)
+2026-10-29 12:47:05 start: pipeline launched on the instance (tmux clarity-llm)
+2026-10-29 13:02:09 create: machine 552643 (Running) -- ssh -o StrictHostKeyChecking=no ubuntu@151.185.34.156
+2026-10-29 13:02:09 connect: E1 -> ubuntu@151.185.34.156 port 22, machine 552643
+2026-10-29 13:02:49 push: bundle unpacked into /home/clarity_llm/code
+2026-10-29 13:02:50 push: code/.env copied (mode 600)
+2026-10-29 13:02:54 start: pipeline launched on the instance (tmux clarity-llm)

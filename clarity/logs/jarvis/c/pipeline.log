@@ -1,0 +1,38 @@
+2026-10-02 05:43:00 setup: start
+2026-10-02 05:43:26 setup: torch 2.11.0+cu128 | NVIDIA RTX PRO 6000 Blackwell Server Edition 95 GiB | bf16 True
+2026-10-02 05:43:26 setup: downloading Qwen/Qwen3-8B-Base and Qwen/Qwen3-0.6B-Base to /home/clarity_llm/hf
+2026-10-02 05:45:05 setup: done (17G of models; disk free 59G)
+2026-10-02 05:48:43 pipeline: start (NAME=Q8_fullq_lora_12ep SEEDS='2' MODEL=Qwen/Qwen3-8B-Base EXTRA_ARGS='--epochs 12 --no-grad-checkpoint')
+2026-10-02 05:48:43 setup: start
+2026-10-02 05:48:46 setup: torch 2.11.0+cu128 | NVIDIA RTX PRO 6000 Blackwell Server Edition 95 GiB | bf16 True
+2026-10-02 05:48:46 setup: downloading Qwen/Qwen3-8B-Base and Qwen/Qwen3-0.6B-Base to /home/clarity_llm/hf
+2026-10-02 05:48:47 setup: done (17G of models; disk free 59G)
+2026-10-02 05:48:48 auto-pause ON: key valid, machine 523823 found
+2026-10-02 05:48:48 smoke: start (Qwen/Qwen3-0.6B-Base, 64 rows, 2 epochs, stop after epoch 0, then resume)
+2026-10-02 05:49:16 smoke: passed (0.1000 (should be << 1))
+2026-10-02 05:49:16 pilot: 20 optimizer steps of Qwen/Qwen3-8B-Base (Q8_fullq_lora_12ep, EXTRA_ARGS='--epochs 12 --no-grad-checkpoint')
+2026-10-02 05:49:58 pilot: longest micro-batch (4096 tokens): peak VRAM 50.4 GiB
+2026-10-02 05:49:58 pilot: 1.45 s per optimizer step; 194 steps per epoch -> 4.7 min per epoch of training, ~56 min for 12 epochs (+ ~3-5 min of evaluation per epoch); peak VRAM 53.4 GiB
+2026-10-02 05:49:58 pilot: projected 1.2 h for 1 seeds x 12 epochs (limit MAX_TOTAL_HOURS=3)
+2026-10-02 05:49:58 train: seed 2 attempt 1
+2026-10-02 06:49:38 train: seed 2 done: [done] Q8_fullq_lora_12ep seed2: epoch 8 selected; dev S2 0.5394036064123571, S1 0.7353546947234179; 60 min
+2026-10-02 06:50:10 hf: 1 of 1 seed folders of Q8_fullq_lora_12ep on the Hub (logs/hf_uploads.log)
+2026-10-02 06:50:15 package: 401K results, 155M adapters in /home/clarity_llm
+2026-10-02 06:50:15 pipeline: ALL DONE
+2026-10-02 06:50:15 pausing instance 523823 (finished) in 1800 s -- Ctrl-C in tmux to keep it running
+2026-10-02 06:57:50 pipeline: start (NAME=Q8_alldata SEEDS='7 8 9' MODEL=Qwen/Qwen3-8B-Base EXTRA_ARGS='--val-frac 0 --select last --no-grad-checkpoint')
+2026-10-02 06:57:51 auto-pause ON: key valid, machine 523920 found
+2026-10-02 06:57:51 pilot: 20 optimizer steps of Qwen/Qwen3-8B-Base (Q8_alldata, EXTRA_ARGS='--val-frac 0 --select last --no-grad-checkpoint')
+2026-10-02 06:59:04 pilot: longest micro-batch (4096 tokens): peak VRAM 50.4 GiB
+2026-10-02 06:59:04 pilot: 1.46 s per optimizer step; 216 steps per epoch -> 5.3 min per epoch of training, ~16 min for 3 epochs (+ ~3-5 min of evaluation per epoch); peak VRAM 53.4 GiB
+2026-10-02 06:59:04 pilot: projected 1.1 h for 3 seeds x 3 epochs (limit MAX_TOTAL_HOURS=3)
+2026-10-02 06:59:04 train: seed 7 attempt 1
+2026-10-02 07:15:11 train: seed 7 done: [done] Q8_alldata seed7: epoch 2 selected; dev S2 0.5148401294983144, S1 0.6966987972956789; 16 min
+2026-10-02 07:15:11 train: seed 8 attempt 1
+2026-10-02 07:31:19 train: seed 8 done: [done] Q8_alldata seed8: epoch 2 selected; dev S2 0.45409253581667375, S1 0.6753814225724338; 16 min
+2026-10-02 07:31:19 train: seed 9 attempt 1
+2026-10-02 07:47:23 train: seed 9 done: [done] Q8_alldata seed9: epoch 2 selected; dev S2 0.4380752761930312, S1 0.7126881832895519; 16 min
+2026-10-02 07:47:41 hf: 3 of 3 seed folders of Q8_alldata on the Hub (logs/hf_uploads.log)
+2026-10-02 07:47:57 package: 238K results, 464M adapters in /home/clarity_llm
+2026-10-02 07:47:57 pipeline: ALL DONE
+2026-10-02 07:47:57 pausing instance 523920 (finished) in 1800 s -- Ctrl-C in tmux to keep it running

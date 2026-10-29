@@ -1,0 +1,73 @@
+{
+  "config": {
+    "name": "Q8_fullq_lora",
+    "seed": 7,
+    "model": "Qwen/Qwen3-8B-Base",
+    "max_len": 1024,
+    "a_budget": 256,
+    "epochs": 3,
+    "lr": 0.0001,
+    "warmup": 0.05,
+    "wd": 0.0,
+    "batch_size": 4,
+    "grad_accum": 4,
+    "eval_batch_size": 16,
+    "lora_r": 16,
+    "lora_alpha": 32,
+    "lora_dropout": 0.05,
+    "grad_checkpoint": false,
+    "val_frac": 0.1,
+    "select": "best",
+    "dtype": "bf16",
+    "device": "cuda",
+    "limit_train": 0,
+    "limit_eval": 0,
+    "pilot_steps": 0,
+    "stop_after_epoch": -1,
+    "log_every": 20,
+    "track": true,
+    "save_epoch_adapters": true
+  },
+  "selected_epoch": 2,
+  "val_macro_f1": 0.4619541281805366,
+  "history": [
+    {
+      "epoch": 0,
+      "train_loss": 2.526079772597121,
+      "val_macro_f1": 0.33460206011517213,
+      "train_minutes": 4.415344500541687,
+      "minutes": 4.911149593194326,
+      "dev_subtask2_macro_f1": 0.3875217617119187,
+      "dev_subtask1_macro_f1": 0.6821548821548822,
+      "dev_inset_rate": 0.538961038961039,
+      "dev_classes_named": 7
+    },
+    {
+      "epoch": 1,
+      "train_loss": 1.4170572401130015,
+      "val_macro_f1": 0.4312544751231543,
+      "train_minutes": 4.407562812169393,
+      "minutes": 4.903398505846659,
+      "dev_subtask2_macro_f1": 0.47770579413091485,
+      "dev_subtask1_macro_f1": 0.6744763041831204,
+      "dev_inset_rate": 0.5876623376623377,
+      "dev_classes_named": 8
+    },
+    {
+      "epoch": 2,
+      "train_loss": 1.0043294074580305,
+      "val_macro_f1": 0.4619541281805366,
+      "train_minutes": 4.458954608440399,
+      "minutes": 4.955547897020976,
+      "dev_subtask2_macro_f1": 0.5010107277259768,
+      "dev_subtask1_macro_f1": 0.7015065966536804,
+      "dev_inset_rate": 0.6103896103896104,
+      "dev_classes_named": 8
+    }
+  ],
+  "dev_subtask2_macro_f1": 0.5010107277259768,
+  "dev_subtask1_macro_f1": 0.7015065966536804,
+  "peak_vram_gb": 53.405561447143555,
+  "wall_minutes": 15.101173488299052,
+  "trainable_params": 43683840
+}

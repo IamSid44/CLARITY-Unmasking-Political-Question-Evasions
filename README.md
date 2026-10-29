@@ -5,9 +5,11 @@
 Siddarth Gottumukkula, Vidvathama R, Sanjana Reddy Vonteri, Shashikanta Sahoo<br>
 Advanced NLP course project, International Institute of Information Technology, Hyderabad
 
-> **Status: in progress.** The mid-evaluation is complete ([report](report/mid_evaluation_report.pdf),
-> [slides](report/mid_evaluation_slides.pdf)). The final evaluation is due in October 2026. All numbers
-> are on the official dev set and may be revised in the final report.
+> **Status: final push.** The mid-evaluation is complete ([report](report/mid_evaluation_report.pdf),
+> [slides](report/mid_evaluation_slides.pdf)). The last experiments (E19–E23) run on 2026-10-29 and 30,
+> and the final report is due on 2026-10-31. The plan is in
+> [`docs/06_final_push_handover.md`](docs/06_final_push_handover.md). All numbers are on the official dev
+> set and may be revised in the final report.
 
 ---
 
@@ -32,8 +34,8 @@ confidence-routed cascade on the result:
 - **A cascade that asks a bigger model only when unsure.** The 8B classifier ranks better than it
   decides: an acceptable label is first for 60% of items but in its top 3 for 93%. A 27B LLM picks
   among the top four candidates for only the least confident items.
-- **Distillation for cost.** One student trained on the cascade's soft labels replaces a 10-seed
-  ensemble at 4.7× less compute.
+- **Distillation for cost.** One student trained on the LLM's soft labels replaces the 10-seed
+  ensemble. With the LLM on half the items, it beats the 10-seed classifier at 0.27× its GPU cost.
 
 ## Results (dev, 308 items)
 
@@ -42,15 +44,21 @@ confidence-routed cascade on the result:
 | DeBERTa-v3-large, 10-seed ensemble | 0.405 | 0.648 | 0 | – |
 | Qwen3-8B + LoRA, 3 epochs, 10 seeds (mid-evaluation) | 0.543 | 0.746 | 0 | – |
 | M1: Qwen3-8B + LoRA, 12 epochs, 10 seeds | 0.598 | 0.743 | 0 | 0.522 |
-| **Accuracy point:** M1 + LLM adjudicator, 30% deferred | **0.669** | **0.798** | 0.36 | 0.558 |
-| **Cost point:** distilled student + LLM adjudicator, 50% deferred | **0.608** | **0.790** | 0.57 | 0.111 |
+| **Accuracy point:** M1 + LLM adjudicator, 30% deferred | **0.669** | **0.798** | 0.36 | 0.576 |
+| **Cost point:** distilled student + LLM adjudicator, 50% deferred | **0.608** | **0.790** | 0.57 | 0.139 |
 | TeleAI (1st place), multi-stage DeepSeek-V3 pipeline | 0.617 | 0.812 | 1.94 | – |
-| One human annotator scored against the other two | 0.684 | – | – | – |
+| One human annotator scored against the other two (2-annotator regime) | 0.684 | – | – | – |
 
-Every system averages seeds and applies logit adjustment, with its one parameter fitted by nested
-cross-validation. Nothing is tuned on dev, and test labels were never released. The adjudicator's gain
-over M1 is +0.067 with a 95% bootstrap interval of [+0.009, +0.124]. Averaged over smaller seed subsets,
-the gain is closer to +0.02 to +0.04.
+Every system averages seeds and applies logit adjustment. Its parameters (and the fusion weights of the
+adjudicator) are fitted by nested cross-validation on dev, and test labels were never released.
+
+How sure we are of the adjudicator's gain over M1:
+- **With the fitted parameters held fixed,** the gain is +0.067, 95% bootstrap interval [+0.009, +0.124].
+- **With them refitted inside each bootstrap replicate,** it is +0.037 [−0.044, +0.120].
+- **Averaged over smaller seed subsets,** it is +0.02 to +0.04.
+
+The official test has two annotators per item. Under that regime, the accuracy point scores 0.589,
+against 0.684 for one human annotator scored against the other.
 
 <p align="center">
   <img src="docs/figures/E18_frontier.png" alt="Dev Subtask 2 macro-F1 against GPU-seconds per item for seed ensembles and distilled students, with and without the LLM adjudicator" width="560">
@@ -94,10 +102,12 @@ file ([`docs/04_results_sources.md`](docs/04_results_sources.md)).
 │   ├── figures/           report and slide figures
 │   ├── experiments/       run lists for each experiment
 │   └── launch/            run queue and cloud GPU launchers
-├── data/                  task evaluation file and fixed splits
+├── data/                  task evaluation file, fixed splits, cached train and dev
 ├── docs/                  experiment log, research narrative, code guide, raw outputs, figures
+├── logs/                  training and pipeline logs of every run
 ├── report/                mid-evaluation report and slides, with LaTeX source
-└── submissions/           packaged Codabench predictions of the DeBERTa systems
+├── runs/M4/               distillation targets (all other run outputs are on Hugging Face)
+└── submissions/           Codabench predictions: the DeBERTa systems and the cascade (E19_*)
 ```
 
 ## Getting started

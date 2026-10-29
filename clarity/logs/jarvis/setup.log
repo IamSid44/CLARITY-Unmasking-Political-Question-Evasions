@@ -1,0 +1,9 @@
+MTU of enp1s0 lowered to 1450
+driver 595 -> torch==2.11.0 from cu128
+Using Python 3.12.3 environment at: /home/clarity_llm/venv
+Checked 8 packages in 3ms
+torch 2.11.0+cu128 | NVIDIA RTX PRO 6000 Blackwell Server Edition 95 GiB | bf16 True
+Fetching 7 files:   0%|          | 0/7 [00:00<?, ?it/s]Fetching 7 files: 100%|██████████| 7/7 [00:00<00:00, 2659.91it/s]
+Qwen/Qwen3-0.6B-Base /home/clarity_llm/hf/hub/models--Qwen--Qwen3-0.6B-Base/snapshots/da87bfb608c14b7cf20ba1ce41287e8de496c0cd
+Fetching 12 files:   0%|          | 0/12 [00:00<?, ?it/s]Fetching 12 files: 100%|██████████| 12/12 [00:00<00:00, 4126.22it/s]
+Qwen/Qwen3-8B-Base /home/clarity_llm/hf/hub/models--Qwen--Qwen3-8B-Base/snapshots/49e3418fbbbca6ecbdf9608b4d22e5a407081db4

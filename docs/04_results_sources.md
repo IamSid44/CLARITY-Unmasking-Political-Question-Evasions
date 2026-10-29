@@ -309,3 +309,24 @@ Sources:
 | input tokens per item: M1 × 10 / accuracy point / cost point / TeleAI | 4,894 / 5,284 / 1,117 / ~7,300 | 4 |
 | student ensembles, S2 alone for K = 1 / 2 / 3 / 5 / 10 | 0.570 / 0.591 / 0.582 / 0.587 / 0.575 | `E18_frontier_student_ensembles.txt` |
 
+
+## 14. Robustness and corrections (E19 Tier 0, done 2026-10-27)
+
+Source: `raw/E19_tier0.txt`, written by `python -m preregistered_analyses.e19_tier0` (CPU, ~7 min). Where
+these numbers differ from §11–13, they replace them. The earlier numbers stay above as computed at the
+time.
+
+| Number | Value | Section of `E19_tier0.txt` |
+|---|---|---|
+| accuracy point minus M1, S2: bootstrap with fixed / refitted parameters | +0.067 [+0.009, +0.124] / **+0.037 [−0.044, +0.120]**, P(≤ 0) 0.199 | A.2 |
+| cost point minus M1, S2, refitted | +0.007 [−0.088, +0.123] | A.2 |
+| M3 GPU-s per call: `cost.json` / one pass over the 308 dev items | 0.103 / **0.151** | B.1 |
+| GPU-s per item: M1 × 10 / accuracy point / student / cost point | 0.522 / **0.576** / 0.052 / **0.139 (0.27× M1)** | B.2 |
+| one-off training cost, GPU-h: M1 (10 seeds) / cost point | 12.5 / 7.0 | B.3 |
+| cascade on the 3,448 cross-fitted train rows, δ = 0.3: macro-F1 gain over M1 + LA | +0.014 [+0.002, +0.026] | C |
+| net fixes of M3 by M1-uncertainty fifth, train (Q1 = most confident) | −41 / −76 / −12 / +5 / +31 | D |
+| S2 at δ = 0.3: confidence / random routing (200 draws) / gold-informed routing | 0.669 / 0.604 ± 0.015 / 0.732 | E.1 |
+| fusion at δ = 0.3: fitted / λ = 0 (M3 only) / λ = 1 (M1 only) | 0.669 / 0.631 / 0.581 | E.2 |
+| in-set gain of the accuracy point, interviews in train / not in train | +0.093 / +0.068 | F |
+| share of M3's picks at letter A (dev) | 0.516 | G |
+| human (one annotator against two) / accuracy point / M1, 2-annotator regime | 0.684 / 0.589 / 0.549 | I |

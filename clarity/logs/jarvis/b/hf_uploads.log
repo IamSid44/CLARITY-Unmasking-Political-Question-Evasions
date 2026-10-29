@@ -1,0 +1,1649 @@
+Upload 52 LFS files:   0%|          | 0/52 [00:00<?, ?it/s]
+adapter_model.safetensors:   0%|          | 0.00/175M [00:00<?, ?B/s][A
+
+ep9_dev_probs.npy:   0%|          | 0.00/11.2k [00:00<?, ?B/s][A[A
+
+
+adapter_model.safetensors:   0%|          | 0.00/175M [00:00<?, ?B/s][A[A[A
+
+
+
+ep0_dev_probs.npy:   0%|          | 0.00/11.2k [00:00<?, ?B/s][A[A[A[A
+
+
+
+
+ep0_test_probs.npy:   0%|          | 0.00/8.66k [00:00<?, ?B/s][A[A[A[A[A
+adapter_model.safetensors:   1%|          | 1.18M/175M [00:00<00:18, 9.34MB/s][A
+
+
+adapter_model.safetensors:   1%|          | 1.38M/175M [00:00<00:15, 10.9MB/s][A[A[Aep0_test_probs.npy: 100%|██████████| 8.66k/8.66k [00:00<00:00, 26.4kB/s]
+
+adapter_model.safetensors:   3%|▎         | 4.72M/175M [00:00<00:17, 9.91MB/s][A
+
+
+adapter_model.safetensors:   3%|▎         | 4.59M/175M [00:00<00:18, 9.42MB/s][A[A[A
+adapter_model.safetensors:   5%|▍         | 8.45M/175M [00:00<00:10, 15.5MB/s][AUpload 52 LFS files:   2%|▏         | 1/52 [00:00<00:35,  1.43it/s]
+
+
+
+
+ep0_val_probs.npy:   0%|          | 0.00/12.5k [00:00<?, ?B/s][A[A[A[A[Aep0_dev_probs.npy: 100%|██████████| 11.2k/11.2k [00:00<00:00, 15.5kB/s]
+ep9_dev_probs.npy: 100%|██████████| 11.2k/11.2k [00:00<00:00, 15.3kB/s]
+ep0_val_probs.npy: 100%|██████████| 12.5k/12.5k [00:00<00:00, 43.9kB/s]
+
+
+adapter_model.safetensors:   0%|          | 0.00/175M [00:00<?, ?B/s][A[AUpload 52 LFS files:   4%|▍         | 2/52 [00:01<00:25,  1.94it/s]
+
+
+
+ep10_dev_probs.npy:   0%|          | 0.00/11.2k [00:00<?, ?B/s][A[A[A[A
+
+
+
+
+ep10_test_probs.npy:   0%|          | 0.00/8.66k [00:00<?, ?B/s][A[A[A[A[AUpload 52 LFS files:   8%|▊         | 4/52 [00:01<00:13,  3.68it/s]ep10_dev_probs.npy: 100%|██████████| 11.2k/11.2k [00:00<00:00, 40.3kB/s]
+
+adapter_model.safetensors:   6%|▋         | 11.2M/175M [00:01<00:24, 6.62MB/s][A
+
+
+adapter_model.safetensors:   7%|▋         | 11.5M/175M [00:01<00:21, 7.74MB/s][A[A[Aep10_test_probs.npy: 100%|██████████| 8.66k/8.66k [00:00<00:00, 32.4kB/s]
+
+
+
+adapter_model.safetensors:   8%|▊         | 13.2M/175M [00:01<00:20, 7.88MB/s][A[A[A
+adapter_model.safetensors:   8%|▊         | 13.2M/175M [00:01<00:22, 7.11MB/s][AUpload 52 LFS files:  10%|▉         | 5/52 [00:01<00:15,  3.12it/s]
+
+
+
+ep10_val_probs.npy:   0%|          | 0.00/12.5k [00:00<?, ?B/s][A[A[A[A
+adapter_model.safetensors:   9%|▉         | 15.5M/175M [00:01<00:17, 8.86MB/s][A
+
+
+adapter_model.safetensors:   9%|▉         | 15.6M/175M [00:01<00:16, 9.38MB/s][A[A[A
+
+adapter_model.safetensors:   5%|▍         | 8.52M/175M [00:00<00:17, 9.65MB/s][A[AUpload 52 LFS files:  12%|█▏        | 6/52 [00:02<00:14,  3.27it/s]
+
+
+
+
+adapter_model.safetensors:   0%|          | 0.00/175M [00:00<?, ?B/s][A[A[A[A[Aep10_val_probs.npy: 100%|██████████| 12.5k/12.5k [00:00<00:00, 44.0kB/s]
+
+
+adapter_model.safetensors:   6%|▌         | 10.2M/175M [00:01<00:17, 9.42MB/s][A[A
+
+adapter_model.safetensors:   8%|▊         | 13.3M/175M [00:01<00:14, 11.2MB/s][A[AUpload 52 LFS files:  13%|█▎        | 7/52 [00:02<00:14,  3.19it/s]
+
+
+
+ep11_dev_probs.npy:   0%|          | 0.00/11.2k [00:00<?, ?B/s][A[A[A[A
+adapter_model.safetensors:  10%|▉         | 16.9M/175M [00:02<00:31, 5.03MB/s][A
+
+
+adapter_model.safetensors:  10%|▉         | 16.9M/175M [00:02<00:30, 5.15MB/s][A[A[A
+
+
+adapter_model.safetensors:  13%|█▎        | 22.2M/175M [00:02<00:15, 9.68MB/s][A[A[A
+adapter_model.safetensors:  13%|█▎        | 22.4M/175M [00:02<00:15, 9.58MB/s][A
+
+
+adapter_model.safetensors:  15%|█▌        | 26.4M/175M [00:02<00:11, 12.7MB/s][A[A[A
+
+
+
+
+adapter_model.safetensors:   9%|▉         | 16.1M/175M [00:00<00:07, 20.1MB/s][A[A[A[A[A
+
+adapter_model.safetensors:   9%|▉         | 16.1M/175M [00:01<00:22, 7.20MB/s][A[Aep11_dev_probs.npy: 100%|██████████| 11.2k/11.2k [00:00<00:00, 16.5kB/s]
+
+
+adapter_model.safetensors:  13%|█▎        | 22.4M/175M [00:02<00:12, 12.6MB/s][A[A
+
+
+
+
+adapter_model.safetensors:  18%|█▊        | 30.9M/175M [00:01<00:05, 27.9MB/s][A[A[A[A[AUpload 52 LFS files:  15%|█▌        | 8/52 [00:03<00:23,  1.85it/s]
+
+
+
+ep11_test_probs.npy:   0%|          | 0.00/8.66k [00:00<?, ?B/s][A[A[A[A
+adapter_model.safetensors:  16%|█▌        | 27.1M/175M [00:03<00:23, 6.17MB/s][A
+
+
+adapter_model.safetensors:  17%|█▋        | 28.8M/175M [00:03<00:23, 6.17MB/s][A[A[A
+
+adapter_model.safetensors:  14%|█▍        | 24.6M/175M [00:02<00:19, 7.67MB/s][A[A
+
+
+adapter_model.safetensors:  18%|█▊        | 30.7M/175M [00:03<00:20, 6.87MB/s][A[A[A
+adapter_model.safetensors:  16%|█▋        | 28.6M/175M [00:04<00:22, 6.40MB/s][A
+
+
+
+
+adapter_model.safetensors:  20%|█▉        | 34.1M/175M [00:02<00:09, 14.4MB/s][A[A[A[A[A
+
+adapter_model.safetensors:  15%|█▍        | 26.2M/175M [00:02<00:19, 7.81MB/s][A[Aep11_test_probs.npy: 100%|██████████| 8.66k/8.66k [00:00<00:00, 13.0kB/s]
+
+adapter_model.safetensors:  17%|█▋        | 30.2M/175M [00:04<00:21, 6.82MB/s][A
+
+adapter_model.safetensors:  16%|█▌        | 27.5M/175M [00:03<00:18, 7.91MB/s][A[A
+
+adapter_model.safetensors:  17%|█▋        | 30.5M/175M [00:03<00:13, 10.7MB/s][A[AUpload 52 LFS files:  17%|█▋        | 9/52 [00:04<00:28,  1.49it/s]
+
+
+
+ep11_val_probs.npy:   0%|          | 0.00/12.5k [00:00<?, ?B/s][A[A[A[A
+
+
+
+
+adapter_model.safetensors:  27%|██▋       | 48.1M/175M [00:02<00:06, 19.6MB/s][A[A[A[A[Aep11_val_probs.npy: 100%|██████████| 12.5k/12.5k [00:00<00:00, 43.9kB/s]
+
+
+
+adapter_model.safetensors:  18%|█▊        | 32.3M/175M [00:04<00:30, 4.70MB/s][A[A[A
+
+
+adapter_model.safetensors:  22%|██▏       | 38.4M/175M [00:04<00:15, 8.82MB/s][A[A[A
+
+
+
+
+adapter_model.safetensors:  37%|███▋      | 64.1M/175M [00:02<00:04, 24.4MB/s][A[A[A[A[A
+adapter_model.safetensors:  18%|█▊        | 32.1M/175M [00:04<00:30, 4.63MB/s][AUpload 52 LFS files:  19%|█▉        | 10/52 [00:05<00:27,  1.52it/s]
+
+
+
+adapter_model.safetensors:   0%|          | 0.00/175M [00:00<?, ?B/s][A[A[A[A
+
+adapter_model.safetensors:  18%|█▊        | 32.3M/175M [00:03<00:23, 6.15MB/s][A[A
+
+
+
+
+adapter_model.safetensors:  41%|████      | 71.8M/175M [00:03<00:03, 27.9MB/s][A[A[A[A[A
+adapter_model.safetensors:  22%|██▏       | 38.6M/175M [00:05<00:15, 9.00MB/s][A
+
+adapter_model.safetensors:  22%|██▏       | 38.0M/175M [00:04<00:12, 11.1MB/s][A[A
+
+
+adapter_model.safetensors:  24%|██▍       | 42.6M/175M [00:05<00:13, 9.88MB/s][A[A[A
+
+
+
+adapter_model.safetensors:   9%|▉         | 16.1M/175M [00:00<00:04, 35.9MB/s][A[A[A[A
+
+
+
+adapter_model.safetensors:  15%|█▌        | 26.4M/175M [00:00<00:02, 51.4MB/s][A[A[A[A
+
+adapter_model.safetensors:  23%|██▎       | 40.3M/175M [00:04<00:18, 7.13MB/s][A[A
+adapter_model.safetensors:  25%|██▌       | 43.9M/175M [00:05<00:16, 7.93MB/s][A
+
+
+
+
+adapter_model.safetensors:  43%|████▎     | 75.5M/175M [00:03<00:06, 15.9MB/s][A[A[A[A[A
+
+adapter_model.safetensors:  24%|██▍       | 42.1M/175M [00:05<00:18, 7.23MB/s][A[A
+adapter_model.safetensors:  26%|██▌       | 45.4M/175M [00:06<00:16, 7.87MB/s][A
+
+
+
+
+adapter_model.safetensors:  45%|████▍     | 78.1M/175M [00:04<00:06, 15.2MB/s][A[A[A[A[A
+adapter_model.safetensors:  27%|██▋       | 47.5M/175M [00:06<00:14, 8.82MB/s][A
+
+adapter_model.safetensors:  25%|██▍       | 43.5M/175M [00:05<00:17, 7.51MB/s][A[A
+
+
+adapter_model.safetensors:  26%|██▌       | 44.6M/175M [00:06<00:23, 5.54MB/s][A[A[A
+
+adapter_model.safetensors:  27%|██▋       | 46.6M/175M [00:05<00:12, 10.3MB/s][A[A
+
+
+adapter_model.safetensors:  26%|██▋       | 46.2M/175M [00:06<00:21, 6.07MB/s][A[A[A
+
+
+
+
+adapter_model.safetensors:  46%|████▌     | 80.3M/175M [00:04<00:09, 10.1MB/s][A[A[A[A[A
+
+
+
+
+adapter_model.safetensors:  49%|████▉     | 86.3M/175M [00:04<00:06, 14.0MB/s][A[A[A[A[A
+adapter_model.safetensors:  28%|██▊       | 49.0M/175M [00:07<00:22, 5.48MB/s][A
+
+adapter_model.safetensors:  28%|██▊       | 48.5M/175M [00:05<00:20, 6.11MB/s][A[A
+
+adapter_model.safetensors:  30%|██▉       | 52.3M/175M [00:06<00:13, 9.23MB/s][A[A
+
+
+adapter_model.safetensors:  27%|██▋       | 48.1M/175M [00:07<00:28, 4.50MB/s][A[A[A
+
+
+
+adapter_model.safetensors:  19%|█▉        | 33.6M/175M [00:02<00:13, 10.2MB/s][A[A[A[A
+adapter_model.safetensors:  37%|███▋      | 64.1M/175M [00:07<00:08, 13.2MB/s][A
+
+
+
+
+adapter_model.safetensors:  51%|█████     | 89.2M/175M [00:05<00:08, 9.97MB/s][A[A[A[A[A
+adapter_model.safetensors:  41%|████      | 70.9M/175M [00:07<00:06, 17.1MB/s][A
+
+
+adapter_model.safetensors:  37%|███▋      | 64.1M/175M [00:07<00:08, 12.4MB/s][A[A[A
+
+
+
+
+adapter_model.safetensors:  52%|█████▏    | 91.5M/175M [00:05<00:08, 10.1MB/s][A[A[A[A[A
+
+
+
+adapter_model.safetensors:  27%|██▋       | 48.1M/175M [00:02<00:08, 15.0MB/s][A[A[A[A
+
+
+
+
+adapter_model.safetensors:  53%|█████▎    | 93.4M/175M [00:06<00:08, 9.88MB/s][A[A[A[A[A
+
+
+adapter_model.safetensors:  46%|████▌     | 80.1M/175M [00:08<00:05, 18.7MB/s][A[A[A
+
+adapter_model.safetensors:  32%|███▏      | 55.9M/175M [00:07<00:21, 5.47MB/s][A[A
+
+
+
+adapter_model.safetensors:  37%|███▋      | 64.1M/175M [00:03<00:05, 19.9MB/s][A[A[A[A
+adapter_model.safetensors:  43%|████▎     | 75.2M/175M [00:08<00:08, 11.5MB/s][A
+
+adapter_model.safetensors:  33%|███▎      | 57.4M/175M [00:07<00:20, 5.64MB/s][A[A
+
+
+adapter_model.safetensors:  55%|█████▍    | 96.1M/175M [00:08<00:03, 23.0MB/s][A[A[A
+adapter_model.safetensors:  44%|████▍     | 77.2M/175M [00:08<00:08, 11.0MB/s][A
+
+adapter_model.safetensors:  34%|███▍      | 59.2M/175M [00:07<00:18, 6.36MB/s][A[A
+
+
+
+
+adapter_model.safetensors:  55%|█████▍    | 96.1M/175M [00:06<00:11, 6.85MB/s][A[A[A[A[A
+
+adapter_model.safetensors:  36%|███▌      | 62.5M/175M [00:07<00:12, 9.08MB/s][A[A
+
+
+
+adapter_model.safetensors:  46%|████▌     | 80.1M/175M [00:03<00:03, 24.3MB/s][A[A[A[A
+
+
+adapter_model.safetensors:  64%|██████▍   | 112M/175M [00:09<00:02, 26.8MB/s] [A[A[A
+
+
+
+adapter_model.safetensors:  55%|█████▍    | 96.1M/175M [00:04<00:02, 27.5MB/s][A[A[A[A
+
+
+
+
+adapter_model.safetensors:  64%|██████▍   | 112M/175M [00:07<00:04, 15.0MB/s] [A[A[A[A[A
+
+
+
+
+adapter_model.safetensors:  68%|██████▊   | 119M/175M [00:07<00:02, 19.5MB/s][A[A[A[A[A
+
+
+adapter_model.safetensors:  73%|███████▎  | 128M/175M [00:09<00:01, 29.7MB/s][A[A[A
+
+adapter_model.safetensors:  37%|███▋      | 64.3M/175M [00:08<00:18, 5.85MB/s][A[A
+adapter_model.safetensors:  46%|████▌     | 80.1M/175M [00:09<00:12, 7.51MB/s][A
+
+
+
+adapter_model.safetensors:  64%|██████▍   | 112M/175M [00:04<00:02, 28.6MB/s] [A[A[A[A
+
+
+adapter_model.safetensors:  82%|████████▏ | 144M/175M [00:09<00:00, 31.7MB/s][A[A[A
+adapter_model.safetensors:  55%|█████▍    | 96.1M/175M [00:09<00:05, 15.1MB/s][A
+
+adapter_model.safetensors:  46%|████▌     | 80.1M/175M [00:08<00:06, 15.0MB/s][A[A
+
+
+adapter_model.safetensors:  86%|████████▋ | 151M/175M [00:10<00:00, 34.8MB/s][A[A[A
+
+
+
+
+adapter_model.safetensors:  70%|██████▉   | 122M/175M [00:08<00:04, 11.4MB/s][A[A[A[A[A
+
+
+
+
+adapter_model.safetensors:  71%|███████▏  | 125M/175M [00:08<00:04, 12.1MB/s][A[A[A[A[A
+adapter_model.safetensors:  64%|██████▍   | 112M/175M [00:10<00:03, 20.8MB/s] [A
+
+adapter_model.safetensors:  55%|█████▍    | 96.1M/175M [00:09<00:03, 20.7MB/s][A[A
+
+
+
+
+adapter_model.safetensors:  73%|███████▎  | 127M/175M [00:08<00:03, 13.0MB/s][A[A[A[A[A
+
+
+
+adapter_model.safetensors:  70%|███████   | 123M/175M [00:05<00:02, 22.9MB/s][A[A[A[A
+
+
+
+adapter_model.safetensors:  72%|███████▏  | 126M/175M [00:05<00:02, 21.2MB/s][A[A[A[A
+
+adapter_model.safetensors:  64%|██████▍   | 112M/175M [00:09<00:02, 24.7MB/s] [A[A
+adapter_model.safetensors:  73%|███████▎  | 128M/175M [00:11<00:02, 21.6MB/s][A
+
+
+adapter_model.safetensors:  89%|████████▉ | 155M/175M [00:11<00:01, 16.6MB/s][A[A[A
+adapter_model.safetensors:  77%|███████▋  | 135M/175M [00:11<00:01, 25.3MB/s][A
+
+
+
+
+adapter_model.safetensors:  74%|███████▍  | 129M/175M [00:09<00:05, 7.92MB/s][A[A[A[A[A
+
+
+
+
+adapter_model.safetensors:  77%|███████▋  | 135M/175M [00:09<00:03, 11.9MB/s][A[A[A[A[A
+
+adapter_model.safetensors:  73%|███████▎  | 128M/175M [00:10<00:01, 28.2MB/s][A[A
+
+
+adapter_model.safetensors:  91%|█████████ | 159M/175M [00:11<00:01, 14.6MB/s][A[A[A
+
+
+
+adapter_model.safetensors:  73%|███████▎  | 128M/175M [00:06<00:03, 12.6MB/s][A[A[A[A
+
+adapter_model.safetensors:  82%|████████▏ | 144M/175M [00:10<00:01, 29.0MB/s][A[A
+adapter_model.safetensors:  80%|███████▉  | 139M/175M [00:11<00:02, 16.9MB/s][A
+
+
+
+adapter_model.safetensors:  82%|████████▏ | 144M/175M [00:07<00:01, 18.0MB/s][A[A[A[A
+adapter_model.safetensors:  81%|████████▏ | 142M/175M [00:12<00:02, 14.9MB/s][A
+
+adapter_model.safetensors:  92%|█████████▏| 160M/175M [00:11<00:00, 31.4MB/s][A[A
+
+
+
+
+adapter_model.safetensors:  79%|███████▊  | 138M/175M [00:10<00:05, 7.08MB/s][A[A[A[A[A
+
+
+adapter_model.safetensors:  92%|█████████▏| 161M/175M [00:12<00:01, 10.2MB/s][A[A[A
+
+
+
+
+adapter_model.safetensors:  80%|███████▉  | 140M/175M [00:10<00:04, 7.81MB/s][A[A[A[A[A
+
+
+
+
+adapter_model.safetensors:  82%|████████▏ | 143M/175M [00:10<00:03, 9.92MB/s][A[A[A[A[A
+
+
+
+adapter_model.safetensors:  92%|█████████▏| 160M/175M [00:07<00:00, 22.0MB/s][A[A[A[Aadapter_model.safetensors: 100%|██████████| 175M/175M [00:12<00:00, 13.7MB/s]
+adapter_model.safetensors: 100%|██████████| 175M/175M [00:11<00:00, 14.9MB/s]
+adapter_model.safetensors: 100%|██████████| 175M/175M [00:08<00:00, 21.6MB/s]
+
+adapter_model.safetensors:  83%|████████▎ | 144M/175M [00:13<00:03, 9.49MB/s][AUpload 52 LFS files:  21%|██        | 11/52 [00:13<01:59,  2.92s/it]
+
+ep1_dev_probs.npy:   0%|          | 0.00/11.2k [00:00<?, ?B/s][A[A
+
+
+ep1_test_probs.npy:   0%|          | 0.00/8.66k [00:00<?, ?B/s][A[A[A
+
+
+
+
+adapter_model.safetensors:  83%|████████▎ | 145M/175M [00:11<00:04, 6.64MB/s][A[A[A[A[Aep1_dev_probs.npy: 100%|██████████| 11.2k/11.2k [00:00<00:00, 43.1kB/s]
+ep1_test_probs.npy: 100%|██████████| 8.66k/8.66k [00:00<00:00, 34.9kB/s]
+Upload 52 LFS files:  25%|██▌       | 13/52 [00:13<01:03,  1.64s/it]
+
+ep1_val_probs.npy:   0%|          | 0.00/12.5k [00:00<?, ?B/s][A[A
+adapter_model.safetensors:  92%|█████████▏| 160M/175M [00:13<00:00, 15.9MB/s][Aep1_val_probs.npy: 100%|██████████| 12.5k/12.5k [00:00<00:00, 48.5kB/s]
+
+
+
+
+
+adapter_model.safetensors:  92%|█████████▏| 160M/175M [00:11<00:01, 14.6MB/s][A[A[A[A[AUpload 52 LFS files:  27%|██▋       | 14/52 [00:13<00:50,  1.32s/it]
+
+adapter_model.safetensors:   0%|          | 0.00/175M [00:00<?, ?B/s][A[Aadapter_model.safetensors: 100%|██████████| 175M/175M [00:14<00:00, 12.5MB/s]
+Upload 52 LFS files:  29%|██▉       | 15/52 [00:14<00:37,  1.03s/it]
+ep2_dev_probs.npy:   0%|          | 0.00/11.2k [00:00<?, ?B/s][A
+
+
+ep2_test_probs.npy:   0%|          | 0.00/8.66k [00:00<?, ?B/s][A[A[Aadapter_model.safetensors: 100%|██████████| 175M/175M [00:12<00:00, 14.4MB/s]
+
+
+adapter_model.safetensors:   9%|▉         | 16.1M/175M [00:00<00:04, 32.6MB/s][A[AUpload 52 LFS files:  33%|███▎      | 17/52 [00:14<00:22,  1.54it/s]
+
+
+
+ep2_val_probs.npy:   0%|          | 0.00/12.5k [00:00<?, ?B/s][A[A[A[Aep2_dev_probs.npy: 100%|██████████| 11.2k/11.2k [00:00<00:00, 37.2kB/s]
+ep2_test_probs.npy: 100%|██████████| 8.66k/8.66k [00:00<00:00, 34.3kB/s]
+Upload 52 LFS files:  35%|███▍      | 18/52 [00:14<00:18,  1.81it/s]
+adapter_model.safetensors:   0%|          | 0.00/175M [00:00<?, ?B/s][Aep2_val_probs.npy: 100%|██████████| 12.5k/12.5k [00:00<00:00, 49.5kB/s]
+Upload 52 LFS files:  37%|███▋      | 19/52 [00:14<00:14,  2.28it/s]
+
+
+ep3_dev_probs.npy:   0%|          | 0.00/11.2k [00:00<?, ?B/s][A[A[A
+
+
+
+ep3_test_probs.npy:   0%|          | 0.00/8.66k [00:00<?, ?B/s][A[A[A[A
+
+adapter_model.safetensors:  18%|█▊        | 32.1M/175M [00:00<00:04, 34.9MB/s][A[Aep3_dev_probs.npy: 100%|██████████| 11.2k/11.2k [00:00<00:00, 44.0kB/s]
+Upload 52 LFS files:  40%|████      | 21/52 [00:14<00:09,  3.23it/s]
+
+
+ep3_val_probs.npy:   0%|          | 0.00/12.5k [00:00<?, ?B/s][A[A[Aep3_test_probs.npy: 100%|██████████| 8.66k/8.66k [00:00<00:00, 33.5kB/s]
+
+adapter_model.safetensors:   9%|▉         | 16.1M/175M [00:00<00:04, 36.1MB/s][Aep3_val_probs.npy: 100%|██████████| 12.5k/12.5k [00:00<00:00, 47.5kB/s]
+
+
+adapter_model.safetensors:  27%|██▋       | 48.1M/175M [00:01<00:03, 35.8MB/s][A[AUpload 52 LFS files:  42%|████▏     | 22/52 [00:15<00:09,  3.13it/s]
+
+
+adapter_model.safetensors:   0%|          | 0.00/175M [00:00<?, ?B/s][A[A[A
+
+
+
+ep4_dev_probs.npy:   0%|          | 0.00/11.2k [00:00<?, ?B/s][A[A[A[A
+adapter_model.safetensors:  18%|█▊        | 32.1M/175M [00:00<00:04, 32.8MB/s][Aep4_dev_probs.npy: 100%|██████████| 11.2k/11.2k [00:00<00:00, 45.2kB/s]
+Upload 52 LFS files:  46%|████▌     | 24/52 [00:15<00:07,  3.97it/s]
+
+
+
+ep4_test_probs.npy:   0%|          | 0.00/8.66k [00:00<?, ?B/s][A[A[A[A
+
+adapter_model.safetensors:  37%|███▋      | 64.1M/175M [00:01<00:03, 36.8MB/s][A[A
+
+
+adapter_model.safetensors:   9%|▉         | 16.1M/175M [00:00<00:04, 35.7MB/s][A[A[Aep4_test_probs.npy: 100%|██████████| 8.66k/8.66k [00:00<00:00, 34.0kB/s]
+Upload 52 LFS files:  48%|████▊     | 25/52 [00:15<00:07,  3.64it/s]
+
+
+
+ep4_val_probs.npy:   0%|          | 0.00/12.5k [00:00<?, ?B/s][A[A[A[A
+adapter_model.safetensors:  27%|██▋       | 48.1M/175M [00:01<00:03, 32.1MB/s][A
+
+adapter_model.safetensors:  46%|████▌     | 80.1M/175M [00:02<00:02, 36.7MB/s][A[A
+
+
+adapter_model.safetensors:  18%|█▊        | 32.1M/175M [00:00<00:03, 35.9MB/s][A[A[Aep4_val_probs.npy: 100%|██████████| 12.5k/12.5k [00:00<00:00, 49.9kB/s]
+Upload 52 LFS files:  50%|█████     | 26/52 [00:16<00:07,  3.58it/s]
+
+
+
+adapter_model.safetensors:   0%|          | 0.00/175M [00:00<?, ?B/s][A[A[A[A
+adapter_model.safetensors:  37%|███▋      | 64.1M/175M [00:01<00:03, 34.1MB/s][A
+
+adapter_model.safetensors:  55%|█████▍    | 96.1M/175M [00:02<00:02, 36.1MB/s][A[AUpload 52 LFS files:  52%|█████▏    | 27/52 [00:16<00:07,  3.38it/s]
+
+
+
+
+ep5_dev_probs.npy:   0%|          | 0.00/11.2k [00:00<?, ?B/s][A[A[A[A[A
+
+
+adapter_model.safetensors:  27%|██▋       | 48.1M/175M [00:01<00:03, 37.0MB/s][A[A[A
+
+
+
+adapter_model.safetensors:   9%|▉         | 16.1M/175M [00:00<00:04, 35.1MB/s][A[A[A[Aep5_dev_probs.npy: 100%|██████████| 11.2k/11.2k [00:00<00:00, 36.8kB/s]
+
+adapter_model.safetensors:  46%|████▌     | 80.1M/175M [00:02<00:02, 35.5MB/s][A
+
+
+adapter_model.safetensors:  37%|███▋      | 64.1M/175M [00:01<00:02, 37.6MB/s][A[A[A
+
+adapter_model.safetensors:  64%|██████▍   | 112M/175M [00:03<00:01, 34.6MB/s] [A[A
+
+
+
+adapter_model.safetensors:  18%|█▊        | 32.1M/175M [00:00<00:03, 36.2MB/s][A[A[A[AUpload 52 LFS files:  54%|█████▍    | 28/52 [00:17<00:09,  2.57it/s]
+
+
+
+
+ep5_test_probs.npy:   0%|          | 0.00/8.66k [00:00<?, ?B/s][A[A[A[A[A
+adapter_model.safetensors:  55%|█████▍    | 96.1M/175M [00:02<00:02, 35.5MB/s][A
+
+adapter_model.safetensors:  73%|███████▎  | 128M/175M [00:03<00:01, 35.7MB/s][A[A
+
+
+adapter_model.safetensors:  46%|████▌     | 80.1M/175M [00:02<00:02, 37.4MB/s][A[A[Aep5_test_probs.npy: 100%|██████████| 8.66k/8.66k [00:00<00:00, 33.4kB/s]
+
+
+
+
+adapter_model.safetensors:  27%|██▋       | 48.1M/175M [00:01<00:03, 34.7MB/s][A[A[A[A
+adapter_model.safetensors:  64%|██████▍   | 112M/175M [00:03<00:01, 35.7MB/s] [AUpload 52 LFS files:  56%|█████▌    | 29/52 [00:17<00:10,  2.23it/s]
+
+
+
+
+ep5_val_probs.npy:   0%|          | 0.00/12.5k [00:00<?, ?B/s][A[A[A[A[A
+
+
+adapter_model.safetensors:  55%|█████▍    | 96.1M/175M [00:02<00:02, 36.9MB/s][A[A[A
+
+adapter_model.safetensors:  82%|████████▏ | 144M/175M [00:04<00:00, 35.0MB/s][A[A
+
+
+
+adapter_model.safetensors:  37%|███▋      | 64.1M/175M [00:01<00:03, 36.1MB/s][A[A[A[Aep5_val_probs.npy: 100%|██████████| 12.5k/12.5k [00:00<00:00, 49.7kB/s]
+
+adapter_model.safetensors:  73%|███████▎  | 128M/175M [00:03<00:01, 35.1MB/s][A
+
+
+adapter_model.safetensors:  64%|██████▍   | 112M/175M [00:03<00:01, 36.5MB/s] [A[A[A
+
+adapter_model.safetensors:  92%|█████████▏| 160M/175M [00:04<00:00, 35.4MB/s][A[A
+
+
+
+adapter_model.safetensors:  46%|████▌     | 80.1M/175M [00:02<00:02, 36.9MB/s][A[A[A[AUpload 52 LFS files:  58%|█████▊    | 30/52 [00:18<00:11,  1.96it/s]
+
+
+
+
+adapter_model.safetensors:   0%|          | 0.00/175M [00:00<?, ?B/s][A[A[A[A[A
+adapter_model.safetensors:  82%|████████▏ | 144M/175M [00:04<00:00, 34.9MB/s][A
+
+
+adapter_model.safetensors:  73%|███████▎  | 128M/175M [00:03<00:01, 36.8MB/s][A[A[Aadapter_model.safetensors: 100%|██████████| 175M/175M [00:04<00:00, 35.2MB/s]
+
+
+
+
+adapter_model.safetensors:  55%|█████▍    | 96.1M/175M [00:02<00:02, 35.5MB/s][A[A[A[A
+
+
+
+
+adapter_model.safetensors:   9%|▉         | 16.1M/175M [00:00<00:05, 31.6MB/s][A[A[A[A[A
+
+
+adapter_model.safetensors:  82%|████████▏ | 144M/175M [00:03<00:00, 36.6MB/s][A[A[AUpload 52 LFS files:  60%|█████▉    | 31/52 [00:19<00:12,  1.74it/s]
+
+ep6_dev_probs.npy:   0%|          | 0.00/11.2k [00:00<?, ?B/s][A[A
+adapter_model.safetensors:  92%|█████████▏| 160M/175M [00:04<00:00, 33.1MB/s][A
+
+
+
+adapter_model.safetensors:  64%|██████▍   | 112M/175M [00:03<00:01, 35.0MB/s] [A[A[A[A
+
+
+
+
+adapter_model.safetensors:  18%|█▊        | 32.1M/175M [00:00<00:04, 33.3MB/s][A[A[A[A[Aep6_dev_probs.npy: 100%|██████████| 11.2k/11.2k [00:00<00:00, 42.8kB/s]
+
+
+
+adapter_model.safetensors:  92%|█████████▏| 160M/175M [00:04<00:00, 37.1MB/s][A[A[Aadapter_model.safetensors: 100%|██████████| 175M/175M [00:05<00:00, 34.2MB/s]
+
+
+
+
+adapter_model.safetensors:  73%|███████▎  | 128M/175M [00:03<00:01, 35.8MB/s][A[A[A[AUpload 52 LFS files:  62%|██████▏   | 32/52 [00:19<00:11,  1.71it/s]
+ep6_test_probs.npy:   0%|          | 0.00/8.66k [00:00<?, ?B/s][A
+
+
+
+
+adapter_model.safetensors:  27%|██▋       | 48.1M/175M [00:01<00:03, 33.8MB/s][A[A[A[A[Aadapter_model.safetensors: 100%|██████████| 175M/175M [00:04<00:00, 36.7MB/s]
+Upload 52 LFS files:  63%|██████▎   | 33/52 [00:20<00:09,  2.08it/s]
+
+ep6_val_probs.npy:   0%|          | 0.00/12.5k [00:00<?, ?B/s][A[Aep6_test_probs.npy: 100%|██████████| 8.66k/8.66k [00:00<00:00, 32.6kB/s]
+
+
+
+
+adapter_model.safetensors:  82%|████████▏ | 144M/175M [00:04<00:00, 35.9MB/s][A[A[A[Aep6_val_probs.npy: 100%|██████████| 12.5k/12.5k [00:00<00:00, 49.6kB/s]
+
+
+
+
+
+adapter_model.safetensors:  37%|███▋      | 64.1M/175M [00:01<00:03, 35.1MB/s][A[A[A[A[AUpload 52 LFS files:  65%|██████▌   | 34/52 [00:20<00:08,  2.24it/s]
+adapter_model.safetensors:   0%|          | 0.00/175M [00:00<?, ?B/s][A
+
+ep7_dev_probs.npy:   0%|          | 0.00/11.2k [00:00<?, ?B/s][A[AUpload 52 LFS files:  69%|██████▉   | 36/52 [00:20<00:04,  3.33it/s]
+
+
+ep7_test_probs.npy:   0%|          | 0.00/8.66k [00:00<?, ?B/s][A[A[A
+
+
+
+adapter_model.safetensors:  92%|█████████▏| 160M/175M [00:04<00:00, 35.9MB/s][A[A[A[A
+
+
+
+
+adapter_model.safetensors:  46%|████▌     | 80.1M/175M [00:02<00:02, 35.7MB/s][A[A[A[A[Aep7_dev_probs.npy: 100%|██████████| 11.2k/11.2k [00:00<00:00, 38.4kB/s]
+
+adapter_model.safetensors:   9%|▉         | 16.1M/175M [00:00<00:04, 35.8MB/s][Aep7_test_probs.npy: 100%|██████████| 8.66k/8.66k [00:00<00:00, 34.8kB/s]
+adapter_model.safetensors: 100%|██████████| 175M/175M [00:04<00:00, 35.5MB/s]
+Upload 52 LFS files:  71%|███████   | 37/52 [00:21<00:05,  2.91it/s]
+
+ep7_val_probs.npy:   0%|          | 0.00/12.5k [00:00<?, ?B/s][A[A
+
+
+
+
+adapter_model.safetensors:  55%|█████▍    | 96.1M/175M [00:02<00:02, 36.4MB/s][A[A[A[A[A
+adapter_model.safetensors:  18%|█▊        | 32.1M/175M [00:00<00:03, 37.0MB/s][AUpload 52 LFS files:  73%|███████▎  | 38/52 [00:21<00:04,  3.38it/s]
+
+
+adapter_model.safetensors:   0%|          | 0.00/175M [00:00<?, ?B/s][A[A[Aep7_val_probs.npy: 100%|██████████| 12.5k/12.5k [00:00<00:00, 51.0kB/s]
+Upload 52 LFS files:  75%|███████▌  | 39/52 [00:21<00:03,  3.73it/s]
+
+ep8_dev_probs.npy:   0%|          | 0.00/11.2k [00:00<?, ?B/s][A[A
+
+
+
+
+adapter_model.safetensors:  64%|██████▍   | 112M/175M [00:03<00:01, 36.4MB/s] [A[A[A[A[A
+
+
+adapter_model.safetensors:   9%|▉         | 16.1M/175M [00:00<00:04, 37.1MB/s][A[A[A
+adapter_model.safetensors:  27%|██▋       | 48.1M/175M [00:01<00:03, 36.0MB/s][Aep8_dev_probs.npy: 100%|██████████| 11.2k/11.2k [00:00<00:00, 42.3kB/s]
+Upload 52 LFS files:  77%|███████▋  | 40/52 [00:21<00:03,  3.52it/s]
+
+ep8_test_probs.npy:   0%|          | 0.00/8.66k [00:00<?, ?B/s][A[A
+
+
+
+
+adapter_model.safetensors:  73%|███████▎  | 128M/175M [00:03<00:01, 36.9MB/s][A[A[A[A[AUpload 52 LFS files:  79%|███████▉  | 41/52 [00:22<00:03,  3.65it/s]
+
+
+
+ep8_val_probs.npy:   0%|          | 0.00/12.5k [00:00<?, ?B/s][A[A[A[Aep8_test_probs.npy: 100%|██████████| 8.66k/8.66k [00:00<00:00, 34.4kB/s]
+
+
+
+adapter_model.safetensors:  18%|█▊        | 32.1M/175M [00:00<00:03, 37.9MB/s][A[A[A
+adapter_model.safetensors:  37%|███▋      | 64.1M/175M [00:01<00:03, 36.7MB/s][Aep8_val_probs.npy: 100%|██████████| 12.5k/12.5k [00:00<00:00, 49.2kB/s]
+Upload 52 LFS files:  81%|████████  | 42/52 [00:22<00:03,  3.26it/s]
+
+adapter_model.safetensors:   0%|          | 0.00/175M [00:00<?, ?B/s][A[A
+
+
+
+
+adapter_model.safetensors:  82%|████████▏ | 144M/175M [00:04<00:00, 36.7MB/s][A[A[A[A[A
+adapter_model.safetensors:  46%|████▌     | 80.1M/175M [00:02<00:02, 37.2MB/s][A
+
+
+adapter_model.safetensors:  27%|██▋       | 48.1M/175M [00:01<00:03, 37.3MB/s][A[A[AUpload 52 LFS files:  83%|████████▎ | 43/52 [00:22<00:02,  3.43it/s]
+
+
+
+ep9_dev_probs.npy:   0%|          | 0.00/11.2k [00:00<?, ?B/s][A[A[A[A
+
+adapter_model.safetensors:   9%|▉         | 16.1M/175M [00:00<00:04, 38.4MB/s][A[Aep9_dev_probs.npy: 100%|██████████| 11.2k/11.2k [00:00<00:00, 45.1kB/s]
+
+
+
+
+
+adapter_model.safetensors:  92%|█████████▏| 160M/175M [00:04<00:00, 36.0MB/s][A[A[A[A[A
+adapter_model.safetensors:  55%|█████▍    | 96.1M/175M [00:02<00:02, 37.5MB/s][A
+
+
+adapter_model.safetensors:  37%|███▋      | 64.1M/175M [00:01<00:02, 37.8MB/s][A[A[AUpload 52 LFS files:  85%|████████▍ | 44/52 [00:23<00:03,  2.51it/s]
+
+
+
+test_probs.npy:   0%|          | 0.00/8.66k [00:00<?, ?B/s][A[A[A[Aadapter_model.safetensors: 100%|██████████| 175M/175M [00:04<00:00, 35.6MB/s]
+
+adapter_model.safetensors:  64%|██████▍   | 112M/175M [00:03<00:01, 37.8MB/s] [A
+
+
+adapter_model.safetensors:  46%|████▌     | 80.1M/175M [00:02<00:02, 36.4MB/s][A[A[A
+
+adapter_model.safetensors:  18%|█▊        | 32.1M/175M [00:01<00:05, 28.3MB/s][A[Atest_probs.npy: 100%|██████████| 8.66k/8.66k [00:00<00:00, 35.2kB/s]
+Upload 52 LFS files:  87%|████████▋ | 45/52 [00:23<00:02,  2.57it/s]
+
+
+
+val_probs.npy:   0%|          | 0.00/12.5k [00:00<?, ?B/s][A[A[A[A
+adapter_model.safetensors:  73%|███████▎  | 128M/175M [00:03<00:01, 36.3MB/s][A
+
+
+adapter_model.safetensors:  55%|█████▍    | 96.1M/175M [00:02<00:02, 36.2MB/s][A[A[AUpload 52 LFS files:  88%|████████▊ | 46/52 [00:23<00:02,  2.97it/s]
+
+
+
+
+test_probs.npy:   0%|          | 0.00/8.66k [00:00<?, ?B/s][A[A[A[A[A
+
+adapter_model.safetensors:  27%|██▋       | 48.1M/175M [00:01<00:03, 31.7MB/s][A[Aval_probs.npy: 100%|██████████| 12.5k/12.5k [00:00<00:00, 46.2kB/s]
+test_probs.npy: 100%|██████████| 8.66k/8.66k [00:00<00:00, 32.8kB/s]
+
+adapter_model.safetensors:  82%|████████▏ | 144M/175M [00:03<00:00, 36.5MB/s][AUpload 52 LFS files:  90%|█████████ | 47/52 [00:24<00:01,  2.76it/s]
+
+
+adapter_model.safetensors:  64%|██████▍   | 112M/175M [00:03<00:01, 36.0MB/s] [A[A[A
+
+
+
+val_probs.npy:   0%|          | 0.00/12.5k [00:00<?, ?B/s][A[A[A[A
+
+adapter_model.safetensors:  37%|███▋      | 64.1M/175M [00:01<00:03, 33.2MB/s][A[AUpload 52 LFS files:  92%|█████████▏| 48/52 [00:24<00:01,  3.24it/s]val_probs.npy: 100%|██████████| 12.5k/12.5k [00:00<00:00, 48.6kB/s]
+
+adapter_model.safetensors:  92%|█████████▏| 160M/175M [00:04<00:00, 36.8MB/s][A
+
+
+adapter_model.safetensors:  73%|███████▎  | 128M/175M [00:03<00:01, 36.4MB/s][A[A[A
+
+adapter_model.safetensors:  46%|████▌     | 80.1M/175M [00:02<00:02, 34.3MB/s][A[AUpload 52 LFS files:  94%|█████████▍| 49/52 [00:25<00:01,  2.86it/s]adapter_model.safetensors: 100%|██████████| 175M/175M [00:04<00:00, 36.8MB/s]
+
+
+
+adapter_model.safetensors:  82%|████████▏ | 144M/175M [00:03<00:00, 35.6MB/s][A[A[A
+
+adapter_model.safetensors:  55%|█████▍    | 96.1M/175M [00:02<00:02, 34.9MB/s][A[AUpload 52 LFS files:  96%|█████████▌| 50/52 [00:25<00:00,  2.36it/s]
+
+
+adapter_model.safetensors:  92%|█████████▏| 160M/175M [00:04<00:00, 36.1MB/s][A[A[A
+
+adapter_model.safetensors:  64%|██████▍   | 112M/175M [00:03<00:01, 35.9MB/s] [A[Aadapter_model.safetensors: 100%|██████████| 175M/175M [00:04<00:00, 36.2MB/s]
+
+
+adapter_model.safetensors:  73%|███████▎  | 128M/175M [00:03<00:01, 36.5MB/s][A[AUpload 52 LFS files:  98%|█████████▊| 51/52 [00:26<00:00,  1.68it/s]
+
+adapter_model.safetensors:  82%|████████▏ | 144M/175M [00:04<00:00, 36.5MB/s][A[A
+
+adapter_model.safetensors:  92%|█████████▏| 160M/175M [00:04<00:00, 36.7MB/s][A[Aadapter_model.safetensors: 100%|██████████| 175M/175M [00:04<00:00, 35.2MB/s]
+Upload 52 LFS files: 100%|██████████| 52/52 [00:27<00:00,  1.27it/s]Upload 52 LFS files: 100%|██████████| 52/52 [00:27<00:00,  1.87it/s]
+[hf] uploaded /home/clarity_llm/runs/Q8_fullq_lora_12ep/seed0 -> siddarthg44/clarity-semeval26/Q8_fullq_lora_12ep/seed0
+Upload 52 LFS files:   0%|          | 0/52 [00:00<?, ?it/s]
+adapter_model.safetensors:   0%|          | 0.00/175M [00:00<?, ?B/s][A
+
+ep11_dev_probs.npy:   0%|          | 0.00/11.2k [00:00<?, ?B/s][A[A
+
+
+adapter_model.safetensors:   0%|          | 0.00/175M [00:00<?, ?B/s][A[A[A
+
+
+
+ep0_dev_probs.npy:   0%|          | 0.00/11.2k [00:00<?, ?B/s][A[A[A[A
+
+
+
+
+ep0_test_probs.npy:   0%|          | 0.00/8.66k [00:00<?, ?B/s][A[A[A[A[A
+adapter_model.safetensors:   1%|          | 1.44M/175M [00:00<00:12, 13.8MB/s][Aep11_dev_probs.npy: 100%|██████████| 11.2k/11.2k [00:00<00:00, 33.8kB/s]
+
+
+
+adapter_model.safetensors:   0%|          | 65.5k/175M [00:00<15:34, 187kB/s][A[A[A
+adapter_model.safetensors:   3%|▎         | 4.59M/175M [00:00<00:18, 9.34MB/s][A
+adapter_model.safetensors:   5%|▌         | 9.04M/175M [00:00<00:09, 17.1MB/s][AUpload 52 LFS files:   2%|▏         | 1/52 [00:00<00:34,  1.46it/s]
+
+ep0_val_probs.npy:   0%|          | 0.00/12.5k [00:00<?, ?B/s][A[Aep0_test_probs.npy: 100%|██████████| 8.66k/8.66k [00:00<00:00, 11.8kB/s]
+ep0_dev_probs.npy: 100%|██████████| 11.2k/11.2k [00:00<00:00, 15.1kB/s]
+
+
+
+adapter_model.safetensors:   2%|▏         | 4.26M/175M [00:00<00:28, 6.08MB/s][A[A[A
+
+
+adapter_model.safetensors:   5%|▌         | 9.24M/175M [00:00<00:12, 13.3MB/s][A[A[A
+
+
+
+adapter_model.safetensors:   0%|          | 0.00/175M [00:00<?, ?B/s][A[A[A[AUpload 52 LFS files:   4%|▍         | 2/52 [00:01<00:26,  1.92it/s]
+
+
+
+
+ep10_dev_probs.npy:   0%|          | 0.00/11.2k [00:00<?, ?B/s][A[A[A[A[A
+
+
+
+adapter_model.safetensors:   1%|▏         | 2.62M/175M [00:00<00:06, 26.1MB/s][A[A[A[Aep0_val_probs.npy: 100%|██████████| 12.5k/12.5k [00:00<00:00, 17.9kB/s]
+
+adapter_model.safetensors:   7%|▋         | 11.4M/175M [00:01<00:24, 6.81MB/s][A
+
+
+
+adapter_model.safetensors:   3%|▎         | 5.24M/175M [00:00<00:15, 11.1MB/s][A[A[A[A
+adapter_model.safetensors:   7%|▋         | 12.9M/175M [00:01<00:23, 6.84MB/s][A
+
+
+
+adapter_model.safetensors:   6%|▌         | 9.63M/175M [00:00<00:08, 18.8MB/s][A[A[A[A
+
+
+adapter_model.safetensors:   7%|▋         | 11.7M/175M [00:01<00:25, 6.37MB/s][A[A[A
+adapter_model.safetensors:   8%|▊         | 14.2M/175M [00:01<00:22, 6.99MB/s][AUpload 52 LFS files:   8%|▊         | 4/52 [00:01<00:19,  2.41it/s]
+
+ep10_test_probs.npy:   0%|          | 0.00/8.66k [00:00<?, ?B/s][A[Aep10_dev_probs.npy: 100%|██████████| 11.2k/11.2k [00:00<00:00, 14.9kB/s]
+
+
+
+adapter_model.safetensors:   8%|▊         | 13.3M/175M [00:01<00:24, 6.70MB/s][A[A[A
+
+
+adapter_model.safetensors:   8%|▊         | 14.6M/175M [00:02<00:23, 6.80MB/s][A[A[A
+
+
+
+
+ep10_val_probs.npy:   0%|          | 0.00/12.5k [00:00<?, ?B/s][A[A[A[A[AUpload 52 LFS files:  10%|▉         | 5/52 [00:02<00:19,  2.35it/s]
+
+
+adapter_model.safetensors:   9%|▉         | 15.7M/175M [00:02<00:22, 7.10MB/s][A[A[Aep10_test_probs.npy: 100%|██████████| 8.66k/8.66k [00:00<00:00, 12.3kB/s]
+
+
+
+
+adapter_model.safetensors:   7%|▋         | 12.2M/175M [00:01<00:24, 6.73MB/s][A[A[A[Aep10_val_probs.npy: 100%|██████████| 12.5k/12.5k [00:00<00:00, 41.6kB/s]
+
+adapter_model.safetensors:   9%|▉         | 16.1M/175M [00:02<00:36, 4.30MB/s][A
+adapter_model.safetensors:  13%|█▎        | 22.5M/175M [00:02<00:15, 9.71MB/s][A
+
+
+
+adapter_model.safetensors:   8%|▊         | 13.8M/175M [00:01<00:23, 6.75MB/s][A[A[A[AUpload 52 LFS files:  12%|█▏        | 6/52 [00:02<00:22,  2.06it/s]
+
+adapter_model.safetensors:   0%|          | 0.00/175M [00:00<?, ?B/s][A[A
+
+
+
+adapter_model.safetensors:   9%|▉         | 15.5M/175M [00:01<00:20, 7.89MB/s][A[A[A[A
+
+
+
+
+ep11_dev_probs.npy:   0%|          | 0.00/11.2k [00:00<?, ?B/s][A[A[A[A[A
+
+
+adapter_model.safetensors:  10%|▉         | 16.8M/175M [00:02<00:39, 4.02MB/s][A[A[A
+adapter_model.safetensors:  15%|█▍        | 26.2M/175M [00:03<00:14, 9.97MB/s][A
+
+
+adapter_model.safetensors:  14%|█▎        | 23.8M/175M [00:03<00:14, 10.6MB/s][A[A[Aep11_dev_probs.npy: 100%|██████████| 11.2k/11.2k [00:00<00:00, 39.2kB/s]
+
+
+
+adapter_model.safetensors:  15%|█▍        | 26.1M/175M [00:03<00:15, 9.55MB/s][A[A[AUpload 52 LFS files:  15%|█▌        | 8/52 [00:03<00:18,  2.41it/s]
+
+
+
+
+test_probs.npy:   0%|          | 0.00/8.66k [00:00<?, ?B/s][A[A[A[A[A
+
+
+
+adapter_model.safetensors:  10%|▉         | 16.9M/175M [00:02<00:35, 4.44MB/s][A[A[A[A
+
+adapter_model.safetensors:   4%|▍         | 7.80M/175M [00:00<00:16, 9.96MB/s][A[A
+
+
+
+adapter_model.safetensors:  13%|█▎        | 22.2M/175M [00:02<00:17, 8.93MB/s][A[A[A[Atest_probs.npy: 100%|██████████| 8.66k/8.66k [00:00<00:00, 30.5kB/s]
+
+
+adapter_model.safetensors:   5%|▌         | 9.44M/175M [00:01<00:18, 8.81MB/s][A[A
+
+adapter_model.safetensors:   6%|▋         | 10.9M/175M [00:01<00:17, 9.33MB/s][A[A
+
+
+
+adapter_model.safetensors:  15%|█▍        | 25.8M/175M [00:02<00:15, 9.63MB/s][A[A[A[A
+adapter_model.safetensors:  16%|█▌        | 28.2M/175M [00:04<00:28, 5.20MB/s][A
+
+adapter_model.safetensors:   8%|▊         | 14.2M/175M [00:01<00:12, 12.5MB/s][A[AUpload 52 LFS files:  17%|█▋        | 9/52 [00:04<00:20,  2.09it/s]
+
+
+
+
+val_probs.npy:   0%|          | 0.00/12.5k [00:00<?, ?B/s][A[A[A[A[A
+
+
+adapter_model.safetensors:  16%|█▌        | 27.9M/175M [00:04<00:28, 5.23MB/s][A[A[A
+adapter_model.safetensors:  18%|█▊        | 31.7M/175M [00:04<00:21, 6.74MB/s][Aval_probs.npy: 100%|██████████| 12.5k/12.5k [00:00<00:00, 41.6kB/s]
+
+
+
+adapter_model.safetensors:  17%|█▋        | 29.2M/175M [00:04<00:27, 5.38MB/s][A[A[A
+
+
+adapter_model.safetensors:  17%|█▋        | 30.4M/175M [00:04<00:26, 5.47MB/s][A[A[AUpload 52 LFS files:  19%|█▉        | 10/52 [00:04<00:22,  1.90it/s]
+
+
+
+
+adapter_model.safetensors:   0%|          | 0.00/175M [00:00<?, ?B/s][A[A[A[A[A
+
+adapter_model.safetensors:   9%|▉         | 16.1M/175M [00:02<00:24, 6.45MB/s][A[A
+
+
+
+
+adapter_model.safetensors:   3%|▎         | 5.11M/175M [00:00<00:03, 45.5MB/s][A[A[A[A[A
+
+
+
+adapter_model.safetensors:  16%|█▌        | 27.7M/175M [00:03<00:27, 5.33MB/s][A[A[A[A
+adapter_model.safetensors:  19%|█▉        | 33.2M/175M [00:05<00:29, 4.78MB/s][A
+adapter_model.safetensors:  21%|██        | 36.3M/175M [00:05<00:20, 6.60MB/s][A
+
+
+
+adapter_model.safetensors:  17%|█▋        | 29.1M/175M [00:04<00:26, 5.41MB/s][A[A[A[A
+
+adapter_model.safetensors:  13%|█▎        | 23.0M/175M [00:02<00:15, 9.56MB/s][A[A
+
+
+
+adapter_model.safetensors:  17%|█▋        | 30.4M/175M [00:04<00:23, 6.05MB/s][A[A[A[A
+
+
+
+
+adapter_model.safetensors:   6%|▌         | 9.70M/175M [00:00<00:11, 14.4MB/s][A[A[A[A[A
+
+
+adapter_model.safetensors:  18%|█▊        | 32.1M/175M [00:05<00:38, 3.74MB/s][A[A[A
+adapter_model.safetensors:  24%|██▍       | 42.2M/175M [00:05<00:14, 9.28MB/s][A
+
+
+adapter_model.safetensors:  22%|██▏       | 38.4M/175M [00:05<00:16, 8.28MB/s][A[A[A
+
+
+adapter_model.safetensors:  25%|██▌       | 44.5M/175M [00:05<00:10, 12.0MB/s][A[A[A
+
+
+adapter_model.safetensors:  27%|██▋       | 46.6M/175M [00:06<00:11, 11.0MB/s][A[A[A
+
+
+
+adapter_model.safetensors:  18%|█▊        | 32.1M/175M [00:05<00:36, 3.91MB/s][A[A[A[A
+
+adapter_model.safetensors:  14%|█▍        | 24.7M/175M [00:03<00:29, 5.15MB/s][A[A
+
+
+
+
+adapter_model.safetensors:   7%|▋         | 12.1M/175M [00:01<00:27, 5.92MB/s][A[A[A[A[A
+
+
+
+
+adapter_model.safetensors:   8%|▊         | 13.6M/175M [00:01<00:24, 6.67MB/s][A[A[A[A[A
+
+adapter_model.safetensors:  15%|█▍        | 26.1M/175M [00:03<00:26, 5.59MB/s][A[A
+
+
+
+
+adapter_model.safetensors:   9%|▊         | 15.1M/175M [00:01<00:21, 7.48MB/s][A[A[A[A[A
+
+
+
+adapter_model.safetensors:  27%|██▋       | 48.1M/175M [00:05<00:09, 12.9MB/s][A[A[A[A
+adapter_model.safetensors:  25%|██▌       | 44.1M/175M [00:06<00:25, 5.22MB/s][A
+
+adapter_model.safetensors:  16%|█▌        | 28.2M/175M [00:03<00:21, 6.79MB/s][A[A
+
+
+adapter_model.safetensors:  28%|██▊       | 48.4M/175M [00:06<00:16, 7.87MB/s][A[A[A
+
+
+
+adapter_model.safetensors:  32%|███▏      | 56.2M/175M [00:05<00:06, 18.5MB/s][A[A[A[A
+
+
+adapter_model.safetensors:  32%|███▏      | 55.3M/175M [00:06<00:08, 13.7MB/s][A[A[A
+adapter_model.safetensors:  26%|██▋       | 46.1M/175M [00:06<00:21, 5.87MB/s][A
+
+
+
+
+adapter_model.safetensors:   9%|▉         | 16.5M/175M [00:02<00:36, 4.29MB/s][A[A[A[A[A
+
+adapter_model.safetensors:  18%|█▊        | 32.1M/175M [00:04<00:24, 5.85MB/s][A[A
+
+
+
+
+adapter_model.safetensors:  13%|█▎        | 22.3M/175M [00:02<00:16, 9.09MB/s][A[A[A[A[A
+
+
+
+adapter_model.safetensors:  34%|███▍      | 59.8M/175M [00:06<00:10, 11.4MB/s][A[A[A[A
+adapter_model.safetensors:  27%|██▋       | 48.1M/175M [00:07<00:28, 4.47MB/s][A
+adapter_model.safetensors:  30%|██▉       | 52.2M/175M [00:07<00:17, 6.95MB/s][A
+
+
+
+adapter_model.safetensors:  36%|███▌      | 62.5M/175M [00:06<00:09, 12.0MB/s][A[A[A[A
+
+
+
+
+adapter_model.safetensors:  15%|█▍        | 25.8M/175M [00:03<00:15, 9.33MB/s][A[A[A[A[A
+adapter_model.safetensors:  33%|███▎      | 57.5M/175M [00:07<00:11, 10.4MB/s][A
+
+adapter_model.safetensors:  27%|██▋       | 48.1M/175M [00:05<00:09, 13.6MB/s][A[A
+
+
+adapter_model.safetensors:  34%|███▎      | 58.7M/175M [00:08<00:17, 6.67MB/s][A[A[A
+
+
+adapter_model.safetensors:  35%|███▍      | 60.6M/175M [00:08<00:16, 6.78MB/s][A[A[A
+
+
+adapter_model.safetensors:  36%|███▌      | 62.1M/175M [00:08<00:15, 7.05MB/s][A[A[A
+
+adapter_model.safetensors:  37%|███▋      | 64.1M/175M [00:05<00:06, 17.8MB/s][A[A
+
+
+
+adapter_model.safetensors:  37%|███▋      | 64.9M/175M [00:07<00:14, 7.43MB/s][A[A[A[A
+
+
+
+
+adapter_model.safetensors:  16%|█▌        | 27.9M/175M [00:04<00:29, 4.98MB/s][A[A[A[A[A
+adapter_model.safetensors:  34%|███▍      | 59.7M/175M [00:09<00:20, 5.63MB/s][A
+
+adapter_model.safetensors:  46%|████▌     | 80.1M/175M [00:06<00:04, 21.8MB/s][A[A
+
+
+
+
+adapter_model.safetensors:  17%|█▋        | 30.1M/175M [00:04<00:23, 6.14MB/s][A[A[A[A[A
+
+
+
+adapter_model.safetensors:  46%|████▌     | 80.1M/175M [00:08<00:06, 13.7MB/s][A[A[A[A
+
+
+
+
+adapter_model.safetensors:  18%|█▊        | 31.7M/175M [00:04<00:20, 6.89MB/s][A[A[A[A[A
+adapter_model.safetensors:  35%|███▌      | 61.2M/175M [00:09<00:19, 5.81MB/s][A
+
+
+adapter_model.safetensors:  37%|███▋      | 64.1M/175M [00:09<00:22, 4.86MB/s][A[A[A
+adapter_model.safetensors:  36%|███▌      | 62.5M/175M [00:09<00:18, 6.14MB/s][A
+
+
+
+adapter_model.safetensors:  55%|█████▍    | 96.1M/175M [00:08<00:04, 19.7MB/s][A[A[A[A
+
+
+adapter_model.safetensors:  46%|████▌     | 80.1M/175M [00:09<00:07, 12.9MB/s][A[A[A
+
+
+
+
+adapter_model.safetensors:  19%|█▉        | 33.1M/175M [00:05<00:31, 4.45MB/s][A[A[A[A[A
+
+
+
+adapter_model.safetensors:  64%|██████▍   | 112M/175M [00:09<00:02, 23.4MB/s] [A[A[A[A
+
+
+
+
+adapter_model.safetensors:  23%|██▎       | 40.7M/175M [00:05<00:13, 9.99MB/s][A[A[A[A[A
+
+adapter_model.safetensors:  51%|█████     | 88.7M/175M [00:07<00:05, 15.2MB/s][A[A
+
+
+
+adapter_model.safetensors:  67%|██████▋   | 118M/175M [00:09<00:02, 26.0MB/s][A[A[A[A
+adapter_model.safetensors:  37%|███▋      | 64.1M/175M [00:10<00:27, 4.07MB/s][A
+
+
+adapter_model.safetensors:  55%|█████▍    | 96.1M/175M [00:10<00:04, 19.2MB/s][A[A[A
+
+
+adapter_model.safetensors:  59%|█████▊    | 102M/175M [00:10<00:03, 22.5MB/s] [A[A[A
+
+adapter_model.safetensors:  52%|█████▏    | 90.9M/175M [00:07<00:05, 15.3MB/s][A[A
+
+adapter_model.safetensors:  54%|█████▍    | 94.2M/175M [00:07<00:05, 16.1MB/s][A[A
+
+
+adapter_model.safetensors:  61%|██████    | 106M/175M [00:10<00:03, 19.5MB/s][A[A[A
+adapter_model.safetensors:  46%|████▌     | 80.1M/175M [00:10<00:07, 12.1MB/s][A
+
+
+
+
+adapter_model.safetensors:  25%|██▌       | 44.1M/175M [00:06<00:18, 6.91MB/s][A[A[A[A[A
+
+
+
+
+adapter_model.safetensors:  26%|██▋       | 46.2M/175M [00:06<00:16, 7.86MB/s][A[A[A[A[A
+
+adapter_model.safetensors:  55%|█████▌    | 96.2M/175M [00:08<00:07, 10.2MB/s][A[A
+
+
+
+
+adapter_model.safetensors:  27%|██▋       | 47.9M/175M [00:06<00:14, 8.74MB/s][A[A[A[A[A
+adapter_model.safetensors:  55%|█████▍    | 96.1M/175M [00:11<00:04, 17.7MB/s][A
+
+
+
+adapter_model.safetensors:  70%|███████   | 123M/175M [00:10<00:03, 13.1MB/s][A[A[A[A
+
+
+adapter_model.safetensors:  62%|██████▏   | 109M/175M [00:11<00:06, 10.3MB/s][A[A[A
+
+
+
+adapter_model.safetensors:  72%|███████▏  | 126M/175M [00:10<00:03, 13.0MB/s][A[A[A[A
+
+adapter_model.safetensors:  64%|██████▍   | 112M/175M [00:08<00:03, 16.4MB/s] [A[A
+adapter_model.safetensors:  64%|██████▍   | 112M/175M [00:11<00:02, 21.7MB/s] [A
+
+
+
+adapter_model.safetensors:  73%|███████▎  | 128M/175M [00:10<00:03, 12.6MB/s][A[A[A[A
+
+
+adapter_model.safetensors:  63%|██████▎   | 111M/175M [00:12<00:06, 9.57MB/s][A[A[A
+
+
+
+
+adapter_model.safetensors:  28%|██▊       | 49.6M/175M [00:07<00:23, 5.31MB/s][A[A[A[A[A
+
+adapter_model.safetensors:  73%|███████▎  | 128M/175M [00:09<00:02, 21.7MB/s][A[A
+adapter_model.safetensors:  73%|███████▎  | 128M/175M [00:12<00:01, 25.4MB/s][A
+
+
+
+
+adapter_model.safetensors:  37%|███▋      | 64.1M/175M [00:07<00:08, 13.3MB/s][A[A[A[A[A
+
+adapter_model.safetensors:  82%|████████▏ | 144M/175M [00:09<00:01, 25.6MB/s][A[A
+adapter_model.safetensors:  82%|████████▏ | 144M/175M [00:12<00:01, 28.1MB/s][A
+
+
+
+adapter_model.safetensors:  74%|███████▍  | 130M/175M [00:11<00:05, 8.05MB/s][A[A[A[A
+
+
+adapter_model.safetensors:  64%|██████▍   | 112M/175M [00:12<00:09, 6.37MB/s][A[A[A
+
+
+
+
+adapter_model.safetensors:  46%|████▌     | 80.1M/175M [00:08<00:05, 18.8MB/s][A[A[A[A[A
+
+adapter_model.safetensors:  92%|█████████▏| 160M/175M [00:10<00:00, 27.4MB/s][A[A
+
+
+
+adapter_model.safetensors:  82%|████████▏ | 144M/175M [00:12<00:02, 14.2MB/s][A[A[A[A
+adapter_model.safetensors:  92%|█████████▏| 160M/175M [00:13<00:00, 29.3MB/s][A
+
+
+adapter_model.safetensors:  73%|███████▎  | 128M/175M [00:13<00:03, 12.8MB/s][A[A[A
+
+
+
+
+adapter_model.safetensors:  55%|█████▍    | 96.1M/175M [00:08<00:03, 23.2MB/s][A[A[A[A[Aadapter_model.safetensors: 100%|██████████| 175M/175M [00:10<00:00, 16.2MB/s]
+
+
+
+
+
+adapter_model.safetensors:  58%|█████▊    | 102M/175M [00:08<00:02, 25.8MB/s] [A[A[A[A[Aadapter_model.safetensors: 100%|██████████| 175M/175M [00:13<00:00, 12.8MB/s]
+
+
+
+
+adapter_model.safetensors:  92%|█████████▏| 160M/175M [00:12<00:00, 19.4MB/s][A[A[A[A
+
+
+
+
+adapter_model.safetensors:  60%|██████    | 106M/175M [00:08<00:02, 25.3MB/s][A[A[A[A[A
+
+
+adapter_model.safetensors:  82%|████████▏ | 144M/175M [00:13<00:01, 18.6MB/s][A[A[A
+ep1_dev_probs.npy:   0%|          | 0.00/11.2k [00:00<?, ?B/s][AUpload 52 LFS files:  21%|██        | 11/52 [00:14<01:58,  2.89s/it]
+
+ep1_test_probs.npy:   0%|          | 0.00/8.66k [00:00<?, ?B/s][A[Aadapter_model.safetensors: 100%|██████████| 175M/175M [00:13<00:00, 13.4MB/s]
+
+
+
+adapter_model.safetensors:  92%|█████████▏| 160M/175M [00:14<00:00, 23.1MB/s][A[A[Aep1_dev_probs.npy: 100%|██████████| 11.2k/11.2k [00:00<00:00, 42.2kB/s]
+ep1_test_probs.npy: 100%|██████████| 8.66k/8.66k [00:00<00:00, 31.6kB/s]
+
+
+
+
+
+adapter_model.safetensors:  62%|██████▏   | 109M/175M [00:09<00:04, 15.7MB/s][A[A[A[A[AUpload 52 LFS files:  25%|██▌       | 13/52 [00:14<01:07,  1.72s/it]
+ep1_val_probs.npy:   0%|          | 0.00/12.5k [00:00<?, ?B/s][A
+
+
+
+
+adapter_model.safetensors:  64%|██████▎   | 111M/175M [00:09<00:04, 15.3MB/s][A[A[A[A[AUpload 52 LFS files:  27%|██▋       | 14/52 [00:14<00:51,  1.36s/it]
+
+adapter_model.safetensors:   0%|          | 0.00/175M [00:00<?, ?B/s][A[Aadapter_model.safetensors: 100%|██████████| 175M/175M [00:14<00:00, 11.9MB/s]
+
+
+
+ep2_dev_probs.npy:   0%|          | 0.00/11.2k [00:00<?, ?B/s][A[A[Aep1_val_probs.npy: 100%|██████████| 12.5k/12.5k [00:00<00:00, 42.7kB/s]
+ep2_dev_probs.npy: 100%|██████████| 11.2k/11.2k [00:00<00:00, 43.4kB/s]
+Upload 52 LFS files:  31%|███       | 16/52 [00:15<00:31,  1.13it/s]
+ep2_test_probs.npy:   0%|          | 0.00/8.66k [00:00<?, ?B/s][A
+
+
+ep2_val_probs.npy:   0%|          | 0.00/12.5k [00:00<?, ?B/s][A[A[A
+
+adapter_model.safetensors:   9%|▉         | 16.1M/175M [00:00<00:04, 33.3MB/s][A[Aep2_test_probs.npy: 100%|██████████| 8.66k/8.66k [00:00<00:00, 32.6kB/s]
+ep2_val_probs.npy: 100%|██████████| 12.5k/12.5k [00:00<00:00, 46.7kB/s]
+Upload 52 LFS files:  35%|███▍      | 18/52 [00:15<00:21,  1.62it/s]
+adapter_model.safetensors:   0%|          | 0.00/175M [00:00<?, ?B/s][A
+
+
+
+
+adapter_model.safetensors:  65%|██████▍   | 113M/175M [00:10<00:07, 8.16MB/s][A[A[A[A[A
+
+adapter_model.safetensors:  18%|█▊        | 32.1M/175M [00:00<00:04, 34.3MB/s][A[AUpload 52 LFS files:  37%|███▋      | 19/52 [00:15<00:18,  1.80it/s]
+
+
+ep3_dev_probs.npy:   0%|          | 0.00/11.2k [00:00<?, ?B/s][A[A[A
+
+
+
+ep3_test_probs.npy:   0%|          | 0.00/8.66k [00:00<?, ?B/s][A[A[A[A
+adapter_model.safetensors:   9%|▉         | 16.1M/175M [00:00<00:04, 34.3MB/s][Aep3_dev_probs.npy: 100%|██████████| 11.2k/11.2k [00:00<00:00, 41.7kB/s]
+ep3_test_probs.npy: 100%|██████████| 8.66k/8.66k [00:00<00:00, 33.3kB/s]
+
+
+
+
+
+adapter_model.safetensors:  73%|███████▎  | 128M/175M [00:11<00:03, 15.1MB/s][A[A[A[A[A
+
+adapter_model.safetensors:  27%|██▋       | 48.1M/175M [00:01<00:03, 34.5MB/s][A[AUpload 52 LFS files:  40%|████      | 21/52 [00:16<00:14,  2.18it/s]
+
+
+ep3_val_probs.npy:   0%|          | 0.00/12.5k [00:00<?, ?B/s][A[A[A
+adapter_model.safetensors:  18%|█▊        | 32.1M/175M [00:00<00:04, 35.2MB/s][A
+
+
+
+adapter_model.safetensors:   0%|          | 0.00/175M [00:00<?, ?B/s][A[A[A[A
+
+
+
+
+adapter_model.safetensors:  82%|████████▏ | 144M/175M [00:11<00:01, 21.0MB/s][A[A[A[A[Aep3_val_probs.npy: 100%|██████████| 12.5k/12.5k [00:00<00:00, 47.6kB/s]
+
+
+adapter_model.safetensors:  37%|███▋      | 64.1M/175M [00:01<00:03, 33.6MB/s][A[A
+
+adapter_model.safetensors:  44%|████▍     | 77.7M/175M [00:02<00:02, 42.4MB/s][A[A
+
+
+
+adapter_model.safetensors:   9%|▉         | 16.1M/175M [00:00<00:04, 37.2MB/s][A[A[A[A
+adapter_model.safetensors:  27%|██▋       | 48.1M/175M [00:01<00:03, 33.8MB/s][A
+
+
+
+
+adapter_model.safetensors:  92%|█████████▏| 160M/175M [00:12<00:00, 25.1MB/s][A[A[A[A[AUpload 52 LFS files:  44%|████▍     | 23/52 [00:17<00:12,  2.32it/s]
+
+
+ep4_dev_probs.npy:   0%|          | 0.00/11.2k [00:00<?, ?B/s][A[A[A
+adapter_model.safetensors:  37%|███▋      | 64.1M/175M [00:01<00:03, 34.9MB/s][A
+
+
+
+adapter_model.safetensors:  18%|█▊        | 32.1M/175M [00:00<00:04, 35.4MB/s][A[A[A[Aep4_dev_probs.npy: 100%|██████████| 11.2k/11.2k [00:00<00:00, 44.6kB/s]
+adapter_model.safetensors: 100%|██████████| 175M/175M [00:12<00:00, 14.0MB/s]
+
+
+adapter_model.safetensors:  48%|████▊     | 83.3M/175M [00:02<00:04, 21.8MB/s][A[A
+
+
+ep4_test_probs.npy:   0%|          | 0.00/8.66k [00:00<?, ?B/s][A[A[AUpload 52 LFS files:  46%|████▌     | 24/52 [00:17<00:12,  2.16it/s]
+
+
+
+adapter_model.safetensors:  27%|██▋       | 48.1M/175M [00:01<00:03, 35.9MB/s][A[A[A[A
+adapter_model.safetensors:  46%|████▌     | 80.1M/175M [00:02<00:02, 34.4MB/s][A
+
+
+
+
+ep4_val_probs.npy:   0%|          | 0.00/12.5k [00:00<?, ?B/s][A[A[A[A[Aep4_val_probs.npy: 100%|██████████| 12.5k/12.5k [00:00<00:00, 45.6kB/s]
+
+
+adapter_model.safetensors:  55%|█████▍    | 96.1M/175M [00:03<00:03, 24.0MB/s][A[Aep4_test_probs.npy: 100%|██████████| 8.66k/8.66k [00:00<00:00, 19.6kB/s]
+
+
+
+
+adapter_model.safetensors:  37%|███▋      | 64.1M/175M [00:01<00:03, 36.2MB/s][A[A[A[A
+adapter_model.safetensors:  55%|█████▍    | 96.1M/175M [00:02<00:02, 35.3MB/s][A
+
+
+
+adapter_model.safetensors:  43%|████▎     | 74.8M/175M [00:01<00:02, 43.2MB/s][A[A[A[AUpload 52 LFS files:  50%|█████     | 26/52 [00:18<00:11,  2.36it/s]
+
+
+adapter_model.safetensors:   0%|          | 0.00/175M [00:00<?, ?B/s][A[A[A
+
+
+
+
+ep5_dev_probs.npy:   0%|          | 0.00/11.2k [00:00<?, ?B/s][A[A[A[A[A
+
+adapter_model.safetensors:  64%|██████▍   | 112M/175M [00:03<00:02, 26.6MB/s] [A[A
+adapter_model.safetensors:  64%|██████▍   | 112M/175M [00:03<00:01, 35.4MB/s] [Aep5_dev_probs.npy: 100%|██████████| 11.2k/11.2k [00:00<00:00, 42.7kB/s]
+
+
+
+adapter_model.safetensors:   9%|▉         | 16.1M/175M [00:00<00:04, 35.6MB/s][A[A[A
+
+adapter_model.safetensors:  73%|███████▎  | 128M/175M [00:04<00:01, 29.3MB/s][A[AUpload 52 LFS files:  54%|█████▍    | 28/52 [00:19<00:09,  2.51it/s]
+
+
+
+
+ep5_test_probs.npy:   0%|          | 0.00/8.66k [00:00<?, ?B/s][A[A[A[A[A
+adapter_model.safetensors:  73%|███████▎  | 128M/175M [00:03<00:01, 35.0MB/s][A
+
+
+adapter_model.safetensors:  18%|█▊        | 32.1M/175M [00:00<00:04, 34.8MB/s][A[A[Aep5_test_probs.npy: 100%|██████████| 8.66k/8.66k [00:00<00:00, 33.0kB/s]
+
+
+adapter_model.safetensors:  82%|████████▏ | 144M/175M [00:04<00:00, 31.1MB/s][A[A
+
+
+
+adapter_model.safetensors:  46%|████▌     | 80.3M/175M [00:03<00:05, 17.4MB/s][A[A[A[A
+adapter_model.safetensors:  82%|████████▏ | 144M/175M [00:04<00:00, 34.1MB/s][A
+
+
+
+adapter_model.safetensors:  55%|█████▍    | 95.3M/175M [00:03<00:03, 26.4MB/s][A[A[A[A
+
+
+adapter_model.safetensors:  27%|██▋       | 48.1M/175M [00:01<00:03, 35.6MB/s][A[A[AUpload 52 LFS files:  56%|█████▌    | 29/52 [00:19<00:10,  2.21it/s]
+
+
+
+
+ep5_val_probs.npy:   0%|          | 0.00/12.5k [00:00<?, ?B/s][A[A[A[A[A
+
+adapter_model.safetensors:  92%|█████████▏| 160M/175M [00:05<00:00, 31.3MB/s][A[Aep5_val_probs.npy: 100%|██████████| 12.5k/12.5k [00:00<00:00, 45.4kB/s]
+
+
+
+
+adapter_model.safetensors:  58%|█████▊    | 102M/175M [00:03<00:03, 23.1MB/s] [A[A[A[A
+
+
+adapter_model.safetensors:  37%|███▋      | 64.1M/175M [00:01<00:03, 33.2MB/s][A[A[A
+adapter_model.safetensors:  92%|█████████▏| 160M/175M [00:04<00:00, 29.2MB/s][AUpload 52 LFS files:  58%|█████▊    | 30/52 [00:20<00:10,  2.06it/s]
+
+
+
+
+adapter_model.safetensors:   0%|          | 0.00/175M [00:00<?, ?B/s][A[A[A[A[Aadapter_model.safetensors: 100%|██████████| 175M/175M [00:05<00:00, 30.6MB/s]
+
+
+
+
+adapter_model.safetensors:  64%|██████▍   | 112M/175M [00:04<00:02, 22.7MB/s][A[A[A[Aadapter_model.safetensors: 100%|██████████| 175M/175M [00:05<00:00, 32.9MB/s]
+
+
+
+adapter_model.safetensors:  46%|████▌     | 80.1M/175M [00:02<00:02, 33.0MB/s][A[A[AUpload 52 LFS files:  60%|█████▉    | 31/52 [00:20<00:10,  2.09it/s]
+ep6_dev_probs.npy:   0%|          | 0.00/11.2k [00:00<?, ?B/s][A
+
+
+
+
+adapter_model.safetensors:   9%|▉         | 16.1M/175M [00:00<00:05, 31.1MB/s][A[A[A[A[A
+
+
+
+adapter_model.safetensors:  73%|███████▎  | 128M/175M [00:04<00:01, 25.8MB/s][A[A[A[Aep6_dev_probs.npy: 100%|██████████| 11.2k/11.2k [00:00<00:00, 42.3kB/s]
+
+ep6_test_probs.npy:   0%|          | 0.00/8.66k [00:00<?, ?B/s][AUpload 52 LFS files:  62%|██████▏   | 32/52 [00:21<00:08,  2.34it/s]
+
+
+adapter_model.safetensors:  55%|█████▍    | 96.1M/175M [00:02<00:02, 32.9MB/s][A[A[A
+
+
+
+
+adapter_model.safetensors:  18%|█▊        | 32.1M/175M [00:00<00:04, 34.3MB/s][A[A[A[A[Aep6_test_probs.npy: 100%|██████████| 8.66k/8.66k [00:00<00:00, 31.9kB/s]
+Upload 52 LFS files:  63%|██████▎   | 33/52 [00:21<00:07,  2.47it/s]
+ep6_val_probs.npy:   0%|          | 0.00/12.5k [00:00<?, ?B/s][A
+
+
+
+adapter_model.safetensors:  82%|████████▏ | 144M/175M [00:05<00:01, 29.0MB/s][A[A[A[A
+
+
+adapter_model.safetensors:  64%|██████▍   | 112M/175M [00:03<00:01, 34.2MB/s] [A[A[AUpload 52 LFS files:  65%|██████▌   | 34/52 [00:21<00:06,  2.73it/s]
+
+adapter_model.safetensors:   0%|          | 0.00/175M [00:00<?, ?B/s][A[Aep6_val_probs.npy: 100%|██████████| 12.5k/12.5k [00:00<00:00, 43.0kB/s]
+
+
+
+
+
+adapter_model.safetensors:  27%|██▋       | 48.1M/175M [00:01<00:03, 34.6MB/s][A[A[A[A[A
+
+
+
+
+adapter_model.safetensors:  35%|███▌      | 62.0M/175M [00:01<00:02, 45.9MB/s][A[A[A[A[A
+
+
+
+adapter_model.safetensors:  92%|█████████▏| 160M/175M [00:05<00:00, 30.8MB/s][A[A[A[AUpload 52 LFS files:  67%|██████▋   | 35/52 [00:22<00:06,  2.65it/s]
+ep7_dev_probs.npy:   0%|          | 0.00/11.2k [00:00<?, ?B/s][A
+
+
+adapter_model.safetensors:  73%|███████▎  | 128M/175M [00:03<00:01, 33.7MB/s][A[A[A
+
+adapter_model.safetensors:   9%|▉         | 16.1M/175M [00:00<00:04, 33.1MB/s][A[Aep7_dev_probs.npy: 100%|██████████| 11.2k/11.2k [00:00<00:00, 42.4kB/s]
+adapter_model.safetensors: 100%|██████████| 175M/175M [00:05<00:00, 29.1MB/s]
+
+
+
+
+
+adapter_model.safetensors:  39%|███▉      | 68.4M/175M [00:02<00:03, 27.2MB/s][A[A[A[A[A
+
+
+adapter_model.safetensors:  82%|████████▏ | 144M/175M [00:04<00:00, 34.4MB/s][A[A[A
+
+adapter_model.safetensors:  18%|█▊        | 32.1M/175M [00:01<00:04, 31.9MB/s][A[AUpload 52 LFS files:  69%|██████▉   | 36/52 [00:22<00:07,  2.25it/s]
+ep7_test_probs.npy:   0%|          | 0.00/8.66k [00:00<?, ?B/s][A
+
+
+
+ep7_val_probs.npy:   0%|          | 0.00/12.5k [00:00<?, ?B/s][A[A[A[A
+
+adapter_model.safetensors:  25%|██▌       | 43.7M/175M [00:01<00:02, 43.7MB/s][A[A
+
+
+
+
+adapter_model.safetensors:  46%|████▌     | 80.1M/175M [00:02<00:03, 26.7MB/s][A[A[A[A[Aep7_test_probs.npy: 100%|██████████| 8.66k/8.66k [00:00<00:00, 31.3kB/s]
+ep7_val_probs.npy: 100%|██████████| 12.5k/12.5k [00:00<00:00, 47.6kB/s]
+
+
+
+adapter_model.safetensors:  92%|█████████▏| 160M/175M [00:04<00:00, 35.1MB/s][A[A[AUpload 52 LFS files:  73%|███████▎  | 38/52 [00:23<00:05,  2.58it/s]
+adapter_model.safetensors:   0%|          | 0.00/175M [00:00<?, ?B/s][A
+
+
+
+ep8_dev_probs.npy:   0%|          | 0.00/11.2k [00:00<?, ?B/s][A[A[A[A
+
+adapter_model.safetensors:  29%|██▉       | 50.6M/175M [00:01<00:04, 26.5MB/s][A[A
+
+
+
+
+adapter_model.safetensors:  55%|█████▍    | 96.1M/175M [00:03<00:02, 29.8MB/s][A[A[A[A[Aadapter_model.safetensors: 100%|██████████| 175M/175M [00:05<00:00, 34.3MB/s]
+
+
+adapter_model.safetensors:  36%|███▋      | 63.7M/175M [00:01<00:02, 37.7MB/s][A[Aep8_dev_probs.npy: 100%|██████████| 11.2k/11.2k [00:00<00:00, 40.2kB/s]
+
+adapter_model.safetensors:   9%|▉         | 16.1M/175M [00:00<00:04, 35.8MB/s][AUpload 52 LFS files:  77%|███████▋  | 40/52 [00:23<00:04,  2.99it/s]
+
+
+ep8_test_probs.npy:   0%|          | 0.00/8.66k [00:00<?, ?B/s][A[A[A
+
+
+
+
+adapter_model.safetensors:  64%|██████▍   | 112M/175M [00:03<00:01, 31.9MB/s] [A[A[A[A[A
+
+
+
+ep8_val_probs.npy:   0%|          | 0.00/12.5k [00:00<?, ?B/s][A[A[A[AUpload 52 LFS files:  79%|███████▉  | 41/52 [00:23<00:03,  3.41it/s]
+
+adapter_model.safetensors:  40%|████      | 70.4M/175M [00:02<00:04, 25.7MB/s][A[Aep8_test_probs.npy: 100%|██████████| 8.66k/8.66k [00:00<00:00, 33.4kB/s]
+ep8_val_probs.npy: 100%|██████████| 12.5k/12.5k [00:00<00:00, 46.7kB/s]
+
+adapter_model.safetensors:  18%|█▊        | 32.1M/175M [00:00<00:04, 34.1MB/s][A
+
+
+
+
+adapter_model.safetensors:  73%|███████▎  | 128M/175M [00:03<00:01, 32.6MB/s][A[A[A[A[A
+
+
+adapter_model.safetensors:   0%|          | 0.00/175M [00:00<?, ?B/s][A[A[AUpload 52 LFS files:  81%|████████  | 42/52 [00:24<00:03,  3.04it/s]
+
+adapter_model.safetensors:  46%|████▌     | 80.1M/175M [00:02<00:04, 23.0MB/s][A[A
+
+
+
+ep9_dev_probs.npy:   0%|          | 0.00/11.2k [00:00<?, ?B/s][A[A[A[AUpload 52 LFS files:  83%|████████▎ | 43/52 [00:24<00:02,  3.39it/s]
+
+
+
+
+adapter_model.safetensors:  82%|████████▏ | 144M/175M [00:04<00:00, 33.8MB/s][A[A[A[A[A
+adapter_model.safetensors:  27%|██▋       | 48.1M/175M [00:01<00:03, 32.9MB/s][A
+
+
+adapter_model.safetensors:   9%|▉         | 16.1M/175M [00:00<00:04, 35.4MB/s][A[A[Aep9_dev_probs.npy: 100%|██████████| 11.2k/11.2k [00:00<00:00, 40.7kB/s]
+
+
+adapter_model.safetensors:  55%|█████▍    | 96.1M/175M [00:03<00:02, 27.2MB/s][A[A
+
+
+
+
+adapter_model.safetensors:  92%|█████████▏| 160M/175M [00:04<00:00, 34.8MB/s][A[A[A[A[A
+adapter_model.safetensors:  37%|███▋      | 64.1M/175M [00:01<00:03, 32.8MB/s][AUpload 52 LFS files:  85%|████████▍ | 44/52 [00:25<00:03,  2.48it/s]
+
+
+
+ep9_test_probs.npy:   0%|          | 0.00/8.66k [00:00<?, ?B/s][A[A[A[A
+
+
+adapter_model.safetensors:  18%|█▊        | 32.1M/175M [00:00<00:04, 35.6MB/s][A[A[A
+
+adapter_model.safetensors:  64%|██████▍   | 112M/175M [00:03<00:02, 29.9MB/s] [A[Aep9_test_probs.npy: 100%|██████████| 8.66k/8.66k [00:00<00:00, 33.0kB/s]
+adapter_model.safetensors: 100%|██████████| 175M/175M [00:05<00:00, 32.9MB/s]
+
+adapter_model.safetensors:  46%|████▌     | 80.1M/175M [00:02<00:02, 33.9MB/s][A
+
+
+adapter_model.safetensors:  27%|██▋       | 48.1M/175M [00:01<00:03, 35.8MB/s][A[A[A
+
+adapter_model.safetensors:  73%|███████▎  | 128M/175M [00:04<00:01, 31.6MB/s][A[AUpload 52 LFS files:  87%|████████▋ | 45/52 [00:25<00:03,  2.16it/s]
+
+
+
+ep9_val_probs.npy:   0%|          | 0.00/12.5k [00:00<?, ?B/s][A[A[A[AUpload 52 LFS files:  88%|████████▊ | 46/52 [00:26<00:02,  2.76it/s]
+
+
+
+
+test_probs.npy:   0%|          | 0.00/8.66k [00:00<?, ?B/s][A[A[A[A[A
+adapter_model.safetensors:  55%|█████▍    | 96.1M/175M [00:02<00:02, 33.3MB/s][Aep9_val_probs.npy: 100%|██████████| 12.5k/12.5k [00:00<00:00, 47.3kB/s]
+
+
+
+adapter_model.safetensors:  37%|███▋      | 64.1M/175M [00:01<00:03, 36.0MB/s][A[A[A
+
+adapter_model.safetensors:  82%|████████▏ | 144M/175M [00:04<00:00, 33.2MB/s][A[Atest_probs.npy: 100%|██████████| 8.66k/8.66k [00:00<00:00, 29.3kB/s]
+Upload 52 LFS files:  90%|█████████ | 47/52 [00:26<00:01,  2.53it/s]
+
+
+
+val_probs.npy:   0%|          | 0.00/12.5k [00:00<?, ?B/s][A[A[A[A
+adapter_model.safetensors:  64%|██████▍   | 112M/175M [00:03<00:01, 34.2MB/s] [A
+
+
+adapter_model.safetensors:  46%|████▌     | 80.1M/175M [00:02<00:02, 35.4MB/s][A[A[AUpload 52 LFS files:  92%|█████████▏| 48/52 [00:26<00:01,  3.04it/s]val_probs.npy: 100%|██████████| 12.5k/12.5k [00:00<00:00, 49.9kB/s]
+
+
+adapter_model.safetensors:  92%|█████████▏| 160M/175M [00:05<00:00, 33.3MB/s][A[A
+adapter_model.safetensors:  73%|███████▎  | 128M/175M [00:03<00:01, 34.6MB/s][A
+
+
+adapter_model.safetensors:  55%|█████▍    | 96.1M/175M [00:02<00:02, 35.2MB/s][A[A[AUpload 52 LFS files:  94%|█████████▍| 49/52 [00:27<00:01,  2.73it/s]adapter_model.safetensors: 100%|██████████| 175M/175M [00:05<00:00, 30.6MB/s]
+
+
+
+adapter_model.safetensors:  64%|██████▍   | 112M/175M [00:03<00:01, 35.8MB/s] [A[A[A
+adapter_model.safetensors:  82%|████████▏ | 144M/175M [00:04<00:00, 33.7MB/s][AUpload 52 LFS files:  96%|█████████▌| 50/52 [00:27<00:00,  2.16it/s]
+
+
+adapter_model.safetensors:  73%|███████▎  | 128M/175M [00:03<00:01, 35.8MB/s][A[A[A
+adapter_model.safetensors:  92%|█████████▏| 160M/175M [00:04<00:00, 34.3MB/s][A
+
+
+adapter_model.safetensors:  82%|████████▏ | 144M/175M [00:04<00:00, 34.3MB/s][A[A[Aadapter_model.safetensors: 100%|██████████| 175M/175M [00:05<00:00, 33.4MB/s]
+Upload 52 LFS files:  98%|█████████▊| 51/52 [00:28<00:00,  1.57it/s]
+
+
+adapter_model.safetensors:  92%|█████████▏| 160M/175M [00:04<00:00, 33.2MB/s][A[A[Aadapter_model.safetensors: 100%|██████████| 175M/175M [00:05<00:00, 34.2MB/s]
+Upload 52 LFS files: 100%|██████████| 52/52 [00:29<00:00,  1.30it/s]Upload 52 LFS files: 100%|██████████| 52/52 [00:29<00:00,  1.74it/s]
+[hf] uploaded /home/clarity_llm/runs/Q8_fullq_lora_12ep/seed1 -> siddarthg44/clarity-semeval26/Q8_fullq_lora_12ep/seed1

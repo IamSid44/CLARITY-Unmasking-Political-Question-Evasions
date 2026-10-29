@@ -1,0 +1,561 @@
+Fetching 7 files:   0%|          | 0/7 [00:00<?, ?it/s]Fetching 7 files: 100%|██████████| 7/7 [00:00<00:00, 2263.87it/s]
+Qwen/Qwen3-0.6B-Base /home/clarity_llm/hf/hub/models--Qwen--Qwen3-0.6B-Base/snapshots/da87bfb608c14b7cf20ba1ce41287e8de496c0cd
+Fetching 12 files:   0%|          | 0/12 [00:00<?, ?it/s]Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+Error while downloading from https://huggingface.co/Qwen/Qwen3-8B-Base/resolve/49e3418fbbbca6ecbdf9608b4d22e5a407081db4/model-00001-of-00005.safetensors: _ssl.c:983: The handshake operation timed out
+Trying to resume download...
+Error while downloading from https://huggingface.co/Qwen/Qwen3-8B-Base/resolve/49e3418fbbbca6ecbdf9608b4d22e5a407081db4/model-00004-of-00005.safetensors: _ssl.c:983: The handshake operation timed out
+Trying to resume download...
+Error while downloading from https://huggingface.co/Qwen/Qwen3-8B-Base/resolve/49e3418fbbbca6ecbdf9608b4d22e5a407081db4/model-00002-of-00005.safetensors: _ssl.c:983: The handshake operation timed out
+Trying to resume download...
+Error while downloading from https://huggingface.co/Qwen/Qwen3-8B-Base/resolve/49e3418fbbbca6ecbdf9608b4d22e5a407081db4/model-00005-of-00005.safetensors: _ssl.c:983: The handshake operation timed out
+Trying to resume download...
+Error while downloading from https://huggingface.co/Qwen/Qwen3-8B-Base/resolve/49e3418fbbbca6ecbdf9608b4d22e5a407081db4/model-00003-of-00005.safetensors: _ssl.c:983: The handshake operation timed out
+Trying to resume download...
+Error while downloading from https://huggingface.co/Qwen/Qwen3-8B-Base/resolve/49e3418fbbbca6ecbdf9608b4d22e5a407081db4/model-00001-of-00005.safetensors: _ssl.c:983: The handshake operation timed out
+Trying to resume download...
+Error while downloading from https://huggingface.co/Qwen/Qwen3-8B-Base/resolve/49e3418fbbbca6ecbdf9608b4d22e5a407081db4/model-00004-of-00005.safetensors: The read operation timed out
+Trying to resume download...
+Error while downloading from https://huggingface.co/Qwen/Qwen3-8B-Base/resolve/49e3418fbbbca6ecbdf9608b4d22e5a407081db4/model-00005-of-00005.safetensors: The read operation timed out
+Trying to resume download...
+Error while downloading from https://huggingface.co/Qwen/Qwen3-8B-Base/resolve/49e3418fbbbca6ecbdf9608b4d22e5a407081db4/model-00002-of-00005.safetensors: The read operation timed out
+Trying to resume download...
+Error while downloading from https://huggingface.co/Qwen/Qwen3-8B-Base/resolve/49e3418fbbbca6ecbdf9608b4d22e5a407081db4/model-00001-of-00005.safetensors: _ssl.c:983: The handshake operation timed out
+Trying to resume download...
+Error while downloading from https://huggingface.co/Qwen/Qwen3-8B-Base/resolve/49e3418fbbbca6ecbdf9608b4d22e5a407081db4/model-00004-of-00005.safetensors: The read operation timed out
+Trying to resume download...
+Error while downloading from https://huggingface.co/Qwen/Qwen3-8B-Base/resolve/49e3418fbbbca6ecbdf9608b4d22e5a407081db4/model-00003-of-00005.safetensors: The read operation timed out
+Trying to resume download...
+Error while downloading from https://huggingface.co/Qwen/Qwen3-8B-Base/resolve/49e3418fbbbca6ecbdf9608b4d22e5a407081db4/model-00005-of-00005.safetensors: The read operation timed out
+Trying to resume download...
+Error while downloading from https://huggingface.co/Qwen/Qwen3-8B-Base/resolve/49e3418fbbbca6ecbdf9608b4d22e5a407081db4/model-00002-of-00005.safetensors: The read operation timed out
+Trying to resume download...
+Error while downloading from https://huggingface.co/Qwen/Qwen3-8B-Base/resolve/49e3418fbbbca6ecbdf9608b4d22e5a407081db4/model-00001-of-00005.safetensors: _ssl.c:983: The handshake operation timed out
+Trying to resume download...
+Error while downloading from https://huggingface.co/Qwen/Qwen3-8B-Base/resolve/49e3418fbbbca6ecbdf9608b4d22e5a407081db4/model-00004-of-00005.safetensors: The read operation timed out
+Trying to resume download...
+Error while downloading from https://huggingface.co/Qwen/Qwen3-8B-Base/resolve/49e3418fbbbca6ecbdf9608b4d22e5a407081db4/model-00002-of-00005.safetensors: The read operation timed out
+Trying to resume download...
+Error while downloading from https://huggingface.co/Qwen/Qwen3-8B-Base/resolve/49e3418fbbbca6ecbdf9608b4d22e5a407081db4/model-00003-of-00005.safetensors: The read operation timed out
+Trying to resume download...
+Error while downloading from https://huggingface.co/Qwen/Qwen3-8B-Base/resolve/49e3418fbbbca6ecbdf9608b4d22e5a407081db4/model-00001-of-00005.safetensors: _ssl.c:983: The handshake operation timed out
+Trying to resume download...
+Error while downloading from https://huggingface.co/Qwen/Qwen3-8B-Base/resolve/49e3418fbbbca6ecbdf9608b4d22e5a407081db4/model-00004-of-00005.safetensors: The read operation timed out
+Trying to resume download...
+Error while downloading from https://huggingface.co/Qwen/Qwen3-8B-Base/resolve/49e3418fbbbca6ecbdf9608b4d22e5a407081db4/model-00005-of-00005.safetensors: The read operation timed out
+Trying to resume download...
+Error while downloading from https://huggingface.co/Qwen/Qwen3-8B-Base/resolve/49e3418fbbbca6ecbdf9608b4d22e5a407081db4/model-00003-of-00005.safetensors: The read operation timed out
+Trying to resume download...
+Error while downloading from https://huggingface.co/Qwen/Qwen3-8B-Base/resolve/49e3418fbbbca6ecbdf9608b4d22e5a407081db4/model-00002-of-00005.safetensors: The read operation timed out
+Trying to resume download...
+Error while downloading from https://huggingface.co/Qwen/Qwen3-8B-Base/resolve/49e3418fbbbca6ecbdf9608b4d22e5a407081db4/model-00001-of-00005.safetensors: _ssl.c:983: The handshake operation timed out
+Max retries exceeded.
+Error while downloading from https://huggingface.co/Qwen/Qwen3-8B-Base/resolve/49e3418fbbbca6ecbdf9608b4d22e5a407081db4/model-00005-of-00005.safetensors: The read operation timed out
+Trying to resume download...
+Error while downloading from https://huggingface.co/Qwen/Qwen3-8B-Base/resolve/49e3418fbbbca6ecbdf9608b4d22e5a407081db4/model-00002-of-00005.safetensors: The read operation timed out
+Trying to resume download...
+Error while downloading from https://huggingface.co/Qwen/Qwen3-8B-Base/resolve/49e3418fbbbca6ecbdf9608b4d22e5a407081db4/model-00003-of-00005.safetensors: The read operation timed out
+Trying to resume download...
+Error while downloading from https://huggingface.co/Qwen/Qwen3-8B-Base/resolve/49e3418fbbbca6ecbdf9608b4d22e5a407081db4/model-00004-of-00005.safetensors: The read operation timed out
+Trying to resume download...
+Error while downloading from https://huggingface.co/Qwen/Qwen3-8B-Base/resolve/49e3418fbbbca6ecbdf9608b4d22e5a407081db4/model-00005-of-00005.safetensors: The read operation timed out
+Trying to resume download...
+Error while downloading from https://huggingface.co/Qwen/Qwen3-8B-Base/resolve/49e3418fbbbca6ecbdf9608b4d22e5a407081db4/model-00003-of-00005.safetensors: peer closed connection without sending complete message body (received 261196238 bytes, expected 3760375328)
+Trying to resume download...
+Error while downloading from https://huggingface.co/Qwen/Qwen3-8B-Base/resolve/49e3418fbbbca6ecbdf9608b4d22e5a407081db4/model-00002-of-00005.safetensors: peer closed connection without sending complete message body (received 227891623 bytes, expected 3898788192)
+Trying to resume download...
+Fetching 12 files:  58%|█████▊    | 7/12 [10:30<07:30, 90.08s/it]
+Traceback (most recent call last):
+  File "/home/clarity_llm/venv/lib/python3.12/site-packages/httpx/_transports/default.py", line 101, in map_httpcore_exceptions
+    yield
+  File "/home/clarity_llm/venv/lib/python3.12/site-packages/httpx/_transports/default.py", line 250, in handle_request
+    resp = self._pool.handle_request(req)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/clarity_llm/venv/lib/python3.12/site-packages/httpcore/_sync/connection_pool.py", line 256, in handle_request
+    raise exc from None
+  File "/home/clarity_llm/venv/lib/python3.12/site-packages/httpcore/_sync/connection_pool.py", line 236, in handle_request
+    response = connection.handle_request(
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/clarity_llm/venv/lib/python3.12/site-packages/httpcore/_sync/connection.py", line 101, in handle_request
+    raise exc
+  File "/home/clarity_llm/venv/lib/python3.12/site-packages/httpcore/_sync/connection.py", line 78, in handle_request
+    stream = self._connect(request)
+             ^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/clarity_llm/venv/lib/python3.12/site-packages/httpcore/_sync/connection.py", line 156, in _connect
+    stream = stream.start_tls(**kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/clarity_llm/venv/lib/python3.12/site-packages/httpcore/_backends/sync.py", line 154, in start_tls
+    with map_exceptions(exc_map):
+  File "/usr/lib/python3.12/contextlib.py", line 158, in __exit__
+    self.gen.throw(value)
+  File "/home/clarity_llm/venv/lib/python3.12/site-packages/httpcore/_exceptions.py", line 14, in map_exceptions
+    raise to_exc(exc) from exc
+httpcore.ConnectTimeout: _ssl.c:983: The handshake operation timed out
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "<string>", line 4, in <module>
+  File "/home/clarity_llm/venv/lib/python3.12/site-packages/huggingface_hub/utils/_validators.py", line 89, in _inner_fn
+    return fn(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^
+  File "/home/clarity_llm/venv/lib/python3.12/site-packages/huggingface_hub/utils/_http.py", line 266, in _inner
+    return fn(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^
+  File "/home/clarity_llm/venv/lib/python3.12/site-packages/huggingface_hub/_snapshot_download.py", line 532, in snapshot_download
+    hf_thread_map(
+  File "/home/clarity_llm/venv/lib/python3.12/site-packages/huggingface_hub/utils/tqdm.py", line 441, in hf_thread_map
+    results[future_to_index[future]] = future.result()
+                                       ^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/concurrent/futures/_base.py", line 449, in result
+    return self.__get_result()
+           ^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/concurrent/futures/_base.py", line 401, in __get_result
+    raise self._exception
+  File "/usr/lib/python3.12/concurrent/futures/thread.py", line 58, in run
+    result = self.fn(*self.args, **self.kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/clarity_llm/venv/lib/python3.12/site-packages/huggingface_hub/_snapshot_download.py", line 512, in _inner_hf_hub_download
+    hf_hub_download(  # type: ignore
+  File "/home/clarity_llm/venv/lib/python3.12/site-packages/huggingface_hub/utils/_validators.py", line 89, in _inner_fn
+    return fn(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^
+  File "/home/clarity_llm/venv/lib/python3.12/site-packages/huggingface_hub/utils/_http.py", line 266, in _inner
+    return fn(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^
+  File "/home/clarity_llm/venv/lib/python3.12/site-packages/huggingface_hub/file_download.py", line 1047, in hf_hub_download
+    return _hf_hub_download_to_cache_dir(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/clarity_llm/venv/lib/python3.12/site-packages/huggingface_hub/file_download.py", line 1285, in _hf_hub_download_to_cache_dir
+    _download_to_tmp_and_move(
+  File "/home/clarity_llm/venv/lib/python3.12/site-packages/huggingface_hub/file_download.py", line 2032, in _download_to_tmp_and_move
+    http_get(
+  File "/home/clarity_llm/venv/lib/python3.12/site-packages/huggingface_hub/utils/_validators.py", line 89, in _inner_fn
+    return fn(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^
+  File "/home/clarity_llm/venv/lib/python3.12/site-packages/huggingface_hub/file_download.py", line 475, in http_get
+    return http_get(
+           ^^^^^^^^^
+  File "/home/clarity_llm/venv/lib/python3.12/site-packages/huggingface_hub/utils/_validators.py", line 89, in _inner_fn
+    return fn(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^
+  File "/home/clarity_llm/venv/lib/python3.12/site-packages/huggingface_hub/file_download.py", line 475, in http_get
+    return http_get(
+           ^^^^^^^^^
+  File "/home/clarity_llm/venv/lib/python3.12/site-packages/huggingface_hub/utils/_validators.py", line 89, in _inner_fn
+    return fn(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^
+  File "/home/clarity_llm/venv/lib/python3.12/site-packages/huggingface_hub/file_download.py", line 475, in http_get
+    return http_get(
+           ^^^^^^^^^
+  File "/home/clarity_llm/venv/lib/python3.12/site-packages/huggingface_hub/utils/_validators.py", line 89, in _inner_fn
+    return fn(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^
+  File "/home/clarity_llm/venv/lib/python3.12/site-packages/huggingface_hub/file_download.py", line 475, in http_get
+    return http_get(
+           ^^^^^^^^^
+  File "/home/clarity_llm/venv/lib/python3.12/site-packages/huggingface_hub/utils/_validators.py", line 89, in _inner_fn
+    return fn(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^
+  File "/home/clarity_llm/venv/lib/python3.12/site-packages/huggingface_hub/file_download.py", line 475, in http_get
+    return http_get(
+           ^^^^^^^^^
+  File "/home/clarity_llm/venv/lib/python3.12/site-packages/huggingface_hub/utils/_validators.py", line 89, in _inner_fn
+    return fn(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^
+  File "/home/clarity_llm/venv/lib/python3.12/site-packages/huggingface_hub/file_download.py", line 391, in http_get
+    response = stack.enter_context(
+               ^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/contextlib.py", line 526, in enter_context
+    result = _enter(cm)
+             ^^^^^^^^^^
+  File "/usr/lib/python3.12/contextlib.py", line 137, in __enter__
+    return next(self.gen)
+           ^^^^^^^^^^^^^^
+  File "/home/clarity_llm/venv/lib/python3.12/site-packages/huggingface_hub/utils/_http.py", line 709, in http_stream_backoff
+    yield from _http_backoff_base(
+  File "/home/clarity_llm/venv/lib/python3.12/site-packages/huggingface_hub/utils/_http.py", line 530, in _http_backoff_base
+    with client.stream(method=method, url=url, **kwargs) as response:
+  File "/usr/lib/python3.12/contextlib.py", line 137, in __enter__
+    return next(self.gen)
+           ^^^^^^^^^^^^^^
+  File "/home/clarity_llm/venv/lib/python3.12/site-packages/httpx/_client.py", line 868, in stream
+    response = self.send(
+               ^^^^^^^^^^
+  File "/home/clarity_llm/venv/lib/python3.12/site-packages/httpx/_client.py", line 914, in send
+    response = self._send_handling_auth(
+               ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/clarity_llm/venv/lib/python3.12/site-packages/httpx/_client.py", line 942, in _send_handling_auth
+    response = self._send_handling_redirects(
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/clarity_llm/venv/lib/python3.12/site-packages/httpx/_client.py", line 979, in _send_handling_redirects
+    response = self._send_single_request(request)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/clarity_llm/venv/lib/python3.12/site-packages/httpx/_client.py", line 1014, in _send_single_request
+    response = transport.handle_request(request)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/clarity_llm/venv/lib/python3.12/site-packages/httpx/_transports/default.py", line 249, in handle_request
+    with map_httpcore_exceptions():
+  File "/usr/lib/python3.12/contextlib.py", line 158, in __exit__
+    self.gen.throw(value)
+  File "/home/clarity_llm/venv/lib/python3.12/site-packages/httpx/_transports/default.py", line 118, in map_httpcore_exceptions
+    raise mapped_exc(message) from exc
+httpx.ConnectTimeout: _ssl.c:983: The handshake operation timed out
+bdf9608b4d22e5a407081db4/model-00001-of-00005.safetensors: The read operation timed out
+Trying to resume download...
+Error while downloading from https://huggingface.co/Qwen/Qwen3-8B-Base/resolve/49e3418fbbbca6ecbdf9608b4d22e5a407081db4/model-00004-of-00005.safetensors: _ssl.c:983: The handshake operation timed out
+Trying to resume download...
+Error while downloading from https://huggingface.co/Qwen/Qwen3-8B-Base/resolve/49e3418fbbbca6ecbdf9608b4d22e5a407081db4/model-00002-of-00005.safetensors: _ssl.c:983: The handshake operation timed out
+Trying to resume download...
+Error while downloading from https://huggingface.co/Qwen/Qwen3-8B-Base/resolve/49e3418fbbbca6ecbdf9608b4d22e5a407081db4/model-00003-of-00005.safetensors: _ssl.c:983: The handshake operation timed out
+Trying to resume download...
+Error while downloading from https://huggingface.co/Qwen/Qwen3-8B-Base/resolve/49e3418fbbbca6ecbdf9608b4d22e5a407081db4/model-00001-of-00005.safetensors: _ssl.c:983: The handshake operation timed out
+Trying to resume download...
+Error while downloading from https://huggingface.co/Qwen/Qwen3-8B-Base/resolve/49e3418fbbbca6ecbdf9608b4d22e5a407081db4/model-00004-of-00005.safetensors: The read operation timed out
+Trying to resume download...
+Error while downloading from https://huggingface.co/Qwen/Qwen3-8B-Base/resolve/49e3418fbbbca6ecbdf9608b4d22e5a407081db4/model-00003-of-00005.safetensors: The read operation timed out
+Trying to resume download...
+Error while downloading from https://huggingface.co/Qwen/Qwen3-8B-Base/resolve/49e3418fbbbca6ecbdf9608b4d22e5a407081db4/model-00001-of-00005.safetensors: The read operation timed out
+Trying to resume download...
+Error while downloading from https://huggingface.co/Qwen/Qwen3-8B-Base/resolve/49e3418fbbbca6ecbdf9608b4d22e5a407081db4/model-00002-of-00005.safetensors: The read operation timed out
+Trying to resume download...
+Error while downloading from https://huggingface.co/Qwen/Qwen3-8B-Base/resolve/49e3418fbbbca6ecbdf9608b4d22e5a407081db4/model-00002-of-00005.safetensors: _ssl.c:983: The handshake operation timed out
+Trying to resume download...
+Error while downloading from https://huggingface.co/Qwen/Qwen3-8B-Base/resolve/49e3418fbbbca6ecbdf9608b4d22e5a407081db4/model-00004-of-00005.safetensors: _ssl.c:983: The handshake operation timed out
+Trying to resume download...
+Error while downloading from https://huggingface.co/Qwen/Qwen3-8B-Base/resolve/49e3418fbbbca6ecbdf9608b4d22e5a407081db4/model-00003-of-00005.safetensors: _ssl.c:983: The handshake operation timed out
+Trying to resume download...
+Error while downloading from https://huggingface.co/Qwen/Qwen3-8B-Base/resolve/49e3418fbbbca6ecbdf9608b4d22e5a407081db4/model-00001-of-00005.safetensors: _ssl.c:983: The handshake operation timed out
+Trying to resume download...
+Error while downloading from https://huggingface.co/Qwen/Qwen3-8B-Base/resolve/49e3418fbbbca6ecbdf9608b4d22e5a407081db4/model-00002-of-00005.safetensors: The read operation timed out
+Trying to resume download...
+Error while downloading from https://huggingface.co/Qwen/Qwen3-8B-Base/resolve/49e3418fbbbca6ecbdf9608b4d22e5a407081db4/model-00004-of-00005.safetensors: The read operation timed out
+Trying to resume download...
+Error while downloading from https://huggingface.co/Qwen/Qwen3-8B-Base/resolve/49e3418fbbbca6ecbdf9608b4d22e5a407081db4/model-00003-of-00005.safetensors: The read operation timed out
+Trying to resume download...
+Error while downloading from https://huggingface.co/Qwen/Qwen3-8B-Base/resolve/49e3418fbbbca6ecbdf9608b4d22e5a407081db4/model-00001-of-00005.safetensors: The read operation timed out
+Trying to resume download...
+Error while downloading from https://huggingface.co/Qwen/Qwen3-8B-Base/resolve/49e3418fbbbca6ecbdf9608b4d22e5a407081db4/model-00002-of-00005.safetensors: _ssl.c:983: The handshake operation timed out
+Trying to resume download...
+Error while downloading from https://huggingface.co/Qwen/Qwen3-8B-Base/resolve/49e3418fbbbca6ecbdf9608b4d22e5a407081db4/model-00004-of-00005.safetensors: _ssl.c:983: The handshake operation timed out
+Trying to resume download...
+Error while downloading from https://huggingface.co/Qwen/Qwen3-8B-Base/resolve/49e3418fbbbca6ecbdf9608b4d22e5a407081db4/model-00001-of-00005.safetensors: _ssl.c:983: The handshake operation timed out
+Trying to resume download...
+Error while downloading from https://huggingface.co/Qwen/Qwen3-8B-Base/resolve/49e3418fbbbca6ecbdf9608b4d22e5a407081db4/model-00003-of-00005.safetensors: _ssl.c:983: The handshake operation timed out
+Trying to resume download...
+Error while downloading from https://huggingface.co/Qwen/Qwen3-8B-Base/resolve/49e3418fbbbca6ecbdf9608b4d22e5a407081db4/model-00001-of-00005.safetensors: The read operation timed out
+Trying to resume download...
+Error while downloading from https://huggingface.co/Qwen/Qwen3-8B-Base/resolve/49e3418fbbbca6ecbdf9608b4d22e5a407081db4/model-00003-of-00005.safetensors: The read operation timed out
+Trying to resume download...
+Error while downloading from https://huggingface.co/Qwen/Qwen3-8B-Base/resolve/49e3418fbbbca6ecbdf9608b4d22e5a407081db4/model-00002-of-00005.safetensors: The read operation timed out
+Trying to resume download...
+Error while downloading from https://huggingface.co/Qwen/Qwen3-8B-Base/resolve/49e3418fbbbca6ecbdf9608b4d22e5a407081db4/model-00004-of-00005.safetensors: The read operation timed out
+Trying to resume download...
+Error while downloading from https://huggingface.co/Qwen/Qwen3-8B-Base/resolve/49e3418fbbbca6ecbdf9608b4d22e5a407081db4/model-00004-of-00005.safetensors: _ssl.c:983: The handshake operation timed out
+Trying to resume download...
+Error while downloading from https://huggingface.co/Qwen/Qwen3-8B-Base/resolve/49e3418fbbbca6ecbdf9608b4d22e5a407081db4/model-00001-of-00005.safetensors: _ssl.c:983: The handshake operation timed out
+Trying to resume download...
+Error while downloading from https://huggingface.co/Qwen/Qwen3-8B-Base/resolve/49e3418fbbbca6ecbdf9608b4d22e5a407081db4/model-00002-of-00005.safetensors: _ssl.c:983: The handshake operation timed out
+Trying to resume download...
+Error while downloading from https://huggingface.co/Qwen/Qwen3-8B-Base/resolve/49e3418fbbbca6ecbdf9608b4d22e5a407081db4/model-00003-of-00005.safetensors: _ssl.c:983: The handshake operation timed out
+Trying to resume download...
+Error while downloading from https://huggingface.co/Qwen/Qwen3-8B-Base/resolve/49e3418fbbbca6ecbdf9608b4d22e5a407081db4/model-00001-of-00005.safetensors: The read operation timed out
+Trying to resume download...
+Error while downloading from https://huggingface.co/Qwen/Qwen3-8B-Base/resolve/49e3418fbbbca6ecbdf9608b4d22e5a407081db4/model-00003-of-00005.safetensors: The read operation timed out
+Trying to resume download...
+Error while downloading from https://huggingface.co/Qwen/Qwen3-8B-Base/resolve/49e3418fbbbca6ecbdf9608b4d22e5a407081db4/model-00004-of-00005.safetensors: The read operation timed out
+Trying to resume download...
+Error while downloading from https://huggingface.co/Qwen/Qwen3-8B-Base/resolve/49e3418fbbbca6ecbdf9608b4d22e5a407081db4/model-00002-of-00005.safetensors: The read operation timed out
+Trying to resume download...
+Error while downloading from https://huggingface.co/Qwen/Qwen3-8B-Base/resolve/49e3418fbbbca6ecbdf9608b4d22e5a407081db4/model-00003-of-00005.safetensors: _ssl.c:983: The handshake operation timed out
+Trying to resume download...
+Error while downloading from https://huggingface.co/Qwen/Qwen3-8B-Base/resolve/49e3418fbbbca6ecbdf9608b4d22e5a407081db4/model-00004-of-00005.safetensors: _ssl.c:983: The handshake operation timed out
+Trying to resume download...
+Error while downloading from https://huggingface.co/Qwen/Qwen3-8B-Base/resolve/49e3418fbbbca6ecbdf9608b4d22e5a407081db4/model-00001-of-00005.safetensors: _ssl.c:983: The handshake operation timed out
+Trying to resume download...
+Error while downloading from https://huggingface.co/Qwen/Qwen3-8B-Base/resolve/49e3418fbbbca6ecbdf9608b4d22e5a407081db4/model-00002-of-00005.safetensors: _ssl.c:983: The handshake operation timed out
+Trying to resume download...
+Error while downloading from https://huggingface.co/Qwen/Qwen3-8B-Base/resolve/49e3418fbbbca6ecbdf9608b4d22e5a407081db4/model-00002-of-00005.safetensors: The read operation timed out
+Trying to resume download...
+Error while downloading from https://huggingface.co/Qwen/Qwen3-8B-Base/resolve/49e3418fbbbca6ecbdf9608b4d22e5a407081db4/model-00004-of-00005.safetensors: The read operation timed out
+Trying to resume download...
+Error while downloading from https://huggingface.co/Qwen/Qwen3-8B-Base/resolve/49e3418fbbbca6ecbdf9608b4d22e5a407081db4/model-00001-of-00005.safetensors: The read operation timed out
+Trying to resume download...
+Error while downloading from https://huggingface.co/Qwen/Qwen3-8B-Base/resolve/49e3418fbbbca6ecbdf9608b4d22e5a407081db4/model-00003-of-00005.safetensors: The read operation timed out
+Trying to resume download...
+Error while downloading from https://huggingface.co/Qwen/Qwen3-8B-Base/resolve/49e3418fbbbca6ecbdf9608b4d22e5a407081db4/model-00004-of-00005.safetensors: _ssl.c:983: The handshake operation timed out
+Trying to resume download...
+Error while downloading from https://huggingface.co/Qwen/Qwen3-8B-Base/resolve/49e3418fbbbca6ecbdf9608b4d22e5a407081db4/model-00002-of-00005.safetensors: _ssl.c:983: The handshake operation timed out
+Trying to resume download...
+Error while downloading from https://huggingface.co/Qwen/Qwen3-8B-Base/resolve/49e3418fbbbca6ecbdf9608b4d22e5a407081db4/model-00003-of-00005.safetensors: _ssl.c:983: The handshake operation timed out
+Trying to resume download...
+Error while downloading from https://huggingface.co/Qwen/Qwen3-8B-Base/resolve/49e3418fbbbca6ecbdf9608b4d22e5a407081db4/model-00001-of-00005.safetensors: _ssl.c:983: The handshake operation timed out
+Trying to resume download...
+Error while downloading from https://huggingface.co/Qwen/Qwen3-8B-Base/resolve/49e3418fbbbca6ecbdf9608b4d22e5a407081db4/model-00003-of-00005.safetensors: The read operation timed out
+Trying to resume download...
+Error while downloading from https://huggingface.co/Qwen/Qwen3-8B-Base/resolve/49e3418fbbbca6ecbdf9608b4d22e5a407081db4/model-00002-of-00005.safetensors: The read operation timed out
+Trying to resume download...
+Error while downloading from https://huggingface.co/Qwen/Qwen3-8B-Base/resolve/49e3418fbbbca6ecbdf9608b4d22e5a407081db4/model-00004-of-00005.safetensors: The read operation timed out
+Trying to resume download...
+Error while downloading from https://huggingface.co/Qwen/Qwen3-8B-Base/resolve/49e3418fbbbca6ecbdf9608b4d22e5a407081db4/model-00001-of-00005.safetensors: The read operation timed out
+Trying to resume download...
+Error while downloading from https://huggingface.co/Qwen/Qwen3-8B-Base/resolve/49e3418fbbbca6ecbdf9608b4d22e5a407081db4/model-00004-of-00005.safetensors: _ssl.c:983: The handshake operation timed out
+Trying to resume download...
+Error while downloading from https://huggingface.co/Qwen/Qwen3-8B-Base/resolve/49e3418fbbbca6ecbdf9608b4d22e5a407081db4/model-00002-of-00005.safetensors: _ssl.c:983: The handshake operation timed out
+Trying to resume download...
+Error while downloading from https://huggingface.co/Qwen/Qwen3-8B-Base/resolve/49e3418fbbbca6ecbdf9608b4d22e5a407081db4/model-00003-of-00005.safetensors: _ssl.c:983: The handshake operation timed out
+Trying to resume download...
+Error while downloading from https://huggingface.co/Qwen/Qwen3-8B-Base/resolve/49e3418fbbbca6ecbdf9608b4d22e5a407081db4/model-00001-of-00005.safetensors: _ssl.c:983: The handshake operation timed out
+Trying to resume download...
+Error while downloading from https://huggingface.co/Qwen/Qwen3-8B-Base/resolve/49e3418fbbbca6ecbdf9608b4d22e5a407081db4/model-00004-of-00005.safetensors: The read operation timed out
+Trying to resume download...
+Error while downloading from https://huggingface.co/Qwen/Qwen3-8B-Base/resolve/49e3418fbbbca6ecbdf9608b4d22e5a407081db4/model-00002-of-00005.safetensors: The read operation timed out
+Trying to resume download...
+Error while downloading from https://huggingface.co/Qwen/Qwen3-8B-Base/resolve/49e3418fbbbca6ecbdf9608b4d22e5a407081db4/model-00003-of-00005.safetensors: The read operation timed out
+Trying to resume download...
+Error while downloading from https://huggingface.co/Qwen/Qwen3-8B-Base/resolve/49e3418fbbbca6ecbdf9608b4d22e5a407081db4/model-00001-of-00005.safetensors: The read operation timed out
+Trying to resume download...
+Error while downloading from https://huggingface.co/Qwen/Qwen3-8B-Base/resolve/49e3418fbbbca6ecbdf9608b4d22e5a407081db4/model-00002-of-00005.safetensors: _ssl.c:983: The handshake operation timed out
+Trying to resume download...
+Error while downloading from https://huggingface.co/Qwen/Qwen3-8B-Base/resolve/49e3418fbbbca6ecbdf9608b4d22e5a407081db4/model-00001-of-00005.safetensors: _ssl.c:983: The handshake operation timed out
+Trying to resume download...
+Error while downloading from https://huggingface.co/Qwen/Qwen3-8B-Base/resolve/49e3418fbbbca6ecbdf9608b4d22e5a407081db4/model-00004-of-00005.safetensors: _ssl.c:983: The handshake operation timed out
+Trying to resume download...
+Error while downloading from https://huggingface.co/Qwen/Qwen3-8B-Base/resolve/49e3418fbbbca6ecbdf9608b4d22e5a407081db4/model-00003-of-00005.safetensors: _ssl.c:983: The handshake operation timed out
+Trying to resume download...
+Error while downloading from https://huggingface.co/Qwen/Qwen3-8B-Base/resolve/49e3418fbbbca6ecbdf9608b4d22e5a407081db4/model-00001-of-00005.safetensors: The read operation timed out
+Trying to resume download...
+Error while downloading from https://huggingface.co/Qwen/Qwen3-8B-Base/resolve/49e3418fbbbca6ecbdf9608b4d22e5a407081db4/model-00004-of-00005.safetensors: The read operation timed out
+Trying to resume download...
+Error while downloading from https://huggingface.co/Qwen/Qwen3-8B-Base/resolve/49e3418fbbbca6ecbdf9608b4d22e5a407081db4/model-00003-of-00005.safetensors: The read operation timed out
+Trying to resume download...
+Error while downloading from https://huggingface.co/Qwen/Qwen3-8B-Base/resolve/49e3418fbbbca6ecbdf9608b4d22e5a407081db4/model-00002-of-00005.safetensors: The read operation timed out
+Trying to resume download...
+Error while downloading from https://huggingface.co/Qwen/Qwen3-8B-Base/resolve/49e3418fbbbca6ecbdf9608b4d22e5a407081db4/model-00004-of-00005.safetensors: _ssl.c:983: The handshake operation timed out
+Trying to resume download...
+Error while downloading from https://huggingface.co/Qwen/Qwen3-8B-Base/resolve/49e3418fbbbca6ecbdf9608b4d22e5a407081db4/model-00003-of-00005.safetensors: _ssl.c:983: The handshake operation timed out
+Trying to resume download...
+Error while downloading from https://huggingface.co/Qwen/Qwen3-8B-Base/resolve/49e3418fbbbca6ecbdf9608b4d22e5a407081db4/model-00001-of-00005.safetensors: _ssl.c:983: The handshake operation timed out
+Trying to resume download...
+Error while downloading from https://huggingface.co/Qwen/Qwen3-8B-Base/resolve/49e3418fbbbca6ecbdf9608b4d22e5a407081db4/model-00002-of-00005.safetensors: _ssl.c:983: The handshake operation timed out
+Trying to resume download...
+Error while downloading from https://huggingface.co/Qwen/Qwen3-8B-Base/resolve/49e3418fbbbca6ecbdf9608b4d22e5a407081db4/model-00001-of-00005.safetensors: The read operation timed out
+Trying to resume download...
+Error while downloading from https://huggingface.co/Qwen/Qwen3-8B-Base/resolve/49e3418fbbbca6ecbdf9608b4d22e5a407081db4/model-00004-of-00005.safetensors: The read operation timed out
+Trying to resume download...
+Error while downloading from https://huggingface.co/Qwen/Qwen3-8B-Base/resolve/49e3418fbbbca6ecbdf9608b4d22e5a407081db4/model-00003-of-00005.safetensors: The read operation timed out
+Trying to resume download...
+Error while downloading from https://huggingface.co/Qwen/Qwen3-8B-Base/resolve/49e3418fbbbca6ecbdf9608b4d22e5a407081db4/model-00002-of-00005.safetensors: The read operation timed out
+Trying to resume download...
+Error while downloading from https://huggingface.co/Qwen/Qwen3-8B-Base/resolve/49e3418fbbbca6ecbdf9608b4d22e5a407081db4/model-00001-of-00005.safetensors: _ssl.c:983: The handshake operation timed out
+Trying to resume download...
+Error while downloading from https://huggingface.co/Qwen/Qwen3-8B-Base/resolve/49e3418fbbbca6ecbdf9608b4d22e5a407081db4/model-00002-of-00005.safetensors: _ssl.c:983: The handshake operation timed out
+Max retries exceeded.
+Error while downloading from https://huggingface.co/Qwen/Qwen3-8B-Base/resolve/49e3418fbbbca6ecbdf9608b4d22e5a407081db4/model-00004-of-00005.safetensors: _ssl.c:983: The handshake operation timed out
+Trying to resume download...
+Error while downloading from https://huggingface.co/Qwen/Qwen3-8B-Base/resolve/49e3418fbbbca6ecbdf9608b4d22e5a407081db4/model-00003-of-00005.safetensors: _ssl.c:983: The handshake operation timed out
+Trying to resume download...
+Error while downloading from https://huggingface.co/Qwen/Qwen3-8B-Base/resolve/49e3418fbbbca6ecbdf9608b4d22e5a407081db4/model-00001-of-00005.safetensors: The read operation timed out
+Trying to resume download...
+Error while downloading from https://huggingface.co/Qwen/Qwen3-8B-Base/resolve/49e3418fbbbca6ecbdf9608b4d22e5a407081db4/model-00003-of-00005.safetensors: The read operation timed out
+Trying to resume download...
+Error while downloading from https://huggingface.co/Qwen/Qwen3-8B-Base/resolve/49e3418fbbbca6ecbdf9608b4d22e5a407081db4/model-00004-of-00005.safetensors: The read operation timed out
+Trying to resume download...
+Error while downloading from https://huggingface.co/Qwen/Qwen3-8B-Base/resolve/49e3418fbbbca6ecbdf9608b4d22e5a407081db4/model-00001-of-00005.safetensors: _ssl.c:983: The handshake operation timed out
+Max retries exceeded.
+Error while downloading from https://huggingface.co/Qwen/Qwen3-8B-Base/resolve/49e3418fbbbca6ecbdf9608b4d22e5a407081db4/model-00003-of-00005.safetensors: _ssl.c:983: The handshake operation timed out
+Trying to resume download...
+Error while downloading from https://huggingface.co/Qwen/Qwen3-8B-Base/resolve/49e3418fbbbca6ecbdf9608b4d22e5a407081db4/model-00004-of-00005.safetensors: _ssl.c:983: The handshake operation timed out
+Trying to resume download...
+Error while downloading from https://huggingface.co/Qwen/Qwen3-8B-Base/resolve/49e3418fbbbca6ecbdf9608b4d22e5a407081db4/model-00004-of-00005.safetensors: The read operation timed out
+Trying to resume download...
+Error while downloading from https://huggingface.co/Qwen/Qwen3-8B-Base/resolve/49e3418fbbbca6ecbdf9608b4d22e5a407081db4/model-00003-of-00005.safetensors: The read operation timed out
+Trying to resume download...
+Error while downloading from https://huggingface.co/Qwen/Qwen3-8B-Base/resolve/49e3418fbbbca6ecbdf9608b4d22e5a407081db4/model-00003-of-00005.safetensors: _ssl.c:983: The handshake operation timed out
+Trying to resume download...
+Error while downloading from https://huggingface.co/Qwen/Qwen3-8B-Base/resolve/49e3418fbbbca6ecbdf9608b4d22e5a407081db4/model-00004-of-00005.safetensors: _ssl.c:983: The handshake operation timed out
+Trying to resume download...
+Error while downloading from https://huggingface.co/Qwen/Qwen3-8B-Base/resolve/49e3418fbbbca6ecbdf9608b4d22e5a407081db4/model-00003-of-00005.safetensors: The read operation timed out
+Trying to resume download...
+Error while downloading from https://huggingface.co/Qwen/Qwen3-8B-Base/resolve/49e3418fbbbca6ecbdf9608b4d22e5a407081db4/model-00004-of-00005.safetensors: The read operation timed out
+Trying to resume download...
+Error while downloading from https://huggingface.co/Qwen/Qwen3-8B-Base/resolve/49e3418fbbbca6ecbdf9608b4d22e5a407081db4/model-00004-of-00005.safetensors: _ssl.c:983: The handshake operation timed out
+Trying to resume download...
+Error while downloading from https://huggingface.co/Qwen/Qwen3-8B-Base/resolve/49e3418fbbbca6ecbdf9608b4d22e5a407081db4/model-00003-of-00005.safetensors: _ssl.c:983: The handshake operation timed out
+Trying to resume download...
+Error while downloading from https://huggingface.co/Qwen/Qwen3-8B-Base/resolve/49e3418fbbbca6ecbdf9608b4d22e5a407081db4/model-00003-of-00005.safetensors: The read operation timed out
+Trying to resume download...
+Error while downloading from https://huggingface.co/Qwen/Qwen3-8B-Base/resolve/49e3418fbbbca6ecbdf9608b4d22e5a407081db4/model-00004-of-00005.safetensors: The read operation timed out
+Trying to resume download...
+Error while downloading from https://huggingface.co/Qwen/Qwen3-8B-Base/resolve/49e3418fbbbca6ecbdf9608b4d22e5a407081db4/model-00003-of-00005.safetensors: _ssl.c:983: The handshake operation timed out
+Trying to resume download...
+Error while downloading from https://huggingface.co/Qwen/Qwen3-8B-Base/resolve/49e3418fbbbca6ecbdf9608b4d22e5a407081db4/model-00004-of-00005.safetensors: _ssl.c:983: The handshake operation timed out
+Trying to resume download...
+Error while downloading from https://huggingface.co/Qwen/Qwen3-8B-Base/resolve/49e3418fbbbca6ecbdf9608b4d22e5a407081db4/model-00004-of-00005.safetensors: The read operation timed out
+Trying to resume download...
+Error while downloading from https://huggingface.co/Qwen/Qwen3-8B-Base/resolve/49e3418fbbbca6ecbdf9608b4d22e5a407081db4/model-00003-of-00005.safetensors: The read operation timed out
+Trying to resume download...
+Error while downloading from https://huggingface.co/Qwen/Qwen3-8B-Base/resolve/49e3418fbbbca6ecbdf9608b4d22e5a407081db4/model-00003-of-00005.safetensors: _ssl.c:983: The handshake operation timed out
+Trying to resume download...
+Error while downloading from https://huggingface.co/Qwen/Qwen3-8B-Base/resolve/49e3418fbbbca6ecbdf9608b4d22e5a407081db4/model-00004-of-00005.safetensors: _ssl.c:983: The handshake operation timed out
+Trying to resume download...
+Fetching 12 files:  58%|█████▊    | 7/12 [12:28<08:54, 106.90s/it]
+Traceback (most recent call last):
+  File "/home/clarity_llm/venv/lib/python3.12/site-packages/httpx/_transports/default.py", line 101, in map_httpcore_exceptions
+    yield
+  File "/home/clarity_llm/venv/lib/python3.12/site-packages/httpx/_transports/default.py", line 250, in handle_request
+    resp = self._pool.handle_request(req)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/clarity_llm/venv/lib/python3.12/site-packages/httpcore/_sync/connection_pool.py", line 256, in handle_request
+    raise exc from None
+  File "/home/clarity_llm/venv/lib/python3.12/site-packages/httpcore/_sync/connection_pool.py", line 236, in handle_request
+    response = connection.handle_request(
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/clarity_llm/venv/lib/python3.12/site-packages/httpcore/_sync/connection.py", line 101, in handle_request
+    raise exc
+  File "/home/clarity_llm/venv/lib/python3.12/site-packages/httpcore/_sync/connection.py", line 78, in handle_request
+    stream = self._connect(request)
+             ^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/clarity_llm/venv/lib/python3.12/site-packages/httpcore/_sync/connection.py", line 156, in _connect
+    stream = stream.start_tls(**kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/clarity_llm/venv/lib/python3.12/site-packages/httpcore/_backends/sync.py", line 154, in start_tls
+    with map_exceptions(exc_map):
+  File "/usr/lib/python3.12/contextlib.py", line 158, in __exit__
+    self.gen.throw(value)
+  File "/home/clarity_llm/venv/lib/python3.12/site-packages/httpcore/_exceptions.py", line 14, in map_exceptions
+    raise to_exc(exc) from exc
+httpcore.ConnectTimeout: _ssl.c:983: The handshake operation timed out
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "<string>", line 4, in <module>
+  File "/home/clarity_llm/venv/lib/python3.12/site-packages/huggingface_hub/utils/_validators.py", line 89, in _inner_fn
+    return fn(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^
+  File "/home/clarity_llm/venv/lib/python3.12/site-packages/huggingface_hub/utils/_http.py", line 266, in _inner
+    return fn(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^
+  File "/home/clarity_llm/venv/lib/python3.12/site-packages/huggingface_hub/_snapshot_download.py", line 532, in snapshot_download
+    hf_thread_map(
+  File "/home/clarity_llm/venv/lib/python3.12/site-packages/huggingface_hub/utils/tqdm.py", line 441, in hf_thread_map
+    results[future_to_index[future]] = future.result()
+                                       ^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/concurrent/futures/_base.py", line 449, in result
+    return self.__get_result()
+           ^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/concurrent/futures/_base.py", line 401, in __get_result
+    raise self._exception
+  File "/usr/lib/python3.12/concurrent/futures/thread.py", line 58, in run
+    result = self.fn(*self.args, **self.kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/clarity_llm/venv/lib/python3.12/site-packages/huggingface_hub/_snapshot_download.py", line 512, in _inner_hf_hub_download
+    hf_hub_download(  # type: ignore
+  File "/home/clarity_llm/venv/lib/python3.12/site-packages/huggingface_hub/utils/_validators.py", line 89, in _inner_fn
+    return fn(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^
+  File "/home/clarity_llm/venv/lib/python3.12/site-packages/huggingface_hub/utils/_http.py", line 266, in _inner
+    return fn(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^
+  File "/home/clarity_llm/venv/lib/python3.12/site-packages/huggingface_hub/file_download.py", line 1047, in hf_hub_download
+    return _hf_hub_download_to_cache_dir(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/clarity_llm/venv/lib/python3.12/site-packages/huggingface_hub/file_download.py", line 1285, in _hf_hub_download_to_cache_dir
+    _download_to_tmp_and_move(
+  File "/home/clarity_llm/venv/lib/python3.12/site-packages/huggingface_hub/file_download.py", line 2032, in _download_to_tmp_and_move
+    http_get(
+  File "/home/clarity_llm/venv/lib/python3.12/site-packages/huggingface_hub/utils/_validators.py", line 89, in _inner_fn
+    return fn(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^
+  File "/home/clarity_llm/venv/lib/python3.12/site-packages/huggingface_hub/file_download.py", line 475, in http_get
+    return http_get(
+           ^^^^^^^^^
+  File "/home/clarity_llm/venv/lib/python3.12/site-packages/huggingface_hub/utils/_validators.py", line 89, in _inner_fn
+    return fn(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^
+  File "/home/clarity_llm/venv/lib/python3.12/site-packages/huggingface_hub/file_download.py", line 475, in http_get
+    return http_get(
+           ^^^^^^^^^
+  File "/home/clarity_llm/venv/lib/python3.12/site-packages/huggingface_hub/utils/_validators.py", line 89, in _inner_fn
+    return fn(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^
+  File "/home/clarity_llm/venv/lib/python3.12/site-packages/huggingface_hub/file_download.py", line 475, in http_get
+    return http_get(
+           ^^^^^^^^^
+  File "/home/clarity_llm/venv/lib/python3.12/site-packages/huggingface_hub/utils/_validators.py", line 89, in _inner_fn
+    return fn(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^
+  File "/home/clarity_llm/venv/lib/python3.12/site-packages/huggingface_hub/file_download.py", line 475, in http_get
+    return http_get(
+           ^^^^^^^^^
+  File "/home/clarity_llm/venv/lib/python3.12/site-packages/huggingface_hub/utils/_validators.py", line 89, in _inner_fn
+    return fn(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^
+  File "/home/clarity_llm/venv/lib/python3.12/site-packages/huggingface_hub/file_download.py", line 475, in http_get
+    return http_get(
+           ^^^^^^^^^
+  File "/home/clarity_llm/venv/lib/python3.12/site-packages/huggingface_hub/utils/_validators.py", line 89, in _inner_fn
+    return fn(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^
+  File "/home/clarity_llm/venv/lib/python3.12/site-packages/huggingface_hub/file_download.py", line 475, in http_get
+    return http_get(
+           ^^^^^^^^^
+  File "/home/clarity_llm/venv/lib/python3.12/site-packages/huggingface_hub/utils/_validators.py", line 89, in _inner_fn
+    return fn(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^
+  File "/home/clarity_llm/venv/lib/python3.12/site-packages/huggingface_hub/file_download.py", line 475, in http_get
+    return http_get(
+           ^^^^^^^^^
+  File "/home/clarity_llm/venv/lib/python3.12/site-packages/huggingface_hub/utils/_validators.py", line 89, in _inner_fn
+    return fn(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^
+  File "/home/clarity_llm/venv/lib/python3.12/site-packages/huggingface_hub/file_download.py", line 475, in http_get
+    return http_get(
+           ^^^^^^^^^
+  File "/home/clarity_llm/venv/lib/python3.12/site-packages/huggingface_hub/utils/_validators.py", line 89, in _inner_fn
+    return fn(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^
+  File "/home/clarity_llm/venv/lib/python3.12/site-packages/huggingface_hub/file_download.py", line 475, in http_get
+    return http_get(
+           ^^^^^^^^^
+  File "/home/clarity_llm/venv/lib/python3.12/site-packages/huggingface_hub/utils/_validators.py", line 89, in _inner_fn
+    return fn(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^
+  File "/home/clarity_llm/venv/lib/python3.12/site-packages/huggingface_hub/file_download.py", line 391, in http_get
+    response = stack.enter_context(
+               ^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/contextlib.py", line 526, in enter_context
+    result = _enter(cm)
+             ^^^^^^^^^^
+  File "/usr/lib/python3.12/contextlib.py", line 137, in __enter__
+    return next(self.gen)
+           ^^^^^^^^^^^^^^
+  File "/home/clarity_llm/venv/lib/python3.12/site-packages/huggingface_hub/utils/_http.py", line 709, in http_stream_backoff
+    yield from _http_backoff_base(
+  File "/home/clarity_llm/venv/lib/python3.12/site-packages/huggingface_hub/utils/_http.py", line 530, in _http_backoff_base
+    with client.stream(method=method, url=url, **kwargs) as response:
+  File "/usr/lib/python3.12/contextlib.py", line 137, in __enter__
+    return next(self.gen)
+           ^^^^^^^^^^^^^^
+  File "/home/clarity_llm/venv/lib/python3.12/site-packages/httpx/_client.py", line 868, in stream
+    response = self.send(
+               ^^^^^^^^^^
+  File "/home/clarity_llm/venv/lib/python3.12/site-packages/httpx/_client.py", line 914, in send
+    response = self._send_handling_auth(
+               ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/clarity_llm/venv/lib/python3.12/site-packages/httpx/_client.py", line 942, in _send_handling_auth
+    response = self._send_handling_redirects(
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/clarity_llm/venv/lib/python3.12/site-packages/httpx/_client.py", line 979, in _send_handling_redirects
+    response = self._send_single_request(request)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/clarity_llm/venv/lib/python3.12/site-packages/httpx/_client.py", line 1014, in _send_single_request
+    response = transport.handle_request(request)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/clarity_llm/venv/lib/python3.12/site-packages/httpx/_transports/default.py", line 249, in handle_request
+    with map_httpcore_exceptions():
+  File "/usr/lib/python3.12/contextlib.py", line 158, in __exit__
+    self.gen.throw(value)
+  File "/home/clarity_llm/venv/lib/python3.12/site-packages/httpx/_transports/default.py", line 118, in map_httpcore_exceptions
+    raise mapped_exc(message) from exc
+httpx.ConnectTimeout: _ssl.c:983: The handshake operation timed out

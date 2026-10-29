@@ -1,0 +1,275 @@
+{
+  "config": {
+    "name": "E11_base_16ep",
+    "model": "microsoft/deberta-v3-large",
+    "input": "qa",
+    "max_len": 512,
+    "a_budget": 96,
+    "head_frac": 1.0,
+    "loss": "ce",
+    "smoothing": 0.0,
+    "focal_gamma": 2.0,
+    "head": "flat",
+    "aux_weight": 0.3,
+    "pooling": "cls",
+    "dropout": 0.1,
+    "lr": 1e-05,
+    "head_lr": 0.0001,
+    "llrd": 0.95,
+    "wd": 0.01,
+    "epochs": 16,
+    "batch_size": 16,
+    "grad_accum": 1,
+    "warmup": 0.1,
+    "reinit_top": 0,
+    "seed": 9,
+    "val_frac": 0.1,
+    "grad_checkpoint": true,
+    "max_vram_gb": 18.0,
+    "save_model": true,
+    "select": "best",
+    "fold": -1,
+    "n_folds": 5,
+    "max_train": 0,
+    "push_to_hub": true
+  },
+  "selected_epoch": 10,
+  "val_macro_f1": 0.4255563989713827,
+  "dev_subtask2_macro_f1": 0.33833007999645803,
+  "dev_subtask1_macro_f1": 0.5722104350032552,
+  "dev_inset": {
+    "inset_rate": 0.5097402597402597,
+    "classes_named": 9,
+    "coverage_ceiling": 1.0,
+    "never_named": []
+  },
+  "dev_subtask2_per_class": {
+    "Explicit": {
+      "f1": 0.6185567010309279,
+      "support": 100,
+      "tp": 60,
+      "fp": 34,
+      "fn": 40
+    },
+    "Implicit": {
+      "f1": 0.5030674846625767,
+      "support": 77,
+      "tp": 41,
+      "fp": 45,
+      "fn": 36
+    },
+    "Dodging": {
+      "f1": 0.3684210526315789,
+      "support": 79,
+      "tp": 21,
+      "fp": 14,
+      "fn": 58
+    },
+    "General": {
+      "f1": 0.33587786259541985,
+      "support": 82,
+      "tp": 22,
+      "fp": 27,
+      "fn": 60
+    },
+    "Deflection": {
+      "f1": 0.12000000000000001,
+      "support": 31,
+      "tp": 3,
+      "fp": 16,
+      "fn": 28
+    },
+    "Partial/half-answer": {
+      "f1": 0.0,
+      "support": 11,
+      "tp": 0,
+      "fp": 4,
+      "fn": 11
+    },
+    "Declining to answer": {
+      "f1": 0.33333333333333337,
+      "support": 13,
+      "tp": 3,
+      "fp": 2,
+      "fn": 10
+    },
+    "Claims ignorance": {
+      "f1": 0.48000000000000004,
+      "support": 12,
+      "tp": 6,
+      "fp": 7,
+      "fn": 6
+    },
+    "Clarification": {
+      "f1": 0.28571428571428575,
+      "support": 4,
+      "tp": 1,
+      "fp": 2,
+      "fn": 3
+    }
+  },
+  "history": [
+    {
+      "epoch": 0,
+      "train_loss": 1.9723520426406074,
+      "val_macro_f1": 0.06400546496777451,
+      "dev_subtask2_macro_f1": 0.0723409481699828,
+      "dev_subtask1_macro_f1": 0.14982644005632512,
+      "dev_inset_rate": 0.37987012987012986,
+      "dev_classes_named": 2,
+      "minutes": 3.7732323169708253
+    },
+    {
+      "epoch": 1,
+      "train_loss": 1.8220752926216912,
+      "val_macro_f1": 0.05862720287542866,
+      "dev_subtask2_macro_f1": 0.06589119370018245,
+      "dev_subtask1_macro_f1": 0.14310188617082611,
+      "dev_inset_rate": 0.37662337662337664,
+      "dev_classes_named": 2,
+      "minutes": 7.767201352119446
+    },
+    {
+      "epoch": 2,
+      "train_loss": 1.7272569524873163,
+      "val_macro_f1": 0.2015339364663008,
+      "dev_subtask2_macro_f1": 0.17849981529475759,
+      "dev_subtask1_macro_f1": 0.34948647962037455,
+      "dev_inset_rate": 0.4707792207792208,
+      "dev_classes_named": 5,
+      "minutes": 13.496125415960949
+    },
+    {
+      "epoch": 3,
+      "train_loss": 1.5615090835340244,
+      "val_macro_f1": 0.31189695952546803,
+      "dev_subtask2_macro_f1": 0.2541852477371756,
+      "dev_subtask1_macro_f1": 0.5524337280224241,
+      "dev_inset_rate": 0.525974025974026,
+      "dev_classes_named": 6,
+      "minutes": 18.65408694346746
+    },
+    {
+      "epoch": 4,
+      "train_loss": 1.3852841900181525,
+      "val_macro_f1": 0.3951781902575277,
+      "dev_subtask2_macro_f1": 0.32133143685499566,
+      "dev_subtask1_macro_f1": 0.5972861113262259,
+      "dev_inset_rate": 0.5292207792207793,
+      "dev_classes_named": 8,
+      "minutes": 24.417918606599173
+    },
+    {
+      "epoch": 5,
+      "train_loss": 1.1951145646498376,
+      "val_macro_f1": 0.36167744674569696,
+      "dev_subtask2_macro_f1": 0.3101302853341628,
+      "dev_subtask1_macro_f1": 0.5742172581184696,
+      "dev_inset_rate": 0.4935064935064935,
+      "dev_classes_named": 8,
+      "minutes": 30.19232881863912
+    },
+    {
+      "epoch": 6,
+      "train_loss": 1.0413664318237108,
+      "val_macro_f1": 0.4208772307235224,
+      "dev_subtask2_macro_f1": 0.33501488843259986,
+      "dev_subtask1_macro_f1": 0.5554598166968016,
+      "dev_inset_rate": 0.5194805194805194,
+      "dev_classes_named": 8,
+      "minutes": 35.87343892653783
+    },
+    {
+      "epoch": 7,
+      "train_loss": 0.8709732834825811,
+      "val_macro_f1": 0.4121776557702918,
+      "dev_subtask2_macro_f1": 0.3520325938811166,
+      "dev_subtask1_macro_f1": 0.572035812902686,
+      "dev_inset_rate": 0.5194805194805194,
+      "dev_classes_named": 9,
+      "minutes": 41.35394241015116
+    },
+    {
+      "epoch": 8,
+      "train_loss": 0.7615004847037423,
+      "val_macro_f1": 0.3936711075411462,
+      "dev_subtask2_macro_f1": 0.3838024484250059,
+      "dev_subtask1_macro_f1": 0.628212332270885,
+      "dev_inset_rate": 0.5422077922077922,
+      "dev_classes_named": 9,
+      "minutes": 46.728906718889874
+    },
+    {
+      "epoch": 9,
+      "train_loss": 0.6483671023059137,
+      "val_macro_f1": 0.3845129847067931,
+      "dev_subtask2_macro_f1": 0.3299221091031601,
+      "dev_subtask1_macro_f1": 0.5908198353794208,
+      "dev_inset_rate": 0.5064935064935064,
+      "dev_classes_named": 9,
+      "minutes": 52.44361596902211
+    },
+    {
+      "epoch": 10,
+      "train_loss": 0.5475816380655029,
+      "val_macro_f1": 0.4255563989713827,
+      "dev_subtask2_macro_f1": 0.33833007999645803,
+      "dev_subtask1_macro_f1": 0.5722104350032552,
+      "dev_inset_rate": 0.5097402597402597,
+      "dev_classes_named": 9,
+      "minutes": 58.17125205596288
+    },
+    {
+      "epoch": 11,
+      "train_loss": 0.45776171133536653,
+      "val_macro_f1": 0.414972064409669,
+      "dev_subtask2_macro_f1": 0.3597713891370864,
+      "dev_subtask1_macro_f1": 0.5878787651501373,
+      "dev_inset_rate": 0.5357142857142857,
+      "dev_classes_named": 9,
+      "minutes": 63.92094076077144
+    },
+    {
+      "epoch": 12,
+      "train_loss": 0.4163361895330173,
+      "val_macro_f1": 0.4235882667033659,
+      "dev_subtask2_macro_f1": 0.34257579345604955,
+      "dev_subtask1_macro_f1": 0.5766133337447735,
+      "dev_inset_rate": 0.512987012987013,
+      "dev_classes_named": 9,
+      "minutes": 69.63854938348135
+    },
+    {
+      "epoch": 13,
+      "train_loss": 0.365708148193344,
+      "val_macro_f1": 0.41760145320429465,
+      "dev_subtask2_macro_f1": 0.36252906577369653,
+      "dev_subtask1_macro_f1": 0.5962350840169077,
+      "dev_inset_rate": 0.5292207792207793,
+      "dev_classes_named": 9,
+      "minutes": 75.34871538082758
+    },
+    {
+      "epoch": 14,
+      "train_loss": 0.35524541769445556,
+      "val_macro_f1": 0.40932511889950285,
+      "dev_subtask2_macro_f1": 0.35564021050526023,
+      "dev_subtask1_macro_f1": 0.5899507944843144,
+      "dev_inset_rate": 0.5227272727272727,
+      "dev_classes_named": 9,
+      "minutes": 81.09348569313686
+    },
+    {
+      "epoch": 15,
+      "train_loss": 0.34614577442983685,
+      "val_macro_f1": 0.4077774666940448,
+      "dev_subtask2_macro_f1": 0.3538999168250679,
+      "dev_subtask1_macro_f1": 0.5849468402941255,
+      "dev_inset_rate": 0.5194805194805194,
+      "dev_classes_named": 9,
+      "minutes": 86.64755804538727
+    }
+  ],
+  "peak_vram_gb": 8.593960285186768,
+  "wall_minutes": 86.82984683116277
+}

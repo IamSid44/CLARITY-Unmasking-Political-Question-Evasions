@@ -1,0 +1,91 @@
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+Loading weights:   0%|          | 0/398 [00:00<?, ?it/s]Loading weights:   1%|          | 4/398 [00:00<00:10, 36.81it/s]Loading weights:  10%|▉         | 38/398 [00:00<00:01, 199.22it/s]Loading weights:  19%|█▉        | 77/398 [00:00<00:01, 279.00it/s]Loading weights:  27%|██▋       | 108/398 [00:00<00:01, 288.38it/s]Loading weights:  36%|███▌      | 143/398 [00:00<00:00, 309.59it/s]Loading weights:  45%|████▍     | 179/398 [00:00<00:00, 317.86it/s]Loading weights:  53%|█████▎    | 212/398 [00:00<00:00, 318.99it/s]Loading weights:  62%|██████▏   | 245/398 [00:00<00:00, 319.29it/s]Loading weights:  70%|██████▉   | 277/398 [00:00<00:00, 312.56it/s]Loading weights:  78%|███████▊  | 311/398 [00:01<00:00, 319.30it/s]Loading weights:  86%|████████▋ | 344/398 [00:01<00:00, 318.94it/s]Loading weights:  95%|█████████▍| 377/398 [00:01<00:00, 320.22it/s]Loading weights: 100%|██████████| 398/398 [00:01<00:00, 304.09it/s]
+[transformers] [1mQwen3ForSequenceClassification LOAD REPORT[0m from: Qwen/Qwen3-8B-Base
+Key            | Status     | 
+---------------+------------+-
+lm_head.weight | UNEXPECTED | 
+score.weight   | MISSING    | 
+
+Notes:
+- UNEXPECTED:	can be ignored when loading from different task/architecture; not ok if you expect identical arch.
+- MISSING:	those params were newly initialized because missing from the checkpoint. Consider training on your downstream task.
+[data] train 3103 (mean 434 tokens, max 1024), slice 345, dev 308, test 237
+[model] Qwen/Qwen3-8B-Base: trainable 43.7M parameters
+[transformers] `use_return_dict` is deprecated! Use `return_dict` instead!
+[check] padded vs alone: max |logit difference| / mean |logit| = 0.0450 (should be << 1)
+wandb: [wandb.login()] Loaded credentials for https://api.wandb.ai from WANDB_API_KEY.
+wandb: Currently logged in as: iamsid44 (iamsid44-iiit-hyderabad) to https://api.wandb.ai. Use `wandb login --relogin` to force relogin
+wandb: setting up run 4b18dd49
+wandb: Tracking run with wandb version 0.30.0
+wandb: Run data is saved locally in /home/clarity_llm/code/clarity/wandb/run-20261002_072031-4b18dd49
+wandb: Run `wandb offline` to turn off syncing.
+wandb: Syncing run Q8_fullq_lora-s9
+wandb: ⭐️ View project at https://wandb.ai/iamsid44-iiit-hyderabad/clarity-semeval26
+wandb: 🚀 View run at https://wandb.ai/iamsid44-iiit-hyderabad/clarity-semeval26/runs/4b18dd49
+[wandb] online run Q8_fullq_lora-s9 (group=Q8_fullq_lora)
+  ep0 step 20/194 loss 4.3839 5129 tok/s  epoch ETA 3.9 min
+  ep0 step 40/194 loss 3.3141 5155 tok/s  epoch ETA 3.7 min
+  ep0 step 60/194 loss 2.9073 5152 tok/s  epoch ETA 3.2 min
+  ep0 step 80/194 loss 2.6773 5150 tok/s  epoch ETA 2.8 min
+  ep0 step 100/194 loss 2.5241 5148 tok/s  epoch ETA 2.3 min
+  ep0 step 120/194 loss 2.4114 5128 tok/s  epoch ETA 1.8 min
+  ep0 step 140/194 loss 2.3275 5131 tok/s  epoch ETA 1.3 min
+  ep0 step 160/194 loss 2.2764 5119 tok/s  epoch ETA 0.8 min
+  ep0 step 180/194 loss 2.2367 5117 tok/s  epoch ETA 0.3 min
+[Q8_fullq_lora seed9] ep0 loss=2.1988 val=0.0613 devS2=0.0788 devS1=0.1616 (4.9m)
+  ep1 step 20/194 loss 1.7904 5272 tok/s  epoch ETA 4.0 min
+  ep1 step 40/194 loss 1.7582 5212 tok/s  epoch ETA 3.6 min
+  ep1 step 60/194 loss 1.7412 5199 tok/s  epoch ETA 3.1 min
+  ep1 step 80/194 loss 1.7252 5228 tok/s  epoch ETA 2.7 min
+  ep1 step 100/194 loss 1.6935 5170 tok/s  epoch ETA 2.2 min
+  ep1 step 120/194 loss 1.6877 5160 tok/s  epoch ETA 1.7 min
+  ep1 step 140/194 loss 1.6581 5148 tok/s  epoch ETA 1.2 min
+  ep1 step 160/194 loss 1.6437 5147 tok/s  epoch ETA 0.8 min
+  ep1 step 180/194 loss 1.6367 5150 tok/s  epoch ETA 0.3 min
+[Q8_fullq_lora seed9] ep1 loss=1.6272 val=0.3538 devS2=0.3983 devS1=0.6078 (4.9m)
+  ep2 step 20/194 loss 1.3659 5123 tok/s  epoch ETA 3.7 min
+  ep2 step 40/194 loss 1.3293 5143 tok/s  epoch ETA 3.2 min
+  ep2 step 60/194 loss 1.3094 5131 tok/s  epoch ETA 2.9 min
+  ep2 step 80/194 loss 1.2742 5104 tok/s  epoch ETA 2.4 min
+  ep2 step 100/194 loss 1.2733 5114 tok/s  epoch ETA 2.0 min
+  ep2 step 120/194 loss 1.2722 5118 tok/s  epoch ETA 1.6 min
+  ep2 step 140/194 loss 1.2596 5113 tok/s  epoch ETA 1.2 min
+  ep2 step 160/194 loss 1.2527 5098 tok/s  epoch ETA 0.8 min
+  ep2 step 180/194 loss 1.2507 5099 tok/s  epoch ETA 0.3 min
+[Q8_fullq_lora seed9] ep2 loss=1.2510 val=0.3875 devS2=0.4492 devS1=0.7477 (4.9m)
+wandb: updating run metadata
+wandb: uploading config.yaml; uploading output.log; uploading wandb-summary.json
+wandb: uploading config.yaml; uploading output.log
+wandb: uploading history steps 29-29, summary
+wandb: 
+wandb: Run history:
+wandb:     epoch/dev_classes_named ▁██
+wandb:        epoch/dev_inset_rate ▁▇█
+wandb: epoch/dev_subtask1_macro_f1 ▁▆█
+wandb: epoch/dev_subtask2_macro_f1 ▁▇█
+wandb:                 epoch/epoch ▁▅█
+wandb:               epoch/minutes ▅▁█
+wandb:          epoch/peak_vram_gb ▁▁▁
+wandb:            epoch/train_loss █▄▁
+wandb:         epoch/train_minutes ▆▁█
+wandb:          epoch/val_macro_f1 ▁▇█
+wandb:                          +5 ...
+wandb: 
+wandb: Run summary:
+wandb:       dev_subtask1_macro_f1 0.74769
+wandb:       dev_subtask2_macro_f1 0.44916
+wandb:     epoch/dev_classes_named 8
+wandb:        epoch/dev_inset_rate 0.59091
+wandb: epoch/dev_subtask1_macro_f1 0.74769
+wandb: epoch/dev_subtask2_macro_f1 0.44916
+wandb:                 epoch/epoch 2
+wandb:               epoch/minutes 4.89867
+wandb:          epoch/peak_vram_gb 53.40556
+wandb:            epoch/train_loss 1.25096
+wandb:                         +11 ...
+wandb: 
+wandb: 🚀 View run Q8_fullq_lora-s9 at: https://wandb.ai/iamsid44-iiit-hyderabad/clarity-semeval26/runs/4b18dd49
+wandb: ⭐️ View project at: https://wandb.ai/iamsid44-iiit-hyderabad/clarity-semeval26
+wandb: Synced 5 W&B file(s), 0 media file(s), 0 artifact file(s) and 0 other file(s)
+wandb: Find logs at: ./clarity/wandb/run-20261002_072031-4b18dd49/logs
+[done] Q8_fullq_lora seed9: epoch 2 selected; dev S2 0.4491624004847899, S1 0.7476909213786889; 15 min

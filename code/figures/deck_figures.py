@@ -90,19 +90,25 @@ def deberta_seeds() -> None:
     _save(fig, "deberta_seeds")
 
 
-def qwen_vs_deberta() -> None:
-    """Report Figure 3: single models on 10 paired seeds, and the 10-seed systems against published dev results."""
+def qwen_vs_deberta(include_alldata: bool = True) -> None:
+    """Report Figure 3: single models on 10 paired seeds, and the 10-seed systems against published dev results.
+
+    include_alldata=False drops the "Qwen-8B all data" column from both panels (the slide-deck version)."""
     labels = ["DeBERTa\nbaseline", "DeBERTa\nfull q.", "Qwen-8B\nLoRA", "Qwen-8B\nall data"]
+    keys = ["base8", "fullq16", "qwen", "qwen_all"]
+    systems = [0.444, 0.412, 0.549, 0.562]  # nested CV, mean of 10 splits (E11_replication.txt, E13_final_analysis.txt)
+    colors, hatches = [DEB_C, DEB_C, QWEN_C, QWEN_C], ["", "", "////", "////"]
+    n = 4 if include_alldata else 3
+    labels, keys, systems, colors, hatches = labels[:n], keys[:n], systems[:n], colors[:n], hatches[:n]
     fig, (a1, a2) = plt.subplots(1, 2, figsize=(11.6, 4.0), gridspec_kw={"width_ratios": [1, 1.05]})
-    paired_panel(a1, [S2[k] for k in ("base8", "fullq16", "qwen", "qwen_all")], labels,
+    paired_panel(a1, [S2[k] for k in keys], labels,
                  "(a) Single models, 10 paired seeds", "Dev Subtask 2 macro-F1")
     a1.legend(handles=SEED_LEGEND, loc="upper left", frameon=False)
     a1.set_ylim(0.25, 0.62)
 
-    systems = [0.444, 0.412, 0.549, 0.562]  # nested CV, mean of 10 splits (E11_replication.txt, E13_final_analysis.txt)
-    x = np.arange(4)
-    a2.bar(x, systems, width=0.6, color=[DEB_C, DEB_C, QWEN_C, QWEN_C], edgecolor="black", linewidth=0.8,
-           hatch=["", "", "////", "////"], zorder=2)
+    x = np.arange(n)
+    a2.bar(x, systems, width=0.6, color=colors, edgecolor="black", linewidth=0.8,
+           hatch=hatches, zorder=2)
     for xi, v in zip(x, systems):
         a2.text(xi, v + 0.015, f"{v:.3f}", ha="center", va="bottom", fontsize=10.5, zorder=4,
                 bbox=dict(boxstyle="square,pad=0.15", fc="white", ec="none"))
@@ -115,7 +121,7 @@ def qwen_vs_deberta() -> None:
     a2.legend(handles=handles, loc="upper center", ncol=2, frameon=True, framealpha=1, edgecolor="0.6",
               fancybox=False, handlelength=2.4, columnspacing=1.0, fontsize=9.5)
     a2.set_xticks(x, labels)
-    a2.set_xlim(-0.55, 3.55)
+    a2.set_xlim(-0.55, n - 0.45)
     a2.set_ylim(0, 1.0)
     a2.set_yticks(np.arange(0, 0.81, 0.2))
     a2.set_ylabel("Dev Subtask 2 macro-F1")
@@ -294,7 +300,7 @@ def main() -> None:
     for old in OUT.glob("*.png"):
         old.unlink()
     deberta_seeds()
-    qwen_vs_deberta()
+    qwen_vs_deberta(include_alldata=False)  # the deck slide shows no all-data column
     undertraining()
     decision_rules()
     negative_results()

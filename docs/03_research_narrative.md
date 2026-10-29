@@ -1232,6 +1232,31 @@ about, choosing among M1's top four labels, and its choice is fused with M1's pr
   - **accuracy:** 10-seed M1 + M3, δ = 0.3;
   - **cost:** student + M3, δ = 0.5.
 
+**E19 Tier 0: a reviewer's checks of those claims (2026-10-27).**
+- **The accuracy point's gain is not significant once its parameters are refitted** inside each
+  bootstrap replicate: +0.037 [−0.044, +0.120], against +0.067 with them held fixed.
+- **The LLM call was under-costed.** Measured as one pass over the dev items, it costs 0.151 GPU-s, not
+  0.103. So the cost point is 0.139 GPU-s per item: 0.27× the 10-seed M1, not 0.21× (3.8× cheaper, not
+  4.7×).
+- **What survives:**
+  - Confidence routing clearly beats random routing (0.669 vs 0.604 ± 0.015).
+  - The gain comes from the LLM, not from re-thresholding.
+  - The LLM's value changes sign with M1's uncertainty: it breaks more than it fixes on confident items
+    and helps on the uncertain ones.
+- **The human comparison.** One annotator scored against the other two reaches 0.684. In that same
+  2-annotator regime, the accuracy point scores 0.589.
+
+**The final push (2026-10-29 → 30).** It turns those findings into the remaining contributions:
+- a router that learns where the LLM is worth calling, trained only on train rows without sibling leakage;
+- an escalation ladder (student → more seeds → LLM);
+- a cheaper, debiased adjudicator;
+- robustness to the official test's transcript formatting;
+- a 14B backbone as a third point on the scale axis;
+- controls for what distillation transfers.
+
+The registrations are in [`02_experiment_log.md`](02_experiment_log.md) §E19–E22, and the plan in
+[`06_final_push_handover.md`](06_final_push_handover.md).
+
 **Next steps, in order (plan at the mid-evaluation)** (the timeline in the Conclusion of `report/mid_evaluation_report.pdf`):
 1. **12 epochs at 10 seeds** → the new single-pass system. Then all of train with 12 epochs, as
    its own test.

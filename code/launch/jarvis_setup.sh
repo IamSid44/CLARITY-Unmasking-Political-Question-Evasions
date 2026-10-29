@@ -14,6 +14,7 @@ MODEL=${MODEL:-Qwen/Qwen3-8B-Base}
 SMOKE_MODEL=Qwen/Qwen3-0.6B-Base
 EXTRA_ARGS=${EXTRA_ARGS:-}
 MAX_TOTAL_HOURS=${MAX_TOTAL_HOURS:-5}
+PARALLEL=${PARALLEL:-1}  # N > 1: up to N seeds train at once on the one GPU (E19, 2026-10-29); 1 = one after another
 AUTO_PAUSE=${AUTO_PAUSE:-1}
 PAUSE_DELAY=${PAUSE_DELAY:-60}
 NO_PROMPT=${NO_PROMPT:-0}
@@ -35,9 +36,10 @@ bundle() {
   [ -f code/models/llm_classifier.py ] || { echo "code/models/llm_classifier.py not found"; exit 2; }
   [ -f data/splits/train_internal_val_index.json ] || { echo "missing data/splits"; exit 2; }
   [ -f data/cache/train.parquet ] || (cd code && python -c "from qevasion.loader import load_qevasion; load_qevasion()")
-  tar czf jarvis_bundle.tgz --exclude='__pycache__' \
-    code/launch/jarvis_setup.sh \
-    code/models/__init__.py code/models/llm_classifier.py code/utils/__init__.py code/utils/tracking.py code/qevasion \
+  # all of code/ (< 1 MB; the E21/E22 inference lane needs cascade/ and decision_rules/), never code/.env:
+  # `jarvis_drive.sh push` copies that separately with mode 600
+  tar czf jarvis_bundle.tgz --exclude='__pycache__' --exclude='code/.env' --exclude='*.pyc' \
+    code \
     data/cache/train.parquet data/cache/dev.parquet data/clarity_task_evaluation_dataset.csv \
     data/splits/train_internal_val_index.json \
     $(ls runs/M4/targets_*.npy 2>/dev/null)  # E17/E19 soft targets (--soft-targets ../runs/M4/...)
@@ -164,19 +166,35 @@ pilot() {
   return 0
 }
 
-train() {
-  for s in $SEEDS; do
-    if [ -f "$RUNS/$NAME/seed$s/metrics.json" ]; then stage "train: seed $s already finished"; continue; fi
-    for attempt in 1 2; do
-      stage "train: seed $s attempt $attempt"
-      if llm --name "$NAME" --seed "$s" --model "$MODEL" --outroot "$RUNS" --track $EXTRA_ARGS >> "$LOGS/${NAME}_seed$s.log" 2>&1; then
-        stage "train: seed $s done: $(grep '^\[done\]' "$LOGS/${NAME}_seed$s.log" | tail -1)"
-        hf_push_bg "$RUNS/$NAME/seed$s"; break
-      fi
-      [ "$attempt" = 2 ] && die "seed $s failed twice (logs/${NAME}_seed$s.log)"
-      stage "train: seed $s failed; retrying from its last finished epoch"
-    done
+train_seed() {
+  local s=$1 attempt
+  if [ -f "$RUNS/$NAME/seed$s/metrics.json" ]; then stage "train: seed $s already finished"; return 0; fi
+  for attempt in 1 2; do
+    stage "train: seed $s attempt $attempt"
+    if llm --name "$NAME" --seed "$s" --model "$MODEL" --outroot "$RUNS" --track $EXTRA_ARGS >> "$LOGS/${NAME}_seed$s.log" 2>&1; then
+      stage "train: seed $s done: $(grep '^\[done\]' "$LOGS/${NAME}_seed$s.log" | tail -1)"
+      hf_push_bg "$RUNS/$NAME/seed$s"; return 0
+    fi
+    [ "$attempt" = 2 ] && { stage "train: seed $s failed twice (logs/${NAME}_seed$s.log)"; return 1; }
+    stage "train: seed $s failed; retrying from its last finished epoch"
   done
+}
+
+train() {
+  local s bad=0
+  if [ "$PARALLEL" -gt 1 ]; then
+    # E19 (2026-10-29): up to PARALLEL seeds at once on one large GPU (an 8B run without gradient checkpointing
+    # peaks at ~53 GiB, so 2 fit on an H200); the per-seed computation is unchanged, only the GPU is shared.
+    # Starts are staggered so model loads do not coincide.
+    for s in $SEEDS; do
+      while [ "$(jobs -rp | wc -l)" -ge "$PARALLEL" ]; do wait -n || bad=1; done
+      train_seed "$s" & sleep 90
+    done
+    while [ "$(jobs -rp | wc -l)" -gt 0 ]; do wait -n || bad=1; done
+    [ "$bad" = 0 ] || die "a seed failed twice (logs/${NAME}_seed*.log)"
+  else
+    for s in $SEEDS; do train_seed "$s" || die "seed $s failed twice (logs/${NAME}_seed$s.log)"; done
+  fi
 }
 
 HF_LOCK=$LOGS/.hf.lock
@@ -274,7 +292,7 @@ case "${1:-}" in
     ask_keys
     command -v tmux >/dev/null || { SUDO=""; [ "$(id -u)" -eq 0 ] || SUDO=sudo; $SUDO apt-get update -qq && $SUDO apt-get install -y -qq tmux >/dev/null; }
     tmux has-session -t "$SESSION" 2>/dev/null && { echo "already running: tmux attach -t $SESSION"; exit 0; }
-    tmux new-session -d -s "$SESSION" "NAME='$NAME' SEEDS='$SEEDS' MODEL='$MODEL' EXTRA_ARGS='$EXTRA_ARGS' MAX_TOTAL_HOURS=$MAX_TOTAL_HOURS AUTO_PAUSE=$AUTO_PAUSE PAUSE_DELAY=$PAUSE_DELAY bash '$SELF' _pipeline; exec bash"
+    tmux new-session -d -s "$SESSION" "NAME='$NAME' SEEDS='$SEEDS' MODEL='$MODEL' EXTRA_ARGS='$EXTRA_ARGS' MAX_TOTAL_HOURS=$MAX_TOTAL_HOURS PARALLEL=$PARALLEL AUTO_PAUSE=$AUTO_PAUSE PAUSE_DELAY=$PAUSE_DELAY bash '$SELF' _pipeline; exec bash"
     echo "started in tmux session '$SESSION'. Watch:  tmux attach -t $SESSION   (Ctrl-b d to leave)"
     echo "                                  or:  tail -f $LOGS/pipeline.log"
     ;;

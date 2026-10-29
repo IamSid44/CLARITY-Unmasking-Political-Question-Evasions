@@ -1,0 +1,93 @@
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+Loading weights:   0%|          | 0/398 [00:00<?, ?it/s]Loading weights:   1%|          | 3/398 [00:00<00:14, 27.29it/s]Loading weights:  11%|█         | 42/398 [00:00<00:01, 226.84it/s]Loading weights:  20%|██        | 80/398 [00:00<00:01, 293.51it/s]Loading weights:  28%|██▊       | 113/398 [00:00<00:00, 307.46it/s]Loading weights:  37%|███▋      | 147/398 [00:00<00:00, 314.39it/s]Loading weights:  45%|████▌     | 181/398 [00:00<00:00, 313.61it/s]Loading weights:  55%|█████▍    | 218/398 [00:00<00:00, 331.44it/s]Loading weights:  64%|██████▍   | 256/398 [00:00<00:00, 344.03it/s]Loading weights:  73%|███████▎  | 291/398 [00:00<00:00, 333.96it/s]Loading weights:  83%|████████▎ | 330/398 [00:01<00:00, 349.95it/s]Loading weights:  92%|█████████▏| 367/398 [00:01<00:00, 347.05it/s]Loading weights: 100%|██████████| 398/398 [00:01<00:00, 322.82it/s]
+[transformers] [1mQwen3ForSequenceClassification LOAD REPORT[0m from: Qwen/Qwen3-8B-Base
+Key            | Status     | 
+---------------+------------+-
+lm_head.weight | UNEXPECTED | 
+score.weight   | MISSING    | 
+
+Notes:
+- UNEXPECTED:	can be ignored when loading from different task/architecture; not ok if you expect identical arch.
+- MISSING:	those params were newly initialized because missing from the checkpoint. Consider training on your downstream task.
+[data] train 3448 (mean 436 tokens, max 1024), slice 0, dev 308, test 237
+[model] Qwen/Qwen3-8B-Base: trainable 43.7M parameters
+[transformers] `use_return_dict` is deprecated! Use `return_dict` instead!
+[check] padded vs alone: max |logit difference| / mean |logit| = 0.0391 (should be << 1)
+wandb: [wandb.login()] Loaded credentials for https://api.wandb.ai from WANDB_API_KEY.
+wandb: Currently logged in as: iamsid44 (iamsid44-iiit-hyderabad) to https://api.wandb.ai. Use `wandb login --relogin` to force relogin
+wandb: setting up run 13927357
+wandb: Tracking run with wandb version 0.30.0
+wandb: Run data is saved locally in /home/clarity_llm/code/clarity/wandb/run-20261002_055026-13927357
+wandb: Run `wandb offline` to turn off syncing.
+wandb: Syncing run Q8_alldata-s0
+wandb: ⭐️ View project at https://wandb.ai/iamsid44-iiit-hyderabad/clarity-semeval26
+wandb: 🚀 View run at https://wandb.ai/iamsid44-iiit-hyderabad/clarity-semeval26/runs/13927357
+[wandb] online run Q8_alldata-s0 (group=Q8_alldata)
+  ep0 step 20/216 loss 5.7835 5169 tok/s  epoch ETA 4.7 min
+  ep0 step 40/216 loss 4.0406 5150 tok/s  epoch ETA 4.1 min
+  ep0 step 60/216 loss 3.3505 5185 tok/s  epoch ETA 3.5 min
+  ep0 step 80/216 loss 2.9991 5200 tok/s  epoch ETA 3.0 min
+  ep0 step 100/216 loss 2.7678 5202 tok/s  epoch ETA 2.6 min
+  ep0 step 120/216 loss 2.6356 5215 tok/s  epoch ETA 2.1 min
+  ep0 step 140/216 loss 2.5278 5200 tok/s  epoch ETA 1.7 min
+  ep0 step 160/216 loss 2.4467 5200 tok/s  epoch ETA 1.3 min
+  ep0 step 180/216 loss 2.3678 5193 tok/s  epoch ETA 0.8 min
+  ep0 step 200/216 loss 2.2834 5184 tok/s  epoch ETA 0.4 min
+[Q8_alldata seed0] ep0 loss=2.2429 val=nan devS2=0.1598 devS1=0.2512 (5.1m)
+  ep1 step 20/216 loss 1.5411 5171 tok/s  epoch ETA 4.3 min
+  ep1 step 40/216 loss 1.6070 5168 tok/s  epoch ETA 4.1 min
+  ep1 step 60/216 loss 1.5528 5169 tok/s  epoch ETA 3.5 min
+  ep1 step 80/216 loss 1.5191 5150 tok/s  epoch ETA 3.1 min
+  ep1 step 100/216 loss 1.5285 5163 tok/s  epoch ETA 2.6 min
+  ep1 step 120/216 loss 1.5291 5181 tok/s  epoch ETA 2.2 min
+  ep1 step 140/216 loss 1.5227 5191 tok/s  epoch ETA 1.7 min
+  ep1 step 160/216 loss 1.5054 5192 tok/s  epoch ETA 1.3 min
+  ep1 step 180/216 loss 1.4815 5178 tok/s  epoch ETA 0.8 min
+  ep1 step 200/216 loss 1.4769 5181 tok/s  epoch ETA 0.4 min
+[Q8_alldata seed0] ep1 loss=1.4719 val=nan devS2=0.3857 devS1=0.7034 (5.1m)
+  ep2 step 20/216 loss 1.2750 5138 tok/s  epoch ETA 4.7 min
+  ep2 step 40/216 loss 1.1767 5097 tok/s  epoch ETA 4.0 min
+  ep2 step 60/216 loss 1.1315 5080 tok/s  epoch ETA 3.4 min
+  ep2 step 80/216 loss 1.1220 5114 tok/s  epoch ETA 3.0 min
+  ep2 step 100/216 loss 1.1306 5145 tok/s  epoch ETA 2.6 min
+  ep2 step 120/216 loss 1.1040 5152 tok/s  epoch ETA 2.1 min
+  ep2 step 140/216 loss 1.1157 5149 tok/s  epoch ETA 1.7 min
+  ep2 step 160/216 loss 1.1019 5152 tok/s  epoch ETA 1.3 min
+  ep2 step 180/216 loss 1.1032 5167 tok/s  epoch ETA 0.8 min
+  ep2 step 200/216 loss 1.0982 5169 tok/s  epoch ETA 0.4 min
+[Q8_alldata seed0] ep2 loss=1.0957 val=nan devS2=0.5199 devS1=0.7167 (5.1m)
+wandb: updating run metadata
+wandb: uploading config.yaml; uploading output.log; uploading wandb-summary.json
+wandb: uploading output.log; uploading wandb-summary.json
+wandb: 
+wandb: Run history:
+wandb:     epoch/dev_classes_named ▁██
+wandb:        epoch/dev_inset_rate ▁▆█
+wandb: epoch/dev_subtask1_macro_f1 ▁██
+wandb: epoch/dev_subtask2_macro_f1 ▁▅█
+wandb:                 epoch/epoch ▁▅█
+wandb:               epoch/minutes ▁▁█
+wandb:          epoch/peak_vram_gb ▁▁▁
+wandb:            epoch/train_loss █▃▁
+wandb:         epoch/train_minutes ▁▁█
+wandb:                 train/epoch ▁▁▁▂▂▂▂▃▃▃▃▄▄▄▄▅▅▅▅▆▆▆▆▇▇▇▇███
+wandb:                          +5 ...
+wandb: 
+wandb: Run summary:
+wandb:       dev_subtask1_macro_f1 0.71669
+wandb:       dev_subtask2_macro_f1 0.51992
+wandb:     epoch/dev_classes_named 8
+wandb:        epoch/dev_inset_rate 0.63961
+wandb: epoch/dev_subtask1_macro_f1 0.71669
+wandb: epoch/dev_subtask2_macro_f1 0.51992
+wandb:                 epoch/epoch 2
+wandb:               epoch/minutes 5.12699
+wandb:          epoch/peak_vram_gb 53.40556
+wandb:            epoch/train_loss 1.09567
+wandb:                         +10 ...
+wandb: 
+wandb: 🚀 View run Q8_alldata-s0 at: https://wandb.ai/iamsid44-iiit-hyderabad/clarity-semeval26/runs/13927357
+wandb: ⭐️ View project at: https://wandb.ai/iamsid44-iiit-hyderabad/clarity-semeval26
+wandb: Synced 5 W&B file(s), 0 media file(s), 0 artifact file(s) and 0 other file(s)
+wandb: Find logs at: ./clarity/wandb/run-20261002_055026-13927357/logs
+[done] Q8_alldata seed0: epoch 2 selected; dev S2 0.5199242404900377, S1 0.716693960206042; 16 min

@@ -1,0 +1,73 @@
+{
+  "config": {
+    "name": "Q8_alldata",
+    "seed": 5,
+    "model": "Qwen/Qwen3-8B-Base",
+    "max_len": 1024,
+    "a_budget": 256,
+    "epochs": 3,
+    "lr": 0.0001,
+    "warmup": 0.05,
+    "wd": 0.0,
+    "batch_size": 4,
+    "grad_accum": 4,
+    "eval_batch_size": 16,
+    "lora_r": 16,
+    "lora_alpha": 32,
+    "lora_dropout": 0.05,
+    "grad_checkpoint": false,
+    "val_frac": 0.0,
+    "select": "last",
+    "dtype": "bf16",
+    "device": "cuda",
+    "limit_train": 0,
+    "limit_eval": 0,
+    "pilot_steps": 0,
+    "stop_after_epoch": -1,
+    "log_every": 20,
+    "track": true,
+    "save_epoch_adapters": true
+  },
+  "selected_epoch": 2,
+  "val_macro_f1": NaN,
+  "history": [
+    {
+      "epoch": 0,
+      "train_loss": 2.1367844869134185,
+      "val_macro_f1": NaN,
+      "train_minutes": 4.83562787771225,
+      "minutes": 5.119110667705536,
+      "dev_subtask2_macro_f1": 0.348330386155127,
+      "dev_subtask1_macro_f1": 0.6235173146571915,
+      "dev_inset_rate": 0.5681818181818182,
+      "dev_classes_named": 7
+    },
+    {
+      "epoch": 1,
+      "train_loss": 1.3133222389158095,
+      "val_macro_f1": NaN,
+      "train_minutes": 4.841827797889709,
+      "minutes": 5.1253477493921915,
+      "dev_subtask2_macro_f1": 0.42347687718360555,
+      "dev_subtask1_macro_f1": 0.6772763065191264,
+      "dev_inset_rate": 0.6201298701298701,
+      "dev_classes_named": 8
+    },
+    {
+      "epoch": 2,
+      "train_loss": 0.9332516644195397,
+      "val_macro_f1": NaN,
+      "train_minutes": 4.838088782628377,
+      "minutes": 5.121637761592865,
+      "dev_subtask2_macro_f1": 0.5517596834250609,
+      "dev_subtask1_macro_f1": 0.729857549043421,
+      "dev_inset_rate": 0.6493506493506493,
+      "dev_classes_named": 8
+    }
+  ],
+  "dev_subtask2_macro_f1": 0.5517596834250609,
+  "dev_subtask1_macro_f1": 0.729857549043421,
+  "peak_vram_gb": 53.405561447143555,
+  "wall_minutes": 15.655340965588888,
+  "trainable_params": 43683840
+}

@@ -11,8 +11,8 @@ over seeds. Raw outputs behind the headline tables are in `docs/raw/`.
 
 | | |
 |---|---|
-| Period | 2026-09-19 → 2026-10-02 (mid-evaluation); Phase 2 from 2026-10-06: E14 (M1) 10-06, E15 (M3) 10-14, E16 (M2) 10-14, E17 (M4) 10-15 |
-| Hardware | 1× RTX PRO 6000 (96 GB), shared with other users' jobs; E13 on JarvisLabs VMs with the same GPU; E14 on the lab server's GPU 0 plus two GPU-1 MIG slices (48 GB each) when free; E15–E17 on the lab server's GPU 0 (vLLM for the 27B LLM), plus the JarvisLabs Model API for the API arms ($0.26) |
+| Period | 2026-09-19 → 2026-10-02 (mid-evaluation); Phase 2 from 2026-10-06: E14 (M1) 10-06, E15 (M3) 10-14, E16 (M2) 10-14, E17 (M4) 10-15, E18 (freeze) 10-15; final push from 10-27: E19–E23 |
+| Hardware | 1× RTX PRO 6000 (96 GB), shared with other users' jobs; E13 on JarvisLabs VMs with the same GPU; E14 on the lab server's GPU 0 plus two GPU-1 MIG slices (48 GB each) when free; E15–E17 on the lab server's GPU 0 (vLLM for the 27B LLM), plus the JarvisLabs Model API for the API arms ($0.26); E19–E22 on on-demand JarvisLabs RTX PRO 6000 VMs (the lab server is fully booked) |
 | Backbone | `microsoft/deberta-v3-large` (435M parameters) through E12; `Qwen/Qwen3-8B-Base` + LoRA from E13 |
 | Final system (E11, by a rule fixed in advance) | full question + 16 epochs, **10-seed** ensemble + logit adjustment: dev S2 **0.405** (0.412 over CV splits), dev S1 **0.648**; the 10-seed baseline system scores 0.428 / 0.601 — not distinguishable on S2 |
 | Latest | E12: training on all of train is the one variant that helps (S2 +0.029 per model, 4/5 seeds; 5-seed system 0.489); the hierarchy of specialist encoders, boundary experts and model soups do not |
@@ -22,8 +22,10 @@ over seeds. Raw outputs behind the headline tables are in `docs/raw/`.
 | Latest | **E16 (M2 completion) done 2026-10-14.** Prompt ablation: `full` kept (on dev, full > no guide > no definitions > bare; within noise). Measured cost: an M1 seed 0.052 GPU-s/item, an M3 call 0.103, so the 10-seed M1 is ~93% of the cost. Frontier: M3 adds +0.02 to +0.03 (δ = 0.3) at every K ≤ 5; K = 10's +0.071 is an outlier, so **E15's 0.669 is likely optimistic**. K = 1 + M3 at δ = 1 matches the 10-seed M1 alone (0.593 vs 0.598) at 3.4× less cost |
 | Latest | **E17 (M4) done 2026-10-15.** One distilled student (soft targets from M3) instead of 10 seeds: single model S2 0.573 vs 0.525 (+0.048, 9/10), S1 +0.031; **student + M3 at δ = 0.5: 0.608 / 0.790 at 0.111 GPU-s per item vs the 10-seed M1 alone at 0.598 / 0.743 and 0.522 GPU-s (4.7× cheaper)**. Adopted as the cost operating point: no undistilled point is cheaper and better |
 | **Current system (2026-10-15)** | Two operating points on dev. **Accuracy:** 10-seed M1 + M3 at δ = 0.3, S2 0.669 (10 splits 0.660) / S1 0.798, 0.36 LLM calls and 0.558 GPU-s per item. **Cost:** E17 student + M3 at δ = 0.5, S2 0.608 / S1 0.790 (mean of 10 students), 0.57 calls and 0.111 GPU-s per item. TeleAI (1st place): 0.617 / 0.812 at 1.94 calls |
-| Latest | **E18 (freeze numbers) done 2026-10-15.** Final dev numbers for both operating points: accuracy point (M1 × 10 + M3, δ = 0.3) S2 0.669 / 0.660 over 10 splits, S1 0.798, 2-annotator 0.589; cost point (student + M3, δ = 0.5) S2 0.608 ± 0.027, S1 0.790, 2-annotator 0.567, at 0.21× the GPU cost of M1. Ensembles of distilled students do not help (≤ +0.02; the students lack diversity), so there is no middle operating point. Figure: `docs/figures/E18_frontier.pdf` |
-| Running | **E19** (robustness, baselines, controls: Tier 0 + arms A, B, D, E, F) and **E20** (spotlight: value-of-compute map and learned router), registered 2026-10-27 18:55; JarvisLabs spot |
+| Latest | **E18 (freeze numbers) done 2026-10-15.** Final dev numbers for both operating points: accuracy point (M1 × 10 + M3, δ = 0.3) S2 0.669 / 0.660 over 10 splits, S1 0.798, 2-annotator 0.589; cost point (student + M3, δ = 0.5) S2 0.608 ± 0.027, S1 0.790, 2-annotator 0.567, at 0.21× the GPU cost of M1 (0.27× after E19's cost correction). Ensembles of distilled students do not help (≤ +0.02; the students lack diversity), so there is no middle operating point. Figure: `docs/figures/E18_frontier.pdf` |
+| Latest | **E19 Tier 0 done 2026-10-27** (`raw/E19_tier0.txt`). Two corrections to E15–E18. (1) **Refitting λ and τ inside each bootstrap replicate,** the accuracy point's gain over M1 is +0.037 [−0.044, +0.120] (P(≤ 0) = 0.20), no longer significant; the earlier +0.067 [+0.009, +0.124] held them fixed. (2) **M3 costs 0.151 GPU-s per call, not 0.103,** so the cost point is 0.139 GPU-s (0.27× M1, not 0.21×) and the accuracy point 0.576. What holds: confidence routing beats random routing (0.669 vs 0.604 ± 0.015 at δ = 0.3); the gain comes from M3, not from re-thresholding; and the LLM's value changes sign with M1's uncertainty |
+| **Current system (2026-10-29)** | As frozen in E18, with Tier 0's corrections. **Accuracy point:** S2 0.669 (10 splits 0.660) / S1 0.798 at 0.576 GPU-s per item. **Cost point:** S2 0.608 (10 splits 0.610) / S1 0.790 at 0.139 GPU-s per item. Test files for M1 and the accuracy point: `submissions/E19_*` |
+| Running | **E19** arm E (distillation controls, 2 Jarvis VMs, from 2026-10-29 13:03). **Registered 2026-10-29 and starting:** E19 arm F (Qwen3-14B, 2 seeds), arms A and B on a local 27B, **E20** amended (leak-free router), **E21** (test transcript shift), **E22** (cached and debiased adjudicator, escalation ladder, specificity score). Arm D dropped. Plan and budget: `06_final_push_handover.md` |
 
 ---
 
@@ -54,8 +56,8 @@ system takes.
 | E13b | Qwen, 12 epochs instead of 3 (3 seeds) | 0.543 *(3 seeds)* | 0.742 | | slice F1 +0.084 (3/3) → **adopted**; best epochs 8–11; 10 seeds after the mid-eval |
 | E13c | Qwen, all of train, last epoch (10 seeds) | 0.492 ± 0.045 | 0.715 | 0.575 | +0.017 per model (6/10); system +0.028 [−0.026, +0.092]: not distinguishable |
 | **E14** | **M1: Qwen 12 epochs at 10 seeds** (+ 5-fold cross-fitting; C(x), u(x)) | **0.525 ± 0.042** | **0.729** | **0.598** (S1 0.743) | **new best system**: +0.057 vs E13x [−0.003, +0.125]; per model +0.049 (8/10); K = 5 is not enough |
-| E15 | **M3: + Qwen3.8-27B-FP8 adjudicator over M1's top 4, fused, δ = 0.3** (0.36 calls/item) | 0.603 *(LLM alone within C)* | | **0.669** (10 splits 0.660; S1 **0.798**) | **new best system**: +0.067 [+0.009, +0.124] over M1; corrected 2026-10-14 (fusion bug) |
-| E17 | **M4: one Qwen3-8B student trained on soft targets 0.5·gold + 0.5·M3's q** (10 seeds) | **0.573** | **0.761** | 0.608 with M3 at δ = 0.5 (S1 0.790; 0.111 GPU-s/item) | **cost operating point**: beats the 10-seed M1 alone at 4.7× less cost |
+| E15 | **M3: + Qwen3.8-27B-FP8 adjudicator over M1's top 4, fused, δ = 0.3** (0.36 calls/item) | 0.603 *(LLM alone within C)* | | **0.669** (10 splits 0.660; S1 **0.798**) | **new best system**: +0.067 [+0.009, +0.124] over M1; corrected 2026-10-14 (fusion bug). *E19: +0.037 [−0.044, +0.120] with refitted parameters* |
+| E17 | **M4: one Qwen3-8B student trained on soft targets 0.5·gold + 0.5·M3's q** (10 seeds) | **0.573** | **0.761** | 0.608 with M3 at δ = 0.5 (S1 0.790; 0.111 GPU-s/item) | **cost operating point**: beats the 10-seed M1 alone at 4.7× less cost. *E19: 0.139 GPU-s, 3.8× less* |
 | — | ChulaNLP's fine-tuned DeBERTa-large (published; checkpoint chosen on dev) | 0.46 | 0.65 | | for reference |
 
 **The three main systems at 10 seeds (E11)** — the numbers to quote. Single models:
@@ -3021,6 +3023,175 @@ Cost per rung is measured in GPU-s on the RTX PRO 6000 (R1, R2) and in tokens / 
 
 **Decision rule.** The value router replaces confidence routing in the final system **only if S-H3 holds
 on held-out train folds**: selection is on train, not dev. Dev numbers are reported either way.
+
+## E19/E20 amendments, E21 and E22 *(registered 2026-10-29, 13:30 IST, before any run they describe)*
+
+*Written after the E19 arm-E lanes started (13:03) and before any of their results; nothing below depends
+on a result.* The operational plan, budget and timetable are in
+[`06_final_push_handover.md`](06_final_push_handover.md).
+
+**What changed since 2026-10-27, and why.**
+- **Compute.**
+  - Jarvis spot pricing exists only for containers (the SDK refuses `is_spot` for VMs).
+  - On an H200 spot container, an 8B training step took **6.83 s** (≈ 1,050 tokens/s). The GPU was
+    0–43% busy while one CPU core sat at 100%, though a bare bf16 matmul reached 749 TFLOPS. The training
+    loop is CPU-bound there.
+  - On an on-demand RTX PRO 6000 VM (₹207/h), the same step takes **1.44 s**, about 56 min per 12-epoch
+    run.
+  - **Every GPU arm therefore runs on RTX PRO 6000 VMs.** The H200 attempt and the reachability probes
+    cost ₹122; the balance at 13:00 was ₹3,748.
+- **The laptop drives Jarvis from Windows Git Bash** (`JL_PY`, see 06 §4). WSL's network ran at about
+  13 KB/s on the hotspot.
+- **A review of the plan (2026-10-29)** found the issues fixed below. It also added three findings that
+  E21 and E22 act on:
+  - **96% of official-test answers start with a speaker tag** ("THE PRESIDENT.", "The President."),
+    10.5% contain footnote markers ("[25.]") and 6.8% contain all-caps header lines. A check of train and
+    dev found none of these; that check was a read-only script run on 2026-10-29 and is to be re-run by
+    E21's code.
+  - **The M3 call's cost grows with the whole prompt, so the shared preamble is not cached.** The E16
+    prompt variants give about 1.33 × 10⁻⁴ GPU-s per prompt token, with an intercept near 0. Qwen3.8-27B
+    is a hybrid linear-attention model, and vLLM reuses such prefixes only at block boundaries.
+  - **Cross-fitted train rows leak through sibling answers.** On slice rows whose answer has a sibling in
+    the training part, three M1 seeds predict the sibling's training label 52–62% of the time, while the
+    gold label equals a sibling's label 44% of the time. Train-side value maps and routers fitted on all
+    rows are therefore biased.
+
+**E19 amendments.**
+- **Arm E runs seeds 0–2, as registered.** The 2026-10-27 handover's lanes listed seeds 0 1; that was
+  an error. Lanes: `Q8_distill_a05_m1` (VM 552643) and `Q8_distill_a05_unif` (VM 552645), seeds
+  sequential, from 13:03.
+- **Arm D is dropped.** It would cost ≈ ₹1,050. Tier 0's refit bootstrap and E16's seed subsets already
+  bound the accuracy point. And 10-of-15 subsets share at least 5 seeds, so H-D's second clause would
+  hold almost by construction.
+- **Arm F is reinstated with 2 seeds.**
+  - `Q14_fullq_lora_12ep`, Qwen3-14B-Base, seeds 0 and 1, the E14 recipe.
+  - No gradient checkpointing if the pilot fits in 96 GB; otherwise checkpointing (the same
+    computation).
+  - **H-F, restated for 2 seeds:** the mean single-model S2 ≥ the 8B's seeds 0–1 mean (0.546) + 0.02,
+    i.e. ≥ 0.566.
+  - Added, exploratory: a mixed ensemble of 10 × 8B and 2 × 14B, with one per-backbone weight fitted with
+    τ by nested CV, reported against 10 × 8B. With 2 seeds it is not adopted into either operating point.
+- **Arms A (the 27B rungs) and B run on a local vLLM copy of Qwen3.8-27B-FP8 on a Jarvis RTX PRO 6000 VM**,
+  the lab server's weights, not the Model API.
+  - **Faithfulness gate:** the VM re-scores 100 existing dev (item, candidates) pairs. If argmax agreement
+    with the saved records is below 0.98, every analysis that mixes saved and new records re-scores all of
+    them on the VM.
+  - If the server already ran A or B through the API, those results stand, labelled by source.
+- **The Model API is capped at $4 for the rest of E19/E20**, for the DeepSeek-V4-Flash rungs only.
+
+**E20 amendments.**
+- **Primary rows.** The value map (S1) and the learned router (S4) are fitted on the **train rows whose
+  answer text has no sibling** (≈ 31% of train), where cross-fitting does not leak. All-row versions are
+  reported as well.
+- **S4 features** gain the question–answer specificity score of E22e.
+- **R2 (thinking) is cut** to at most 500 of those rows, stratified by M1-uncertainty quintile, plus dev
+  and test, on the local vLLM. It is dropped if the inference lane is not done by 18:00 IST.
+- **R3** stays within the $4 API cap.
+
+### E21 — The official test set's shift: transcript artifacts and label-free routing *(registered 2026-10-29)*
+
+**Why.**
+- Test answers carry transcript formatting that the models never saw in training (above).
+- Test answers are also shorter: a median of 59 words, against 292 on dev.
+- At the slice threshold, the accuracy point defers 0.253 of test but 0.357 of dev.
+
+None of this can be scored on test, so every rule is fixed here.
+
+**a. Sensitivity (dev).**
+- **Perturbation.** `qevasion/normalize.py` gains a function that injects the artifacts into dev answers at
+  test's rates, with seed 21:
+  - a leading speaker tag drawn from test's tags;
+  - footnote markers;
+  - one header line;
+  - a trailing turn by another speaker.
+- **Scoring.** The 10 M1 seeds and the 10 students score the perturbed dev (inference only).
+- **H21a:** ≥ 5% of the 10-seed M1's dev predictions change, or its dev S2 falls by ≥ 0.01.
+- **Control:** an unperturbed re-run reproduces the saved `dev_probs` (max |Δp| < 10⁻³).
+
+**b. Normalization (test).**
+- **The rules:**
+  - drop the leading speaker tag;
+  - drop footnote markers;
+  - drop all-caps header lines;
+  - cut the answer at a line that opens a turn by another speaker (only a well-formed "Title Name." or
+    "Q." at the start of a line).
+- **Check:** on train and dev the rules must change ≤ 1% of answers.
+- **Decision:** if H21a holds, the test submission files are rebuilt from normalized test text. M1, the
+  student and M3 (on the new candidate sets) are all re-run. Otherwise the raw text is kept. Both are
+  reported.
+
+**c. Label-free routing threshold.** The test submission defers the same fraction of test as the slice
+threshold realises on dev. That is a quantile of test's own u; it uses no labels. Files with both
+thresholds are written, and the number of test labels that differ is reported.
+
+**d. An expected-macro-F1 decoder, as a control.**
+- **Method.** Annotators are drawn from the temperature-scaled posterior, with the temperature fitted by
+  NLL on the slice. 300 sampled 2-annotator reference sets are used, with coordinate ascent over the
+  labels.
+- **Scope.** It is applied to M1 and to the fused system, and compared with logit adjustment on dev:
+  10-split mean and 2-annotator mean.
+- **It is reported, not adopted.** Choosing between the two rules on dev would be selection on dev.
+
+### E22 — A cheaper, debiased adjudicator and an escalation ladder *(registered 2026-10-29)*
+
+**Why.**
+- M3 calls are ~62% of the cost point's GPU time, and the preamble is not cached (above).
+- M3 picks letter A for 52% of dev items (Tier 0 G).
+- Extra compute helps only on uncertain items (Tier 0 D).
+- Seed ensembles help through diversity, and students lack it (E18).
+
+**a. Cost with a working prefix cache.**
+- **Setup.** The fixed preamble is padded with whitespace to a multiple of the cache block that vLLM uses
+  for this hybrid model, and each batch starts with a warm-up request. vLLM's prefix-cache hit rate is
+  logged.
+- **Measurement.** GPU-s per call is measured with the E19 protocol (one pass over the 308 distinct dev
+  items) for the original and the cached prompt, together with one M1 seed's GPU-s per item, **all on the
+  same VM**, so every ratio comes from one GPU.
+- **H22a:** the cached prompt costs ≤ 0.6 × the original per call, and its q has argmax agreement ≥ 0.98
+  with the original.
+- **Use.** Accuracy numbers always use the original prompt. If H22a holds, cost tables gain a "cached"
+  column.
+
+**b. Debiasing by permutation.** This is E19 arm B as registered: 4 cyclic orders, adopted only if
+permutation-averaged q beats single-order q on the 300 screen rows in both within-C accuracy and NLL.
+It runs on the local vLLM.
+
+**c. Escalation ladder.**
+- **The stages:**
+  1. **Stage 0:** one student (`Q8_distill_a05`, each of the 10).
+  2. **Stage 1:** on the fraction e1 of items with the highest student u (threshold from the slice), add K
+     M1 seeds. These are the E16 K = 5 subsets, with subset i paired with student i. Fuse with fixed
+     weight 0.5: log p = 0.5 log p_student + 0.5 mean log p_M1.
+  3. **Stage 2:** on the fraction e2 of all items with the highest fused u (a subset of the escalated
+     items), call M3 over the fused top 4, fused as in E15 (nested CV).
+- **Primary configuration, fixed now:** e1 = 0.4, K = 5, e2 = 0.3.
+  - Cost = 0.052 + 0.4 × 5 × 0.052 + 0.3 × c_M3.
+  - That is ≈ 0.20 GPU-s with c_M3 = 0.151, or less with E22a's cached cost.
+- **Grid** e1 ∈ {0.2, 0.4, 0.6} × K ∈ {3, 5} × e2 ∈ {0.2, 0.3, 0.5}: reported as a curve, not used to
+  choose.
+- **H22c:**
+  - the primary ladder's 10-split mean S2, averaged over the 10 students, is ≥ 0.625 (the cost point's
+    0.610 + 0.015);
+  - and it beats the mean of 200 random escalations at the same e1 and e2 by ≥ 0.01.
+- **If H22c holds,** the ladder becomes a third operating point, with a test file (new M3 test calls on
+  the VM). Otherwise it is reported on the frontier.
+
+**d. The learned router** is E20 S4 as amended above: singleton rows, with the specificity feature.
+
+**e. Question–answer specificity.**
+- **Model and score.** Qwen3-8B-Base, frozen. For every train, dev and test item, s(a | q) is the mean log
+  probability of the first 256 answer tokens after "Question: {sub-question}\nAnswer:".
+- **Contrasts:**
+  - with three random sub-questions from other interviews (seed 22): PMI_c = s(a | q) − mean s(a | q′);
+  - with an empty question: PMI_0.
+- **H22e:** on train, PMI_c is ordered Clear Reply > Ambivalent > Clear Non-Reply. The Spearman ρ between
+  clarity level and PMI_c must be > 0, with a bootstrap 95% interval excluding 0.
+- **Use.** It is a router feature (d) whatever the result, and an interpretive figure.
+
+### E23 — Freeze *(was "E21" in the 2026-10-27 handover)*
+
+Final tables, the frontier figure with every operating point under both cost accountings, test files,
+docs, the HF model card and W&B summaries, from E19–E22's outputs. Nothing new is run.
 
 ## Deferred
 

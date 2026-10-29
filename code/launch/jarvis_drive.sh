@@ -21,13 +21,16 @@ LOCAL_LOGS=$REPO/logs/jarvis${PROFILE:+/$PROFILE}
 WATCH=jarvis-watch${PROFILE:+-$PROFILE}
 LOCAL_RUNS=$REPO/runs
 UVX=${UVX:-$(command -v uvx || echo "$HOME/.local/bin/uvx")}
+JL_PY=${JL_PY:-}  # a Python with the jarvislabs SDK, used instead of uvx (e.g. from Windows Git Bash; 2026-10-29)
 
 mkdir -p "$CFG" "$LOCAL_LOGS"; chmod 700 "$CFG"
 need_uv() {
+  [ -n "$JL_PY" ] && return 0
   [ -x "$UVX" ] && return 0
   curl -LsSf https://astral.sh/uv/install.sh | sh >/dev/null && UVX=$HOME/.local/bin/uvx
   [ -x "$UVX" ] || { echo "could not install uv (needed for the JarvisLabs SDK)"; exit 1; }
 }
+jl() { if [ -n "$JL_PY" ]; then "$JL_PY" "$@" | tr -d '\r'; else "$UVX" --quiet --from jarvislabs python "$@"; fi; }
 note() { echo "$(date '+%F %T') $*" | tee -a "$LOCAL_LOGS/drive.log"; }
 load() { [ -f "$KEYS" ] && set -a && . "$KEYS" && set +a; [ -f "$HOSTCFG" ] && . "$HOSTCFG"; return 0; }
 R() { ssh -i "$SSHKEY" -p "$JPORT" -o StrictHostKeyChecking=accept-new -o ServerAliveInterval=30 \
@@ -38,7 +41,7 @@ need_host() { load; [ -n "${JHOST:-}" ] || { echo "run: bash code/launch/jarvis_
 pause_now() {
   load; need_uv
   [ -n "${JL_API_KEY:-}" ] && [ -n "${JL_MACHINE_ID:-}" ] || { note "cannot pause: no key or machine id"; return 1; }
-  JL_API_KEY=$JL_API_KEY "$UVX" --quiet --from jarvislabs python -c \
+  JL_API_KEY=$JL_API_KEY jl -c \
     "from jarvislabs import Client; print('pause:', Client().instances.pause($JL_MACHINE_ID))" 2>&1 | tee -a "$LOCAL_LOGS/drive.log"
 }
 
@@ -67,7 +70,7 @@ keys)
   read -rsp "JarvisLabs API key (jarvislabs.ai/settings/api-keys; input hidden): " k; echo
   umask 077; touch "$KEYS"; grep -v '^JL_API_KEY=' "$KEYS" > "$KEYS.tmp" 2>/dev/null; mv "$KEYS.tmp" "$KEYS"
   echo "JL_API_KEY=$k" >> "$KEYS"; chmod 600 "$KEYS"
-  JL_API_KEY=$k "$UVX" --quiet --from jarvislabs python -c \
+  JL_API_KEY=$k jl -c \
     "from jarvislabs import Client; print('key OK; instances:', [(i.machine_id, getattr(i,'status','?')) for i in Client().instances.list()])" \
     || echo "key check failed -- re-run: bash code/launch/jarvis_drive.sh keys"
   ;;
@@ -93,7 +96,7 @@ create|resume)
   [ -n "${JL_API_KEY:-}" ] || { echo "run: bash code/launch/jarvis_drive.sh keys"; exit 2; }
   [ "$1" = resume ] && [ -z "${JL_MACHINE_ID:-}" ] && { echo "no machine id for profile ${PROFILE:-default}"; exit 2; }
   out=$(JL_API_KEY=$JL_API_KEY ACTION=$1 MID=${JL_MACHINE_ID:-0} GPU=$GPU_TYPE LABEL="clarity-${PROFILE:-a}" SPOT=$SPOT TEMPLATE=$TEMPLATE \
-    "$UVX" --quiet --from jarvislabs python -c '
+    jl -c '
 import os
 from jarvislabs import Client
 c = Client()
@@ -124,7 +127,7 @@ push)
 start)
   need_host
   R "umask 077; printf 'JL_API_KEY=%s\nJL_MACHINE_ID=%s\n' '${JL_API_KEY:-}' '${JL_MACHINE_ID:-}' > $RBASE/keys.env"
-  R "NAME='$NAME' SEEDS='$SEEDS' MODEL='$MODEL' EXTRA_ARGS='$EXTRA_ARGS' MAX_TOTAL_HOURS=$MAX_TOTAL_HOURS AUTO_PAUSE=1 PAUSE_DELAY=1800 NO_PROMPT=1 \
+  R "NAME='$NAME' SEEDS='$SEEDS' MODEL='$MODEL' EXTRA_ARGS='$EXTRA_ARGS' MAX_TOTAL_HOURS=$MAX_TOTAL_HOURS PARALLEL=${PARALLEL:-1} AUTO_PAUSE=1 PAUSE_DELAY=1800 NO_PROMPT=1 \
      bash $RBASE/code/code/launch/jarvis_setup.sh all" && note "start: pipeline launched on the instance (tmux clarity-llm)"
   ;;
 

@@ -1,0 +1,4 @@
+2026-10-29 13:36:56 create: machine 552699 (Running) -- ssh -o StrictHostKeyChecking=no ubuntu@151.185.34.168
+2026-10-29 13:36:57 connect: L -> ubuntu@151.185.34.168 port 22, machine 552699
+2026-10-29 13:37:30 push: bundle unpacked into /home/clarity_llm/code
+2026-10-29 13:37:32 push: code/.env copied (mode 600)

@@ -1,0 +1,14 @@
+Q8_alldata: single models on dev (multi-reference S2, S1), epoch chosen on the train slice
+seed epoch slice F1  dev S2  dev S1   DeBERTa S2/S1   per-epoch dev S2
+   0     2      nan   0.520   0.717   0.344/0.591     0.160 0.386 0.520
+   1     2      nan   0.443   0.689   0.370/0.627     0.329 0.459 0.443
+   2     2      nan   0.538   0.758   0.428/0.640     0.340 0.337 0.538
+   3     2      nan   0.437   0.693   nan/nan     0.158 0.378 0.437
+   4     2      nan   0.535   0.730   nan/nan     0.203 0.473 0.535
+   5     2      nan   0.552   0.730   nan/nan     0.348 0.423 0.552
+   6     2      nan   0.492   0.746   nan/nan     0.246 0.417 0.492
+
+mean S2 0.502 ± 0.046   S1 0.723 ± 0.026
+paired vs DeBERTa (same seeds): S2 +nan (3/7 up), S1 +nan (3/7 up)
+screening bar (experiment log, E12): extend to more seeds if >= +0.015 with >= 2 of 3 seeds up
+wall 16 min per seed; peak VRAM 53.4 GiB

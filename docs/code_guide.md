@@ -84,6 +84,7 @@ Every command runs from inside `code/`. Every path is defined once, in `code/qev
 | `cascade.frontier` | `cascade.candidates`, `cascade.fuse`, `decision_rules.decide` |
 | `cascade.cost` | `models.llm_classifier` |
 | `preregistered_analyses.e18_final` | `cascade.frontier`, `cascade.fuse`, `decision_rules.decide` |
+| `preregistered_analyses.e19_tier0`, `evaluation.make_cascade_submission` | `preregistered_analyses.e19_lib`, `cascade.fuse`, `cascade.frontier`, `cascade.candidates`, `decision_rules.decide`, `evaluation.make_submission` |
 
 ## 3. File reference
 
@@ -95,6 +96,7 @@ Every command runs from inside `code/`. Every path is defined once, in `code/qev
 | `labels.py` | The 9 evasion labels, the 3 clarity labels, the official 9 → 3 mapping, label encoders |
 | `scoring.py` | Replica of the official scorer: multi-reference macro-F1 (Subtask 2) and macro-F1 (Subtask 1) |
 | `paths.py` | Every repository path; `CLARITY_RUNS` moves `runs/` |
+| `normalize.py` | **E21.** Removes the official test's transcript artifacts (speaker tags, footnotes, headers, other speakers' turns); injects them into dev at test's rates |
 
 ### `models/`: classifiers
 
@@ -123,7 +125,9 @@ Every command runs from inside `code/`. Every path is defined once, in `code/qev
 | `fuse.py` | Fuses the LLM's distribution with M1's over C(x) and defers by confidence (**M2**) |
 | `frontier.py` | Accuracy-vs-cost frontier over seed count × deferral rate (E16) |
 | `cost.py` | Measured GPU-seconds per item of an M1 seed and an M3 call |
-| `distill_targets.py` | **M4.** Soft targets (1 − α)·gold + α·q from M3 |
+| `distill_targets.py` | **M4.** Soft targets (1 − α)·gold + α·q from M3; `--teacher m1 \| uniform` gives the E19 controls |
+| `infer_variants.py` | **E21.** M1 seeds and students on dev with test's transcript artifacts injected, and on normalized test text |
+| `specificity.py` | **E22e.** Question–answer specificity: answer log-likelihood after its own sub-question vs random ones vs none |
 | `api_budget.py`, `api_probe.py` | API price table, spend ledger with a hard cap, and an API capability probe |
 | `publish.py` | Uploads cascade outputs to Hugging Face and logs results to W&B |
 
@@ -137,6 +141,7 @@ Every command runs from inside `code/`. Every path is defined once, in `code/qev
 | `verify_scorer_geometry.py` | Regenerates every number in `docs/01_scorer_geometry.md` |
 | `peek.py` | Inspects a run while it trains |
 | `make_submission.py` | Packages test predictions as Codabench zips into `submissions/` |
+| `make_cascade_submission.py` | Test files for the cascade systems (M1, accuracy point, cost point) → `submissions/E19_*/` |
 
 ### `preregistered_analyses/`
 
@@ -149,6 +154,7 @@ Every command runs from inside `code/`. Every path is defined once, in `code/qev
 | `e14_m1_analysis.py` | M1: epochs, seed-count curve, candidate coverage, uncertainty AUROC, LLM headroom |
 | `e17_m4_analysis.py` | M4: distilled student vs M1 seeds, routing, student + M3 frontier |
 | `e18_final.py` | Final numbers for both operating points, cost table, frontier figure → `docs/raw/E18_final.txt` |
+| `e19_tier0.py`, `e19_lib.py` | E19 Tier 0: headlines with refitted bootstrap, corrected cost, train-row cascade, value map, routing and fusion ablations, strata, position bias, test files, human ceiling → `docs/raw/E19_tier0.txt` |
 
 ### `figures/`
 
@@ -171,8 +177,15 @@ Every command runs from inside `code/`. Every path is defined once, in `code/qev
 
 `launch/` holds the scripts used to run experiments on our hardware: a tmux run queue for a shared GPU
 server (`start.sh`, `run_queue.sh`, `gpu_watch.sh`, `m3_local.sh`, `e16_gpu.sh`, `e17_post.sh`,
-`download_model.sh`) and a driver for rented cloud GPU instances (`jarvis_drive.sh`, `jarvis_setup.sh`).
+`download_model.sh`) and a driver for rented cloud GPU instances (`jarvis_drive.sh`, `jarvis_setup.sh`, and
+`infer_lane.sh` for the E19–E22 inference lane).
 They are specific to that infrastructure; every run can also be started directly with `python -m`.
+- **Running the cloud driver from Windows Git Bash:** set `JL_PY` to a Python that has the `jarvislabs`
+  SDK installed, instead of using `uvx`.
+- **Several seeds on one large GPU:** `PARALLEL=N` trains up to N seeds at once.
+
+Usage, machine choice and costs are in
+[`06_final_push_handover.md`](06_final_push_handover.md) §5–6.
 
 `experiments/<EXP>/` lists the runs of each queued experiment. `common.args` holds the shared
 arguments; each line of a `lane_gpu<N>_<x>.txt` file is one run: `<run name> <seed | fold<k>> <extra args>`.

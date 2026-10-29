@@ -1,0 +1,10 @@
+Q8_fullq_lora: single models on dev (multi-reference S2, S1), epoch chosen on the train slice
+seed epoch slice F1  dev S2  dev S1   DeBERTa S2/S1   per-epoch dev S2
+   0     2    0.459   0.405   0.647   0.344/0.591     0.162 0.382 0.405
+   1     2    0.444   0.426   0.687   0.370/0.627     0.275 0.339 0.426
+   2     2    0.432   0.554   0.728   0.428/0.640     0.344 0.425 0.554
+
+mean S2 0.462 ± 0.080   S1 0.688 ± 0.040
+paired vs DeBERTa (same seeds): S2 +0.081 (3/3 up), S1 +0.068 (3/3 up)
+screening bar (experiment log, E12): extend to more seeds if >= +0.015 with >= 2 of 3 seeds up
+wall 21 min per seed; peak VRAM 19.3 GiB

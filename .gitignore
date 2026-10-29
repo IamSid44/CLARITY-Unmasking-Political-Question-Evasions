@@ -28,3 +28,10 @@ submissions/*
 !submissions/E19_accuracy_point/
 
 .claude/
+
+# the code bundle that launch/jarvis_setup.sh builds for cloud instances
+jarvis_bundle.tgz
+
+# model weights: too large for git (GitHub refuses files over 100 MB); every adapter is on Hugging Face
+*.safetensors
+adapters_*.tgz

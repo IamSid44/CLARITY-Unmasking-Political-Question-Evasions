@@ -10,6 +10,12 @@ This document is the working plan after the mid-evaluation (submitted 2026-10-02
 The experiment-by-experiment record stays in [`02_experiment_log.md`](02_experiment_log.md), and every
 hypothesis is registered there before its run starts.
 
+> **Superseded for the final push (2026-10-27 onwards).** M1–M4 below are done. The current plan, budget
+> and launch procedure are in [`06_final_push_handover.md`](06_final_push_handover.md). E19's Tier 0 corrected two
+> numbers quoted here: the M3 call costs 0.151 GPU-s, so the cost point is 0.139 GPU-s (0.27× M1, not
+> 0.111 and 4.7× cheaper). And with refitted parameters, the accuracy point's gain over M1 is +0.037
+> [−0.044, +0.120]. This document is kept as the dated record of Phase 2.
+
 ---
 
 ## 1. Where the mid-evaluation left us

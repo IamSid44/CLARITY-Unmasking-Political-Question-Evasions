@@ -1,0 +1,47 @@
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+Loading weights:   0%|          | 0/398 [00:00<?, ?it/s]Loading weights:   1%|          | 4/398 [00:00<00:10, 37.13it/s]Loading weights:   9%|▉         | 37/398 [00:00<00:01, 200.56it/s]Loading weights:  18%|█▊        | 70/398 [00:00<00:01, 253.29it/s]Loading weights:  26%|██▌       | 103/398 [00:00<00:01, 278.67it/s]Loading weights:  34%|███▍      | 136/398 [00:00<00:00, 291.20it/s]Loading weights:  42%|████▏     | 169/398 [00:00<00:00, 301.36it/s]Loading weights:  51%|█████     | 202/398 [00:00<00:00, 307.65it/s]Loading weights:  59%|█████▉    | 235/398 [00:00<00:00, 311.29it/s]Loading weights:  68%|██████▊   | 269/398 [00:00<00:00, 314.96it/s]Loading weights:  76%|███████▌  | 302/398 [00:01<00:00, 316.42it/s]Loading weights:  84%|████████▍ | 335/398 [00:01<00:00, 317.91it/s]Loading weights:  92%|█████████▏| 368/398 [00:01<00:00, 320.25it/s]Loading weights: 100%|██████████| 398/398 [00:01<00:00, 300.41it/s]
+[transformers] [1mQwen3ForSequenceClassification LOAD REPORT[0m from: Qwen/Qwen3-8B-Base
+Key            | Status     | 
+---------------+------------+-
+lm_head.weight | UNEXPECTED | 
+score.weight   | MISSING    | 
+
+Notes:
+- UNEXPECTED:	can be ignored when loading from different task/architecture; not ok if you expect identical arch.
+- MISSING:	those params were newly initialized because missing from the checkpoint. Consider training on your downstream task.
+[data] train 3103 (mean 434 tokens, max 1024), slice 345, dev 308, test 237
+[model] Qwen/Qwen3-8B-Base: trainable 43.7M parameters
+[transformers] `use_return_dict` is deprecated! Use `return_dict` instead!
+[check] padded vs alone: max |logit difference| / mean |logit| = 0.0391 (should be << 1)
+[transformers] `use_cache=True` is incompatible with gradient checkpointing. Setting `use_cache=False`.
+  ep0 step 20/194 loss 5.4349 3454 tok/s  epoch ETA 6.0 min
+  ep0 step 40/194 loss 3.9563 3419 tok/s  epoch ETA 5.3 min
+  ep0 step 60/194 loss 3.3413 3496 tok/s  epoch ETA 4.7 min
+  ep0 step 80/194 loss 3.0099 3460 tok/s  epoch ETA 3.8 min
+  ep0 step 100/194 loss 2.7912 3458 tok/s  epoch ETA 3.2 min
+  ep0 step 120/194 loss 2.6416 3444 tok/s  epoch ETA 2.5 min
+  ep0 step 140/194 loss 2.5322 3452 tok/s  epoch ETA 1.8 min
+  ep0 step 160/194 loss 2.4325 3430 tok/s  epoch ETA 1.1 min
+  ep0 step 180/194 loss 2.3629 3438 tok/s  epoch ETA 0.5 min
+[Q8_fullq_lora seed0] ep0 loss=2.3224 val=0.2080 devS2=0.1621 devS1=0.4890 (7.0m)
+  ep1 step 20/194 loss 1.5699 3490 tok/s  epoch ETA 6.0 min
+  ep1 step 40/194 loss 1.5733 3441 tok/s  epoch ETA 5.1 min
+  ep1 step 60/194 loss 1.5621 3438 tok/s  epoch ETA 4.4 min
+  ep1 step 80/194 loss 1.5473 3436 tok/s  epoch ETA 3.8 min
+  ep1 step 100/194 loss 1.5438 3431 tok/s  epoch ETA 3.1 min
+  ep1 step 120/194 loss 1.5192 3421 tok/s  epoch ETA 2.4 min
+  ep1 step 140/194 loss 1.5362 3434 tok/s  epoch ETA 1.8 min
+  ep1 step 160/194 loss 1.5258 3442 tok/s  epoch ETA 1.1 min
+  ep1 step 180/194 loss 1.5128 3441 tok/s  epoch ETA 0.5 min
+[Q8_fullq_lora seed0] ep1 loss=1.5041 val=0.3923 devS2=0.3822 devS1=0.6332 (7.0m)
+  ep2 step 20/194 loss 1.1607 3381 tok/s  epoch ETA 5.5 min
+  ep2 step 40/194 loss 1.1477 3403 tok/s  epoch ETA 5.0 min
+  ep2 step 60/194 loss 1.1552 3431 tok/s  epoch ETA 4.3 min
+  ep2 step 80/194 loss 1.1475 3425 tok/s  epoch ETA 3.7 min
+  ep2 step 100/194 loss 1.1480 3433 tok/s  epoch ETA 3.1 min
+  ep2 step 120/194 loss 1.1249 3437 tok/s  epoch ETA 2.4 min
+  ep2 step 140/194 loss 1.1274 3444 tok/s  epoch ETA 1.8 min
+  ep2 step 160/194 loss 1.1076 3441 tok/s  epoch ETA 1.1 min
+  ep2 step 180/194 loss 1.1027 3442 tok/s  epoch ETA 0.5 min
+[Q8_fullq_lora seed0] ep2 loss=1.1030 val=0.4595 devS2=0.4053 devS1=0.6475 (7.0m)
+[done] Q8_fullq_lora seed0: epoch 2 selected; dev S2 0.40526233308915827, S1 0.6474816785697616; 21 min

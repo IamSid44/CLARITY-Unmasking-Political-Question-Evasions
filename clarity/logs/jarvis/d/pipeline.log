@@ -1,0 +1,40 @@
+2026-10-02 05:43:01 setup: start
+2026-10-02 05:43:26 setup: torch 2.11.0+cu128 | NVIDIA RTX PRO 6000 Blackwell Server Edition 95 GiB | bf16 True
+2026-10-02 05:43:26 setup: downloading Qwen/Qwen3-8B-Base and Qwen/Qwen3-0.6B-Base to /home/clarity_llm/hf
+2026-10-02 05:44:54 setup: done (17G of models; disk free 59G)
+2026-10-02 05:49:03 pipeline: start (NAME=Q8_alldata SEEDS='0 1 2' MODEL=Qwen/Qwen3-8B-Base EXTRA_ARGS='--val-frac 0 --select last --no-grad-checkpoint')
+2026-10-02 05:49:03 setup: start
+2026-10-02 05:49:06 setup: torch 2.11.0+cu128 | NVIDIA RTX PRO 6000 Blackwell Server Edition 95 GiB | bf16 True
+2026-10-02 05:49:06 setup: downloading Qwen/Qwen3-8B-Base and Qwen/Qwen3-0.6B-Base to /home/clarity_llm/hf
+2026-10-02 05:49:07 setup: done (17G of models; disk free 59G)
+2026-10-02 05:49:08 auto-pause ON: key valid, machine 523824 found
+2026-10-02 05:49:08 smoke: start (Qwen/Qwen3-0.6B-Base, 64 rows, 2 epochs, stop after epoch 0, then resume)
+2026-10-02 05:49:34 smoke: passed (0.1000 (should be << 1))
+2026-10-02 05:49:34 pilot: 20 optimizer steps of Qwen/Qwen3-8B-Base (Q8_alldata, EXTRA_ARGS='--val-frac 0 --select last --no-grad-checkpoint')
+2026-10-02 05:50:15 pilot: longest micro-batch (4096 tokens): peak VRAM 50.4 GiB
+2026-10-02 05:50:15 pilot: 1.45 s per optimizer step; 216 steps per epoch -> 5.2 min per epoch of training, ~16 min for 3 epochs (+ ~3-5 min of evaluation per epoch); peak VRAM 53.4 GiB
+2026-10-02 05:50:15 pilot: projected 1.1 h for 3 seeds x 3 epochs (limit MAX_TOTAL_HOURS=3)
+2026-10-02 05:50:15 train: seed 0 attempt 1
+2026-10-02 06:05:59 train: seed 0 done: [done] Q8_alldata seed0: epoch 2 selected; dev S2 0.5199242404900377, S1 0.716693960206042; 16 min
+2026-10-02 06:05:59 train: seed 1 attempt 1
+2026-10-02 06:22:03 train: seed 1 done: [done] Q8_alldata seed1: epoch 2 selected; dev S2 0.4431754106981108, S1 0.6890966863607083; 16 min
+2026-10-02 06:22:03 train: seed 2 attempt 1
+2026-10-02 06:37:55 train: seed 2 done: [done] Q8_alldata seed2: epoch 2 selected; dev S2 0.5378641965629734, S1 0.7583468486480963; 16 min
+2026-10-02 06:38:13 hf: 3 of 3 seed folders of Q8_alldata on the Hub (logs/hf_uploads.log)
+2026-10-02 06:38:29 package: 232K results, 464M adapters in /home/clarity_llm
+2026-10-02 06:38:29 pipeline: ALL DONE
+2026-10-02 06:38:29 pausing instance 523824 (finished) in 1800 s -- Ctrl-C in tmux to keep it running
+2026-10-02 06:42:24 pipeline: start (NAME=Q8_alldata SEEDS='3 4 5 6' MODEL=Qwen/Qwen3-8B-Base EXTRA_ARGS='--val-frac 0 --select last --no-grad-checkpoint')
+2026-10-02 06:42:25 auto-pause ON: key valid, machine 523909 found
+2026-10-02 06:42:25 train: seed 3 attempt 1
+2026-10-02 06:58:49 train: seed 3 done: [done] Q8_alldata seed3: epoch 2 selected; dev S2 0.4369419632558362, S1 0.6925752599890531; 16 min
+2026-10-02 06:58:49 train: seed 4 attempt 1
+2026-10-02 07:14:36 train: seed 4 done: [done] Q8_alldata seed4: epoch 2 selected; dev S2 0.5348598723371863, S1 0.7298924300350033; 16 min
+2026-10-02 07:14:36 train: seed 5 attempt 1
+2026-10-02 07:30:21 train: seed 5 done: [done] Q8_alldata seed5: epoch 2 selected; dev S2 0.5517596834250609, S1 0.729857549043421; 16 min
+2026-10-02 07:30:21 train: seed 6 attempt 1
+2026-10-02 07:46:06 train: seed 6 done: [done] Q8_alldata seed6: epoch 2 selected; dev S2 0.4921269861525158, S1 0.7456905759953553; 16 min
+2026-10-02 07:46:24 hf: 7 of 7 seed folders of Q8_alldata on the Hub (logs/hf_uploads.log)
+2026-10-02 07:47:00 package: 534K results, 1.1G adapters in /home/clarity_llm
+2026-10-02 07:47:00 pipeline: ALL DONE
+2026-10-02 07:47:00 pausing instance 523909 (finished) in 1800 s -- Ctrl-C in tmux to keep it running

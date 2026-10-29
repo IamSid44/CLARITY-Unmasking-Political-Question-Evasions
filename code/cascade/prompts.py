@@ -50,6 +50,20 @@ CONFUSION_GUIDE: tuple[str, ...] = (
 
 
 VARIANTS = ("full", "no_guide", "no_defs", "bare")  # E16 prompt-part ablation; E15 used "full"
+# E19 arm B / E22b: the order in which the candidates are shown (E15-E18 used "taxonomy", so letter A is the
+# lowest label index); "shift<k>" rotates the taxonomy order by k, "reverse" reverses it
+ORDERS = ("taxonomy", "shift1", "shift2", "shift3", "reverse")
+
+
+def display_order(cand: list[int], order: str = "taxonomy") -> list[int]:
+    c = sorted(cand)
+    if order == "taxonomy":
+        return c
+    if order == "reverse":
+        return c[::-1]
+    assert order in ORDERS, order
+    k = int(order[5:]) % len(c)
+    return c[k:] + c[:k]
 
 
 def preamble(variant: str = "full") -> str:
@@ -95,15 +109,15 @@ def approx_tokens(text: str) -> int:
 
 
 def build_messages(item: Item, cand: list[int], examples: list[tuple[Item, int]],
-                   variant: str = "full") -> tuple[list[dict], list[int]]:
+                   variant: str = "full", order: str = "taxonomy") -> tuple[list[dict], list[int]]:
     """Chat messages for one item.
 
-    `cand` are label indices (any order; shown in taxonomy order with letters A, B, ...). `examples` are
-    (item, gold label index) pairs, most similar LAST. Examples are dropped from the least similar end
+    `cand` are label indices (any order; shown in `order`, taxonomy by default, with letters A, B, ...).
+    `examples` are (item, gold label index) pairs, most similar LAST. Examples are dropped from the least similar end
     (the front) until the prompt fits MAX_PROMPT_TOKENS; none is ever cut. Returns (messages, kept example
     positions in `examples`).
     """
-    cand = sorted(cand)
+    cand = display_order(cand, order)
     options = "\n".join(f"{LETTERS[j]}. {EVASION_LABELS[c]}" for j, c in enumerate(cand))
     tail = (f"Item to label:\n{render_item(item)}\n\n"
             f"Which label describes how the answer responds to the sub-question? Allowed labels:\n{options}\n\n"
@@ -121,6 +135,6 @@ def build_messages(item: Item, cand: list[int], examples: list[tuple[Item, int]]
     return [{"role": "system", "content": sys_msg}, {"role": "user", "content": user}], keep
 
 
-def letter_map(cand: list[int]) -> dict[str, int]:
+def letter_map(cand: list[int], order: str = "taxonomy") -> dict[str, int]:
     """Option letter -> label index, in the order build_messages shows them."""
-    return {LETTERS[j]: c for j, c in enumerate(sorted(cand))}
+    return {LETTERS[j]: c for j, c in enumerate(display_order(cand, order))}

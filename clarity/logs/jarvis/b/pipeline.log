@@ -1,0 +1,24 @@
+2026-10-02 05:42:59 setup: start
+2026-10-02 05:43:25 setup: torch 2.11.0+cu128 | NVIDIA RTX PRO 6000 Blackwell Server Edition 95 GiB | bf16 True
+2026-10-02 05:43:25 setup: downloading Qwen/Qwen3-8B-Base and Qwen/Qwen3-0.6B-Base to /home/clarity_llm/hf
+2026-10-02 05:44:57 setup: done (17G of models; disk free 59G)
+2026-10-02 05:48:26 pipeline: start (NAME=Q8_fullq_lora_12ep SEEDS='0 1' MODEL=Qwen/Qwen3-8B-Base EXTRA_ARGS='--epochs 12 --no-grad-checkpoint')
+2026-10-02 05:48:26 setup: start
+2026-10-02 05:48:30 setup: torch 2.11.0+cu128 | NVIDIA RTX PRO 6000 Blackwell Server Edition 95 GiB | bf16 True
+2026-10-02 05:48:30 setup: downloading Qwen/Qwen3-8B-Base and Qwen/Qwen3-0.6B-Base to /home/clarity_llm/hf
+2026-10-02 05:48:31 setup: done (17G of models; disk free 59G)
+2026-10-02 05:48:31 auto-pause ON: key valid, machine 523821 found
+2026-10-02 05:48:31 smoke: start (Qwen/Qwen3-0.6B-Base, 64 rows, 2 epochs, stop after epoch 0, then resume)
+2026-10-02 05:48:59 smoke: passed (0.1000 (should be << 1))
+2026-10-02 05:48:59 pilot: 20 optimizer steps of Qwen/Qwen3-8B-Base (Q8_fullq_lora_12ep, EXTRA_ARGS='--epochs 12 --no-grad-checkpoint')
+2026-10-02 05:49:38 pilot: longest micro-batch (4096 tokens): peak VRAM 50.4 GiB
+2026-10-02 05:49:38 pilot: 1.41 s per optimizer step; 194 steps per epoch -> 4.5 min per epoch of training, ~55 min for 12 epochs (+ ~3-5 min of evaluation per epoch); peak VRAM 53.4 GiB
+2026-10-02 05:49:38 pilot: projected 2.3 h for 2 seeds x 12 epochs (limit MAX_TOTAL_HOURS=4)
+2026-10-02 05:49:38 train: seed 0 attempt 1
+2026-10-02 06:48:15 train: seed 0 done: [done] Q8_fullq_lora_12ep seed0: epoch 9 selected; dev S2 0.5306049367488948, S1 0.7513008205320354; 59 min
+2026-10-02 06:48:15 train: seed 1 attempt 1
+2026-10-02 07:47:26 train: seed 1 done: [done] Q8_fullq_lora_12ep seed1: epoch 11 selected; dev S2 0.5601860337037045, S1 0.7400843372937578; 59 min
+2026-10-02 07:48:00 hf: 2 of 2 seed folders of Q8_fullq_lora_12ep on the Hub (logs/hf_uploads.log)
+2026-10-02 07:48:10 package: 794K results, 309M adapters in /home/clarity_llm
+2026-10-02 07:48:10 pipeline: ALL DONE
+2026-10-02 07:48:10 pausing instance 523821 (finished) in 1800 s -- Ctrl-C in tmux to keep it running

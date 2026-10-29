@@ -9,10 +9,10 @@
 | [`03_research_narrative.md`](03_research_narrative.md) | The same work as one argument, from the first DeBERTa run to the cascade |
 | [`04_results_sources.md`](04_results_sources.md) | Every number in the report, with the script and output file it comes from |
 | [`05_phase2_plan_and_budget.md`](05_phase2_plan_and_budget.md) | The plan after the mid-evaluation: cascade design, protocol, compute budget and run procedure |
-| [`06_final_push_handover.md`](06_final_push_handover.md) | The final push (2026-10-27 → 30): E19/E20 plan, budget, and how to launch the JarvisLabs lanes from a laptop |
+| [`06_final_push_handover.md`](06_final_push_handover.md) | The final push (2026-10-29 → 31): the plan (E19–E23), budget, timetable, and how to run the JarvisLabs lanes from a Windows laptop |
 | [`raw/`](raw/) | Raw outputs of every analysis script |
 | [`figures/`](figures/) | Generated figures, including those used in the slides (`figures/deck/`) |
 
 Documents 02, 03 and 05 are working records. They were written as the project progressed, so they are
-dated, refer to experiments by ID (E0–E20), and keep failed ideas and corrected mistakes where they
+dated, refer to experiments by ID (E0–E23), and keep failed ideas and corrected mistakes where they
 happened.

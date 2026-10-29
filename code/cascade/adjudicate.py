@@ -11,6 +11,10 @@ Splits (E15): screen = 300 rows (seed 15) of the 30% least confident cross-fitte
 slice = the 345-row train slice (10-seed candidates); dev; test; train50 = the 50% least confident
 cross-fitted train rows (M4's inputs). Candidates are M1's top 4 by rank of the calibrated, adjusted q.
 
+E19-E22 options (vLLM): --order shows the candidates rotated or reversed (q is still stored in sorted-candidate
+order); --cache-pad aligns the shared preamble to vLLM's cache block and warms the cache; --think-budget N lets
+the model think first and reads the letter after </think>.
+
 Writes runs/M3/<tag>/responses.jsonl, one line per item, appended as results arrive; a rerun skips
 items already done, so nothing is paid for twice. q(c|x) is the softmax over the candidates' letter
 log-probabilities. API spend goes through cascade.api_budget (hard cap for all of E15).
@@ -28,7 +32,8 @@ from pathlib import Path
 
 import numpy as np
 
-from cascade.prompts import LETTERS, PROMPT_VERSION, approx_tokens, build_messages, item_from_row, letter_map
+from cascade.prompts import (LETTERS, ORDERS, PROMPT_VERSION, approx_tokens, build_messages, item_from_row,
+                             letter_map)
 from qevasion.paths import ROOT, RUNS
 
 M1_INPUTS = RUNS / "M1" / "Q8_fullq_lora_12ep_fixed_a0.05" / "cascade_inputs.npz"
@@ -86,7 +91,8 @@ def load_jobs(path: str) -> list[Job]:
             for r in map(json.loads, Path(path).read_text().splitlines()) if r]
 
 
-def build_prompts(jobs: list[Job], k: int, variant: str = "full") -> list[tuple[list[dict], list[int]]]:
+def build_prompts(jobs: list[Job], k: int, variant: str = "full",
+                  order: str = "taxonomy") -> list[tuple[list[dict], list[int]]]:
     from cascade.exemplars import Retriever
 
     r = Retriever()
@@ -95,17 +101,19 @@ def build_prompts(jobs: list[Job], k: int, variant: str = "full") -> list[tuple[
     for j in jobs:
         ex = r.examples(j.frame, j.i, j.cand, k)
         exs = [(item_from_row(tr.iloc[e]), int(r.y[e])) for e in ex]
-        msgs, keep = build_messages(item_from_row(r.frames[j.frame].iloc[j.i]), j.cand, exs, variant)
+        msgs, keep = build_messages(item_from_row(r.frames[j.frame].iloc[j.i]), j.cand, exs, variant, order)
         out.append((msgs, [ex[n] for n in keep]))
     return out
 
 
-def letters_to_q(top: list[tuple[str, float]], cand: list[int]) -> dict:
-    """Candidate log-probs from the first output token's top log-probs; absent letters get min(top) - 1."""
-    lm = letter_map(cand)
+def letters_to_q(top: list[tuple[str, float]], cand: list[int], order: str = "taxonomy") -> dict:
+    """Candidate log-probs from the first output token's top log-probs; absent letters get min(top) - 1.
+    `lp` and `q` are in sorted-candidate order, whatever order the options were shown in."""
+    lm = letter_map(cand, order)
     best = {L: max((lp for t, lp in top if t.strip() == L), default=None) for L in lm}
     floor = min(lp for _, lp in top) - 1.0 if top else -30.0
-    lps = [best[L] if best[L] is not None else floor for L in lm]
+    by_label = {c: (best[L] if best[L] is not None else floor) for L, c in lm.items()}
+    lps = [by_label[c] for c in sorted(cand)]
     m = max(lps)
     e = [math.exp(v - m) for v in lps]
     return {"lp": lps, "q": [v / sum(e) for v in e], "missing": sum(best[L] is None for L in lm),
@@ -118,13 +126,57 @@ def done_ids(path: Path) -> set[str]:
     return {json.loads(line)["id"] for line in path.read_text().splitlines() if line.strip()}
 
 
-def record(job: Job, ex: list[int], msgs: list[dict], top: list[tuple[str, float]], extra: dict) -> dict:
+def record(job: Job, ex: list[int], msgs: list[dict], top: list[tuple[str, float]], extra: dict,
+           order: str = "taxonomy") -> dict:
     return {"id": job.id, "split": job.split, "frame": job.frame, "i": job.i, "cand": job.cand, "examples": ex,
-            **letters_to_q(top, job.cand), "top": [[t, round(lp, 4)] for t, lp in top[:8]],
+            **letters_to_q(top, job.cand, order), "order": order, "top": [[t, round(lp, 4)] for t, lp in top[:8]],
             "prompt_chars": sum(len(m["content"]) for m in msgs), **extra}
 
 
 # ---------------------------------------------------------------- local backend (vLLM)
+
+def cache_block(llm) -> int:
+    """The token granularity at which vLLM can reuse a cached prefix for this model (E22a). For hybrid
+    linear-attention models such as Qwen3.8 a prefix is reusable only up to a block boundary."""
+    cc = llm.llm_engine.vllm_config.cache_config
+    sizes = {k: getattr(cc, k, None) for k in ("block_size", "mamba_block_size")}
+    print(f"[cache] {sizes}, prefix caching {getattr(cc, 'enable_prefix_caching', '?')}", flush=True)
+    return int(sizes["mamba_block_size"] or sizes["block_size"])
+
+
+def pad_preamble(llm, prompts, kw: dict) -> int:
+    """E22a: pad the system message with ' .' units until the prefix shared by every prompt ends on a cache
+    block boundary. Returns the number of units added."""
+    tok, block = llm.get_tokenizer(), cache_block(llm)
+    a, b = prompts[0][0], prompts[-1][0]
+    base = a[0]["content"]
+
+    def shared(sys: str) -> int:
+        ids = [tok.apply_chat_template([dict(m[0], content=sys), m[1]], tokenize=True, add_generation_prompt=True,
+                                       **kw["chat_template_kwargs"]) for m in (a, b)]
+        return next((n for n, (x, y) in enumerate(zip(*ids)) if x != y), min(map(len, ids)))
+
+    for units in range(0, 4 * block):
+        n = shared(base + " ." * units)
+        if n % block == 0:
+            break
+    else:
+        raise SystemExit(f"could not align the shared prefix to the cache block ({block})")
+    for msgs, _ in prompts:
+        msgs[0]["content"] = base + " ." * units
+    print(f"[cache] preamble padded by {units} units: shared prefix {n} tokens = {n // block} blocks of {block}",
+          flush=True)
+    return units
+
+
+def log_cache_metrics(llm) -> None:
+    try:
+        for m in llm.get_metrics():
+            if "prefix_cache" in m.name:
+                print(f"[cache] {m.name} = {getattr(m, 'value', getattr(m, 'values', '?'))}", flush=True)
+    except Exception as e:  # noqa: BLE001 -- metrics are diagnostics only
+        print(f"[cache] no metrics: {type(e).__name__}", flush=True)
+
 
 def run_vllm(jobs, prompts, a, out: Path) -> None:
     from vllm import LLM, SamplingParams
@@ -133,18 +185,43 @@ def run_vllm(jobs, prompts, a, out: Path) -> None:
               gpu_memory_utilization=a.gpu_util, seed=0, **json.loads(a.vllm_args))
     sp = SamplingParams(max_tokens=1, temperature=0.0, logprobs=20)
     kw = {"chat_template_kwargs": json.loads(a.chat_template_kwargs)}
+    extra = {}
+    if a.cache_pad:
+        extra["cache_pad_units"] = pad_preamble(llm, prompts, kw)
+        llm.chat([prompts[0][0]], sp, use_tqdm=False, **kw)  # warm-up: the shared prefix enters the cache
+    if a.think_budget:
+        # E19 arm A / E20 R2: think first (Qwen's recommended sampling for thinking mode), then read the answer
+        # letter's distribution at the first token after </think>
+        sp_think = SamplingParams(max_tokens=a.think_budget, temperature=0.6, top_p=0.95, top_k=20, seed=0,
+                                  stop=["</think>"])
+        kw_think = {"chat_template_kwargs": {**kw["chat_template_kwargs"], "enable_thinking": True}}
+        tok = llm.get_tokenizer()
     for s in range(0, len(jobs), a.chunk):
         t0 = time.time()
         part = list(range(s, min(s + a.chunk, len(jobs))))
-        outs = llm.chat([prompts[n][0] for n in part], sp, use_tqdm=True, **kw)
+        msgs = [prompts[n][0] for n in part]
+        if a.think_budget:
+            thoughts = llm.chat(msgs, sp_think, use_tqdm=True, **kw_think)
+            texts = [tok.apply_chat_template(m, tokenize=False, add_generation_prompt=True,
+                                             **kw_think["chat_template_kwargs"]) for m in msgs]
+            outs = llm.generate([t + th.outputs[0].text + "\n</think>\n\n" for t, th in zip(texts, thoughts)], sp,
+                                use_tqdm=False)
+        else:
+            outs = llm.chat(msgs, sp, use_tqdm=True, **kw)
         sec = (time.time() - t0) / len(part)
         with out.open("a") as f:
-            for n, o in zip(part, outs):
+            for j, (n, o) in enumerate(zip(part, outs)):
                 lp = o.outputs[0].logprobs[0]
                 top = sorted(((v.decoded_token or "", v.logprob) for v in lp.values()), key=lambda x: -x[1])
-                f.write(json.dumps(record(jobs[n], prompts[n][1], prompts[n][0], top,
-                                          {"prompt_tokens": len(o.prompt_token_ids), "gpu_sec": round(sec, 3)})) + "\n")
+                info = {"prompt_tokens": len(o.prompt_token_ids), "gpu_sec": round(sec, 3), **extra}
+                if a.think_budget:
+                    th = thoughts[j].outputs[0]
+                    info.update(think_tokens=len(th.token_ids), think_finished=th.finish_reason == "stop",
+                                thought=th.text[-2000:])
+                f.write(json.dumps(record(jobs[n], prompts[n][1], prompts[n][0], top, info, a.order)) + "\n")
         print(f"{time.strftime('%T')} {s + len(part)}/{len(jobs)} scored ({sec:.2f} s/item)", flush=True)
+    if a.cache_pad:
+        log_cache_metrics(llm)
 
 
 # ---------------------------------------------------------------- API backend (OpenAI-compatible)
@@ -209,7 +286,7 @@ async def run_api(jobs, prompts, a, out: Path) -> None:
         usd = ledger.add(a.model, u)
         rec = record(jobs[n], prompts[n][1], prompts[n][0], top,
                      {"usage": u, "usd": round(usd, 7), "sec": round(time.time() - t0, 2),
-                      "content": r.choices[0].message.content})
+                      "content": r.choices[0].message.content}, a.order)
         async with lock:
             with out.open("a") as f:
                 f.write(json.dumps(rec) + "\n")
@@ -248,6 +325,9 @@ def main() -> None:
     p.add_argument("--concurrency", type=int, default=8)
     p.add_argument("--max-usd", type=float, default=1.0, help="cap for THIS run (the E15 cap applies on top)")
     p.add_argument("--samples", type=int, default=0, help="if >0: no log-probs, estimate q from N samples")
+    p.add_argument("--order", default="taxonomy", choices=ORDERS, help="order the candidates are shown in (E19 arm B)")
+    p.add_argument("--cache-pad", action="store_true", help="vLLM: align the shared preamble to the cache block (E22a)")
+    p.add_argument("--think-budget", type=int, default=0, help="vLLM: think up to N tokens before the letter (E19 A, E20 R2)")
     a = p.parse_args()
 
     outdir = RUNS / "M3" / a.tag
@@ -281,7 +361,7 @@ def main() -> None:
     print(f"{len(jobs)} items to score ({len(done)} already done) for {a.tag}", flush=True)
     if not jobs:
         return
-    prompts = build_prompts(jobs, a.k, a.prompt_variant)
+    prompts = build_prompts(jobs, a.k, a.prompt_variant, a.order)
     toks = np.array([sum(approx_tokens(m["content"]) for m in pm) for pm, _ in prompts])
     nex = np.array([len(ex) for _, ex in prompts])
     pre = approx_tokens(prompts[0][0][0]["content"])
@@ -289,7 +369,8 @@ def main() -> None:
           f"preamble {pre}; examples kept: mean {nex.mean():.1f}, min {nex.min()}", flush=True)
     (outdir / "prompt_sample.txt").write_text("\n\n=====\n\n".join(m["content"] for m in prompts[0][0]))
     cfg = {"backend": a.backend, "model": a.model, "k": a.k, "prompt_version": PROMPT_VERSION,
-           "prompt_variant": a.prompt_variant, "top_k": TOP_K,
+           "prompt_variant": a.prompt_variant, "top_k": TOP_K, "order": a.order,
+           "cache_pad": a.cache_pad, "think_budget": a.think_budget,
            "m1_inputs": str(M1_INPUTS.relative_to(ROOT)), "extra_body": json.loads(a.extra_body),
            "chat_template_kwargs": json.loads(a.chat_template_kwargs), "samples": a.samples,
            "started": time.strftime("%F %T")}
@@ -309,7 +390,7 @@ def main() -> None:
     cfg_path = outdir / "config.json"
     if cfg_path.exists():  # resuming: the scoring configuration must not change under the same tag
         old = json.loads(cfg_path.read_text())
-        defaults = {"prompt_variant": "full"}  # keys added after E15's runs
+        defaults = {"prompt_variant": "full", "order": "taxonomy", "cache_pad": False, "think_budget": 0}  # added after E15
         diff = [key for key in cfg if key != "started" and old.get(key, defaults.get(key)) != cfg[key]]
         if diff:
             raise SystemExit(f"{cfg_path} differs in {diff}: use a new --tag")

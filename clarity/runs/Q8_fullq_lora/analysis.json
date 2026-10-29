@@ -1,0 +1,33 @@
+{
+  "n_seeds": 3,
+  "subtask2_macro_f1": {
+    "mean": 0.46157996727958767,
+    "std": 0.08033220920599524
+  },
+  "subtask1_macro_f1": {
+    "mean": 0.6877773368814123,
+    "std": 0.04049255861279348
+  },
+  "subtask1_level_macro_f1": {
+    "mean": 0.7194970347000998,
+    "std": 0.026953285446419624
+  },
+  "inset_rate": 0.6038961038961039,
+  "class_coverage": 0.9259259259259259,
+  "per_class_subtask2": {
+    "Explicit": 0.7239821177373766,
+    "Implicit": 0.45914837650242896,
+    "Dodging": 0.5499194476409666,
+    "General": 0.3186258186258186,
+    "Deflection": 0.39308673555248896,
+    "Partial/half-answer": 0.0,
+    "Declining to answer": 0.5384615384615384,
+    "Claims ignorance": 0.6590909090909091,
+    "Clarification": 0.511904761904762
+  },
+  "per_class_subtask1": {
+    "Ambivalent": 0.8060208565619466,
+    "Clear Non-Reply": 0.5943211504187114,
+    "Clear Reply": 0.6629900036635789
+  }
+}

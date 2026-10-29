@@ -1,0 +1,28 @@
+2026-10-01 21:22:26 pipeline: start (NAME=Eve SEEDS='0 1 2' MODEL=Qwen/Qwen3-8B-Base EXTRA_ARGS='')
+2026-10-01 21:22:26 setup: start
+2026-10-01 21:23:27 setup: torch 2.11.0+cu128 | NVIDIA RTX PRO 6000 Blackwell Server Edition 95 GiB | bf16 True
+2026-10-01 21:23:27 setup: downloading Qwen/Qwen3-8B-Base and Qwen/Qwen3-0.6B-Base to /home/clarity_llm/hf
+2026-10-01 21:24:21 pipeline: start (NAME=Q8_fullq_lora SEEDS='0 1 2' MODEL=Qwen/Qwen3-8B-Base EXTRA_ARGS='')
+2026-10-01 21:24:21 setup: start
+2026-10-01 21:24:23 setup: torch 2.11.0+cu128 | NVIDIA RTX PRO 6000 Blackwell Server Edition 95 GiB | bf16 True
+2026-10-01 21:24:23 setup: downloading Qwen/Qwen3-8B-Base and Qwen/Qwen3-0.6B-Base to /home/clarity_llm/hf
+2026-10-01 21:52:39 pipeline: start (NAME=Q8_fullq_lora SEEDS='0 1 2' MODEL=Qwen/Qwen3-8B-Base EXTRA_ARGS='')
+2026-10-01 21:52:39 setup: start
+2026-10-01 21:52:45 setup: torch 2.11.0+cu128 | NVIDIA RTX PRO 6000 Blackwell Server Edition 95 GiB | bf16 True
+2026-10-01 21:52:45 setup: downloading Qwen/Qwen3-8B-Base and Qwen/Qwen3-0.6B-Base to /home/clarity_llm/hf
+2026-10-01 21:52:45 setup: done (28G of models; disk free 47G)
+2026-10-01 21:52:46 auto-pause ON: key valid, machine 523670 found
+2026-10-01 21:52:46 smoke: start (Qwen/Qwen3-0.6B-Base, 64 rows, 2 epochs, stop after epoch 0, then resume)
+2026-10-01 21:53:13 smoke: passed (0.1000 (should be << 1))
+2026-10-01 21:53:13 pilot: 20 optimizer steps of Qwen/Qwen3-8B-Base
+2026-10-01 21:54:07 pilot: 2.11 s per optimizer step; 194 steps per epoch -> 6.8 min per epoch of training, ~20 min for 3 epochs (+ ~3-5 min of evaluation per epoch); peak VRAM 17.6 GiB
+2026-10-01 21:54:07 pilot: projected 1.9 h for 3 seeds x 3 epochs (limit MAX_TOTAL_HOURS=5)
+2026-10-01 21:54:07 train: seed 0 attempt 1
+2026-10-01 22:15:26 train: seed 0 done: [done] Q8_fullq_lora seed0: epoch 2 selected; dev S2 0.40526233308915827, S1 0.6474816785697616; 21 min
+2026-10-01 22:15:26 train: seed 1 attempt 1
+2026-10-01 22:36:43 train: seed 1 done: [done] Q8_fullq_lora seed1: epoch 2 selected; dev S2 0.42590692011164216, S1 0.6873863675345614; 21 min
+2026-10-01 22:36:43 train: seed 2 attempt 1
+2026-10-01 22:57:59 train: seed 2 done: [done] Q8_fullq_lora seed2: epoch 2 selected; dev S2 0.5535706486379627, S1 0.7284639645399139; 21 min
+2026-10-01 22:58:15 package: 363K results, 464M adapters in /home/clarity_llm
+2026-10-01 22:58:15 pipeline: ALL DONE
+2026-10-01 22:58:15 pausing instance 523670 (finished) in 1800 s -- Ctrl-C in tmux to keep it running

@@ -1,0 +1,71 @@
+{
+  "config": {
+    "name": "Q8_fullq_lora",
+    "seed": 1,
+    "model": "Qwen/Qwen3-8B-Base",
+    "max_len": 1024,
+    "a_budget": 256,
+    "epochs": 3,
+    "lr": 0.0001,
+    "warmup": 0.05,
+    "wd": 0.0,
+    "batch_size": 4,
+    "grad_accum": 4,
+    "eval_batch_size": 16,
+    "lora_r": 16,
+    "lora_alpha": 32,
+    "lora_dropout": 0.05,
+    "grad_checkpoint": true,
+    "val_frac": 0.1,
+    "select": "best",
+    "dtype": "bf16",
+    "device": "cuda",
+    "limit_train": 0,
+    "limit_eval": 0,
+    "pilot_steps": 0,
+    "stop_after_epoch": -1,
+    "log_every": 20
+  },
+  "selected_epoch": 2,
+  "val_macro_f1": 0.4439621429654392,
+  "history": [
+    {
+      "epoch": 0,
+      "train_loss": 2.0322395039280665,
+      "val_macro_f1": 0.25231383380992334,
+      "train_minutes": 6.525104725360871,
+      "minutes": 7.021645867824555,
+      "dev_subtask2_macro_f1": 0.2753343086676419,
+      "dev_subtask1_macro_f1": 0.5932190321989957,
+      "dev_inset_rate": 0.564935064935065,
+      "dev_classes_named": 6
+    },
+    {
+      "epoch": 1,
+      "train_loss": 1.4178591919870875,
+      "val_macro_f1": 0.31699357037742426,
+      "train_minutes": 6.521689621607463,
+      "minutes": 7.018174246946971,
+      "dev_subtask2_macro_f1": 0.339145580185207,
+      "dev_subtask1_macro_f1": 0.5518433179723502,
+      "dev_inset_rate": 0.6006493506493507,
+      "dev_classes_named": 8
+    },
+    {
+      "epoch": 2,
+      "train_loss": 1.0619604878953284,
+      "val_macro_f1": 0.4439621429654392,
+      "train_minutes": 6.5022940595944725,
+      "minutes": 6.998913832505544,
+      "dev_subtask2_macro_f1": 0.42590692011164216,
+      "dev_subtask1_macro_f1": 0.6873863675345614,
+      "dev_inset_rate": 0.5811688311688312,
+      "dev_classes_named": 8
+    }
+  ],
+  "dev_subtask2_macro_f1": 0.42590692011164216,
+  "dev_subtask1_macro_f1": 0.6873863675345614,
+  "peak_vram_gb": 19.240379810333252,
+  "wall_minutes": 21.24701246023178,
+  "trainable_params": 43683840
+}

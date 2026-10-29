@@ -1,0 +1,38 @@
+2026-10-02 11:10:58 create: machine 523821 (Running) -- ssh -o StrictHostKeyChecking=no ubuntu@151.185.34.159
+2026-10-02 11:10:58 connect: b -> ubuntu@151.185.34.159 port 22, machine 523821
+2026-10-02 11:12:29 push: bundle unpacked into /home/clarity_llm/code
+2026-10-02 11:12:30 push: clarity/.env copied (mode 600)
+2026-10-02 11:15:28 push: bundle unpacked into /home/clarity_llm/code
+2026-10-02 11:15:29 push: clarity/.env copied (mode 600)
+2026-10-02 11:18:24 push: bundle unpacked into /home/clarity_llm/code
+2026-10-02 11:18:25 push: clarity/.env copied (mode 600)
+2026-10-02 11:18:27 start: pipeline launched on the instance (tmux clarity-llm)
+2026-10-02 11:18:27 watch: every 300 s
+2026-10-02 11:18:28 watch: 2026-10-02 05:48:26 setup: start
+2026-10-02 11:23:29 watch: 2026-10-02 05:49:38 train: seed 0 attempt 1
+2026-10-02 11:28:31 watch: 2026-10-02 05:49:38 train: seed 0 attempt 1
+2026-10-02 11:33:32 watch: 2026-10-02 05:49:38 train: seed 0 attempt 1
+2026-10-02 11:38:33 watch: 2026-10-02 05:49:38 train: seed 0 attempt 1
+2026-10-02 11:43:35 watch: 2026-10-02 05:49:38 train: seed 0 attempt 1
+2026-10-02 11:48:37 watch: 2026-10-02 05:49:38 train: seed 0 attempt 1
+2026-10-02 11:53:38 watch: 2026-10-02 05:49:38 train: seed 0 attempt 1
+2026-10-02 11:58:40 watch: 2026-10-02 05:49:38 train: seed 0 attempt 1
+2026-10-02 12:03:42 watch: 2026-10-02 05:49:38 train: seed 0 attempt 1
+2026-10-02 12:08:44 watch: 2026-10-02 05:49:38 train: seed 0 attempt 1
+2026-10-02 12:13:46 watch: 2026-10-02 05:49:38 train: seed 0 attempt 1
+2026-10-02 12:18:48 watch: 2026-10-02 06:48:15 train: seed 1 attempt 1
+2026-10-02 12:23:59 watch: 2026-10-02 06:48:15 train: seed 1 attempt 1
+2026-10-02 12:29:02 watch: 2026-10-02 06:48:15 train: seed 1 attempt 1
+2026-10-02 12:34:05 watch: 2026-10-02 06:48:15 train: seed 1 attempt 1
+2026-10-02 12:39:10 watch: 2026-10-02 06:48:15 train: seed 1 attempt 1
+2026-10-02 12:44:14 watch: 2026-10-02 06:48:15 train: seed 1 attempt 1
+2026-10-02 12:49:17 watch: 2026-10-02 06:48:15 train: seed 1 attempt 1
+2026-10-02 12:54:19 watch: 2026-10-02 06:48:15 train: seed 1 attempt 1
+2026-10-02 12:59:22 watch: 2026-10-02 06:48:15 train: seed 1 attempt 1
+2026-10-02 13:04:24 watch: 2026-10-02 06:48:15 train: seed 1 attempt 1
+2026-10-02 13:09:27 watch: 2026-10-02 06:48:15 train: seed 1 attempt 1
+2026-10-02 13:14:30 watch: 2026-10-02 06:48:15 train: seed 1 attempt 1
+2026-10-02 13:19:35 watch: 2026-10-02 07:48:10 pausing instance 523821 (finished) in 1800 s -- Ctrl-C in tmux to keep it running
+2026-10-02 13:19:38 watch: final results copied to clarity/runs/ and /mnt/c/Users/vidva/OneDrive - International Institute of Information Technology/Desktop/Course_Work_4-1/ANLP/Project/Course_Project/CLARITY-Unmasking-Political-Question-Evasions/clarity/logs/jarvis/b
+pause: True
+2026-10-02 13:20:02 watch: finished

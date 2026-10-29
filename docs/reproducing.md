@@ -80,3 +80,13 @@ python -m preregistered_analyses.e18_final > ../docs/raw/E18_final.txt
 The exact order used, with the server environments, is in
 [`05_phase2_plan_and_budget.md`](05_phase2_plan_and_budget.md) §6, and each run list is in
 `code/experiments/`.
+
+## 4. Robustness analyses and the final push (E19–E23)
+
+```bash
+python -m preregistered_analyses.e19_tier0 > ../docs/raw/E19_tier0.txt   # CPU, ~7 min
+python -m evaluation.make_cascade_submission                              # test files -> submissions/E19_*
+```
+
+The GPU arms of E19–E22 run on rented RTX PRO 6000 VMs. The commands, the machine choice and the costs
+are in [`06_final_push_handover.md`](06_final_push_handover.md) §5–6.
