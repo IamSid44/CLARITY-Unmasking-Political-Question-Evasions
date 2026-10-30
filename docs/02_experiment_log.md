@@ -3534,6 +3534,79 @@ of the answer (E25c).
 
 ---
 
+## E26 — Reduced precision: does the instrument survive FP8 and NF4, and what does it save? *(registered 2026-10-30, 22:25 IST, before any run)*
+
+**Where it sits in the argument.** Act 5 asks how cheaply the relation can be measured. E25d found no frozen fast
+path, and the 10 M1 seeds are ~91% of the accuracy point's GPU cost, so the remaining lever is numeric precision.
+The yardstick is already measured: changing GPU architecture alone flipped 1.3–1.6% of M1's labels and changed
+1.9% of the instrument's decisions (E25 controls). The question is whether quantization costs more than that.
+
+**Design.** Inference only, nothing retrained. The frozen M1 (Q8_fullq_lora_12ep, 10 seeds, `adapter_best` from
+the Hub) on the train slice (345, where calibration and routing were fitted), dev (308) and normalized test (237):
+890 items × 10 seeds per precision (`audit/quant.py`). **Every quantized run is compared with a 16-bit run of the
+same models on the same GPU type.**
+* **FP8**, on a JarvisLabs RTX PRO 6000 (Blackwell, native FP8 tensor cores): adapter merged into the base, every
+  decoder Linear in W8A8 e4m3 (row-wise weight scales, per-token activation scales, `torch._scaled_mm`; tensor-wise
+  if row-wise is unavailable), embeddings/norms/head in 16-bit. Against a merged bf16 run on the same VM. The 27B
+  scores every dev item that either precision defers (4 orders, as E25), so the **full system** is compared.
+* **NF4**, on the team's local RTX A4000s (Ampere, 16 GB; NF4 is not native on any GPU: 4-bit storage, bf16
+  compute): base in NF4 (bitsandbytes), adapter unmerged on top (the QLoRA layout), head in 16-bit; the bf16
+  reference split over two A4000s. M1 level only (the 27B does not fit there).
+Labels and routing use the frozen instrument (`code/experiments/e25/frozen_system.json`); nothing is refitted.
+
+**Hypotheses.**
+* **H26-1 (FP8 fidelity):** on dev, the 10-seed M1 label agrees with bf16 on ≥ 98% of items and the M1 system's S2
+  (nested CV, 10 splits) is within ±0.01: FP8 costs no more than changing GPU does.
+* **H26-2 (FP8 speed):** batched throughput ≥ 1.3× bf16. *Not obvious:* FP8 matmuls are ~2× peak, but quantizing
+  activations on the fly, small batches and the 16-bit parts eat into it.
+* **H26-3 (NF4, descriptive):** agreement 0.93–0.97, M1 S2 −0.01 to −0.03, throughput ≤ 1.0× (no speed-up; it
+  saves memory, ≤ 0.4×). **QLoRA trigger:** if NF4 costs > 0.02 S2 or flips > 5% of labels, QLoRA (training the
+  adapter on the NF4 base) is the named fix in future work; it is not run here.
+* **H26-4 (the cascade absorbs quantization error; the non-obvious one):** M1's FP8-induced decision flips sit
+  where M1 is unsure, which is where the 27B re-decides: ≥ 50% of the flips fall among deferred items (dev
+  deferral ~36%), and the full system flips fewer decisions than M1 alone.
+* **Decision rule:** FP8 becomes the instrument's recommended serving precision if H26-1 and H26-2 both hold;
+  the cost claim is then the measured speed ratio applied to the accuracy point (0.576 GPU-s/item), not a
+  projection.
+
+**Budget.** RTX PRO 6000 VM ₹207.36/h, lane PASS=4 with MAX_HOURS 0.9 (≤ ₹199 incl. storage; ₹230.59 left, no
+recharge possible below ₹500). The 27B scores dev only, without CUDA graphs (faster start-up; ~100 items per
+order). If the cap stops the lane before the 27B finishes, labels are computed locally with M1's decision wherever
+a 27B record is missing, and the analysis says so. NF4 on the local A4000s costs nothing. Analysis:
+`preregistered_analyses/e26_analysis.py` → `docs/raw/E26_analysis.txt`.
+
+**Amendment (22:30 IST).** The first lane attempt stopped at the smoke test: `audit/quant.py` did not set the model's
+padding token, so batched inference refused to run (a bug, not an FP8 issue; FP8 row-wise worked). The lane was
+stopped before it paused, the loader fixed, and the same VM restarted (MAX_HOURS 0.75). The lab half runs from
+`code/launch/e26_lab_run.sh` on phoenix under the team account, on GPUs 0 and 2 only (GPU 1 carries another user's
+job); NF4 seeds 0–4 and 5–9 run in parallel there, then the bf16 reference split over both cards.
+
+### E26 results, FP8 half *(2026-10-30, 22:52 IST; `raw/E26_analysis.txt`)*
+
+Spend ₹90 (credit 230.59 → 140.18); the instance destroyed itself. Noise floor: the merged bf16 model on this VM
+agrees with the training-time probabilities on 97.9% of per-seed labels (max |dp| 0.26).
+
+| | Result | Verdict |
+|---|---|---|
+| H26-1 FP8 fidelity | dev labels agree with same-GPU bf16 on 91.7% per seed and **96.1%** for the 10-seed mean (bar 98%); routing identical on 96.1%, top-4 sets on 84.7%; **M1 system S2 −0.020** (0.599 → 0.579, 10 splits) | **FAILED** |
+| H26-2 FP8 speed | batched throughput **0.83×** bf16 (43.1 → 35.9 items/s); batch-1 latency p50 33.6 → 30.2 ms, p95 62.7 → 49.6 ms | **FAILED** |
+| H26-4 cascade absorbs | 71% of FP8's 17 M1 decision flips fall on items deferred to the 27B (dev deferral 36%); **full-system S2 0.653 → 0.649 (−0.003)** against M1's −0.020; 16 vs 17 decisions flipped | **HELD** |
+| Decision rule | H26-1 and H26-2 failed | FP8 (as implemented) **not adopted** |
+
+**Reading.** FP8 costs M1 about as much as several seeds' worth of noise (−0.020 S2, 4× the cross-GPU flip rate),
+but the cascade absorbs almost all of it: the flips land where M1 is unsure, which is exactly where the 27B
+re-decides, so the full system loses only −0.003. The error goes where the adjudicator already looks.
+
+**NF4 status (23:05 IST): not run in time.** On the lab server the shared network delivers ~0.2–1 MB/s, so the 16 GB
+base model needs 9+ hours; JarvisLabs refuses to start an RTX PRO 6000 below a ₹244 balance (₹164 available,
+recharges start at ₹500). H26-3 is therefore unanswered in the report; the lab run continues overnight and, if it
+lands, is added as a follow-up. FP8's result stands on its own (both of its comparisons are on one GPU type). FP8 is not
+faster here because activations are quantized in unfused PyTorch ops (per-token scales, casts, padding) around each
+FP8 matmul; a speed-up needs fused kernels (e.g. vLLM's FP8 path), which is future work. The peak-memory figure
+(21.9 vs 20.9 GB) includes loading the 16-bit model before conversion, so it does not measure FP8's footprint.
+
+---
+
 ## Deferred
 
 - **An LLM in the re-ranking slot.** The encoder pipeline comes first; the

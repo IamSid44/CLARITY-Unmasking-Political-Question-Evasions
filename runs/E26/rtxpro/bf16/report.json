@@ -1,0 +1,205 @@
+{
+ "gpu": "NVIDIA RTX PRO 6000 Blackwell Server Edition",
+ "n_gpus": 1,
+ "precision": "bf16",
+ "fp8_mode": null,
+ "batch": 32,
+ "device_map": "single",
+ "torch": "2.11.0+cu128",
+ "transformers": "5.17.0",
+ "seed0": {
+  "load_s": 2.4,
+  "slice": {
+   "items": 345,
+   "seconds": 9.77,
+   "items_per_s": 35.32
+  },
+  "dev_own": {
+   "items": 308,
+   "seconds": 9.35,
+   "items_per_s": 32.95
+  },
+  "test_own": {
+   "items": 237,
+   "seconds": 3.87,
+   "items_per_s": 61.21
+  },
+  "peak_mem_gb": 21.89,
+  "latency_batch1": {
+   "p50_ms": 33.58028849999073,
+   "p95_ms": 62.7364060000275,
+   "n": 56
+  }
+ },
+ "seed1": {
+  "load_s": 1.9,
+  "slice": {
+   "items": 345,
+   "seconds": 9.66,
+   "items_per_s": 35.73
+  },
+  "dev_own": {
+   "items": 308,
+   "seconds": 9.38,
+   "items_per_s": 32.82
+  },
+  "test_own": {
+   "items": 237,
+   "seconds": 3.88,
+   "items_per_s": 61.02
+  },
+  "peak_mem_gb": 21.89
+ },
+ "seed2": {
+  "load_s": 2.1,
+  "slice": {
+   "items": 345,
+   "seconds": 9.68,
+   "items_per_s": 35.65
+  },
+  "dev_own": {
+   "items": 308,
+   "seconds": 9.39,
+   "items_per_s": 32.79
+  },
+  "test_own": {
+   "items": 237,
+   "seconds": 3.89,
+   "items_per_s": 60.96
+  },
+  "peak_mem_gb": 21.89
+ },
+ "seed3": {
+  "load_s": 1.9,
+  "slice": {
+   "items": 345,
+   "seconds": 9.68,
+   "items_per_s": 35.64
+  },
+  "dev_own": {
+   "items": 308,
+   "seconds": 9.4,
+   "items_per_s": 32.77
+  },
+  "test_own": {
+   "items": 237,
+   "seconds": 3.89,
+   "items_per_s": 60.94
+  },
+  "peak_mem_gb": 21.89
+ },
+ "seed4": {
+  "load_s": 2.1,
+  "slice": {
+   "items": 345,
+   "seconds": 9.68,
+   "items_per_s": 35.63
+  },
+  "dev_own": {
+   "items": 308,
+   "seconds": 9.4,
+   "items_per_s": 32.78
+  },
+  "test_own": {
+   "items": 237,
+   "seconds": 3.89,
+   "items_per_s": 60.97
+  },
+  "peak_mem_gb": 21.89
+ },
+ "seed5": {
+  "load_s": 2.1,
+  "slice": {
+   "items": 345,
+   "seconds": 9.68,
+   "items_per_s": 35.64
+  },
+  "dev_own": {
+   "items": 308,
+   "seconds": 9.39,
+   "items_per_s": 32.79
+  },
+  "test_own": {
+   "items": 237,
+   "seconds": 3.89,
+   "items_per_s": 60.96
+  },
+  "peak_mem_gb": 21.89
+ },
+ "seed6": {
+  "load_s": 2.1,
+  "slice": {
+   "items": 345,
+   "seconds": 9.68,
+   "items_per_s": 35.65
+  },
+  "dev_own": {
+   "items": 308,
+   "seconds": 9.39,
+   "items_per_s": 32.79
+  },
+  "test_own": {
+   "items": 237,
+   "seconds": 3.89,
+   "items_per_s": 60.96
+  },
+  "peak_mem_gb": 21.89
+ },
+ "seed7": {
+  "load_s": 2.0,
+  "slice": {
+   "items": 345,
+   "seconds": 9.68,
+   "items_per_s": 35.64
+  },
+  "dev_own": {
+   "items": 308,
+   "seconds": 9.4,
+   "items_per_s": 32.76
+  },
+  "test_own": {
+   "items": 237,
+   "seconds": 3.89,
+   "items_per_s": 60.91
+  },
+  "peak_mem_gb": 21.89
+ },
+ "seed8": {
+  "load_s": 1.9,
+  "slice": {
+   "items": 345,
+   "seconds": 9.69,
+   "items_per_s": 35.61
+  },
+  "dev_own": {
+   "items": 308,
+   "seconds": 9.4,
+   "items_per_s": 32.76
+  },
+  "test_own": {
+   "items": 237,
+   "seconds": 3.89,
+   "items_per_s": 60.93
+  },
+  "peak_mem_gb": 21.89
+ },
+ "seed9": {
+  "load_s": 2.1,
+  "slice": {
+   "items": 345,
+   "seconds": 9.68,
+   "items_per_s": 35.64
+  },
+  "dev_own": {
+   "items": 308,
+   "seconds": 9.4,
+   "items_per_s": 32.78
+  },
+  "test_own": {
+   "items": 237,
+   "seconds": 3.89,
+   "items_per_s": 60.96
+  },
+  "peak_mem_gb": 21.89
+ }
+}

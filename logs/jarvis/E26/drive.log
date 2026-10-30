@@ -1,0 +1,5 @@
+2026-10-30 22:25:39 create: machine 556582 (Running) -- ssh -o StrictHostKeyChecking=no ubuntu@151.185.34.137
+2026-10-30 22:25:40 connect: E26 -> ubuntu@151.185.34.137 port 22, machine 556582
+2026-10-30 22:26:58 push: bundle unpacked into /home/clarity_llm/code
+2026-10-30 22:26:59 push: code/.env copied (mode 600)
+2026-10-30 22:27:01 lane: inference lane launched on machine 556582 (tmux clarity-infer)

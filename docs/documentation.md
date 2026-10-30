@@ -411,6 +411,25 @@ who holds the President's accountability.
 - **Latency (batch 1, H100):** the base 8B takes 48 ms at full depth and 28 ms at 18 layers. The LoRA timing was
   taken while the GPU was shared, so it is not reported.
 
+### E26 (Act 5c): does the instrument survive lower precision?
+
+- **Why:** the 10 M1 seeds are about 91% of the accuracy point's GPU cost, and E25d ruled out a frozen fast path.
+  Numeric precision is the remaining lever.
+- **Yardstick:** changing GPU alone flips about 2% of labels.
+- **Design:** the frozen M1 in FP8 (8-bit weights and activations) against a 16-bit run on the same RTX PRO 6000,
+  on 890 items × 10 seeds, plus the 27B for the full system. Pre-registered at 22:25 IST.
+
+| Hypothesis | Result | Verdict |
+|---|---|---|
+| FP8 matches 16-bit (≥ 98% agreement, M1 within ±0.01) | 96.1% agreement; M1 −0.020 | failed |
+| FP8 is ≥ 1.3× faster | 0.83× (activation quantization in unfused PyTorch ops) | failed |
+| **The cascade absorbs the error** | 71% of FP8's label flips fall on items the 27B re-decides; **full system −0.003** vs M1 −0.020 | **held** |
+
+- **Reading:** quantization error lands where M1 is unsure, which is exactly where the adjudicator already looks. The
+  cascade makes the system robust to a cheaper M1, even though this FP8 implementation is not itself faster.
+- **Speed:** a real speed-up needs fused FP8 kernels (future work).
+- **NF4:** not run in time. The lab network and the Jarvis minimum balance blocked it.
+
 ---
 
 ## 11. The connected argument, start to finish

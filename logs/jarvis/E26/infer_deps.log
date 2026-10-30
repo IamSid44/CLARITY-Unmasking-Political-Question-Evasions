@@ -1,0 +1,14 @@
+Using Python 3.12.3 environment at: /home/clarity_llm/venv
+Resolved 7 packages in 281ms
+Downloading scikit-learn (8.7MiB)
+Downloading scipy (33.7MiB)
+ Downloaded scikit-learn
+ Downloaded scipy
+Prepared 6 packages in 799ms
+Installed 6 packages in 12ms
+ + cloudpickle==3.1.2
+ + joblib==1.6.0
+ + narwhals==2.28.0
+ + scikit-learn==1.9.1
+ + scipy==1.18.1
+ + threadpoolctl==3.7.0

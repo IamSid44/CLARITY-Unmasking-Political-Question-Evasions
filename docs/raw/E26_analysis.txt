@@ -1,0 +1,24 @@
+E26 analysis (registered 2026-10-30; docs/02 E26): reduced precision of the frozen M1, each against a 16-bit run on the same GPU type.
+
+==============================================================================================================
+Site rtxpro
+==============================================================================================================
+   rtxpro: GPU NVIDIA RTX PRO 6000 Blackwell Server Edition x1; precisions ['bf16', 'fp8']; torch 2.11.0+cu128, transformers 5.17.0
+   bf16 on rtxpro vs the saved (training-time) dev probabilities: argmax agreement per seed 0.979, max |dp| 0.259
+
+   --- fp8 vs bf16 on rtxpro ---
+   slice     label agreement per seed 0.935, 10-seed mean 0.959; mean max |dp| 0.059; top-4 identical 0.875; routing identical 0.968; mean u 0.488 (bf16 0.482)
+   dev_own   label agreement per seed 0.917, 10-seed mean 0.961; mean max |dp| 0.068; top-4 identical 0.847; routing identical 0.961; mean u 0.545 (bf16 0.541)
+   test_own  label agreement per seed 0.954, 10-seed mean 0.987; mean max |dp| 0.044; top-4 identical 0.831; routing identical 0.970; mean u 0.437 (bf16 0.434)
+   M1 system dev S2 (nested CV): bf16 0.606 (10 splits 0.599); fp8 0.582 (0.579); difference -0.020
+   full system dev S2 (frozen params, in-sample): bf16 0.653, fp8 0.649 (-0.003); S1 0.796 vs 0.784
+   H26-4 cascade absorbs: M1 decisions flipped 17 (0.055); share of them among items deferred to the 27B 0.706 (dev deferral 0.364); system decisions flipped 16 (0.052)
+   throughput (batch 32): bf16 43.1 items/s, fp8 35.9 items/s -> 0.83x; batch-1 latency p50 bf16 33.6 ms, fp8 30.2 ms (p95 62.7 / 49.6); peak memory 21.9 GB vs 20.9 GB (0.96x)
+   accuracy point cost at this speed ratio: M1 0.522 -> 0.627 GPU-s/item; system 0.576 -> 0.681 (+18%)
+
+==============================================================================================================
+Registered hypotheses
+==============================================================================================================
+   H26-1 FP8 fidelity (10-seed agreement >= 0.98 on dev AND M1 S2 within 0.01): FAILED (agreement 0.961, S2 -0.020)
+   H26-2 FP8 speed (>= 1.3x bf16 batched throughput): FAILED (0.83x, mode rowwise)
+   H26-4 cascade absorbs FP8 error (>= 50% of M1 flips among deferred items AND fewer system flips): HELD (0.706; 16 vs 17)

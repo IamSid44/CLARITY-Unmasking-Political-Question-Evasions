@@ -1,0 +1,6 @@
+rtxpro bf16 dev_own: 308 items, deferred 112, 27B-scored 112
+rtxpro bf16 test_own: 237 items, deferred 58, 27B-scored 0
+rtxpro bf16 slice: 345 items, deferred 104, 27B-scored 0
+rtxpro fp8 dev_own: 308 items, deferred 112, 27B-scored 112
+rtxpro fp8 test_own: 237 items, deferred 59, 27B-scored 0
+rtxpro fp8 slice: 345 items, deferred 107, 27B-scored 0

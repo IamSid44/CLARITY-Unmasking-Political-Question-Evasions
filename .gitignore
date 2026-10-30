@@ -13,6 +13,8 @@ runs/*
 !runs/E25/
 runs/E25/hidden/*.npy
 runs/E25/jobs_27b.jsonl
+# E26 (2026-10-30): reduced-precision M1 outputs, reports and labels (small)
+!runs/E26/
 wandb/
 *.tmp
 

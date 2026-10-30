@@ -304,6 +304,44 @@ pass3() {
   rm -f "$CODE/runs/E25/hidden/train.npy"  # 1 GB, not uploaded; the probes are fitted
 }
 
+# ---------------------------------------------------------------- PASS=4: E26 (FP8 vs 16-bit, RTX PRO 6000)
+p4_27b() { for o in taxonomy shift1 shift2 shift3; do adj --tag "e26_rtxpro_$o" --splits "" --jobs-file ../runs/E26/rtxpro/jobs_27b.jsonl --order "$o" --vllm-args '{"enforce_eager": true}' || return 1; done; }
+
+pass4() {
+  step deps uv pip install --python "$PY" scipy scikit-learn
+  step fetch hf_fetch
+  ok fetch && step m1inputs m1inputs
+  step p4_frames run "$PY" -m audit.frames build
+  ok fetch && ok p4_frames && step p4_smoke run "$PY" -m audit.quant --precision fp8 --smoke
+  ok p4_frames && step p4_bf16 run "$PY" -m audit.quant --precision bf16 --site rtxpro
+  ok p4_smoke && step p4_fp8 run "$PY" -m audit.quant --precision fp8 --site rtxpro
+  ok p4_bf16 && step p4_jobs run "$PY" -m audit.quant_system jobs --site rtxpro
+  stage "waiting for the 27B download and vLLM install"
+  if wait_flag fetch27 && wait_flag vllm_env && ok p4_jobs && ok m1inputs; then
+    step p4_27b p4_27b
+  fi
+  ok p4_bf16 && step p4_label run "$PY" -m audit.quant_system label --site rtxpro
+}
+
+# ---------------------------------------------------------------- PASS=5: E26 NF4 on the RTX PRO 6000 (bf16 exists)
+hf_fetch_m1() {  # only the 10 M1 adapters and their saved probabilities
+  run "$PY" -c "
+import os
+from dotenv import load_dotenv
+from huggingface_hub import snapshot_download
+load_dotenv('.env')
+pat = ['Q8_fullq_lora_12ep/seed*/*.npy', 'Q8_fullq_lora_12ep/seed*/*.json', 'Q8_fullq_lora_12ep/seed*/adapter_best/*']
+print(snapshot_download(os.environ['HF_REPO_ID'], local_dir='../runs', allow_patterns=pat, token=os.environ['HF_TOKEN']))"
+}
+
+pass5() {
+  step deps uv pip install --python "$PY" scipy scikit-learn bitsandbytes
+  step p5_fetch hf_fetch_m1
+  step p5_frames run "$PY" -m audit.frames build
+  ok p5_fetch && ok p5_frames && step p5_smoke run "$PY" -m audit.quant --precision nf4 --smoke
+  ok p5_smoke && step p5_nf4 run "$PY" -m audit.quant --precision nf4 --site rtxpro
+}
+
 vllm_think() {
   if [ "$(TZ=Asia/Kolkata date +%H:%M)" \> "$THINK_DEADLINE" ]; then echo "past $THINK_DEADLINE: thinking rung dropped (E20 amendment)"; return 0; fi
   adj --tag qwen38_27b_k0_think4k --splits "" --jobs-file ../runs/E22/jobs_think.jsonl --think-budget 4096 --chunk 128
@@ -316,6 +354,20 @@ m1cost() {  # one M1 seed and the 27B call, timed on this VM (E22a: every cost r
 
 upload() {  # every output that exists, then the logs; each folder is checked on the Hub afterwards
   local f paths=() root=$CODE/runs
+  if [ "$PASS" = 5 ]; then  # E26, NF4 on the same GPU type as the FP8 run
+    guard upload --dest E26/rtxpro/nf4 "$root/E26/rtxpro/nf4" || return 1
+    guard upload --dest logs/infer_lane_e26_nf4 "$LOGS" --allow 'infer*' || return 1
+    guard verify E26/rtxpro/nf4 logs/infer_lane_e26_nf4/infer.log
+    return
+  fi
+  if [ "$PASS" = 4 ]; then  # E26 only
+    guard upload --dest E26 "$root/E26" || return 1
+    paths+=("E26/rtxpro")
+    for f in $(cd "$root" && ls -d M3/e26_* 2>/dev/null); do guard upload --dest "$f" "$root/$f" || return 1; paths+=("$f"); done
+    guard upload --dest logs/infer_lane_e26 "$LOGS" --allow 'infer*' || return 1
+    guard verify "${paths[@]}" logs/infer_lane_e26/infer.log
+    return
+  fi
   if [ "$PASS" = 3 ]; then  # E25 only; the earlier passes' folders are already on the Hub
     p3_upload || return 1
     for f in E25/frames/summary.json $(cd "$root" && ls -d M3/e25_* 2>/dev/null); do paths+=("$f"); done
@@ -389,6 +441,7 @@ lane() {
     && touch "$LOGS/.setup_done"; } || die "setup"
   mkdir -p "$CODE/runs/E21" "$CODE/runs/E22"
   for f in fetch27 vllm_env; do  # background: weights and environment for the 27B (once, even across restarts)
+    [ "$PASS" = 5 ] && break  # E26 NF4 needs neither
     [ -f "$LOGS/.infer_$f" ] && continue
     pidf=$LOGS/.infer_${f}_pid
     [ -f "$pidf" ] && kill -0 "$(cat "$pidf")" 2>/dev/null && continue
@@ -397,8 +450,8 @@ lane() {
       && touch "$LOGS/.infer_$f" || touch "$LOGS/.infer_${f}_failed" ) &
     echo $! > "$pidf"
   done
-  if [ "$PASS" = 2 ] || [ "$PASS" = 3 ]; then
-    if [ "$PASS" = 2 ]; then pass2; else pass3; fi
+  if [ "$PASS" = 2 ] || [ "$PASS" = 3 ] || [ "$PASS" = 4 ] || [ "$PASS" = 5 ]; then
+    case "$PASS" in 2) pass2 ;; 3) pass3 ;; 4) pass4 ;; 5) pass5 ;; esac
     stage "lane: steps finished"
     trap - EXIT
     finish done

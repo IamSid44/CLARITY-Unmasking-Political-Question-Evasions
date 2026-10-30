@@ -1,0 +1,10 @@
+Q8_fullq_lora_12ep seeds [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]: tau_C 0.20, T 2.15, fixed parameter 3.000 (alpha 0.05)
+    val: mean |C| 3.00
+    dev: mean |C| 3.00
+   test: mean |C| 3.00
+  train: mean |C| 3.00
+wrote /home/clarity_llm/code/runs/M1/Q8_fullq_lora_12ep_fixed_a0.05/cascade_inputs.npz and meta.json
+dev 308 items; candidate sets differing from the saved M3 records: 0
+test 237 items; candidate sets differing from the saved M3 records: 0
+screen 300 items; candidate sets differing from the saved M3 records: 0
+cascade inputs reproduce the saved candidate sets

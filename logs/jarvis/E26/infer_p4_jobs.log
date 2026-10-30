@@ -1,0 +1,1 @@
+rtxpro: precisions ['bf16', 'fp8']; 27B jobs (deferred, distinct candidate sets): 136
