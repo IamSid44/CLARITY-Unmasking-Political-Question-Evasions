@@ -28,7 +28,8 @@ over seeds. Raw outputs behind the headline tables are in `docs/raw/`.
 | Latest | **E19–E22 done 2026-10-29/30** (`raw/E21_E22_analysis.txt`, `raw/E20_router.txt`, `raw/E23_systems.txt`). The 27B on the JarvisLabs VM agrees with the lab server's copy on only 92.5% of dev (faith gate failed), so everything was re-scored on one copy. Order-averaged q adopted (E19 B). LLM alone over 9 labels 0.591 < M1 (E19 A). Distillation: the M3-taught student beats self-distillation by only +0.012 single-model (H-E fails), +0.026 as a system. On leak-free train rows the LLM's value map is 0/−7/+2/+7/+12: the big losses on confident items were sibling leakage; the learned router loses to confidence routing (E20). Test answers carry transcript artifacts that cost M1 0.048 S2 on dev when injected, so the test files use normalized text (E21). Cached prompt halves the 27B's cost but changes its answers (E22a). Ladder 0.600 at 0.221 GPU-s, not adopted (E22c). E19 D and F not run |
 | Latest | **E24 pre-checks done 2026-10-30** (`raw/E24_prechecks.txt`, CPU only), for the research extension in [`07_research_extension_plan.md`](07_research_extension_plan.md). 61.5% of 3,079 train sibling pairs (same answer, different sub-question) carry different labels; sibling disagreement 72% vs 43% between annotators on one item, so evasion is relational, not annotator noise. M1 reads the question (same label on only 19% of disjoint dev sibling pairs). Question–answer relevance does not measure answering (AUC 0.566 for Clear Reply). Five candidate modules rejected: epistemic routing, sibling decoding, single-order debiasing, conformal set routing (0.564–0.617 vs 0.641–0.663), metric-optimal rule (no gain over CV-tuned logit adjustment) |
 | Latest | **E25 done 2026-10-30** (`raw/E25_analysis.txt`). The instrument reads the question causally (unrelated question: Clear Reply 25% → 1%). Question or speaker: a no-stake LLM does not evade where Presidents did (OR 1.18), but in the President's role the same models evade on the same questions (OR 2.74, exploratory) at the same rate; a follow-up turns 66% of evasions into replies. Detection needs most of the answer, and only fine-tuning binds labels to questions |
-| Running | nothing. **Experiments closed.** No JarvisLabs instance exists; credit left ₹230.59 |
+| Latest | **E26 done 2026-10-31** (`raw/E26_analysis.txt`). Reduced precision of M1, each against 16-bit on the same GPU type: FP8 (RTX PRO 6000) 96.1% label agreement, M1 −0.020, full system −0.003; NF4 (RTX A4000) 86.7%, M1 −0.034. Neither is faster as implemented (0.83× / 0.82×). The cascade absorbs most of FP8's error (71% of flips land on items the 27B re-decides) |
+| Running | nothing. **Experiments closed.** No JarvisLabs instance exists; credit left ₹140.18 |
 
 ---
 
@@ -3600,7 +3601,37 @@ re-decides, so the full system loses only −0.003. The error goes where the adj
 **NF4 status (23:05 IST): not run in time.** On the lab server the shared network delivers ~0.2–1 MB/s, so the 16 GB
 base model needs 9+ hours; JarvisLabs refuses to start an RTX PRO 6000 below a ₹244 balance (₹164 available,
 recharges start at ₹500). H26-3 is therefore unanswered in the report; the lab run continues overnight and, if it
-lands, is added as a follow-up. FP8's result stands on its own (both of its comparisons are on one GPU type). FP8 is not
+lands, is added as a follow-up. FP8's result stands on its own (both of its comparisons are on one GPU type).
+
+### E26 results, NF4 half *(2026-10-31, 01:30 IST; lab server, 2 × RTX A4000; `raw/E26_analysis.txt`)*
+
+The lab run did land overnight. Amendments on the way: the PyTorch install timed out (uv's 30 s HTTP timeout, now
+600 s); the first pass ran out of GPU memory after 6 NF4 seeds and 1 bf16 seed, because memory crept up across seeds
+inside one process; it resumed with one process per seed and the split bf16 model capped at 12 GiB per card. GPU 1
+(another user's job) was never used. Noise floor on this site: bf16 split over two A4000s agrees with the
+training-time probabilities on 97.9% of per-seed labels (the same as the RTX PRO).
+
+| | NF4 vs same-site bf16 | Prediction |
+|---|---|---|
+| dev label agreement | 78.9% per seed, **86.7%** 10-seed mean | 93–97% → worse |
+| M1 system dev S2 (nested CV, 10 splits) | 0.598 → 0.565, **−0.034** | −0.01 to −0.03 → slightly worse |
+| routing identical / top-4 identical | 83.8% / 62.3% | — |
+| batched throughput | **0.82×** (7.7 → 6.3 items/s, batch 16) | ≤ 1.0× → held |
+| batch-1 latency p50 | 169 → 259 ms (slower) | — |
+| peak memory | 16.8 → 11.3 GB (0.67×; includes per-process creep) | ≤ 0.4× → not met as measured |
+| **QLoRA trigger** (> 0.02 S2 or > 5% flips) | **met** | QLoRA is the named fix (future work) |
+
+*Exploratory (not registered for NF4): does the cascade absorb it?* Using the 27B records from the RTX PRO run (the
+27B does not fit on an A4000), NF4's full system loses −0.010 S2 against its M1's −0.029 (frozen τ), but only 49%
+of NF4's 45 M1 flips fall on deferred items, and 60 of the 136 items NF4 defers have no 27B record (their candidate
+sets differ from those scored), so they keep M1's decision: a partial absorption, measured as a lower bound.
+
+**Reading across both formats.** In this setup neither low-precision format makes M1 cheaper in time: FP8 0.83× and
+NF4 0.82× throughput, because the kernels used (unfused FP8 activation quantization; NF4 dequantization) cost more
+than they save at these batch sizes. They differ in accuracy: FP8 changes 4% of ensemble labels (−0.020 M1, −0.003
+full system), NF4 13% (−0.034 M1). The cascade absorbs most of FP8's error and part of NF4's. So the instrument's
+cost lever is not precision as implemented here; the measured result is that **the adjudicator makes the system
+robust to a degraded first stage**, which is what a cheaper first stage would need. FP8 is not
 faster here because activations are quantized in unfused PyTorch ops (per-token scales, casts, padding) around each
 FP8 matmul; a speed-up needs fused kernels (e.g. vLLM's FP8 path), which is future work. The peak-memory figure
 (21.9 vs 20.9 GB) includes loading the 16-bit model before conversion, so it does not measure FP8's footprint.

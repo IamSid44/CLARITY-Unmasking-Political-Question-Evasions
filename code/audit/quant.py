@@ -124,6 +124,10 @@ def load(precision: str, seed: int, model_id: str, device_map, fp8: str | None, 
         kw["dtype"] = torch.bfloat16
     else:
         kw["dtype"] = torch.bfloat16
+    import os
+
+    if device_map == "auto" and os.environ.get("E26_MAX_MEM_GIB"):  # leave room for activations on split models
+        kw["max_memory"] = {i: f"{os.environ['E26_MAX_MEM_GIB']}GiB" for i in range(torch.cuda.device_count())}
     base = AutoModelForSequenceClassification.from_pretrained(model_id, **kw)
     base.config.pad_token_id = pad_id  # the head reads the last non-pad token (as models.llm_classifier sets it)
     model = PeftModel.from_pretrained(base, adapter)

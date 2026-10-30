@@ -1,0 +1,220 @@
+{
+ "gpu": "NVIDIA RTX A4000",
+ "n_gpus": 1,
+ "precision": "nf4",
+ "fp8_mode": null,
+ "batch": 16,
+ "device_map": "single",
+ "torch": "2.6.0+cu124",
+ "transformers": "5.17.0",
+ "seed0": {
+  "load_s": 8.4,
+  "slice": {
+   "items": 345,
+   "seconds": 65.67,
+   "items_per_s": 5.25
+  },
+  "dev_own": {
+   "items": 308,
+   "seconds": 64.23,
+   "items_per_s": 4.8
+  },
+  "test_own": {
+   "items": 237,
+   "seconds": 25.1,
+   "items_per_s": 9.44
+  },
+  "peak_mem_gb": 9.24,
+  "latency_batch1": {
+   "p50_ms": 259.2104619834572,
+   "p95_ms": 475.00144375953823,
+   "n": 56
+  }
+ },
+ "seed1": {
+  "load_s": 5.3,
+  "slice": {
+   "items": 345,
+   "seconds": 66.99,
+   "items_per_s": 5.15
+  },
+  "dev_own": {
+   "items": 308,
+   "seconds": 64.75,
+   "items_per_s": 4.76
+  },
+  "test_own": {
+   "items": 237,
+   "seconds": 25.09,
+   "items_per_s": 9.44
+  },
+  "peak_mem_gb": 12.87
+ },
+ "seed2": {
+  "load_s": 5.3,
+  "slice": {
+   "items": 345,
+   "seconds": 66.89,
+   "items_per_s": 5.16
+  },
+  "dev_own": {
+   "items": 308,
+   "seconds": 64.72,
+   "items_per_s": 4.76
+  },
+  "test_own": {
+   "items": 237,
+   "seconds": 25.08,
+   "items_per_s": 9.45
+  },
+  "peak_mem_gb": 12.16
+ },
+ "seed3": {
+  "load_s": 5.4,
+  "slice": {
+   "items": 345,
+   "seconds": 67.03,
+   "items_per_s": 5.15
+  },
+  "dev_own": {
+   "items": 308,
+   "seconds": 64.87,
+   "items_per_s": 4.75
+  },
+  "test_own": {
+   "items": 237,
+   "seconds": 25.15,
+   "items_per_s": 9.42
+  },
+  "peak_mem_gb": 12.87
+ },
+ "seed4": {
+  "load_s": 11.9,
+  "slice": {
+   "items": 345,
+   "seconds": 64.74,
+   "items_per_s": 5.33
+  },
+  "dev_own": {
+   "items": 308,
+   "seconds": 64.37,
+   "items_per_s": 4.78
+  },
+  "test_own": {
+   "items": 237,
+   "seconds": 25.15,
+   "items_per_s": 9.42
+  },
+  "peak_mem_gb": 9.24,
+  "latency_batch1": {
+   "p50_ms": 259.44679300300777,
+   "p95_ms": 475.99503747187555,
+   "n": 56
+  }
+ },
+ "seed5": {
+  "load_s": 17.1,
+  "slice": {
+   "items": 345,
+   "seconds": 63.86,
+   "items_per_s": 5.4
+  },
+  "dev_own": {
+   "items": 308,
+   "seconds": 65.23,
+   "items_per_s": 4.72
+  },
+  "test_own": {
+   "items": 237,
+   "seconds": 26.13,
+   "items_per_s": 9.07
+  },
+  "peak_mem_gb": 9.24,
+  "latency_batch1": {
+   "p50_ms": 276.78860747255385,
+   "p95_ms": 510.57215710170567,
+   "n": 56
+  }
+ },
+ "seed6": {
+  "load_s": 13.2,
+  "slice": {
+   "items": 345,
+   "seconds": 69.14,
+   "items_per_s": 4.99
+  },
+  "dev_own": {
+   "items": 308,
+   "seconds": 69.33,
+   "items_per_s": 4.44
+  },
+  "test_own": {
+   "items": 237,
+   "seconds": 26.85,
+   "items_per_s": 8.83
+  },
+  "peak_mem_gb": 12.87
+ },
+ "seed7": {
+  "load_s": 13.3,
+  "slice": {
+   "items": 345,
+   "seconds": 69.46,
+   "items_per_s": 4.97
+  },
+  "dev_own": {
+   "items": 308,
+   "seconds": 69.52,
+   "items_per_s": 4.43
+  },
+  "test_own": {
+   "items": 237,
+   "seconds": 27.01,
+   "items_per_s": 8.78
+  },
+  "peak_mem_gb": 12.16
+ },
+ "seed8": {
+  "load_s": 98.2,
+  "slice": {
+   "items": 345,
+   "seconds": 67.73,
+   "items_per_s": 5.09
+  },
+  "dev_own": {
+   "items": 308,
+   "seconds": 68.37,
+   "items_per_s": 4.51
+  },
+  "test_own": {
+   "items": 237,
+   "seconds": 26.5,
+   "items_per_s": 8.94
+  },
+  "peak_mem_gb": 12.87
+ },
+ "seed9": {
+  "load_s": 18.4,
+  "slice": {
+   "items": 345,
+   "seconds": 65.34,
+   "items_per_s": 5.28
+  },
+  "dev_own": {
+   "items": 308,
+   "seconds": 68.23,
+   "items_per_s": 4.51
+  },
+  "test_own": {
+   "items": 237,
+   "seconds": 27.12,
+   "items_per_s": 8.74
+  },
+  "peak_mem_gb": 9.24,
+  "latency_batch1": {
+   "p50_ms": 286.3203880842775,
+   "p95_ms": 527.324691764079,
+   "n": 56
+  }
+ }
+}

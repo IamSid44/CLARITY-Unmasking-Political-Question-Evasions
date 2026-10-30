@@ -17,8 +17,24 @@ Site rtxpro
    accuracy point cost at this speed ratio: M1 0.522 -> 0.627 GPU-s/item; system 0.576 -> 0.681 (+18%)
 
 ==============================================================================================================
+Site a4000
+==============================================================================================================
+   a4000: GPU NVIDIA RTX A4000 x2; precisions ['bf16', 'nf4']; torch 2.6.0+cu124, transformers 5.17.0
+   bf16 on a4000 vs the saved (training-time) dev probabilities: argmax agreement per seed 0.979, max |dp| 0.270
+
+   --- nf4 vs bf16 on a4000 ---
+   slice     label agreement per seed 0.823, 10-seed mean 0.899; mean max |dp| 0.158; top-4 identical 0.655; routing identical 0.910; mean u 0.517 (bf16 0.482)
+   dev_own   label agreement per seed 0.789, 10-seed mean 0.867; mean max |dp| 0.191; top-4 identical 0.623; routing identical 0.838; mean u 0.570 (bf16 0.541)
+   test_own  label agreement per seed 0.849, 10-seed mean 0.890; mean max |dp| 0.134; top-4 identical 0.557; routing identical 0.907; mean u 0.467 (bf16 0.435)
+   M1 system dev S2 (nested CV): bf16 0.598 (10 splits 0.598); nf4 0.558 (0.565); difference -0.034
+   throughput (batch 16): bf16 7.7 items/s, nf4 6.3 items/s -> 0.82x; batch-1 latency p50 bf16 169.0 ms, nf4 259.2 ms (p95 343.9 / 475.0); peak memory 16.8 GB vs 11.3 GB (0.67x)
+   accuracy point cost at this speed ratio: M1 0.522 -> 0.636 GPU-s/item; system 0.576 -> 0.690 (+20%)
+
+==============================================================================================================
 Registered hypotheses
 ==============================================================================================================
    H26-1 FP8 fidelity (10-seed agreement >= 0.98 on dev AND M1 S2 within 0.01): FAILED (agreement 0.961, S2 -0.020)
    H26-2 FP8 speed (>= 1.3x bf16 batched throughput): FAILED (0.83x, mode rowwise)
    H26-4 cascade absorbs FP8 error (>= 50% of M1 flips among deferred items AND fewer system flips): HELD (0.706; 16 vs 17)
+   H26-3 NF4 (descriptive): 10-seed agreement 0.867 (predicted 0.93-0.97); M1 S2 -0.034 (predicted -0.01 to -0.03); speed 0.82x (predicted <= 1.0x); memory 0.67x (predicted <= 0.4x)
+   QLoRA trigger (NF4 costs > 0.02 S2 or flips > 5% of labels): MET -> QLoRA is the named fix

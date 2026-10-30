@@ -428,7 +428,21 @@ who holds the President's accountability.
 - **Reading:** quantization error lands where M1 is unsure, which is exactly where the adjudicator already looks. The
   cascade makes the system robust to a cheaper M1, even though this FP8 implementation is not itself faster.
 - **Speed:** a real speed-up needs fused FP8 kernels (future work).
-- **NF4:** not run in time. The lab network and the Jarvis minimum balance blocked it.
+
+**NF4** (4-bit, on the lab's RTX A4000s against a 16-bit run on the same cards; finished overnight):
+
+| | FP8 (RTX PRO 6000) | NF4 (RTX A4000) |
+|---|---|---|
+| Labels agreeing with 16-bit (10-seed, dev) | 96.1% | 86.7% |
+| M1 accuracy change | −0.020 | −0.034 |
+| Full-system change | −0.003 | −0.010 (lower bound: 60 deferred items lacked 27B records) |
+| Speed | 0.83× | 0.82× |
+
+- **Neither format saves time here.** Each format's kernels cost more than they save: FP8's activation
+  quantization, NF4's dequantization.
+- **The QLoRA trigger is met for NF4,** so retraining the adapter on the 4-bit base is the named fix (future work).
+- **The robust finding is the cascade:** the 27B absorbs most of FP8's error and part of NF4's. A cheaper first
+  stage costs the system much less than it costs M1 alone.
 
 ---
 

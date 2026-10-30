@@ -26,7 +26,7 @@ free_gpus() {  # every listed GPU must have no compute process and < 1 GB in use
 log "phase 0: setup in $W"
 # no python3-venv on this server (and no sudo): uv, with its binary, Python, cache and venv all inside $W and no
 # change to the shell profile
-export UV_INSTALL_DIR=$W/bin UV_NO_MODIFY_PATH=1 UV_CACHE_DIR=$W/uvcache UV_PYTHON_INSTALL_DIR=$W/uvpython
+export UV_INSTALL_DIR=$W/bin UV_NO_MODIFY_PATH=1 UV_CACHE_DIR=$W/uvcache UV_PYTHON_INSTALL_DIR=$W/uvpython UV_HTTP_TIMEOUT=600 UV_HTTP_RETRIES=10
 [ -x $W/bin/uv ] || curl -LsSf https://astral.sh/uv/install.sh | sh || { log "uv install failed"; exit 1; }
 if [ ! -x $W/venv/bin/python ]; then
   $W/bin/uv venv $W/venv --python /usr/bin/python3 --no-python-downloads || { log "venv failed"; exit 1; }  # the system 3.10: fetching a managed Python stalled on this network

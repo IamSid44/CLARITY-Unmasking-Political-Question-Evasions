@@ -1,0 +1,250 @@
+{
+ "gpu": "NVIDIA RTX A4000",
+ "n_gpus": 2,
+ "precision": "bf16",
+ "fp8_mode": null,
+ "batch": 8,
+ "device_map": "auto",
+ "torch": "2.6.0+cu124",
+ "transformers": "5.17.0",
+ "seed0": {
+  "load_s": 9.0,
+  "slice": {
+   "items": 345,
+   "seconds": 54.64,
+   "items_per_s": 6.31
+  },
+  "dev_own": {
+   "items": 308,
+   "seconds": 54.2,
+   "items_per_s": 5.68
+  },
+  "test_own": {
+   "items": 237,
+   "seconds": 19.94,
+   "items_per_s": 11.89
+  },
+  "peak_mem_gb": 16.82,
+  "latency_batch1": {
+   "p50_ms": 169.02612801641226,
+   "p95_ms": 343.92191318329424,
+   "n": 56
+  }
+ },
+ "seed1": {
+  "load_s": 11.9,
+  "slice": {
+   "items": 345,
+   "seconds": 55.37,
+   "items_per_s": 6.23
+  },
+  "dev_own": {
+   "items": 308,
+   "seconds": 54.78,
+   "items_per_s": 5.62
+  },
+  "test_own": {
+   "items": 237,
+   "seconds": 19.97,
+   "items_per_s": 11.87
+  },
+  "peak_mem_gb": 16.82,
+  "latency_batch1": {
+   "p50_ms": 167.82780713401735,
+   "p95_ms": 343.42987393029034,
+   "n": 56
+  }
+ },
+ "seed2": {
+  "load_s": 8.9,
+  "slice": {
+   "items": 345,
+   "seconds": 55.66,
+   "items_per_s": 6.2
+  },
+  "dev_own": {
+   "items": 308,
+   "seconds": 55.9,
+   "items_per_s": 5.51
+  },
+  "test_own": {
+   "items": 237,
+   "seconds": 20.75,
+   "items_per_s": 11.42
+  },
+  "peak_mem_gb": 16.82,
+  "latency_batch1": {
+   "p50_ms": 171.94796819239855,
+   "p95_ms": 355.0175860291347,
+   "n": 56
+  }
+ },
+ "seed3": {
+  "load_s": 9.0,
+  "slice": {
+   "items": 345,
+   "seconds": 56.22,
+   "items_per_s": 6.14
+  },
+  "dev_own": {
+   "items": 308,
+   "seconds": 55.68,
+   "items_per_s": 5.53
+  },
+  "test_own": {
+   "items": 237,
+   "seconds": 20.12,
+   "items_per_s": 11.78
+  },
+  "peak_mem_gb": 16.82,
+  "latency_batch1": {
+   "p50_ms": 170.3801704570651,
+   "p95_ms": 345.07533733267337,
+   "n": 56
+  }
+ },
+ "seed4": {
+  "load_s": 14.0,
+  "slice": {
+   "items": 345,
+   "seconds": 55.93,
+   "items_per_s": 6.17
+  },
+  "dev_own": {
+   "items": 308,
+   "seconds": 55.33,
+   "items_per_s": 5.57
+  },
+  "test_own": {
+   "items": 237,
+   "seconds": 20.01,
+   "items_per_s": 11.84
+  },
+  "peak_mem_gb": 16.82,
+  "latency_batch1": {
+   "p50_ms": 170.0975545682013,
+   "p95_ms": 345.68342939019203,
+   "n": 56
+  }
+ },
+ "seed5": {
+  "load_s": 15.3,
+  "slice": {
+   "items": 345,
+   "seconds": 55.79,
+   "items_per_s": 6.18
+  },
+  "dev_own": {
+   "items": 308,
+   "seconds": 55.47,
+   "items_per_s": 5.55
+  },
+  "test_own": {
+   "items": 237,
+   "seconds": 20.19,
+   "items_per_s": 11.74
+  },
+  "peak_mem_gb": 16.82,
+  "latency_batch1": {
+   "p50_ms": 172.67413716763258,
+   "p95_ms": 346.1915800580755,
+   "n": 56
+  }
+ },
+ "seed6": {
+  "load_s": 18.6,
+  "slice": {
+   "items": 345,
+   "seconds": 55.6,
+   "items_per_s": 6.21
+  },
+  "dev_own": {
+   "items": 308,
+   "seconds": 55.26,
+   "items_per_s": 5.57
+  },
+  "test_own": {
+   "items": 237,
+   "seconds": 20.38,
+   "items_per_s": 11.63
+  },
+  "peak_mem_gb": 16.82,
+  "latency_batch1": {
+   "p50_ms": 173.10311552137136,
+   "p95_ms": 344.81225383933634,
+   "n": 56
+  }
+ },
+ "seed7": {
+  "load_s": 168.0,
+  "slice": {
+   "items": 345,
+   "seconds": 56.76,
+   "items_per_s": 6.08
+  },
+  "dev_own": {
+   "items": 308,
+   "seconds": 56.84,
+   "items_per_s": 5.42
+  },
+  "test_own": {
+   "items": 237,
+   "seconds": 21.14,
+   "items_per_s": 11.21
+  },
+  "peak_mem_gb": 16.82,
+  "latency_batch1": {
+   "p50_ms": 177.51686461269855,
+   "p95_ms": 358.7765858974308,
+   "n": 56
+  }
+ },
+ "seed8": {
+  "load_s": 18.5,
+  "slice": {
+   "items": 345,
+   "seconds": 57.05,
+   "items_per_s": 6.05
+  },
+  "dev_own": {
+   "items": 308,
+   "seconds": 58.18,
+   "items_per_s": 5.29
+  },
+  "test_own": {
+   "items": 237,
+   "seconds": 21.19,
+   "items_per_s": 11.18
+  },
+  "peak_mem_gb": 16.82,
+  "latency_batch1": {
+   "p50_ms": 178.57996141538024,
+   "p95_ms": 359.17814285494387,
+   "n": 56
+  }
+ },
+ "seed9": {
+  "load_s": 10.6,
+  "slice": {
+   "items": 345,
+   "seconds": 57.63,
+   "items_per_s": 5.99
+  },
+  "dev_own": {
+   "items": 308,
+   "seconds": 59.63,
+   "items_per_s": 5.17
+  },
+  "test_own": {
+   "items": 237,
+   "seconds": 23.62,
+   "items_per_s": 10.03
+  },
+  "peak_mem_gb": 16.82,
+  "latency_batch1": {
+   "p50_ms": 175.46088504604995,
+   "p95_ms": 381.0144589515403,
+   "n": 56
+  }
+ }
+}
