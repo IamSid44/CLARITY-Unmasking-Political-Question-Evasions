@@ -1,0 +1,85 @@
+/home/clarity_llm/venv/lib/python3.12/site-packages/sklearn/decomposition/_pca.py:779: RuntimeWarning: invalid value encountered in divide
+  self.explained_variance_ratio_ = self.explained_variance_ / total_var
+{"layer": 0, "C": 0.01, "tau": -1.0, "slice_f1": 0.05185185185185185, "dev_s2": 0.060415024954032046, "dev_s1": 0.13608957795004306, "sib_same_label_disjoint": 1.0, "seconds": 15.0}
+/home/clarity_llm/venv/lib/python3.12/site-packages/sklearn/linear_model/_logistic.py:599: ConvergenceWarning: lbfgs failed to converge after 2000 iteration(s) (status=1):
+STOP: TOTAL NO. OF ITERATIONS REACHED LIMIT
+
+Increase the number of iterations to improve the convergence (max_iter=2000).
+You might also want to scale the data as shown in:
+    https://scikit-learn.org/stable/modules/preprocessing.html
+Please also refer to the documentation for alternative solver options:
+    https://scikit-learn.org/stable/modules/linear_model.html#logistic-regression
+  n_iter_i = _check_optimize_result(
+{"layer": 1, "C": 0.1, "tau": 0.20000000000000018, "slice_f1": 0.302654550764903, "dev_s2": 0.21172738723075896, "dev_s1": 0.41139810763965606, "sib_same_label_disjoint": 0.8793103448275862, "seconds": 438.4}
+/home/clarity_llm/venv/lib/python3.12/site-packages/sklearn/linear_model/_logistic.py:599: ConvergenceWarning: lbfgs failed to converge after 2000 iteration(s) (status=1):
+STOP: TOTAL NO. OF ITERATIONS REACHED LIMIT
+
+Increase the number of iterations to improve the convergence (max_iter=2000).
+You might also want to scale the data as shown in:
+    https://scikit-learn.org/stable/modules/preprocessing.html
+Please also refer to the documentation for alternative solver options:
+    https://scikit-learn.org/stable/modules/linear_model.html#logistic-regression
+  n_iter_i = _check_optimize_result(
+{"layer": 2, "C": 0.1, "tau": 0.15000000000000013, "slice_f1": 0.32540801949291603, "dev_s2": 0.28447877162864854, "dev_s1": 0.44050294275013374, "sib_same_label_disjoint": 0.896551724137931, "seconds": 460.6}
+/home/clarity_llm/venv/lib/python3.12/site-packages/sklearn/linear_model/_logistic.py:599: ConvergenceWarning: lbfgs failed to converge after 2000 iteration(s) (status=1):
+STOP: TOTAL NO. OF ITERATIONS REACHED LIMIT
+
+Increase the number of iterations to improve the convergence (max_iter=2000).
+You might also want to scale the data as shown in:
+    https://scikit-learn.org/stable/modules/preprocessing.html
+Please also refer to the documentation for alternative solver options:
+    https://scikit-learn.org/stable/modules/linear_model.html#logistic-regression
+  n_iter_i = _check_optimize_result(
+{"layer": 3, "C": 0.1, "tau": 0.4500000000000002, "slice_f1": 0.303303016535271, "dev_s2": 0.2995133405404531, "dev_s1": 0.4365205992978412, "sib_same_label_disjoint": 0.7931034482758621, "seconds": 414.7}
+{"layer": 4, "C": 0.01, "tau": -0.09999999999999998, "slice_f1": 0.32387286605994997, "dev_s2": 0.24402074786625771, "dev_s1": 0.4586991306642912, "sib_same_label_disjoint": 0.7586206896551724, "seconds": 362.6}
+/home/clarity_llm/venv/lib/python3.12/site-packages/sklearn/linear_model/_logistic.py:599: ConvergenceWarning: lbfgs failed to converge after 2000 iteration(s) (status=1):
+STOP: TOTAL NO. OF ITERATIONS REACHED LIMIT
+
+Increase the number of iterations to improve the convergence (max_iter=2000).
+You might also want to scale the data as shown in:
+    https://scikit-learn.org/stable/modules/preprocessing.html
+Please also refer to the documentation for alternative solver options:
+    https://scikit-learn.org/stable/modules/linear_model.html#logistic-regression
+  n_iter_i = _check_optimize_result(
+{"layer": 5, "C": 0.01, "tau": -0.04999999999999993, "slice_f1": 0.32892633856299625, "dev_s2": 0.28276368663151946, "dev_s1": 0.44756680101507684, "sib_same_label_disjoint": 0.8103448275862069, "seconds": 339.1}
+/home/clarity_llm/venv/lib/python3.12/site-packages/sklearn/linear_model/_logistic.py:599: ConvergenceWarning: lbfgs failed to converge after 2000 iteration(s) (status=1):
+STOP: TOTAL NO. OF ITERATIONS REACHED LIMIT
+
+Increase the number of iterations to improve the convergence (max_iter=2000).
+You might also want to scale the data as shown in:
+    https://scikit-learn.org/stable/modules/preprocessing.html
+Please also refer to the documentation for alternative solver options:
+    https://scikit-learn.org/stable/modules/linear_model.html#logistic-regression
+  n_iter_i = _check_optimize_result(
+{"layer": 6, "C": 0.01, "tau": -0.19999999999999996, "slice_f1": 0.307472869216487, "dev_s2": 0.2655468453918066, "dev_s1": 0.46085129948844933, "sib_same_label_disjoint": 0.8275862068965517, "seconds": 380.8}
+{"layer": 7, "C": 0.01, "tau": 0.10000000000000009, "slice_f1": 0.30423065964872875, "dev_s2": 0.32453346027583985, "dev_s1": 0.4860004797134326, "sib_same_label_disjoint": 0.8103448275862069, "seconds": 361.5}
+/home/clarity_llm/venv/lib/python3.12/site-packages/sklearn/linear_model/_logistic.py:599: ConvergenceWarning: lbfgs failed to converge after 2000 iteration(s) (status=1):
+STOP: TOTAL NO. OF ITERATIONS REACHED LIMIT
+
+Increase the number of iterations to improve the convergence (max_iter=2000).
+You might also want to scale the data as shown in:
+    https://scikit-learn.org/stable/modules/preprocessing.html
+Please also refer to the documentation for alternative solver options:
+    https://scikit-learn.org/stable/modules/linear_model.html#logistic-regression
+  n_iter_i = _check_optimize_result(
+{"layer": 8, "C": 0.01, "tau": 0.6000000000000001, "slice_f1": 0.2884628540404417, "dev_s2": 0.33716285485526204, "dev_s1": 0.5194331105827925, "sib_same_label_disjoint": 0.8275862068965517, "seconds": 341.8}
+/home/clarity_llm/venv/lib/python3.12/site-packages/sklearn/linear_model/_logistic.py:599: ConvergenceWarning: lbfgs failed to converge after 2000 iteration(s) (status=1):
+STOP: TOTAL NO. OF ITERATIONS REACHED LIMIT
+
+Increase the number of iterations to improve the convergence (max_iter=2000).
+You might also want to scale the data as shown in:
+    https://scikit-learn.org/stable/modules/preprocessing.html
+Please also refer to the documentation for alternative solver options:
+    https://scikit-learn.org/stable/modules/linear_model.html#logistic-regression
+  n_iter_i = _check_optimize_result(
+{"layer": 9, "C": 0.1, "tau": 0.40000000000000013, "slice_f1": 0.28586883008566083, "dev_s2": 0.25226764657165923, "dev_s1": 0.4453821788780528, "sib_same_label_disjoint": 0.7586206896551724, "seconds": 654.4}
+/home/clarity_llm/venv/lib/python3.12/site-packages/sklearn/linear_model/_logistic.py:599: ConvergenceWarning: lbfgs failed to converge after 2000 iteration(s) (status=1):
+STOP: TOTAL NO. OF ITERATIONS REACHED LIMIT
+
+Increase the number of iterations to improve the convergence (max_iter=2000).
+You might also want to scale the data as shown in:
+    https://scikit-learn.org/stable/modules/preprocessing.html
+Please also refer to the documentation for alternative solver options:
+    https://scikit-learn.org/stable/modules/linear_model.html#logistic-regression
+  n_iter_i = _check_optimize_result(
+{"layer": 10, "C": 0.1, "tau": 0.050000000000000044, "slice_f1": 0.31991500165956066, "dev_s2": 0.28610207650739866, "dev_s1": 0.4247815896015343, "sib_same_label_disjoint": 0.8103448275862069, "seconds": 930.7}

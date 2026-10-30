@@ -12,3 +12,6 @@
 2026-10-29 13:02:49 push: bundle unpacked into /home/clarity_llm/code
 2026-10-29 13:02:50 push: code/.env copied (mode 600)
 2026-10-29 13:02:54 start: pipeline launched on the instance (tmux clarity-llm)
+2026-10-29 18:55:21 resume: machine 553343 (Running) -- ssh -o StrictHostKeyChecking=no ubuntu@151.185.34.180
+2026-10-29 18:55:22 connect: E1 -> ubuntu@151.185.34.180 port 22, machine 553343
+2026-10-29 18:56:01 sync: copied

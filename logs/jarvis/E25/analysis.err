@@ -1,0 +1,26 @@
+Traceback (most recent call last):
+  File "<frozen runpy>", line 198, in _run_module_as_main
+  File "<frozen runpy>", line 88, in _run_code
+  File "C:\Users\vidva\OneDrive - International Institute of Information Technology\Desktop\Course_Work_4-1\ANLP\Project\Course_Project\CLARITY-Unmasking-Political-Question-Evasions\code\preregistered_analyses\e25_analysis.py", line 475, in <module>
+    main()
+  File "C:\Users\vidva\OneDrive - International Institute of Information Technology\Desktop\Course_Work_4-1\ANLP\Project\Course_Project\CLARITY-Unmasking-Political-Question-Evasions\code\preregistered_analyses\e25_analysis.py", line 465, in main
+    controls()
+  File "C:\Users\vidva\OneDrive - International Institute of Information Technology\Desktop\Course_Work_4-1\ANLP\Project\Course_Project\CLARITY-Unmasking-Political-Question-Evasions\code\preregistered_analyses\e25_analysis.py", line 99, in controls
+    lq[i, list(c)] = np.log(np.maximum(LOOK["averaged"][(i, c)], 1e-12))
+                                       ~~~~~~~~~~~~~~~~^^^^^^^^
+KeyError: (np.int64(271), (1, 2, 4, 7))
+Traceback (most recent call last):
+  File "<frozen runpy>", line 198, in _run_module_as_main
+  File "<frozen runpy>", line 88, in _run_code
+  File "C:\Users\vidva\OneDrive - International Institute of Information Technology\Desktop\Course_Work_4-1\ANLP\Project\Course_Project\CLARITY-Unmasking-Political-Question-Evasions\code\figures\e25_figures.py", line 127, in <module>
+    main()
+  File "C:\Users\vidva\OneDrive - International Institute of Information Technology\Desktop\Course_Work_4-1\ANLP\Project\Course_Project\CLARITY-Unmasking-Political-Question-Evasions\code\figures\e25_figures.py", line 121, in main
+    R = json.loads((RUNS / "E25" / "analysis.json").read_text())
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Program Files\WindowsApps\PythonSoftwareFoundation.Python.3.11_3.11.2544.0_x64__qbz5n2kfra8p0\Lib\pathlib.py", line 1058, in read_text
+    with self.open(mode='r', encoding=encoding, errors=errors) as f:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Program Files\WindowsApps\PythonSoftwareFoundation.Python.3.11_3.11.2544.0_x64__qbz5n2kfra8p0\Lib\pathlib.py", line 1044, in open
+    return io.open(self, mode, buffering, encoding, errors, newline)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: 'C:\\Users\\vidva\\OneDrive - International Institute of Information Technology\\Desktop\\Course_Work_4-1\\ANLP\\Project\\Course_Project\\CLARITY-Unmasking-Political-Question-Evasions\\runs\\E25\\analysis.json'

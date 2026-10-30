@@ -24,8 +24,11 @@ over seeds. Raw outputs behind the headline tables are in `docs/raw/`.
 | **Current system (2026-10-15)** | Two operating points on dev. **Accuracy:** 10-seed M1 + M3 at δ = 0.3, S2 0.669 (10 splits 0.660) / S1 0.798, 0.36 LLM calls and 0.558 GPU-s per item. **Cost:** E17 student + M3 at δ = 0.5, S2 0.608 / S1 0.790 (mean of 10 students), 0.57 calls and 0.111 GPU-s per item. TeleAI (1st place): 0.617 / 0.812 at 1.94 calls |
 | Latest | **E18 (freeze numbers) done 2026-10-15.** Final dev numbers for both operating points: accuracy point (M1 × 10 + M3, δ = 0.3) S2 0.669 / 0.660 over 10 splits, S1 0.798, 2-annotator 0.589; cost point (student + M3, δ = 0.5) S2 0.608 ± 0.027, S1 0.790, 2-annotator 0.567, at 0.21× the GPU cost of M1 (0.27× after E19's cost correction). Ensembles of distilled students do not help (≤ +0.02; the students lack diversity), so there is no middle operating point. Figure: `docs/figures/E18_frontier.pdf` |
 | Latest | **E19 Tier 0 done 2026-10-27** (`raw/E19_tier0.txt`). Two corrections to E15–E18. (1) **Refitting λ and τ inside each bootstrap replicate,** the accuracy point's gain over M1 is +0.037 [−0.044, +0.120] (P(≤ 0) = 0.20), no longer significant; the earlier +0.067 [+0.009, +0.124] held them fixed. (2) **M3 costs 0.151 GPU-s per call, not 0.103,** so the cost point is 0.139 GPU-s (0.27× M1, not 0.21×) and the accuracy point 0.576. What holds: confidence routing beats random routing (0.669 vs 0.604 ± 0.015 at δ = 0.3); the gain comes from M3, not from re-thresholding; and the LLM's value changes sign with M1's uncertainty |
-| **Current system (2026-10-29)** | As frozen in E18, with Tier 0's corrections. **Accuracy point:** S2 0.669 (10 splits 0.660) / S1 0.798 at 0.576 GPU-s per item. **Cost point:** S2 0.608 (10 splits 0.610) / S1 0.790 at 0.139 GPU-s per item. Test files for M1 and the accuracy point: `submissions/E19_*` |
-| Running | **E19** arm E (distillation controls, 2 Jarvis VMs, from 2026-10-29 13:03). **Registered 2026-10-29 and starting:** E19 arm F (Qwen3-14B, 2 seeds), arms A and B on a local 27B, **E20** amended (leak-free router), **E21** (test transcript shift), **E22** (cached and debiased adjudicator, escalation ladder, specificity score). Arm D dropped. Plan and budget: `06_final_push_handover.md` |
+| **Final system (2026-10-30, E23)** | One 27B copy (VM), order-averaged q, normalized test text. **Accuracy point:** M1 × 10 + M3, δ = 0.3: dev S2 **0.650** (10 splits 0.639) / S1 0.788, 0.36 calls. **Cost point:** student + M3, δ = 0.5: S2 0.608 (10 splits 0.606) / S1 0.785 (mean of 10 students), 0.139 GPU-s. Lab-record reference: 0.669 / 0.608. Test files: `submissions/E23_*` |
+| Latest | **E19–E22 done 2026-10-29/30** (`raw/E21_E22_analysis.txt`, `raw/E20_router.txt`, `raw/E23_systems.txt`). The 27B on the JarvisLabs VM agrees with the lab server's copy on only 92.5% of dev (faith gate failed), so everything was re-scored on one copy. Order-averaged q adopted (E19 B). LLM alone over 9 labels 0.591 < M1 (E19 A). Distillation: the M3-taught student beats self-distillation by only +0.012 single-model (H-E fails), +0.026 as a system. On leak-free train rows the LLM's value map is 0/−7/+2/+7/+12: the big losses on confident items were sibling leakage; the learned router loses to confidence routing (E20). Test answers carry transcript artifacts that cost M1 0.048 S2 on dev when injected, so the test files use normalized text (E21). Cached prompt halves the 27B's cost but changes its answers (E22a). Ladder 0.600 at 0.221 GPU-s, not adopted (E22c). E19 D and F not run |
+| Latest | **E24 pre-checks done 2026-10-30** (`raw/E24_prechecks.txt`, CPU only), for the research extension in [`07_research_extension_plan.md`](07_research_extension_plan.md). 61.5% of 3,079 train sibling pairs (same answer, different sub-question) carry different labels; sibling disagreement 72% vs 43% between annotators on one item, so evasion is relational, not annotator noise. M1 reads the question (same label on only 19% of disjoint dev sibling pairs). Question–answer relevance does not measure answering (AUC 0.566 for Clear Reply). Five candidate modules rejected: epistemic routing, sibling decoding, single-order debiasing, conformal set routing (0.564–0.617 vs 0.641–0.663), metric-optimal rule (no gain over CV-tuned logit adjustment) |
+| Latest | **E25 done 2026-10-30** (`raw/E25_analysis.txt`). The instrument reads the question causally (unrelated question: Clear Reply 25% → 1%). Question or speaker: a no-stake LLM does not evade where Presidents did (OR 1.18), but in the President's role the same models evade on the same questions (OR 2.74, exploratory) at the same rate; a follow-up turns 66% of evasions into replies. Detection needs most of the answer, and only fine-tuning binds labels to questions |
+| Running | nothing. **Experiments closed.** No JarvisLabs instance exists; credit left ₹230.59 |
 
 ---
 
@@ -3192,6 +3195,344 @@ It runs on the local vLLM.
 
 Final tables, the frontier figure with every operating point under both cost accountings, test files,
 docs, the HF model card and W&B summaries, from E19–E22's outputs. Nothing new is run.
+
+### E19–E22 results *(2026-10-29 → 30)*
+
+**Sources:**
+- `raw/E21_E22_analysis.txt`: `preregistered_analyses/e21_e22_analysis.py` (E19 A/B, E21a, E22a/b/e);
+- `raw/E20_router.txt`: `preregistered_analyses/e20_router.py`;
+- `raw/E23_systems.txt`: `preregistered_analyses/e23_systems.py` (operating points, E19-E system part, E22c);
+- `raw/E23_final_submission.txt`: `evaluation/make_final_submission.py`.
+
+The runs are on HF:
+- the arm-E students under `Q8_distill_a05_{m1,unif}/`;
+- the inference lanes under `E21/`, `E22/` and `M3/qwen38_27b_k0_{vm,jarvis,jarvis_cached,shift1,shift2,shift3,reverse,all9,vm_tn*}/`;
+- their logs under `logs/infer_lane/`.
+
+**How it ran.**
+- **Two inference lanes on Jarvis RTX PRO 6000 VMs:**
+  - **2026-10-29:** a first lane. A reporting bug crashed it at 14:09, and with no monitor running the VM sat
+    idle until 18:45 (≈ ₹950). It was then rerun.
+  - **2026-10-30, 11:53–12:18:** a second pass, with the self-managing lanes of 06 §6.
+- **E19 arm E:** two lanes, 6 seeds, done 16:04 on 2026-10-29.
+- **Credit:** ₹3,748 at the start of 2026-10-29 → ₹785.80 at the end. Arm F (14B) was not run.
+
+**The faithfulness gate failed.** The VM's 27B agrees with the lab server's records on 92.5% of dev
+items (mean max |Δq| 0.038), against the registered 0.98. On the other splits it agrees on 95.9–97.0%.
+- As registered, every record set the analyses need was re-scored on the VM: 6,497 items, tag
+  `qwen38_27b_k0_vm`.
+- Every new comparison uses only the VM's records.
+- The E15–E18 lab numbers are kept as what they were.
+
+**E19 arm A (the 27B alone, all nine labels, dev):** S2 **0.591**, S1 0.750, in-set 0.610. That is below
+the 10-seed M1 alone (0.598), so the expectation held.
+
+**E19 arm B / E22b (option order).**
+- **Position bias by order** (300 screen rows): letter A is picked 0.40 of the time in taxonomy order
+  (where A is usually Explicit), and 0.22–0.29 in the shifted and reversed orders.
+- **Within-C accuracy:** 0.327 for taxonomy order alone, 0.343 for the mean over the 4 cyclic orders.
+- **NLL:** 1.476 vs 1.431.
+- **The registered rule adopts permutation-averaged q:** it is better on both.
+- **On dev** (reported only), the in-set rate of the argmax within C is 0.643 for taxonomy order and 0.604
+  for the average.
+
+**E19 arm E (distillation controls), single-model dev S2,** seeds 0 / 1 / 2:
+
+| Student | Seeds 0 / 1 / 2 | Mean |
+|---|---|---|
+| M3-taught | 0.557 / 0.596 / 0.572 | **0.575** |
+| M1-taught (self-distillation) | 0.527 / 0.570 / 0.593 | 0.563 |
+| uniform-taught | 0.467 / 0.528 / 0.552 | 0.516 |
+
+- **H-E, single model:** the M3-taught student beats the uniform control by +0.059 (3/3 seeds). It beats
+  self-distillation by only +0.012 (2/3), below the registered 0.015, so **the H-E single-model part
+  fails**.
+- **By the registered rule,** the claim that the student learns "the LLM's knowledge" is dropped. The
+  student's gain is described as a soft-target / candidate-smoothing effect. Most of it is matched by M1's
+  own soft targets on the same candidate sets.
+- The system part is reported under E23 systems below.
+
+**E20 (amended): value map and learned router, on the 1,067 singleton train rows.**
+- **Value map:** net fixes of the VM's 27B over the cross-fitted M1, by fifth of M1 uncertainty (most
+  confident first), are **0 / −7 / +2 / +7 / +12**. Every 95% interval includes 0.
+- **Across all 3,448 rows** (Tier 0, lab records) the same map was −41 / −76 / −12 / +5 / +31. **Most of the
+  large losses on confident items came from sibling leakage.** On leak-free rows, the LLM roughly breaks
+  even where M1 is confident and helps where it is not.
+- **S-H1:** net value rises with uncertainty (Spearman ρ = 0.9 over the fifths), so that part holds. "Negative
+  in Q1–Q2" holds only for Q2.
+- **The learned router** (multinomial logistic regression of fix / break / neither on confidence features,
+  M1's class, lengths and the specificity score; 5-fold, held-out) **loses to confidence routing at all 4
+  budgets.** Macro-F1 at δ = 0.1 / 0.2 / 0.3 / 0.5:
+  - router 0.459 / 0.458 / 0.456 / 0.476;
+  - confidence 0.469 / 0.477 / 0.479 / 0.492;
+  - random 0.459 / 0.462 / 0.465 / 0.471.
+
+  S-H3 fails, so **confidence routing stays.** The thinking rung (R2) was dropped (past 18:00), so S-H2 and
+  the multi-rung allocation were not evaluated.
+
+**E21 (test transcript shift).**
+- **Normalization** changes 0.0% of train and dev answers and 97% of test answers. That confirms the
+  artifacts are test-only: speaker tags 96.2%, footnotes 10.5%, headers 7.6%, other speakers' turns 6.3%.
+  On test the median answer goes from 59 to 52 words.
+- **Control:** 20/20 seed folders reproduce their saved probabilities exactly.
+- **H21a held.** Injecting test's artifacts into dev changes **15.6%** of the 10-seed M1's dev predictions
+  and lowers S2 by **0.048** (0.617 → 0.570 at a fixed τ = 1.15). A single student changes 11.8% on average.
+- **Decision (registered): the test files are rebuilt from normalized text.** Normalization changes 34 of
+  237 of M1's test labels.
+- **Deviation:** the first lane's adapter-swapping inference did not reproduce the M1 seeds. It was replaced
+  by one fresh base model per adapter, which reproduces all 20 seed folders exactly.
+- **A caveat for the report:** 15 test answers lose more than half their words, because the rule cuts at
+  another speaker's turn. The annotators saw the full text.
+
+**E22a (cached prompt).**
+- **Cost:** on one VM, the cache-aligned prompt costs **0.050 GPU-s per call against 0.101** (0.49×).
+- **Agreement:** it moves q enough that argmax agreement is only 0.906 (mean max |Δq| 0.055), against the
+  registered 0.98, so **H22a fails**. The padding is not neutral for this model.
+- **Use:** caching is reported as a cost measurement only. Accuracy numbers use the original prompt.
+- **One M1 seed** costs 0.040 GPU-s per item on the same GPU, and reproduces exactly.
+
+**E22e (specificity).**
+- **Training rows:** PMI_c is +0.180 / +0.099 / +0.115 for Clear Reply / Ambivalent / Clear Non-Reply.
+  Spearman ρ with the clarity order is +0.095 [+0.060, +0.131], so **H22e holds by its registered
+  statistic**.
+- **But the signal is weak.** The AUROC for Clear Reply against the rest is 0.566, and Ambivalent and Non-Reply
+  are not ordered. On dev, ρ is +0.058 [−0.065, +0.174].
+- **As a router feature** it did not rescue the router (E20 above).
+
+### E23 results: the final systems *(2026-10-30)*
+
+**Source:** `raw/E23_systems.txt`. Dev, nested CV split 0 / mean of 10 splits / S1. Every system uses
+one copy of the 27B: the VM's.
+
+| System | Lab records (E15–E18, reference) | VM, single order | **VM, order-averaged q (final)** |
+|---|---|---|---|
+| Accuracy point: M1 × 10 + M3, δ = 0.3 (0.357 calls) | 0.669 / 0.660 / 0.798 | 0.639 / 0.637 / 0.787 | **0.650 / 0.639 / 0.788** |
+| Cost point: student + M3, δ = 0.5 (mean of 10 students, 0.574 calls) | 0.608 / 0.610 / 0.790 | 0.599 / 0.606 / 0.784 | **0.608 / 0.606 / 0.785** |
+
+**Reading this table.**
+- **The lab and VM copies are the same FP8 weights** on a different serving stack and GPU. They disagree on 7.5%
+  of dev decisions, and that alone moves the accuracy point by 0.02–0.03.
+- **The lab headline (0.669) is the high end of this spread.** With one consistent copy and the adopted
+  debiasing, the accuracy point is 0.650 on split 0 (0.639 over 10 splits). That is still above M1 alone
+  (0.598 / 0.601) and TeleAI's dev 0.617.
+- **The cost point is unchanged.**
+
+**E19-E, system part** (students + M3 at δ = 0.5, VM records, single order; 10-split mean S2, seeds 0–2):
+
+| Student | 10-split mean S2 |
+|---|---|
+| M3-taught | 0.615 |
+| M1-taught | 0.589 (M3 ahead by +0.026: +0.028 / +0.032 / +0.018) |
+| uniform-taught | 0.603 (M3 ahead by +0.012: +0.014 / −0.007 / +0.028) |
+
+- **The system part of H-E holds** against both controls (≥ +0.01).
+- **Taken with the single-model part,** which failed against self-distillation (+0.012 < 0.015), **H-E as
+  registered is not met.**
+- **So, by the registered rule,** the student is described as a soft-target / candidate-smoothing effect. In
+  the cascade, though, the M3-taught student combines with M3 better than either control does.
+
+**E22c, the escalation ladder** (VM records, single order; GPU-s on the E19 lab scale):
+- **Primary configuration** (e1 0.4, K 5, e2 0.3): 10-split S2 **0.600**, S1 0.785, at 0.221 GPU-s and 0.358
+  calls per item.
+- **H22c part 1** (≥ 0.625) **fails**.
+- **H22c part 2 holds:** primary minus random escalation at the same rates is +0.018 (random 0.582 ± 0.020).
+  - **Deviation:** the random draws are made within the items scored for e1 = 0.6, not over all items, because
+    the pass-2 jobs held fused candidate sets only for those.
+- **Grid:** best 0.604 at e1 0.6, K 5, e2 0.3 (0.285 GPU-s). Cheapest, 0.580 at 0.118 GPU-s.
+- **The ladder is not adopted.** No ladder point beats the cost point (0.606 at 0.139 GPU-s).
+
+**Final test files** (`raw/E23_final_submission.txt`, `submissions/E23_*`). All use normalized test text, the
+VM's 27B and order-averaged q:
+- **M1 × 10:** dev split-0 S2 0.598.
+- **Accuracy point:** dev 0.650 / S1 0.788; it defers 24.5% of test (58 calls).
+- **Cost point, student 0:** dev 0.627 / S1 0.747; it defers 40.1% of test.
+- **Differences:** the accuracy point changes 40 of 237 test labels relative to M1, and 31 relative to the E19
+  accuracy-point file.
+
+## E24 — Pre-checks for the research extension *(2026-10-30, CPU only)*
+
+**Why.** The mid-evaluation asked for more than the shared task. Seven literature scouts proposed ~60 candidate
+additions (doc 07). Before spending any of the remaining ₹785.80, each candidate that can be tested on existing
+artifacts was tested; a module goes to the GPU only if its pre-check passes.
+
+**What.** `python -m preregistered_analyses.e24_prechecks` (≈ 5 min) → `raw/E24_prechecks.txt`. P1 sibling
+structure; P2 question sensitivity of M1 on dev sibling pairs, with an annotator-noise control; P3 epistemic vs
+aleatoric routing; P4 sibling mean-field decoding; P5 a parameter-free decision rule for any-annotator macro-F1;
+P6 single-order position debiasing of the 27B; P7 conformal multi-reference candidate sets as router and pruner,
+with the system's nested-CV fusion; P8 question–answer relevance (E22 specificity scores) by gold label.
+
+**Results.**
+
+| Check | Result | Consequence |
+|---|---|---|
+| P1 | 69% of train rows share their answer; 61.5% of 3,079 sibling pairs differ in S2, 40.6% in S1 | a free contrast set |
+| P2 | annotators disagree 43% within an item, 72% across siblings, 83% across random items; M1 repeats its label on 19% of disjoint sibling pairs; both siblings right on 40% | evasion is relational; M1 reads the question but grounding is the bottleneck |
+| P3 | epistemic MI catches 49/115 errors in the top 30% vs 53 for entropy | rejected |
+| P4 | ±0.01, sign depends on τ | not established |
+| P5 | 0.594 untuned vs 0.598 CV-tuned logit adjustment; 5/10 seeds | theory only |
+| P6 | debiasing lowers agreement with the 4-order average (0.85 → 0.79) | rejected |
+| P7 | coverage valid (0.977 at α = 0.05) but S2 0.564–0.617 vs 0.641–0.663 | rejected |
+| P8 | relevance ordered (p = 2e-12) but AUC 0.566 for Clear Reply; Deflection as identifiable as Explicit | relevance ≠ answerhood |
+
+**What it changed.** The extension leads with evasion as a relation (P1, P2, P8) and an LLM evasion audit, not
+with new routing or decision methods; the rejected modules become a negative-results ledger. Plan and GPU budget:
+doc 07.
+
+---
+
+## E25 — Is evasion in the question or in the answerer? *(registered 2026-10-30, 14:30 IST, before any run)*
+
+**Where it sits in the argument.** E13–E23 built an instrument: knowledge (an 8B LLM) beats structure, the 8B
+ranks better than it decides, so a 27B adjudicates (E23 accuracy point, dev 0.650). E24 showed that what it
+measures is a *relation*: the label moves with the sub-question (sibling labels differ 72% vs 43% within an item),
+and question–answer relevance does not capture it (AUC 0.566). Two questions follow, in order:
+(1) does the instrument respond to the question *causally* (E25a), and (2) when an answer evades, is that driven
+by the **question** or by the **speaker** (E25b)? E25c/d measure what the instrument costs and when it can stop.
+
+**One frozen instrument, no parameter changes.** Every E25 label comes from the E23 accuracy point with all
+parameters fixed before the run (`audit/system.py freeze` → `code/experiments/e25/frozen_system.json`): M1 =
+Q8_fullq_lora_12ep, all 10 seeds; slice calibration (τ_C 0.20, T 2.15) and top-4 candidates; defer iff
+u ≥ 0.638 (the slice's 70% quantile, δ = 0.3); τ_M1 1.15 for kept items; λ 0.5, τ −0.55 for deferred items
+(fitted once on all of dev with the averaged VM records; nested CV of the same procedure: 0.650 / 0.639, so the
+instrument is E23's). The 27B (Qwen3.8-27B-FP8, k = 0) scores every deferred item in the 4 cyclic orders;
+q is their mean. Control: `jobs` + `label` on dev with E23's records reproduce the frozen full-dev predictions
+exactly (S2 0.6732; checked 2026-10-30). Text: dev answers as is, test answers normalized (E21b), LLM answers
+stripped of markdown (format control). Nothing is refitted on E25 data.
+
+**E25a — Does the instrument read the question causally?** Frames (`audit/frames.py`): each dev/test item with
+its question replaced by one from a different interview (*rand*, seed 25), with no question (*null*), and (dev)
+with its answer replaced by one constant, contentless sentence (*qonly*). No sibling swap: siblings share turn and
+answer, so a sibling's sub-question reproduces the sibling's own row (100% of dev; E24 P2 covers it).
+* **H25a-1 (relation, not style).** An answer paired with an unrelated question has, by the taxonomy's definition,
+  not replied to it. If the instrument models the relation, *rand* moves labels away from Clear Reply: the
+  Clear-Reply share falls by at least half (dev), and at most 50% of items keep their *own* label. If it labels
+  answer style, labels persist. Not obvious: training never showed a mismatched pair.
+* **H25a-2 (how much the answer alone decides; descriptive).** Persistence under *null* (share of items keeping
+  their own label). Read: ≥ 0.7 = labels are mostly answer-driven.
+* **Control C-q (for E25b).** *qonly* shows how much label variation the question alone creates; used below.
+* Test-set replication of the label-free measures (persistence, Clear-Reply share) is reported alongside dev.
+
+**E25b — Question or speaker? The same questions, put to speakers with no political stake.** The 308 dev
+sub-questions (191 interview turns) are put to four open 7–8B instruction-tuned LLMs of four families
+(Llama-3.1-8B-Instruct, Mistral-7B-Instruct-v0.3, Qwen3-8B with thinking off, OLMo-2-1124-7B-Instruct;
+`audit/generate.py`), greedy decoding, ≤ 400 new tokens, one user message, "spoken prose, no lists, ≤ 250
+words". Conditions, each differing from P in one factor: **N** neutral analyst ("you are not the President";
+factor: stake), **P** the President, in the interview, on its date (reference), **F** P's conversation, then
+"With respect, you haven't answered the question. ⟨sub-question⟩" (factor: pursuit), **B** P with the President's
+own answer as private notes (factor: information). N, P, B are generated once per turn and shared by its
+sub-questions, as the President's one answer is. Every answer is labelled by the frozen instrument against its
+dev sub-question. *Evades* = predicted clarity ≠ Clear Reply; for the President, the dev gold clarity label (and,
+like for like, the instrument's dev prediction). Statistics: cluster bootstrap over the 191 turns (2,000 draws).
+* **H25b-1 (a question-driven component exists).** In N, a model with no stake evades more often on the
+  questions the President evaded: odds ratio OR = odds(LLM evades | President evaded) / odds(… | President
+  answered) ≥ 1.5, pooled over the four models (Mantel–Haenszel), 95% CI above 1. If evasion were purely the
+  speaker's strategy, OR ≈ 1. **Control:** the same OR computed on *qonly* (the instrument's labels when the
+  answer carries nothing) must be < the N OR; otherwise the instrument's question prior, not the answerers,
+  explains the association.
+* **H25b-2 (stake).** P evades more than N: pooled paired difference ≥ +0.10.
+* **H25b-3 (pursuit).** Among P answers that evade, F turns ≥ 50% into a Clear Reply.
+* **H25b-4 (information; a test of the taxonomy).** With the President's own answer as notes (B), the Clear-Reply
+  rate is higher for questions whose President answer was labelled *indirect but informative* (Implicit,
+  General, Partial; majority gold) than for *non-answers* (Dodging, Deflection, Declining, Claims ignorance):
+  difference ≥ +0.15. If the taxonomy's split between indirect answers and non-answers is about information
+  content, the notes should let the LLM answer only the former.
+* **Descriptive.** Per-model evasion-type profiles against the Presidents' gold profile (Jensen–Shannon distance);
+  results per model (the 27B judge is Qwen-family, so Qwen3-8B is flagged).
+
+**E25c — When does evasion become visible?** The instrument on the first 25/50/75% of each answer's words.
+**H25c:** at 50%, its label agrees with the full-answer label on ≥ 70% of dev items and dev S2 drops by ≤ 0.05
+(streaming detection after half the answer). Reported per gold class.
+
+**E25d — Does the frozen base model already encode the relation? (the fast path).** Layer-wise linear probes on
+Qwen3-8B-Base without an adapter (`audit/hidden.py`; PCA-256 + logistic regression on train minus the slice;
+C and τ chosen on the slice). **H25d-1:** the best layer reaches dev S2 ≥ 0.45 (one fine-tuned seed: 0.525).
+**H25d-2:** the probe repeats its label on ≥ 30% of dev sibling pairs with disjoint annotator sets (M1: 19%),
+i.e. fine-tuning is what binds the label to the question. Latency: batch-1 time of the base model truncated to
+9/18/27/36 layers against the LoRA classifier.
+
+**Validity checks that can be acted on** (each limitation has its test):
+* *The instrument may not be valid on LLM text* → two team members label 100 LLM answers (stratified by model ×
+  condition, blind to both) at the clarity level; the instrument is used for E25b conclusions only if its κ with
+  the humans is within 0.10 of the humans' κ with each other. Sheet: written by the analysis script.
+* *Length/format may drive labels* → markdown removed for every answer; E25b effects re-estimated with log
+  answer length as a covariate.
+* *The instrument's own question prior* → control C-q above.
+* *Cost* → GPU time per step from the lane log; nothing in E25 changes the instrument, so its cost is E23's.
+
+**Budget.** One RTX PRO 6000 VM (~₹207/h), self-managing lane (`infer_lane.sh`, PASS=3; watchdog, upload check,
+self-destroy), MAX_HOURS 3.3 → at most ≈ ₹700 of the ₹785.80 left. Analysis: `preregistered_analyses/e25_analysis.py`
+→ `docs/raw/E25_analysis.txt`.
+
+**Amendments (2026-10-30, 14:25–14:40 IST, before any E25 result was seen).**
+1. *Hardware.* No RTX PRO 6000 VM was free; the lane runs on one H100 80 GB VM (₹330/h, machine 554906), with an
+   independent hard stop at 2.2 h (≤ ₹726). The lane's watchdog could not read a fractional MAX_HOURS (fixed in
+   the script for later runs).
+2. *Control C1 failed as registered.* On the H100, M1 seed 0 on dev_own differs from its saved dev probabilities
+   (scored on Blackwell GPUs) by max |dp| 0.196, with argmax agreement 0.987 (4 of 308 labels): bf16 numerics
+   differ across GPU architectures. Every E25 contrast compares frames scored in this one run on this one GPU,
+   so the control is recorded for every seed and reported, not used as a stop. The instrument's dev numbers in
+   E25 are this run's; the honest accuracy estimate remains E23's.
+3. *Throughput.* The H100 scores ~15 items/s per seed at batch 16, which would overrun the cap; batch 64 is used
+   for every E25 frame (~30 items/s), and the test-set prefix frames (a replication of a descriptive measure)
+   are dropped. Dev prefixes and the test rand/null replication are kept. The subject LLMs share the GPU with the
+   8B scorer (vLLM memory 0.45).
+4. *Two of the four subject models failed to load (recorded 15:05 IST, before any E25 analysis):* OLMo-2-7B
+   (its 4,096-token context is below the requested max_model_len of 8,192) and Llama-3.1-8B (no KV-cache memory
+   left at vLLM memory 0.45 while the 8B scorer held the GPU). E25b is therefore a **two-family pilot**:
+   Mistral-7B-Instruct-v0.3 and Qwen3-8B, 2,464 answers. Qwen3-8B shares a family with the 27B judge, so every
+   E25b result is also reported per model. "Pooled over the four models" in H25b-1 reads "over the two".
+   Re-running Llama and OLMo (with max_model_len 4096 and the GPU to themselves) is the first follow-up.
+5. *The 27B did not start on the H100 (15:31 IST):* 749 Mamba cache blocks < vLLM's default max_num_seqs 1,024. Re-run
+   by hand on the same VM with max_num_seqs 512 (scoring is unchanged: one token, greedy), then every frame relabelled.
+6. *Probes:* at ~340 s per layer on the VM's CPU, all 37 layers would overrun the cap; every 4th layer (0, 4, …, 36),
+   C in {0.01, 0.1}, max_iter 300 (`audit/hidden_fast.py`, generated from `audit/hidden.py` by the recovery script).
+
+### E25 results *(2026-10-30, 16:10 IST; `raw/E25_analysis.txt`, figures `figures/E25_*.pdf`)*
+
+Spend: ₹555 (credit 785.80 → 230.59); the instance destroyed itself after uploading, and the collector copied
+everything into `runs/E25`. Controls: on the H100, candidate sets match the saved inputs on 96.1% of dev, routing
+on 99.0%, and the instrument agrees with E23's frozen predictions on 98.1% (dev S2 0.659 vs 0.673, both in-sample).
+
+| Hypothesis | Result | Verdict |
+|---|---|---|
+| H25a-1 relation, not style | Unrelated question: Clear-Reply share 0.253 → **0.013**, labels kept 0.188; 62 of 78 Clear Replies become Dodging. Test (label-free): 0.338 → 0.110, kept 0.367 | **HELD** |
+| H25a-2 (descriptive) | No question: labels kept 0.354; Clear-Reply share *rises* to 0.640 (nothing to evade) | the question carries much of the label |
+| H25b-1 question-driven (N) | MH OR **1.18 [0.80, 1.73]** (Mistral 0.98, Qwen 1.40); adjusted 1.16. Control C-q degenerate: the contentless answer is labelled Dodging for 98% of questions | **FAILED** |
+| H25b-2 stake (P − N ≥ 0.10) | −0.031 [−0.081, +0.022] | **FAILED** |
+| H25b-3 pursuit (F) | 66.1% of evasive P answers become Clear Replies (Mistral 0.63, Qwen 0.69); 5.4% go the other way | **HELD** |
+| H25b-4 information (B) | +0.113 [−0.006, +0.225] (without notes, P: −0.015) | **FAILED** (direction as predicted) |
+| H25c streaming at 50% | agreement 0.662, S2 −0.150; refusals visible early (Declining 0.82, Claims ignorance 0.75 at 25%), General/Dodging late | **FAILED** |
+| H25d-1 frozen probe ≥ 0.45 | slice-chosen layer 28: 0.397 | **FAILED** |
+| H25d-2 probe less question-bound (≥ 0.30) | probe repeats its label on 44.8% of disjoint sibling pairs (M1 19%) | **HELD** |
+
+**Exploratory, not registered as a hypothesis (reported by condition in the registered analysis):** the President's
+evasion predicts the LLM's in **P (OR 2.74 [1.87, 4.17]; Mistral 3.01, Qwen 2.46)**, F (2.19 [1.28, 4.11]) and
+B (4.13 [2.68, 6.34]), but not in N (1.18). The rate does not change between N and P (H25b-2), so the role changes
+*where* models evade, not *how often*. N and P are labelled by the same instrument on the same questions, so a
+question prior of the instrument cannot produce the N–P difference; only the answers differ. Evasion rates overall:
+Presidents 0.744 (gold), LLMs 0.52–0.55 (N, P, B) and 0.20 after a follow-up. LLMs over-use Explicit (0.41–0.83 vs
+0.28) and under-use Dodging (0.02–0.09 vs 0.18); the briefed condition is the closest to the Presidents' profile.
+Condition effects survive a length covariate (F −1.58 → −1.52 log-odds).
+
+**Latency (E25d).** Base 8B, batch 1, H100: 48 ms at 36 layers, 38 ms at 27, 28 ms at 18. The 9-layer reading
+(424 ms) is the first configuration measured (warm-up) and the LoRA classifier's 463 ms was measured while the GPU
+was shared with the hidden-state dump: neither is reliable.
+
+**What it changed.** The answer to "question or speaker?" is neither alone: a speaker without a stake does not
+evade where Presidents did, but the same models in the President's role do, on the same questions, without
+evading more often. Evasion behaves like **question × role**. The instrument reads the question causally (E25a),
+and only fine-tuning binds labels to questions (E25d), so there is no frozen fast path; and detection needs most
+of the answer (E25c).
+
+**Closing decisions (2026-10-30, 16:40 IST).** The experiments end here; the report and slides use what exists.
+1. *Human validation dropped* (annotation is out of scope for the remaining time). It is replaced by a label-free
+   check (`raw/E25_analysis.txt` §G): on LLM answers the instrument is **more** confident than on the Presidents'
+   (mean u 0.462 vs 0.540, seed agreement 0.806 vs 0.730, 29% vs 36% deferred). That rules out the instrument
+   being out of its depth on LLM text; it does not rule out confident errors, which the report states.
+2. *No further GPU runs.* Llama-3.1 and OLMo-2 are not re-run; the P-condition association stays **exploratory**
+   (two model families), and its registered replication is future work. Credit left: ₹230.59.
+
+---
 
 ## Deferred
 

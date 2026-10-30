@@ -1,0 +1,104 @@
+E24 pre-checks (CPU, existing artifacts). Dev = 308 items, 3 annotators; S2 = any-annotator macro-F1.
+M1 = 10-seed mean of Q8_fullq_lora_12ep; train prior from 3448 rows; PRIOR sums to 1.000
+
+==============================================================================================================
+P1. Sibling structure (same answer, several sub-questions)
+==============================================================================================================
+   train: rows 3448, unique answers 2004, rows sharing their answer 2381 (69.1%)
+   dev: rows 308, unique answers 191, rows sharing their answer 203 (65.9%)
+   train sibling pairs 3079; different S2 label 61.5%, different S1 level 40.6%
+   mutual information between sibling labels 0.241 bits (9.9% of the label entropy)
+
+==============================================================================================================
+P2. Does M1 read the question? Dev sibling pairs
+==============================================================================================================
+   dev sibling pairs 153; annotator sets disjoint 58
+   M1 predicts the SAME label on disjoint pairs 19.0% (11/58); on overlapping pairs 49.5%
+   both siblings in their reference sets, disjoint pairs: 39.7%
+   P(two labels by different annotators differ): same item 0.432, sibling items 0.716, random items 0.834
+   -> sibling divergence above the same-item rate is relational signal, not annotator noise
+   -> M1 conditions on the question; 'models ignore the question' is not supported for M1
+
+==============================================================================================================
+P3. Routing signal: aleatoric vs epistemic uncertainty over the 10 seeds (dev)
+==============================================================================================================
+   total entropy    rho(annotator entropy) +0.173  rho(M1 wrong) +0.357  M1 errors caught in top 30%: 53/115
+   aleatoric E[H]   rho(annotator entropy) +0.243  rho(M1 wrong) +0.387  M1 errors caught in top 30%: 53/115
+   epistemic MI     rho(annotator entropy) +0.137  rho(M1 wrong) +0.278  M1 errors caught in top 30%: 49/115
+   negative margin  rho(annotator entropy) +0.221  rho(M1 wrong) +0.281  M1 errors caught in top 30%: 46/115
+   annotator entropy -0.00: n 125, M1 error rate 0.384
+   annotator entropy 0.64: n 150, M1 error rate 0.393
+   annotator entropy 1.10: n  33, M1 error rate 0.242
+   -> the epistemic split does not route better; reject the module
+
+==============================================================================================================
+P4. Sibling mean-field decoding over M1 probabilities (dev; S2 by tau x coupling w)
+==============================================================================================================
+   tau  w=0.0   w=0.25  w=0.5   w=1.0 
+   0.0  0.578   0.589   0.582   0.591 
+   0.25 0.586   0.585   0.588   0.578 
+   0.5  0.578   0.588   0.592   0.580 
+   0.75 0.599   0.606   0.593   0.573 
+   1.0  0.609   0.613   0.616   0.593 
+   -> differences are within +-0.01 and change sign with tau: not established
+
+==============================================================================================================
+P5. Metric-aware decision rule (no tuned parameter) vs logit adjustment (dev)
+==============================================================================================================
+   argmax                               0.578
+   logit adjustment tau=0.5  (dev-tuned) 0.578
+   logit adjustment tau=0.75 (dev-tuned) 0.599
+   logit adjustment tau=1.0  (dev-tuned) 0.609
+   metric rule, k=1                     0.582
+   metric rule, k=2                     0.597
+   metric rule, k=3                     0.594
+   single seeds (mean of 10): argmax 0.525, LA tau=1 0.529, metric rule k=3 0.527; rule > LA on 5/10
+   -> matches the CV-tuned M1 system (0.598) with no tuning; no gain. A theory section, not a method
+
+==============================================================================================================
+P6. Single-order position debiasing of the 27B (lab records, 4 cyclic orders)
+==============================================================================================================
+   calibration rows (screen + test, unlabelled use) 537, dev rows 308
+   position prior over letters A-D: taxonomy [0.39, 0.21, 0.25, 0.15]; shift1 [0.25, 0.19, 0.23, 0.32]; shift2 [0.22, 0.24, 0.45, 0.08]; shift3 [0.25, 0.42, 0.22, 0.11]
+   4-order average: in-set 0.597
+   taxonomy  raw: in-set 0.643, agrees with the average 0.795 | debiased: in-set 0.640, agrees 0.789
+   shift1    raw: in-set 0.584, agrees with the average 0.864 | debiased: in-set 0.581, agrees 0.792
+   shift2    raw: in-set 0.575, agrees with the average 0.847 | debiased: in-set 0.555, agrees 0.799
+   shift3    raw: in-set 0.581, agrees with the average 0.867 | debiased: in-set 0.584, agrees 0.815
+   -> debiasing lowers agreement with the 4-order average: the canonical order confounds position with
+      label identity (slot A is usually Explicit). Reject the module
+
+==============================================================================================================
+P7. Conformal multi-reference candidate sets vs the threshold router (lab 27B, single order, 5 CV splits)
+==============================================================================================================
+   threshold delta 0.2: calls 0.23  S2 0.646
+   threshold delta 0.3: calls 0.36  S2 0.663
+   threshold delta 0.4: calls 0.54  S2 0.646
+   threshold delta 0.5: calls 0.65  S2 0.641
+   conformal alpha 0.05: calls 0.93  mean|C| 3.84  any-annotator coverage 0.977 (target >= 0.95)  S2 0.617
+   conformal alpha 0.10: calls 0.88  mean|C| 2.96  any-annotator coverage 0.939 (target >= 0.90)  S2 0.605
+   conformal alpha 0.15: calls 0.82  mean|C| 2.46  any-annotator coverage 0.896 (target >= 0.85)  S2 0.611
+   conformal alpha 0.20: calls 0.76  mean|C| 2.08  any-annotator coverage 0.858 (target >= 0.80)  S2 0.605
+   conformal alpha 0.30: calls 0.51  mean|C| 1.56  any-annotator coverage 0.764 (target >= 0.70)  S2 0.564
+   -> coverage holds, but sets are large where annotators disagree, so the router calls the LLM on items M1
+      already gets right and prunes useful options. Loses at every budget. Reject the module
+
+==============================================================================================================
+P8. Relevance is not answerhood: question-answer specificity (E22 scores, Qwen3-8B-Base) by gold label (train)
+==============================================================================================================
+   label                      n   PMI_c   PMI_0  identifiable
+   Declining to answer      145   0.070   0.179         0.634
+   Dodging                  706   0.075   0.122         0.676
+   Deflection               381   0.095   0.146         0.798
+   Implicit                 488   0.113   0.163         0.827
+   Claims ignorance         119   0.116   0.207         0.768
+   General                  386   0.125   0.172         0.791
+   Partial/half-answer       79   0.125   0.164         0.835
+   Explicit                1052   0.180   0.229         0.817
+   Clarification             92   0.185   0.330         0.594
+   Kruskal-Wallis over the 9 labels (PMI_c): p = 2.3e-12
+   AUC Clear Reply vs rest: PMI_c 0.566, PMI_0 0.550, identifiable 0.549
+   AUC Clear Non-Reply vs rest: PMI_c 0.479, PMI_0 0.529, identifiable 0.422
+   identifiable = share of 3 random questions under which the answer is less likely than under its own
+   (the Alvarez & Morrier 2025 answer-quality idea). -> ordered but barely discriminative: Deflection and
+   Partial answers are as question-specific as Explicit ones; relevance does not measure answering

@@ -5,11 +5,11 @@
 Siddarth Gottumukkula, Vidvathama R, Sanjana Reddy Vonteri, Shashikanta Sahoo<br>
 Advanced NLP course project, International Institute of Information Technology, Hyderabad
 
-> **Status: final push.** The mid-evaluation is complete ([report](report/mid_evaluation_report.pdf),
-> [slides](report/mid_evaluation_slides.pdf)). The last experiments (E19–E23) run on 2026-10-29 and 30,
-> and the final report is due on 2026-10-31. The plan is in
-> [`docs/06_final_push_handover.md`](docs/06_final_push_handover.md). All numbers are on the official dev
-> set and may be revised in the final report.
+> **Status: experiments closed (2026-10-30); final report and slides due 2026-10-31.** The mid-evaluation is
+> complete ([report](report/mid_evaluation_report.pdf), [slides](report/mid_evaluation_slides.pdf)). After it,
+> the system below became a measurement instrument for a research question, *is evasion in the question or in the
+> answerer?* (E24–E25). **Start with [`docs/documentation.md`](docs/documentation.md)**: every experiment, why it
+> was run, and how each led to the next. All numbers are on the official dev set.
 
 ---
 
@@ -44,13 +44,20 @@ confidence-routed cascade on the result:
 | DeBERTa-v3-large, 10-seed ensemble | 0.405 | 0.648 | 0 | – |
 | Qwen3-8B + LoRA, 3 epochs, 10 seeds (mid-evaluation) | 0.543 | 0.746 | 0 | – |
 | M1: Qwen3-8B + LoRA, 12 epochs, 10 seeds | 0.598 | 0.743 | 0 | 0.522 |
-| **Accuracy point:** M1 + LLM adjudicator, 30% deferred | **0.669** | **0.798** | 0.36 | 0.576 |
-| **Cost point:** distilled student + LLM adjudicator, 50% deferred | **0.608** | **0.790** | 0.57 | 0.139 |
+| **Accuracy point:** M1 + LLM adjudicator, 30% deferred | **0.650** | **0.788** | 0.36 | 0.576 |
+| **Cost point:** distilled student + LLM adjudicator, 50% deferred | **0.608** | **0.785** | 0.57 | 0.139 |
 | TeleAI (1st place), multi-stage DeepSeek-V3 pipeline | 0.617 | 0.812 | 1.94 | – |
 | One human annotator scored against the other two (2-annotator regime) | 0.684 | – | – | – |
 
 Every system averages seeds and applies logit adjustment. Its parameters (and the fusion weights of the
 adjudicator) are fitted by nested cross-validation on dev, and test labels were never released.
+
+The two operating points are the final system (E23).
+- **One copy of the LLM throughout:** the adjudicator is a single serving of Qwen3.8-27B-FP8, with its answer
+  averaged over four orderings of the candidate labels.
+- **The earlier figure:** the same weights served on our lab server gave 0.669 for the accuracy point. The two
+  copies disagree on 7.5% of decisions.
+- **The test predictions** (`submissions/E23_*`) use test answers cleaned of transcript artifacts.
 
 How sure we are of the adjudicator's gain over M1:
 - **With the fitted parameters held fixed,** the gain is +0.067, 95% bootstrap interval [+0.009, +0.124].
@@ -107,7 +114,7 @@ file ([`docs/04_results_sources.md`](docs/04_results_sources.md)).
 ├── logs/                  training and pipeline logs of every run
 ├── report/                mid-evaluation report and slides, with LaTeX source
 ├── runs/M4/               distillation targets (all other run outputs are on Hugging Face)
-└── submissions/           Codabench predictions: the DeBERTa systems and the cascade (E19_*)
+└── submissions/           Codabench predictions: the DeBERTa systems, the cascade (E19_*), the final system (E23_*)
 ```
 
 ## Getting started

@@ -1,0 +1,7 @@
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+Loading weights:   0%|          | 0/399 [00:00<?, ?it/s]Loading weights:   1%|          | 2/399 [00:00<00:26, 14.86it/s]Loading weights:  12%|█▏        | 48/399 [00:00<00:01, 239.90it/s]Loading weights:  23%|██▎       | 93/399 [00:00<00:00, 316.78it/s]Loading weights:  36%|███▌      | 142/399 [00:00<00:00, 379.68it/s]Loading weights:  48%|████▊     | 191/399 [00:00<00:00, 413.61it/s]Loading weights:  59%|█████▉    | 236/399 [00:00<00:00, 423.60it/s]Loading weights:  70%|███████   | 281/399 [00:00<00:00, 430.40it/s]Loading weights:  82%|████████▏ | 329/399 [00:00<00:00, 445.08it/s]Loading weights:  95%|█████████▍| 378/399 [00:00<00:00, 455.75it/s]Loading weights: 100%|██████████| 399/399 [00:00<00:00, 400.17it/s]
+train: 3448 items in 194 s; PMI_c mean +0.126, PMI_0 mean +0.181
+dev: 308 items in 21 s; PMI_c mean +0.124, PMI_0 mean +0.177
+test: 237 items in 10 s; PMI_c mean +0.274, PMI_0 mean +0.251
+test_norm: 237 items in 14 s; PMI_c mean +0.326, PMI_0 mean +0.371
+wrote /home/clarity_llm/code/runs/E22/specificity.npz

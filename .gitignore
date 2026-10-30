@@ -8,6 +8,11 @@ __pycache__/
 # Jarvis bundle needs, are tracked so instances can be launched from a machine without a Python env
 runs/*
 !runs/M4/
+# E25 (2026-10-30): the LLM answers, frames, labels and probe results behind the final report (~10 MB); the
+# hidden states (158 MB) stay on Hugging Face only
+!runs/E25/
+runs/E25/hidden/*.npy
+runs/E25/jobs_27b.jsonl
 wandb/
 *.tmp
 
@@ -26,6 +31,9 @@ submissions/*
 !submissions/FINAL_fullq_16ep_10seed_logitadj/
 !submissions/E19_m1_10seed/
 !submissions/E19_accuracy_point/
+!submissions/E23_m1_10seed/
+!submissions/E23_accuracy_point/
+!submissions/E23_cost_point_student0/
 
 .claude/
 

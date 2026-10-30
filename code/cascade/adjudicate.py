@@ -91,11 +91,17 @@ def load_jobs(path: str) -> list[Job]:
             for r in map(json.loads, Path(path).read_text().splitlines()) if r]
 
 
-def build_prompts(jobs: list[Job], k: int, variant: str = "full",
-                  order: str = "taxonomy") -> list[tuple[list[dict], list[int]]]:
-    from cascade.exemplars import Retriever
+def build_prompts(jobs: list[Job], k: int, variant: str = "full", order: str = "taxonomy",
+                  test_text: str = "raw") -> list[tuple[list[dict], list[int]]]:
+    from cascade.exemplars import Retriever, load_frames
 
-    r = Retriever()
+    frames = load_frames()
+    if test_text == "normalized":  # E21b: the official test answers without their transcript artifacts
+        from qevasion.normalize import normalize_answer
+
+        frames["test"] = frames["test"].copy()
+        frames["test"]["interview_answer"] = [normalize_answer(a) for a in frames["test"]["interview_answer"]]
+    r = Retriever(frames)
     tr = r.frames["train"]
     out = []
     for j in jobs:
@@ -154,16 +160,22 @@ def pad_preamble(llm, prompts, kw: dict) -> int:
     def shared(sys: str) -> int:
         ids = [tok.apply_chat_template([dict(m[0], content=sys), m[1]], tokenize=True, add_generation_prompt=True,
                                        **kw["chat_template_kwargs"]) for m in (a, b)]
+        ids = [list(x["input_ids"]) if hasattr(x, "keys") else list(x) for x in ids]  # transformers 5: a BatchEncoding
         return next((n for n, (x, y) in enumerate(zip(*ids)) if x != y), min(map(len, ids)))
 
-    for units in range(0, 4 * block):
-        n = shared(base + " ." * units)
-        if n % block == 0:
-            break
+    # " ." may add two tokens per unit, so a one-token tail is also tried, or an odd prefix could never align
+    for units in range(0, 2 * block):
+        for tail in ("", " ,"):
+            n = shared(base + " ." * units + tail)
+            if n % block == 0:
+                break
+        else:
+            continue
+        break
     else:
         raise SystemExit(f"could not align the shared prefix to the cache block ({block})")
     for msgs, _ in prompts:
-        msgs[0]["content"] = base + " ." * units
+        msgs[0]["content"] = base + " ." * units + tail
     print(f"[cache] preamble padded by {units} units: shared prefix {n} tokens = {n // block} blocks of {block}",
           flush=True)
     return units
@@ -327,6 +339,7 @@ def main() -> None:
     p.add_argument("--samples", type=int, default=0, help="if >0: no log-probs, estimate q from N samples")
     p.add_argument("--order", default="taxonomy", choices=ORDERS, help="order the candidates are shown in (E19 arm B)")
     p.add_argument("--cache-pad", action="store_true", help="vLLM: align the shared preamble to the cache block (E22a)")
+    p.add_argument("--test-text", default="raw", choices=("raw", "normalized"), help="official test answers (E21b)")
     p.add_argument("--think-budget", type=int, default=0, help="vLLM: think up to N tokens before the letter (E19 A, E20 R2)")
     a = p.parse_args()
 
@@ -361,7 +374,7 @@ def main() -> None:
     print(f"{len(jobs)} items to score ({len(done)} already done) for {a.tag}", flush=True)
     if not jobs:
         return
-    prompts = build_prompts(jobs, a.k, a.prompt_variant, a.order)
+    prompts = build_prompts(jobs, a.k, a.prompt_variant, a.order, a.test_text)
     toks = np.array([sum(approx_tokens(m["content"]) for m in pm) for pm, _ in prompts])
     nex = np.array([len(ex) for _, ex in prompts])
     pre = approx_tokens(prompts[0][0][0]["content"])
@@ -370,7 +383,7 @@ def main() -> None:
     (outdir / "prompt_sample.txt").write_text("\n\n=====\n\n".join(m["content"] for m in prompts[0][0]))
     cfg = {"backend": a.backend, "model": a.model, "k": a.k, "prompt_version": PROMPT_VERSION,
            "prompt_variant": a.prompt_variant, "top_k": TOP_K, "order": a.order,
-           "cache_pad": a.cache_pad, "think_budget": a.think_budget,
+           "cache_pad": a.cache_pad, "think_budget": a.think_budget, "test_text": a.test_text,
            "m1_inputs": str(M1_INPUTS.relative_to(ROOT)), "extra_body": json.loads(a.extra_body),
            "chat_template_kwargs": json.loads(a.chat_template_kwargs), "samples": a.samples,
            "started": time.strftime("%F %T")}
@@ -390,7 +403,7 @@ def main() -> None:
     cfg_path = outdir / "config.json"
     if cfg_path.exists():  # resuming: the scoring configuration must not change under the same tag
         old = json.loads(cfg_path.read_text())
-        defaults = {"prompt_variant": "full", "order": "taxonomy", "cache_pad": False, "think_budget": 0}  # added after E15
+        defaults = {"prompt_variant": "full", "order": "taxonomy", "cache_pad": False, "think_budget": 0, "test_text": "raw"}  # added after E15
         diff = [key for key in cfg if key != "started" and old.get(key, defaults.get(key)) != cfg[key]]
         if diff:
             raise SystemExit(f"{cfg_path} differs in {diff}: use a new --tag")

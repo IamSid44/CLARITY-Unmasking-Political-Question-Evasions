@@ -1,0 +1,67 @@
+E19 A/B, E21a, E22a/b/e: registered checks on the inference-lane outputs (2026-10-29)
+
+==============================================================================================================
+A. E19 arm A: Qwen3.8-27B-FP8 alone over all nine labels (VM, k = 0, no thinking)
+==============================================================================================================
+   items scored: dev 308, test 237
+   dev: S2 0.591  S1 0.750  in-set 0.610   (registered expectation: below M1 alone, S2 0.598)
+   dev predictions per label: Explicit 123, Implicit 51, Dodging 14, General 21, Deflection 64, Partial/ha 4, Declining  18, Claims ign 9, Clarificat 4
+   expectation HELD: the LLM alone is below M1 alone
+
+==============================================================================================================
+B. E19 arm B / E22b: candidate order -- position bias and the permutation-averaged q
+==============================================================================================================
+   300 screen rows (train, one gold label): 300 rows scored in all five orders
+   order                 picks letter A  acc within C  NLL (gold in C)
+   taxonomy                       0.400         0.327            1.476
+   shift1                         0.293         0.293            1.576
+   shift2                         0.247         0.343            1.735
+   shift3                         0.250         0.343            1.563
+   reverse                        0.220         0.273            1.767
+   average (4 cyclic)                 -         0.343            1.431
+   decision rule (registered): adopt permutation-averaged q iff it beats single-order q on BOTH -> ADOPTED (acc +0.017, NLL -0.045)
+   dev (reported only): in-set rate of the argmax within C, per order
+     taxonomy             in-set 0.643; picks A 0.519
+     shift1               in-set 0.584; picks A 0.231
+     shift2               in-set 0.575; picks A 0.140
+     shift3               in-set 0.581; picks A 0.308
+     reverse              in-set 0.568; picks A 0.289
+     average (4 cyclic)   in-set 0.604
+
+==============================================================================================================
+C. E22a: the cache-aligned prompt against the original prompt (same VM, dev, 308 items)
+==============================================================================================================
+   GPU-s per call: original 0.101, cached 0.050 (ratio 0.49); prompt tokens 1114 vs 1333
+   argmax agreement 0.906; mean max |dq| 0.0545
+   H22a (cost <= 0.6x AND agreement >= 0.98): FAILED
+   one M1 seed on the same GPU: 0.0397 GPU-s per item (max |dp| vs saved 0.0)
+
+==============================================================================================================
+D. The faithfulness gate: the VM's 27B (qwen38_27b_k0_vm) against the lab server's records (qwen38_27b_k0)
+==============================================================================================================
+   dev         308 items: argmax agreement 0.925, mean max |dq| 0.0382
+   test        237 items: argmax agreement 0.970, mean max |dq| 0.0273
+   screen      300 items: argmax agreement 0.963, mean max |dq| 0.0351
+   slice       345 items: argmax agreement 0.962, mean max |dq| 0.0340
+   trainall   3448 items: argmax agreement 0.959, mean max |dq| 0.0337
+   gate (>= 0.98 on dev) failed, so every new analysis uses the VM's records only (E19 amendment)
+
+==============================================================================================================
+E. E21a / H21a: test's transcript artifacts injected into dev (seed 21), and normalized test
+==============================================================================================================
+   control: 20/20 seed folders reproduce their saved probabilities (max |dp| < 1e-3)
+   10-seed M1 (mean p, logit adjustment tau 1.15): dev predictions changed 0.156; S2 0.617 -> 0.570 (-0.048); S1 0.736 -> 0.729; in-set 0.630 -> 0.604
+   H21a (>= 5% of predictions change, or S2 falls by >= 0.01): HELD
+   single students (argmax): dev predictions changed 0.118 on average (min 0.094, max 0.140)
+   official test, 10-seed M1: 34 of 237 labels change with normalized answers (S1 labels: 15)
+   decision (registered): rebuild the test files from normalized text
+
+==============================================================================================================
+F. E22e / H22e: question-answer specificity (Qwen3-8B-Base, mean log-prob of the first 256 answer tokens)
+==============================================================================================================
+   clarity labels ('Ambivalent', 'Clear Non-Reply', 'Clear Reply')
+   train n 3448: PMI_c mean Reply / Ambivalent / Non-Reply = +0.180 / +0.099 / +0.115; Spearman rho +0.095 [+0.060, +0.131]; AUROC Clear Reply vs rest 0.566; PMI_0 mean +0.181
+   H22e (rho > 0 with the 95% interval above 0, on train): HELD
+   train PMI_c by evasion label: Explicit +0.180, Implicit +0.113, Dodging +0.075, General +0.125, Deflection +0.095, Partial/ha +0.125, Declining  +0.070, Claims ign +0.116, Clarificat +0.185
+   dev   n  308: PMI_c mean Reply / Ambivalent / Non-Reply = +0.140 / +0.100 / +0.293; Spearman rho +0.058 [-0.065, +0.174]; AUROC Clear Reply vs rest 0.571; PMI_0 mean +0.177
+

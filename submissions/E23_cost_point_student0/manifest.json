@@ -1,0 +1,41 @@
+{
+  "system": "student Q8_distill_a05 seed 0 + M3, delta 0.5",
+  "m3": "Qwen3.8-27B-FP8 on the JarvisLabs VM, k = 0, q averaged over 4 cyclic option orders",
+  "test_text": "official test answers normalized by qevasion.normalize (E21b)",
+  "dev_fit": "all 308 dev items (3-annotator reference sets)",
+  "routing": "u = 1 - top calibrated q; threshold = (1 - delta) quantile of u on the train slice",
+  "delta": 0.5,
+  "lam": 0.5,
+  "tau": 0.3500000000000001,
+  "tau_m1": 0.6000000000000001,
+  "dev_in_sample_s2": 0.646854428792594,
+  "slice_threshold_u": 0.5301019817453564,
+  "dev_defer_rate": 0.6006493506493507,
+  "test_defer_rate": 0.4008438818565401,
+  "test_m3_calls": 95,
+  "dev_s2_nested_cv_split0": 0.627088206601506,
+  "dev_s1_nested_cv_split0": 0.7466458771924502,
+  "seeds": [
+    0
+  ],
+  "test_distribution_subtask2": {
+    "Explicit": 83,
+    "Implicit": 39,
+    "Dodging": 30,
+    "Declining to answer": 23,
+    "Deflection": 22,
+    "Claims ignorance": 14,
+    "Clarification": 12,
+    "General": 12,
+    "Partial/half-answer": 2
+  },
+  "test_distribution_subtask1": {
+    "Ambivalent": 105,
+    "Clear Reply": 83,
+    "Clear Non-Reply": 49
+  },
+  "sha256": {
+    "submissions\\E23_cost_point_student0\\subtask1_clarity\\prediction.zip": "a178f3bd4d626935",
+    "submissions\\E23_cost_point_student0\\subtask2_evasion\\prediction.zip": "88ca34b297bb138d"
+  }
+}

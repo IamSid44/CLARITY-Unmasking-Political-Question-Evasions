@@ -330,3 +330,31 @@ time.
 | in-set gain of the accuracy point, interviews in train / not in train | +0.093 / +0.068 | F |
 | share of M3's picks at letter A (dev) | 0.516 | G |
 | human (one annotator against two) / accuracy point / M1, 2-annotator regime | 0.684 / 0.589 / 0.549 | I |
+
+## 15. The final push: E19 arms, E20–E23 (done 2026-10-29/30)
+
+Sources:
+- `raw/E21_E22_analysis.txt` (`preregistered_analyses/e21_e22_analysis.py`);
+- `raw/E20_router.txt` (`preregistered_analyses/e20_router.py`);
+- `raw/E23_systems.txt` (`preregistered_analyses/e23_systems.py`);
+- `raw/E23_final_submission.txt` (`evaluation/make_final_submission.py`).
+
+All 27B numbers here come from one copy of the model (the JarvisLabs VM).
+
+| Number | Value | Source |
+|---|---|---|
+| VM vs lab 27B, dev: argmax agreement, mean max \|Δq\| | 0.925, 0.038 | `E21_E22_analysis.txt` D |
+| **final accuracy point** (VM, order-averaged q): S2 split 0 / 10 splits / S1 | **0.650 / 0.639 / 0.788** | `E23_systems.txt` S1 |
+| accuracy point, VM single order | 0.639 / 0.637 / 0.787 | same |
+| **final cost point** (mean of 10 students): S2 / 10 splits / S1 | **0.608 / 0.606 / 0.785** | `E23_systems.txt` S2 |
+| LLM alone over 9 labels: dev S2 / S1 | 0.591 / 0.750 | `E21_E22_analysis.txt` A |
+| letter-A pick rate, taxonomy order vs shifted orders (screen) | 0.40 vs 0.22–0.29 | same, B |
+| order-averaged vs single-order q (screen): accuracy, NLL | 0.343 vs 0.327; 1.431 vs 1.476 | same, B |
+| students, single model S2: M3- / M1- / uniform-taught (seeds 0–2) | 0.575 / 0.563 / 0.516 | HF `metrics.json`; log §E19–E22 results |
+| students + M3 at δ = 0.5, 10-split S2: M3- / M1- / uniform-taught | 0.615 / 0.589 / 0.603 | `E23_systems.txt` S3 |
+| value map, leak-free train rows (Q1 → Q5 net fixes) | 0 / −7 / +2 / +7 / +12 | `E20_router.txt` S1 |
+| learned router vs confidence, macro-F1 at δ = 0.3 | 0.456 vs 0.479 | `E20_router.txt` S4 |
+| test artifacts injected into dev: M1 predictions changed; S2 change | 15.6%; −0.048 | `E21_E22_analysis.txt` E |
+| 27B call: original vs cache-aligned prompt (GPU-s); argmax agreement | 0.101 vs 0.050; 0.906 | same, C |
+| specificity: Spearman with clarity order (train); AUROC Clear Reply | +0.095 [+0.060, +0.131]; 0.566 | same, F |
+| ladder, primary: 10-split S2, GPU-s; minus random escalation | 0.600, 0.221; +0.018 | `E23_systems.txt` S4 |

@@ -1,0 +1,1 @@
+faithfulness on 308 dev items: argmax agreement 0.925, mean max |dq| 0.0382; gate (>= 0.98) FAILED: re-score saved records on this VM before mixing

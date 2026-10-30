@@ -60,16 +60,16 @@ In the 2-annotator regime of the official test, the comparable system number is 
 
 | Id | What | The claim it tests | Where | Status |
 |---|---|---|---|---|
-| E19-E | Distillation controls: students taught by M1's own q, or by a uniform distribution over C(x); seeds 0–2 each | The student learns the LLM's knowledge, not just label smoothing | 2 VMs | **running** since 13:03 |
-| E19-F | Qwen3-14B-Base backbone, seeds 0–1 | A third point on the encoder → 8B → 14B axis; a mixed 8B + 14B ensemble | 2 VMs, after E | to launch around 16:30 |
-| E21 | Test transcript shift: dev sensitivity check, test normalization, label-free routing threshold, expected-F1 decoder (control) | The system is robust to how test answers are formatted | inference VM, then CPU | **running** (lane L) |
-| E22-a | 27B cost with a working prefix cache | The cost point roughly halves | inference VM | **running** (lane L) |
-| E22-b | Debiasing M3 by averaging 4 option orders (E19 arm B) | Part of the letter-A bias is an artifact | inference VM | **running** (lane L) |
-| E19-A | LLM alone over all 9 labels: 27B with and without thinking (local), DeepSeek-V4-Flash (API) | Every LLM-alone arm scores below M1 | inference VM, API | partly server |
-| E22-c | Escalation ladder: student → +5 M1 seeds on the 40% least confident → 27B on the 30% least confident | ≥ 0.625 S2 at ≈ 0.2 GPU-s, beating random escalation | CPU + one more 27B pass | after the inference lane |
-| E20 + E22-d | Learned value-of-LLM router, fitted on leak-free (singleton) train rows | Beats confidence routing at matched calls | CPU | after the inference lane |
-| E22-e | Question–answer specificity score (PMI under Qwen3-8B-Base) | Ordered Clear Reply > Ambivalent > Clear Non-Reply; a router feature | inference VM | **running** (lane L) |
-| E23 | Freeze: tables, frontier figure, test files, docs, model card | — | CPU | Oct 30 |
+| E19-E | Distillation controls: students taught by M1's own q, or by a uniform distribution over C(x); seeds 0–2 each | The student learns the LLM's knowledge, not just label smoothing | 2 VMs | **done**: single model fails H-E vs self-distillation (+0.012); system part in `raw/E23_systems.txt` |
+| E19-F | Qwen3-14B-Base backbone, seeds 0–1 | A third point on the encoder → 8B → 14B axis; a mixed 8B + 14B ensemble | 2 VMs, after E | **dropped**: not run (credit and time) |
+| E21 | Test transcript shift: dev sensitivity check, test normalization, label-free routing threshold, expected-F1 decoder (control) | The system is robust to how test answers are formatted | inference VM, then CPU | **done**: H21a held; test files rebuilt from normalized text (`submissions/E23_*`) |
+| E22-a | 27B cost with a working prefix cache | The cost point roughly halves | inference VM | **done**: 0.49× cost, but H22a fails on agreement (0.906) |
+| E22-b | Debiasing M3 by averaging 4 option orders (E19 arm B) | Part of the letter-A bias is an artifact | inference VM | **done**: order-averaged q adopted |
+| E19-A | LLM alone over all 9 labels: 27B with and without thinking (local), DeepSeek-V4-Flash (API) | Every LLM-alone arm scores below M1 | inference VM, API | **done** (no thinking): S2 0.591, below M1; thinking and DeepSeek rungs dropped |
+| E22-c | Escalation ladder: student → +5 M1 seeds on the 40% least confident → 27B on the 30% least confident | ≥ 0.625 S2 at ≈ 0.2 GPU-s, beating random escalation | CPU + one more 27B pass | **done**: see `raw/E23_systems.txt` |
+| E20 + E22-d | Learned value-of-LLM router, fitted on leak-free (singleton) train rows | Beats confidence routing at matched calls | CPU | **done**: router loses at 4/4 budgets; confidence routing stays |
+| E22-e | Question–answer specificity score (PMI under Qwen3-8B-Base) | Ordered Clear Reply > Ambivalent > Clear Non-Reply; a router feature | inference VM | **done**: H22e holds, weakly (ρ +0.095) |
+| E23 | Freeze: tables, frontier figure, test files, docs, model card | — | CPU | **done** (Oct 30): `raw/E23_systems.txt`, `submissions/E23_*` |
 
 **Dropped:**
 - **E19-D (5 more M1 seeds, ≈ ₹1,050).** Tier 0's refit bootstrap and E16's seed subsets already bound
@@ -184,13 +184,14 @@ bash code/launch/jarvis_drive.sh push && bash code/launch/jarvis_drive.sh start
 - **`PARALLEL=N`** trains up to N seeds at once on one GPU (default 1). An 8B run without checkpointing
   peaks at 53 GB, so N = 1 on a 96 GB card.
 - **The inference lane** (E21, E22-a/b/e, the E19-A local rungs) uses the same `create` and `push`, then
-  runs `code/launch/infer_lane.sh` on the VM:
+  `lane`. That writes the instance's key and machine id onto it, so it can stop itself, and starts
+  `code/launch/infer_lane.sh` there:
 
 ```bash
 export JPROFILE=L GPU_TYPE=RTX-PRO6000 TEMPLATE=vm SPOT=0
 bash code/launch/jarvis_drive.sh create && bash code/launch/jarvis_drive.sh push
+MAX_HOURS=3 bash code/launch/jarvis_drive.sh lane
 . ~/.config/clarity_jarvis/host_L.env
-ssh -i ~/.ssh/jarvis_ed25519 -p $JPORT $JUSER@$JHOST "bash /home/clarity_llm/code/code/launch/infer_lane.sh start"
 ssh -i ~/.ssh/jarvis_ed25519 -p $JPORT $JUSER@$JHOST "bash /home/clarity_llm/code/code/launch/infer_lane.sh status"
 ```
 
@@ -216,16 +217,43 @@ resumes where it stopped.
 While the 8B steps use the GPU, the 27B weights download and the vLLM 0.31.0 environment installs in the
 background.
 
-**Monitoring.** `JPROFILE=E1 bash code/launch/jarvis_drive.sh status` shows the pipeline stages, the
-latest training lines and the GPU.
+**Every lane looks after itself (since 2026-10-29).** Once launched, nothing depends on the laptop or its
+network. Both the training pipeline and the inference lane:
+- **copy their logs to HF every 10 minutes**, under `logs/jarvis_<RUN_NAME>/` (training) and
+  `logs/infer_lane/` (inference);
+- **record a failed step and carry on** with every step that does not depend on it (inference lane);
+- **run a watchdog** that stops the lane if no log or output file changes for `IDLE_MIN` minutes (30 for
+  training, 45 for inference) or the lane runs past `MAX_HOURS` (inference);
+- **stop the instance at the end, or on any exit, crash or watchdog stop:**
+  1. upload the outputs and logs, and check them on HF;
+  2. **destroy** the instance if every step (or seed) succeeded and is on HF;
+  3. otherwise **pause** it, which keeps the disk and bills only storage.
+
+  The utility behind this is `code/utils/vm_guard.py`.
+
+This was added after 2026-10-29, when an inference lane crashed on a reporting bug at 14:09. With the
+laptop's monitor not running, the VM sat idle for 4.5 hours, about ₹950.
+
+**Monitoring, from any network:**
+- **The progress logs on HF, in a browser:**
+  `huggingface.co/siddarthg44/clarity-semeval26/tree/main/logs/` → `infer_lane/infer.log` or
+  `jarvis_<RUN_NAME>/pipeline.log`. They are at most 10 minutes old.
+- **Instance states and the balance** (HTTPS, works where port 22 is blocked):
+  `. ~/.config/clarity_jarvis/keys.env; JL_API_KEY=$JL_API_KEY $JL_PY -c "from jarvislabs import Client; c=Client();
+  print([(i.machine_id, i.status) for i in c.instances.list()], c.account.balance())"`.
+- **The detailed view, which needs port 22:** `JPROFILE=E1 bash code/launch/jarvis_drive.sh status`.
+  Use it sparingly. Jarvis VMs run fail2ban, and on 2026-10-29 a running VM stopped answering SSH
+  ("connection timed out") while other port-22 hosts were reachable. The likely cause was one-minute
+  polling plus bare TCP probes. Poll the HF logs instead; a ban does not stop the lane itself.
 
 **Reading the pilot.** It prints a projected time for all seeds. If that is over `MAX_TOTAL_HOURS`, the
 pipeline stops and pauses itself. Raise the limit only if the projection is sane.
 
-**When a lane finishes.** The pipeline pauses the VM 30 minutes after `ALL DONE`, and a paused VM still
-bills storage. So:
-1. Check that each seed is on HF under `<RUN_NAME>/seed<k>`.
-2. **Destroy** the VM:
+**When a lane finishes.**
+- **Success:** it destroys itself once its outputs are on HF. Nothing to do.
+- **Failure:** it pauses itself. Read its log on HF, fix the cause, then `resume` (the machine id changes),
+  `push` and launch again. Finished steps and seeds are skipped.
+- **To destroy a paused instance by hand,** once its outputs are on HF:
 
 ```bash
 P=E1; . ~/.config/clarity_jarvis/keys.env; . ~/.config/clarity_jarvis/host_$P.env

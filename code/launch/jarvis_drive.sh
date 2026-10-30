@@ -33,7 +33,7 @@ need_uv() {
 jl() { if [ -n "$JL_PY" ]; then "$JL_PY" "$@" | tr -d '\r'; else "$UVX" --quiet --from jarvislabs python "$@"; fi; }
 note() { echo "$(date '+%F %T') $*" | tee -a "$LOCAL_LOGS/drive.log"; }
 load() { [ -f "$KEYS" ] && set -a && . "$KEYS" && set +a; [ -f "$HOSTCFG" ] && . "$HOSTCFG"; return 0; }
-R() { ssh -i "$SSHKEY" -p "$JPORT" -o StrictHostKeyChecking=accept-new -o ServerAliveInterval=30 \
+R() { ssh -i "$SSHKEY" -o IdentitiesOnly=yes -p "$JPORT" -o StrictHostKeyChecking=accept-new -o ServerAliveInterval=30 \
           -o ConnectTimeout=20 -o BatchMode=yes "$JUSER@$JHOST" "$@"; }
 
 need_host() { load; [ -n "${JHOST:-}" ] || { echo "run: bash code/launch/jarvis_drive.sh connect \"<ssh command>\" <machine_id>"; exit 2; }; }
@@ -96,12 +96,12 @@ create|resume)
   [ -n "${JL_API_KEY:-}" ] || { echo "run: bash code/launch/jarvis_drive.sh keys"; exit 2; }
   [ "$1" = resume ] && [ -z "${JL_MACHINE_ID:-}" ] && { echo "no machine id for profile ${PROFILE:-default}"; exit 2; }
   out=$(JL_API_KEY=$JL_API_KEY ACTION=$1 MID=${JL_MACHINE_ID:-0} GPU=$GPU_TYPE LABEL="clarity-${PROFILE:-a}" SPOT=$SPOT TEMPLATE=$TEMPLATE \
-    jl -c '
+    STORAGE=${STORAGE:-100} jl -c '
 import os
 from jarvislabs import Client
 c = Client()
 if os.environ["ACTION"] == "create":
-    i = c.instances.create(gpu_type=os.environ["GPU"], template=os.environ["TEMPLATE"], storage=100, name=os.environ["LABEL"],
+    i = c.instances.create(gpu_type=os.environ["GPU"], template=os.environ["TEMPLATE"], storage=int(os.environ["STORAGE"]), name=os.environ["LABEL"],
                            is_spot=os.environ["SPOT"] == "1")
 else:
     i = c.instances.resume(int(os.environ["MID"]))
@@ -116,7 +116,7 @@ push)
   need_host
   (cd "$REPO" && bash code/launch/jarvis_setup.sh bundle >/dev/null) || { note "bundle failed"; exit 1; }
   R "mkdir -p $RBASE/code 2>/dev/null || { sudo mkdir -p $RBASE && sudo chown \$(id -u):\$(id -g) $RBASE && mkdir -p $RBASE/code; }" \
-    && scp -i "$SSHKEY" -P "$JPORT" -o StrictHostKeyChecking=accept-new -q "$REPO/jarvis_bundle.tgz" "$JUSER@$JHOST:$RBASE/jarvis_bundle.tgz" \
+    && scp -i "$SSHKEY" -o IdentitiesOnly=yes -P "$JPORT" -o StrictHostKeyChecking=accept-new -q "$REPO/jarvis_bundle.tgz" "$JUSER@$JHOST:$RBASE/jarvis_bundle.tgz" \
     && R "tar xzf $RBASE/jarvis_bundle.tgz -C $RBASE/code && ls $RBASE/code/code" \
     && note "push: bundle unpacked into $RBASE/code" || { note "push failed"; exit 1; }
   if [ -f "$REPO/code/.env" ]; then
@@ -127,7 +127,7 @@ push)
 start)
   need_host
   R "umask 077; printf 'JL_API_KEY=%s\nJL_MACHINE_ID=%s\n' '${JL_API_KEY:-}' '${JL_MACHINE_ID:-}' > $RBASE/keys.env"
-  R "NAME='$NAME' SEEDS='$SEEDS' MODEL='$MODEL' EXTRA_ARGS='$EXTRA_ARGS' MAX_TOTAL_HOURS=$MAX_TOTAL_HOURS PARALLEL=${PARALLEL:-1} AUTO_PAUSE=1 PAUSE_DELAY=1800 NO_PROMPT=1 \
+  R "NAME='$NAME' SEEDS='$SEEDS' MODEL='$MODEL' EXTRA_ARGS='$EXTRA_ARGS' MAX_TOTAL_HOURS=$MAX_TOTAL_HOURS PARALLEL=${PARALLEL:-1} AUTO_PAUSE=1 PAUSE_DELAY=60 NO_PROMPT=1 \
      bash $RBASE/code/code/launch/jarvis_setup.sh all" && note "start: pipeline launched on the instance (tmux clarity-llm)"
   ;;
 
@@ -160,10 +160,17 @@ watch)
   done
   ;;
 
+lane)  # the E19-E22 inference lane: it pauses or destroys the instance itself, so this machine may disconnect
+  need_host
+  R "umask 077; printf 'JL_API_KEY=%s\nJL_MACHINE_ID=%s\n' '${JL_API_KEY:-}' '${JL_MACHINE_ID:-}' > $RBASE/keys.env"
+  R "IDLE_MIN=${IDLE_MIN:-45} MAX_HOURS=${MAX_HOURS:-4} AUTO_STOP=${AUTO_STOP:-1} PASS=${PASS:-1} bash $RBASE/code/code/launch/infer_lane.sh start" \
+    && note "lane: inference lane launched on machine $JL_MACHINE_ID (tmux clarity-infer)"
+  ;;
+
 all)  bash "$0" push && bash "$0" start && bash "$0" watch ;;
 sync) need_host; sync_once final && note "sync: copied" ;;
 status) need_host; R "bash $RBASE/code/code/launch/jarvis_setup.sh status" ;;
 pause)  pause_now ;;
-ssh)    need_host; ssh -i "$SSHKEY" -p "$JPORT" "$JUSER@$JHOST" ;;
-*) echo "usage: bash code/launch/jarvis_drive.sh {keygen|keys|connect \"<ssh command>\" <machine_id>|create|resume|push|start|watch|all|sync|status|pause|ssh}"; exit 2 ;;
+ssh)    need_host; ssh -i "$SSHKEY" -o IdentitiesOnly=yes -p "$JPORT" "$JUSER@$JHOST" ;;
+*) echo "usage: bash code/launch/jarvis_drive.sh {keygen|keys|connect \"<ssh command>\" <machine_id>|create|resume|push|start|lane|watch|all|sync|status|pause|ssh}"; exit 2 ;;
 esac

@@ -2,3 +2,19 @@
 2026-10-29 13:36:57 connect: L -> ubuntu@151.185.34.168 port 22, machine 552699
 2026-10-29 13:37:30 push: bundle unpacked into /home/clarity_llm/code
 2026-10-29 13:37:32 push: code/.env copied (mode 600)
+2026-10-29 13:45:08 push: bundle unpacked into /home/clarity_llm/code
+2026-10-29 13:45:10 push: code/.env copied (mode 600)
+2026-10-29 14:02:44 push: bundle unpacked into /home/clarity_llm/code
+2026-10-29 14:02:46 push: code/.env copied (mode 600)
+2026-10-29 18:53:41 resume: machine 553339 (Running) -- ssh -o StrictHostKeyChecking=no ubuntu@151.185.34.168
+2026-10-29 18:53:42 connect: L -> ubuntu@151.185.34.168 port 22, machine 553339
+2026-10-29 18:54:39 push: bundle unpacked into /home/clarity_llm/code
+2026-10-29 18:54:40 push: code/.env copied (mode 600)
+2026-10-29 19:01:54 push: bundle unpacked into /home/clarity_llm/code
+2026-10-29 19:01:55 push: code/.env copied (mode 600)
+2026-10-29 19:02:24 lane: inference lane launched on machine 553339 (tmux clarity-infer)
+2026-10-29 19:24:48 resume: machine 553380 (Running) -- ssh -o StrictHostKeyChecking=no ubuntu@151.185.34.68
+2026-10-29 19:24:49 connect: L -> ubuntu@151.185.34.68 port 22, machine 553380
+2026-10-29 19:57:11 push: bundle unpacked into /home/clarity_llm/code
+2026-10-29 19:57:13 push: code/.env copied (mode 600)
+2026-10-29 19:57:15 lane: inference lane launched on machine 553380 (tmux clarity-infer)

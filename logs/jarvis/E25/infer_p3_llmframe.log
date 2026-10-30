@@ -1,0 +1,5 @@
+llm frame: 2464 answers (0 empty); words median 205; per model x condition:
+condition     B    F    N    P
+model                         
+mistral_7b  308  308  308  308
+qwen3_8b    308  308  308  308

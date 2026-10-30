@@ -86,6 +86,12 @@ The exact order used, with the server environments, is in
 ```bash
 python -m preregistered_analyses.e19_tier0 > ../docs/raw/E19_tier0.txt   # CPU, ~7 min
 python -m evaluation.make_cascade_submission                              # test files -> submissions/E19_*
+# after the inference lanes (06 §6; their outputs are on HF under E21/, E22/, M3/qwen38_27b_k0_*):
+python -m preregistered_analyses.e21_e22_analysis > ../docs/raw/E21_E22_analysis.txt
+python -m preregistered_analyses.e20_router > ../docs/raw/E20_router.txt
+python -m cascade.pass2_jobs                       # jobs of the second 27B pass (PASS=2 lane)
+python -m preregistered_analyses.e23_systems > ../docs/raw/E23_systems.txt      # ~15 min
+python -m evaluation.make_final_submission > ../docs/raw/E23_final_submission.txt   # -> submissions/E23_*
 ```
 
 The GPU arms of E19–E22 run on rented RTX PRO 6000 VMs. The commands, the machine choice and the costs

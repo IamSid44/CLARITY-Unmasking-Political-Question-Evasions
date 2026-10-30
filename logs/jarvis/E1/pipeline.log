@@ -1,0 +1,22 @@
+2026-10-29 07:32:49 pipeline: start (NAME=Q8_distill_a05_m1 SEEDS='0 1 2' MODEL=Qwen/Qwen3-8B-Base EXTRA_ARGS='--epochs 12 --no-grad-checkpoint --soft-targets ../runs/M4/targets_a0.5_m1.npy')
+2026-10-29 07:32:49 setup: start
+2026-10-29 07:33:21 setup: torch 2.11.0+cu128 | NVIDIA RTX PRO 6000 Blackwell Server Edition 95 GiB | bf16 True
+2026-10-29 07:33:21 setup: downloading Qwen/Qwen3-8B-Base and Qwen/Qwen3-0.6B-Base to /home/clarity_llm/hf
+2026-10-29 07:34:49 setup: done (17G of models; disk free 59G)
+2026-10-29 07:34:50 auto-pause ON: key valid, machine 552643 found
+2026-10-29 07:34:50 smoke: start (Qwen/Qwen3-0.6B-Base, 64 rows, 2 epochs, stop after epoch 0, then resume)
+2026-10-29 07:35:19 smoke: passed (0.1000 (should be << 1))
+2026-10-29 07:35:19 pilot: 20 optimizer steps of Qwen/Qwen3-8B-Base (Q8_distill_a05_m1, EXTRA_ARGS='--epochs 12 --no-grad-checkpoint --soft-targets ../runs/M4/targets_a0.5_m1.npy')
+2026-10-29 07:36:00 pilot: longest micro-batch (4096 tokens): peak VRAM 50.4 GiB
+2026-10-29 07:36:00 pilot: 1.44 s per optimizer step; 194 steps per epoch -> 4.7 min per epoch of training, ~56 min for 12 epochs (+ ~3-5 min of evaluation per epoch); peak VRAM 53.4 GiB
+2026-10-29 07:36:00 pilot: projected 3.6 h for 3 seeds x 12 epochs (limit MAX_TOTAL_HOURS=4.5)
+2026-10-29 07:36:00 train: seed 0 attempt 1
+2026-10-29 08:35:15 train: seed 0 done: [done] Q8_distill_a05_m1 seed0: epoch 6 selected; dev S2 0.5267948914254048, S1 0.7194444444444444; 59 min
+2026-10-29 08:35:15 train: seed 1 attempt 1
+2026-10-29 09:34:35 train: seed 1 done: [done] Q8_distill_a05_m1 seed1: epoch 5 selected; dev S2 0.5704952628830422, S1 0.7254877140729711; 59 min
+2026-10-29 09:34:35 train: seed 2 attempt 1
+2026-10-29 10:33:49 train: seed 2 done: [done] Q8_distill_a05_m1 seed2: epoch 7 selected; dev S2 0.5928180515344006, S1 0.7725840912296466; 59 min
+2026-10-29 10:34:22 hf: 3 of 3 seed folders of Q8_distill_a05_m1 on the Hub (logs/hf_uploads.log)
+2026-10-29 10:34:38 package: 1.2M results, 464M adapters in /home/clarity_llm
+2026-10-29 10:34:38 pipeline: ALL DONE
+2026-10-29 10:34:38 pausing instance 552643 (finished) in 1800 s -- Ctrl-C in tmux to keep it running

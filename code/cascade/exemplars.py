@@ -30,7 +30,11 @@ EMB_DIR = RUNS / "M3" / "embeddings"
 
 def load_frames() -> dict[str, pd.DataFrame]:
     sp = load_qevasion(DATA_CACHE)
-    return {"train": sp.train, "dev": sp.dev, "test": pd.read_csv(TEST_CSV)}
+    frames = {"train": sp.train, "dev": sp.dev, "test": pd.read_csv(TEST_CSV)}
+    # E25: controlled copies of dev/test (question swaps, answer prefixes) and the LLM answers (audit.frames)
+    for p in sorted((RUNS / "E25" / "frames").glob("*.parquet")):
+        frames[p.stem] = pd.read_parquet(p)
+    return frames
 
 
 def embed_text(df: pd.DataFrame) -> list[str]:
@@ -72,9 +76,10 @@ class Retriever:
         self.frames = frames or load_frames()
         tr = self.frames["train"]
         self.y = encode_evasion(tr["evasion_label"].tolist())
-        self.emb = {s: np.load(EMB_DIR / f"{s}.npy") for s in self.frames}
+        # frames without embeddings (E25) can only be scored with k = 0 examples; examples() needs them otherwise
+        self.emb = {s: np.load(EMB_DIR / f"{s}.npy") for s in self.frames if (EMB_DIR / f"{s}.npy").exists()}
         self.keys = {s: group_keys(df) for s, df in self.frames.items()}
-        assert len(self.emb["train"]) == len(tr)
+        assert "train" not in self.emb or len(self.emb["train"]) == len(tr)
 
     def examples(self, split: str, i: int, cand: list[int], k: int) -> list[int]:
         """Train row indices to show for row i of `split`, least similar first."""

@@ -1,0 +1,50 @@
+{
+  "system": "10-seed M1 + M3, delta 0.3",
+  "m3": "Qwen3.8-27B-FP8 on the JarvisLabs VM, k = 0, q averaged over 4 cyclic option orders",
+  "test_text": "official test answers normalized by qevasion.normalize (E21b)",
+  "dev_fit": "all 308 dev items (3-annotator reference sets)",
+  "routing": "u = 1 - top calibrated q; threshold = (1 - delta) quantile of u on the train slice",
+  "delta": 0.3,
+  "lam": 0.5,
+  "tau": -0.55,
+  "tau_m1": 1.15,
+  "dev_in_sample_s2": 0.6732410372804539,
+  "slice_threshold_u": 0.6379547529779154,
+  "dev_defer_rate": 0.35714285714285715,
+  "test_defer_rate": 0.24472573839662448,
+  "test_m3_calls": 58,
+  "dev_s2_nested_cv_split0": 0.6502606260745796,
+  "dev_s1_nested_cv_split0": 0.7884570807306891,
+  "seeds": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9
+  ],
+  "test_distribution_subtask2": {
+    "Explicit": 79,
+    "Implicit": 49,
+    "Dodging": 34,
+    "Deflection": 22,
+    "Claims ignorance": 15,
+    "Clarification": 14,
+    "Declining to answer": 13,
+    "General": 8,
+    "Partial/half-answer": 3
+  },
+  "test_distribution_subtask1": {
+    "Ambivalent": 116,
+    "Clear Reply": 79,
+    "Clear Non-Reply": 42
+  },
+  "sha256": {
+    "submissions\\E23_accuracy_point\\subtask1_clarity\\prediction.zip": "3c03179e950e03b1",
+    "submissions\\E23_accuracy_point\\subtask2_evasion\\prediction.zip": "c4e96496ec3b9081"
+  }
+}

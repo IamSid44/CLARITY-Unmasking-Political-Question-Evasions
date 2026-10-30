@@ -1,0 +1,10 @@
+Q8_distill_a05_unif: single models on dev (multi-reference S2, S1), epoch chosen on the train slice
+seed epoch slice F1  dev S2  dev S1   DeBERTa S2/S1   per-epoch dev S2
+   0     3    0.493   0.467   0.747   0.344/0.591     0.241 0.459 0.489 0.467 0.546 0.502 0.496 0.493 0.518 0.516 0.516 0.519
+   1     6    0.524   0.528   0.745   0.370/0.627     0.318 0.559 0.437 0.523 0.436 0.535 0.528 0.482 0.534 0.501 0.500 0.502
+   2     5    0.531   0.552   0.745   0.428/0.640     0.325 0.405 0.433 0.565 0.508 0.552 0.548 0.532 0.528 0.531 0.509 0.511
+
+mean S2 0.516 ± 0.044   S1 0.746 ± 0.001
+paired vs DeBERTa (same seeds): S2 +0.135 (3/3 up), S1 +0.127 (3/3 up)
+screening bar (experiment log, E12): extend to more seeds if >= +0.015 with >= 2 of 3 seeds up
+wall 59 min per seed; peak VRAM 53.4 GiB

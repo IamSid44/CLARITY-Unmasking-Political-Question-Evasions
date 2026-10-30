@@ -1,0 +1,16 @@
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+Loading weights:   0%|          | 0/398 [00:00<?, ?it/s]Loading weights:   0%|          | 1/398 [00:00<00:54,  7.31it/s]Loading weights:   6%|▋         | 25/398 [00:00<00:03, 118.20it/s]Loading weights:  12%|█▏        | 46/398 [00:00<00:02, 154.82it/s]Loading weights:  17%|█▋        | 69/398 [00:00<00:01, 173.54it/s]Loading weights:  23%|██▎       | 90/398 [00:00<00:01, 177.16it/s]Loading weights:  29%|██▉       | 115/398 [00:00<00:01, 196.18it/s]Loading weights:  34%|███▍      | 137/398 [00:00<00:01, 199.19it/s]Loading weights:  40%|███▉      | 158/398 [00:00<00:01, 198.08it/s]Loading weights:  45%|████▌     | 181/398 [00:01<00:01, 205.27it/s]Loading weights:  51%|█████     | 202/398 [00:01<00:00, 205.42it/s]Loading weights:  57%|█████▋    | 225/398 [00:01<00:00, 210.78it/s]Loading weights:  62%|██████▏   | 247/398 [00:01<00:00, 208.97it/s]Loading weights:  69%|██████▊   | 273/398 [00:01<00:00, 222.96it/s]Loading weights:  74%|███████▍  | 296/398 [00:01<00:00, 217.51it/s]Loading weights:  80%|███████▉  | 318/398 [00:01<00:00, 212.69it/s]Loading weights:  85%|████████▌ | 340/398 [00:01<00:00, 207.61it/s]Loading weights:  91%|█████████ | 362/398 [00:01<00:00, 211.09it/s]Loading weights:  96%|█████████▋| 384/398 [00:01<00:00, 208.91it/s]Loading weights: 100%|██████████| 398/398 [00:02<00:00, 198.02it/s]
+[transformers] [1mQwen3Model LOAD REPORT[0m from: Qwen/Qwen3-8B-Base
+Key            | Status     |  | 
+---------------+------------+--+-
+lm_head.weight | UNEXPECTED |  | 
+
+Notes:
+- UNEXPECTED:	can be ignored when loading from different task/architecture; not ok if you expect identical arch.
+train: (3448, 37, 4096) in 191 s
+dev_own: (308, 37, 4096) in 15 s
+test_own: (237, 37, 4096) in 9 s
+first 9 layers: batch-1 p50 424.0 ms, p95 433.4 ms
+first 18 layers: batch-1 p50 27.8 ms, p95 42.6 ms
+first 27 layers: batch-1 p50 38.1 ms, p95 61.5 ms
+first 36 layers: batch-1 p50 48.0 ms, p95 82.8 ms

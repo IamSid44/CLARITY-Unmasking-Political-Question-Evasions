@@ -1257,6 +1257,21 @@ about, choosing among M1's top four labels, and its choice is fused with M1's pr
 The registrations are in [`02_experiment_log.md`](02_experiment_log.md) §E19–E22, and the plan in
 [`06_final_push_handover.md`](06_final_push_handover.md).
 
+**What the final push found (2026-10-30).**
+- **Two copies of the same LLM disagree.** Qwen3.8-27B-FP8 served on a rented VM disagrees with the lab
+  server's copy on 7.5% of dev decisions. With one consistent copy and its option-order bias averaged out, the
+  accuracy point is **0.650** (0.639 over 10 splits), not 0.669. That is still above M1 (0.598) and TeleAI's
+  dev 0.617. The cost point is unchanged (0.608).
+- **The "LLM hurts confident items" story was mostly leakage.** On train rows with no sibling answer, the LLM
+  roughly breaks even where M1 is confident and helps where it is not (0 / −7 / +2 / +7 / +12). A router learned
+  from these rows did not beat plain confidence routing.
+- **Distillation is mostly soft targets.** A student taught by M1's own probabilities nearly matches the
+  M3-taught one alone (+0.012). Combined with the LLM, though, the M3-taught student is clearly better (+0.026).
+- **The official test set is formatted differently.** Its answers carry transcript artifacts. Injected into
+  dev, they cost M1 0.048 S2, so the final test predictions use cleaned answers.
+- **Cheaper calls and a three-stage ladder were measured but not adopted.** Prefix caching halves the LLM's
+  cost but changes its answers. The ladder reaches 0.600 at 0.221 GPU-s, behind the cost point.
+
 **Next steps, in order (plan at the mid-evaluation)** (the timeline in the Conclusion of `report/mid_evaluation_report.pdf`):
 1. **12 epochs at 10 seeds** → the new single-pass system. Then all of train with 12 epochs, as
    its own test.

@@ -1,0 +1,24 @@
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+Loading weights:   0%|          | 0/398 [00:00<?, ?it/s]Loading weights:   1%|          | 2/398 [00:00<00:20, 19.19it/s]Loading weights:  12%|█▏        | 47/398 [00:00<00:01, 264.28it/s]Loading weights:  22%|██▏       | 89/398 [00:00<00:00, 333.59it/s]Loading weights:  33%|███▎      | 132/398 [00:00<00:00, 370.64it/s]Loading weights:  43%|████▎     | 170/398 [00:00<00:00, 373.23it/s]Loading weights:  54%|█████▍    | 214/398 [00:00<00:00, 393.47it/s]Loading weights:  65%|██████▍   | 258/398 [00:00<00:00, 403.96it/s]Loading weights:  75%|███████▌  | 300/398 [00:00<00:00, 403.64it/s]Loading weights:  87%|████████▋ | 345/398 [00:00<00:00, 414.67it/s]Loading weights:  98%|█████████▊| 389/398 [00:01<00:00, 419.99it/s]Loading weights: 100%|██████████| 398/398 [00:01<00:00, 384.91it/s]
+[transformers] [1mQwen3ForSequenceClassification LOAD REPORT[0m from: Qwen/Qwen3-8B-Base
+Key            | Status     | 
+---------------+------------+-
+lm_head.weight | UNEXPECTED | 
+score.weight   | MISSING    | 
+
+Notes:
+- UNEXPECTED:	can be ignored when loading from different task/architecture; not ok if you expect identical arch.
+- MISSING:	those params were newly initialized because missing from the checkpoint. Consider training on your downstream task.
+[init] init_seed -1: checksum of head + LoRA A at init -25.126017
+[data] soft targets ../runs/M4/targets_a0.5_uniform.npy: mean target on gold 0.605
+[data] train 3103 (mean 434 tokens, max 1024), slice 345, dev 308, test 237
+[model] Qwen/Qwen3-8B-Base: trainable 43.7M parameters
+[transformers] `use_return_dict` is deprecated! Use `return_dict` instead!
+[check] padded vs alone: max |logit difference| / mean |logit| = 0.0391 (should be << 1)
+[pilot] longest micro-batch (4096 tokens): peak VRAM 50.4 GiB
+  ep0 step 5/194 loss 7.9624 5262 tok/s  epoch ETA 3.9 min
+  ep0 step 10/194 loss 7.9604 5076 tok/s  epoch ETA 4.2 min
+  ep0 step 15/194 loss 7.8502 5075 tok/s  epoch ETA 4.2 min
+  ep0 step 20/194 loss 7.5095 5091 tok/s  epoch ETA 4.1 min
+
+[pilot] 1.41 s per optimizer step; 194 steps per epoch -> 4.6 min per epoch of training, ~55 min for 12 epochs (+ ~3-5 min of evaluation per epoch); peak VRAM 53.4 GiB

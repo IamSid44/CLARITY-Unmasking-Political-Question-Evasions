@@ -1,0 +1,46 @@
+E23 systems on dev, one 27B copy (VM). Records: single 2081, averaged 953, lab 1976 (dev item, candidate set) pairs
+
+==============================================================================================================
+S1. Accuracy point: 10-seed M1 + M3, delta = 0.3
+==============================================================================================================
+   lab       S2 0.669  10 splits 0.660  S1 0.798  calls 0.357
+   single    S2 0.639  10 splits 0.637  S1 0.787  calls 0.357
+   averaged  S2 0.650  10 splits 0.639  S1 0.788  calls 0.357
+   (lab = the E15/E18 records, shown as the reference: S2 0.669 / 10 splits 0.660 / S1 0.798)
+
+==============================================================================================================
+S2. Cost point: one student + M3, delta = 0.5 (mean over the 10 students)
+==============================================================================================================
+   lab       S2 0.608  10 splits 0.610  S1 0.790  calls 0.574  (sd over students of split-0 S2 0.027)
+   single    S2 0.599  10 splits 0.606  S1 0.784  calls 0.574  (sd over students of split-0 S2 0.021)
+   averaged  S2 0.608  10 splits 0.606  S1 0.785  calls 0.574  (sd over students of split-0 S2 0.018)
+
+==============================================================================================================
+S3. E19-E, system part: students + M3 at delta = 0.5 (VM records, single order), seeds 0-2
+==============================================================================================================
+   M3-taught       S2 per seed 0.604 / 0.620 / 0.597; mean 0.607; 10-split mean 0.615; S1 0.773
+   M1-taught       S2 per seed 0.575 / 0.572 / 0.598; mean 0.582; 10-split mean 0.589; S1 0.763
+   uniform-taught  S2 per seed 0.599 / 0.622 / 0.582; mean 0.601; 10-split mean 0.603; S1 0.794
+   M3-taught minus M1-taught: +0.028 / +0.032 / +0.018, mean +0.026 -> H-E (system, >= +0.01) HELD
+   M3-taught minus uniform-taught: +0.014 / -0.007 / +0.028, mean +0.012 -> H-E (system, >= +0.01) HELD
+
+==============================================================================================================
+S4. E22c: escalation ladder (VM records, single order); cost on the E19 lab scale
+==============================================================================================================
+   primary (e1 0.4, K 5, e2 0.3), mean over 10 students: S2 0.598  10 splits 0.600  S1 0.785  calls 0.358  GPU-s 0.221  e1 realised 0.44
+   H22c part 1 (10-split S2 >= 0.625): FAILED
+   random escalation at the same rates (200 draws, within the items scored for e1 = 0.6): 10-split S2 0.582 +- 0.020; primary minus random +0.018 -> H22c part 2 (>= +0.01) HELD
+   grid (mean over students): e1, K, e2 -> 10-split S2, GPU-s
+     0.2 3 0.2 -> 0.580  0.118
+     0.2 5 0.2 -> 0.589  0.141
+     0.4 3 0.2 -> 0.580  0.153
+     0.4 3 0.3 -> 0.582  0.175
+     0.4 5 0.2 -> 0.595  0.198
+     0.4 5 0.3 -> 0.600  0.221
+     0.6 3 0.2 -> 0.585  0.191
+     0.6 3 0.3 -> 0.585  0.213
+     0.6 3 0.5 -> 0.594  0.254
+     0.6 5 0.2 -> 0.595  0.264
+     0.6 5 0.3 -> 0.604  0.285
+     0.6 5 0.5 -> 0.596  0.326
+

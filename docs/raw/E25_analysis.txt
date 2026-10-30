@@ -1,0 +1,133 @@
+E25 analysis (registered 2026-10-30 14:30 IST; docs/02 E25). Labels: the frozen E23 instrument (code/experiments/e25/frozen_system.json).
+
+==============================================================================================================
+A. Controls
+==============================================================================================================
+   M1 on dev_own reproduces the saved dev probabilities: 7 seeds, max |dp| 1.96e-01 (registered tolerance 1e-3) -> FAILED (amendment 2: H100 numerics; recorded, not a stop)
+   H100 vs saved inputs: candidate sets identical on 0.961 of dev, deferral decision identical on 0.990
+   instrument on dev_own with THIS VM's 27B calls vs the frozen (E23 VM-record) predictions: agreement 0.981; S2 0.659 vs 0.673 (full-dev fit; the honest nested-CV estimate stays 0.650 / 0.639)
+   deferred to the 27B on dev_own: 0.360 (frozen: 0.357); 27B records missing: 0
+
+==============================================================================================================
+B. E25a: does the instrument read the question causally? (labels: the full instrument; M1 alone in brackets)
+==============================================================================================================
+   dev: own  Clear-Reply share 0.253  clarity shares (Amb, CNR, CR) [0.682, 0.065, 0.253]
+   dev: rand  Clear-Reply share 0.013  label persistence 0.188 (M1 alone 0.175)  top labels [('Dodging', 240), ('Deflection', 36), ('Declining to answer', 9), ('Implicit', 7)]
+   dev: null  Clear-Reply share 0.640  label persistence 0.354 (M1 alone 0.328)  top labels [('Explicit', 197), ('Dodging', 31), ('Implicit', 31), ('Claims ignorance', 15)]
+   dev: qonly Clear-Reply share 0.006  label persistence 0.143 (M1 alone 0.136)  top labels [('Dodging', 302), ('Partial/half-answer', 3), ('Explicit', 2), ('Declining to answer', 1)]
+   test: own  Clear-Reply share 0.338  clarity shares (Amb, CNR, CR) [0.485, 0.177, 0.338]
+   test: rand  Clear-Reply share 0.110  label persistence 0.367 (M1 alone 0.380)  top labels [('Dodging', 146), ('Explicit', 26), ('Declining to answer', 16), ('Clarification', 15)]
+   test: null  Clear-Reply share 0.481  label persistence 0.519 (M1 alone 0.515)  top labels [('Explicit', 114), ('Implicit', 39), ('Dodging', 27), ('Claims ignorance', 15)]
+   H25a-1 (dev: Clear-Reply share under rand <= half of own's 0.253, AND persistence <= 0.5): HELD (share 0.013, persistence 0.188)
+   replication on test (label-free): share 0.110 vs own 0.338; persistence 0.367
+   H25a-2 (descriptive): persistence under null 0.354 -> the question carries much of the label (< 0.7)
+   dev items labelled Clear Reply on their own question (78): under rand -> {'Dodging': 62, 'Deflection': 8, 'Explicit': 4, 'Implicit': 2, 'Clarification': 1}
+
+==============================================================================================================
+C. E25b: question or speaker? The Presidents' questions put to four open LLMs
+==============================================================================================================
+   answers: 2464; words, median per model x condition:
+condition       N      P      F      B
+model                                 
+mistral_7b  225.0  208.5  132.5  209.0
+qwen3_8b    223.0  224.5  182.5  195.0
+   share cut at 400 tokens: 0.021
+
+   evasion rate (clarity != Clear Reply). Presidents: gold 0.744, instrument on their answers 0.747
+condition       N      P      F      B
+model                                 
+mistral_7b  0.591  0.516  0.231  0.614
+qwen3_8b    0.506  0.519  0.172  0.481
+   pooled over models: N 0.549  P 0.518  F 0.201  B 0.547
+
+   H25b-1: odds ratio of an LLM evading on questions the President evaded vs answered (gold), by condition
+   N: MH OR 1.18 [+0.802, +1.727]  per model mistral_7b 0.98, qwen3_8b 1.40   (President labelled by the instrument: 1.26)
+   P: MH OR 2.74 [+1.865, +4.174]  per model mistral_7b 3.01, qwen3_8b 2.46   (President labelled by the instrument: 3.49)
+   F: MH OR 2.19 [+1.282, +4.107]  per model mistral_7b 1.88, qwen3_8b 2.45   (President labelled by the instrument: 2.14)
+   B: MH OR 4.13 [+2.677, +6.342]  per model mistral_7b 8.13, qwen3_8b 2.30   (President labelled by the instrument: 6.45)
+   control C-q: OR of the instrument's evasion label on the CONSTANT answer vs the President's gold: 14.81 [+2.574, +35.926]; qonly labels {'Dodging': 302, 'Partial/half-answer': 3, 'Explicit': 2}
+   P(bootstrap OR_qonly >= OR_N) = 1.000
+   N, adjusted for the instrument's question prior (qonly P(Explicit)), log length and model: OR 1.16 [+0.784, +1.721]
+   H25b-1 (N: MH OR >= 1.5, CI above 1, and the qonly control's OR below it): FAILED
+
+   H25b-2 (stake: P - N >= +0.10): -0.031 [-0.081, +0.022] -> FAILED; per model mistral_7b -0.075, qwen3_8b +0.013
+   H25b-3 (pursuit: of P answers that evade, F gives a Clear Reply in >= 50%): 0.661 of 319 -> HELD; per model mistral_7b 0.629, qwen3_8b 0.694
+      (and of P answers that reply, F stops replying in 0.054)
+   H25b-4 (information: in B, Clear-Reply rate on indirect-answer questions minus non-answer questions >= +0.15): 0.398 - 0.285 = +0.113 [-0.006, +0.225] -> FAILED  (same difference in P, no notes: -0.015)
+      items: indirect 108, non-answer 86 (plurality of 3 annotators)
+
+   condition effects vs N (log-odds), without / with log answer length as a covariate: P -0.12 / -0.12  F -1.58 / -1.52  B -0.01 / +0.01
+
+   evasion-type profiles (share of the 9 labels); Presidents: plurality gold, and the instrument on their answers
+                     Explicit   Implicit    Dodging    General Deflection Partial/ha Declining  Claims ign Clarificat   JS(gold)
+   President gold       0.280      0.207      0.182      0.175      0.062      0.011      0.040      0.029      0.015
+   President inst.      0.253      0.318      0.136      0.081      0.133      0.013      0.029      0.023      0.013   0.186
+   mistral_7 N          0.409      0.136      0.081      0.244      0.023      0.016      0.013      0.078      0.000   0.357
+   mistral_7 P          0.484      0.214      0.032      0.172      0.045      0.026      0.013      0.013      0.000   0.313
+   mistral_7 F          0.769      0.068      0.026      0.068      0.010      0.019      0.013      0.026      0.000   0.497
+   mistral_7 B          0.386      0.279      0.045      0.127      0.091      0.029      0.029      0.013      0.000   0.211
+   qwen3_8b N           0.494      0.231      0.055      0.159      0.010      0.023      0.006      0.023      0.000   0.338
+   qwen3_8b P           0.481      0.250      0.058      0.133      0.032      0.013      0.003      0.023      0.006   0.279
+   qwen3_8b F           0.828      0.055      0.023      0.039      0.006      0.016      0.010      0.023      0.000   0.538
+   qwen3_8b B           0.519      0.205      0.091      0.068      0.049      0.026      0.026      0.016      0.000   0.264
+   (JS for the LLM rows is against the instrument's profile of the Presidents, like for like; Qwen3-8B shares a family with the 27B judge)
+
+==============================================================================================================
+D. E25c: when does evasion become visible? Answer prefixes (instrument; M1 alone in brackets)
+==============================================================================================================
+   dev 25%: agreement with the full-answer label 0.539 (0.584)  S2 0.432 (own 0.659)  S1 0.625
+   dev 50%: agreement with the full-answer label 0.662 (0.688)  S2 0.509 (own 0.659)  S1 0.674
+   dev 75%: agreement with the full-answer label 0.766 (0.805)  S2 0.554 (own 0.659)  S1 0.712
+   H25c (dev, 50%: agreement >= 0.70 and S2 drop <= 0.05): FAILED (agreement 0.662, drop +0.150)
+   agreement at 25 / 50 / 75% by the item's plurality gold label (dev):
+      Explicit               n  77  0.53  0.75  0.78
+      Implicit               n  57  0.49  0.70  0.77
+      Dodging                n  50  0.54  0.62  0.74
+      General                n  48  0.52  0.54  0.77
+      Deflection             n  17  0.53  0.59  0.88
+      Declining to answer    n  11  0.82  0.82  0.91
+      Claims ignorance       n   8  0.75  0.88  0.88
+
+==============================================================================================================
+E. E25d: does the frozen base model already encode the relation? Layer-wise probes; early-exit latency
+==============================================================================================================
+   layer  0: slice F1 0.052  dev S2 0.060  S1 0.136  same label on disjoint siblings 1.000
+   layer 16: slice F1 0.317  dev S2 0.350  S1 0.530  same label on disjoint siblings 0.724
+   layer 32: slice F1 0.364  dev S2 0.298  S1 0.512  same label on disjoint siblings 0.534
+   layer 36: slice F1 0.356  dev S2 0.339  S1 0.517  same label on disjoint siblings 0.397
+   layer chosen on the slice: 28 -> dev S2 0.397, sibling same-label 0.448;  best on dev (optimistic): layer 28 0.397
+   H25d-1 (slice-chosen layer, dev S2 >= 0.45): FAILED
+   H25d-2 (its same-label rate on disjoint dev siblings >= 0.30; M1 0.19): HELD
+   batch-1 latency (H100, dev items, mean 484 tokens): LoRA classifier (one seed) p50 463.4 ms, p95 528.5 ms; base model truncated to L layers: L=9 p50 424.0 ms, L=18 p50 27.8 ms, L=27 p50 38.1 ms, L=36 p50 48.0 ms
+   batched throughput, one M1 seed: 30.6 items/s (dev_own)
+
+==============================================================================================================
+G. Is the instrument on familiar ground with LLM text? (label-free; replaces the dropped human annotation)
+==============================================================================================================
+   frame                   mean u  deferred  seed agreement  final = M1 label
+   Presidents (dev)         0.540     0.360           0.730             0.776
+   LLM answers (all)        0.462     0.293           0.806             0.806
+   mistral_7b B             0.513     0.347           0.758             0.789
+   mistral_7b F             0.336     0.201           0.878             0.838
+   mistral_7b N             0.570     0.494           0.735             0.682
+   mistral_7b P             0.483     0.253           0.806             0.841
+   qwen3_8b B               0.452     0.244           0.810             0.851
+   qwen3_8b F               0.325     0.146           0.902             0.870
+   qwen3_8b N               0.529     0.380           0.766             0.753
+   qwen3_8b P               0.486     0.279           0.795             0.825
+   -> the instrument is MORE confident on LLM answers than on the Presidents' (lower u, higher seed agreement):
+      it is not out of its depth; this rules out one failure mode, not confident errors
+
+==============================================================================================================
+F. Cost of the lane (from logs/infer.log)
+==============================================================================================================
+   deps              0.0 min
+   fetch             3.8 min
+   m1inputs          0.1 min
+   p3_frames         0.0 min
+   p3_hidden         4.3 min
+   p3_llmframe       0.0 min
+   p3_m1llm         11.5 min
+   p3_jobs           0.0 min
+   p3_label          0.1 min
+   upload            0.9 min

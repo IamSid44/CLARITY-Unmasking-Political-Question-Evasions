@@ -1,0 +1,15 @@
+{
+ "dev_own": 308,
+ "dev_qonly": 308,
+ "dev_rand": 308,
+ "dev_null": 308,
+ "dev_pre25": 308,
+ "dev_pre50": 308,
+ "dev_pre75": 308,
+ "test_own": 237,
+ "test_rand": 237,
+ "test_null": 237,
+ "test_pre25": 237,
+ "test_pre50": 237,
+ "test_pre75": 237
+}

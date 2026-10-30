@@ -128,6 +128,7 @@ Every command runs from inside `code/`. Every path is defined once, in `code/qev
 | `distill_targets.py` | **M4.** Soft targets (1 − α)·gold + α·q from M3; `--teacher m1 \| uniform` gives the E19 controls |
 | `infer_variants.py` | **E21.** M1 seeds and students on dev with test's transcript artifacts injected, and on normalized test text |
 | `specificity.py` | **E22e.** Question–answer specificity: answer log-likelihood after its own sub-question vs random ones vs none |
+| `pass2_jobs.py` | The second 27B pass's (item, candidates) jobs: E19-E controls, E22c ladder, normalized test (E21b) |
 | `api_budget.py`, `api_probe.py` | API price table, spend ledger with a hard cap, and an API capability probe |
 | `publish.py` | Uploads cascade outputs to Hugging Face and logs results to W&B |
 
@@ -142,6 +143,7 @@ Every command runs from inside `code/`. Every path is defined once, in `code/qev
 | `peek.py` | Inspects a run while it trains |
 | `make_submission.py` | Packages test predictions as Codabench zips into `submissions/` |
 | `make_cascade_submission.py` | Test files for the cascade systems (M1, accuracy point, cost point) → `submissions/E19_*/` |
+| `make_final_submission.py` | **E23.** The final test files: normalized test text, the VM's 27B, order-averaged q → `submissions/E23_*/` |
 
 ### `preregistered_analyses/`
 
@@ -155,6 +157,9 @@ Every command runs from inside `code/`. Every path is defined once, in `code/qev
 | `e17_m4_analysis.py` | M4: distilled student vs M1 seeds, routing, student + M3 frontier |
 | `e18_final.py` | Final numbers for both operating points, cost table, frontier figure → `docs/raw/E18_final.txt` |
 | `e19_tier0.py`, `e19_lib.py` | E19 Tier 0: headlines with refitted bootstrap, corrected cost, train-row cascade, value map, routing and fusion ablations, strata, position bias, test files, human ceiling → `docs/raw/E19_tier0.txt` |
+| `e21_e22_analysis.py` | E19 A/B, E21a, E22a/b/e: the LLM alone, option order, cached prompt, faithfulness, test-artifact sensitivity, specificity → `docs/raw/E21_E22_analysis.txt` |
+| `e20_router.py` | E20 (amended): value map and learned router on the leak-free singleton train rows → `docs/raw/E20_router.txt` |
+| `e23_systems.py` | Final operating points with one 27B copy (single and order-averaged q), E19-E system part, E22c ladder → `docs/raw/E23_systems.txt` |
 
 ### `figures/`
 
@@ -172,6 +177,7 @@ Every command runs from inside `code/`. Every path is defined once, in `code/qev
 |---|---|
 | `ckpt.py` | Atomic checkpoint saving and resume after interruption |
 | `tracking.py` | W&B logging and Hugging Face upload of metrics, probabilities and adapters; skipped when no keys are set |
+| `vm_guard.py` | Lets a rented VM look after itself: copies logs to HF, uploads and checks outputs there, and pauses or destroys its own instance |
 
 ### `launch/` and `experiments/`
 
@@ -183,6 +189,9 @@ They are specific to that infrastructure; every run can also be started directly
 - **Running the cloud driver from Windows Git Bash:** set `JL_PY` to a Python that has the `jarvislabs`
   SDK installed, instead of using `uvx`.
 - **Several seeds on one large GPU:** `PARALLEL=N` trains up to N seeds at once.
+- **Self-managing lanes:** both pipelines copy their logs to HF and run a watchdog. At the end they destroy
+  the instance if everything is on HF, and pause it otherwise (`utils/vm_guard.py`).
+- **The inference lane:** `jarvis_drive.sh lane` launches it.
 
 Usage, machine choice and costs are in
 [`06_final_push_handover.md`](06_final_push_handover.md) §5–6.

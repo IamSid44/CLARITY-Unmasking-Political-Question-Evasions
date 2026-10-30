@@ -1,0 +1,10 @@
+averaged M3 records: dev 953, normalized test 436 (item, candidates) pairs
+   E23_m1_10seed              tau_m1 1.150, dev_s2_nested_cv_split0 0.598, dev_s1_nested_cv_split0 0.743
+      test labels {'Explicit': 68, 'Implicit': 47, 'Dodging': 24, 'Claims ign': 23, 'Deflection': 21, 'Clarificat': 16, 'Declining ': 14, 'General': 13, 'Partial/ha': 11}
+   E23_accuracy_point         tau_m1 1.150, lam 0.500, tau -0.550, test_defer_rate 0.245, test_m3_calls 58, dev_s2_nested_cv_split0 0.650, dev_s1_nested_cv_split0 0.788
+      test labels {'Explicit': 79, 'Implicit': 49, 'Dodging': 34, 'Deflection': 22, 'Claims ign': 15, 'Clarificat': 14, 'Declining ': 13, 'General': 8, 'Partial/ha': 3}
+   E23_cost_point_student0    tau_m1 0.600, lam 0.500, tau 0.350, test_defer_rate 0.401, test_m3_calls 95, dev_s2_nested_cv_split0 0.627, dev_s1_nested_cv_split0 0.747
+      test labels {'Explicit': 83, 'Implicit': 39, 'Dodging': 30, 'Declining ': 23, 'Deflection': 22, 'Claims ign': 14, 'Clarificat': 12, 'General': 12, 'Partial/ha': 2}
+   E23_accuracy_point vs E23_m1_10seed: 40 of 237 test labels differ (S1: 20)
+   E23_cost_point_student0 vs E23_accuracy_point: 53 of 237 test labels differ (S1: 32)
+   E23 vs E19 accuracy point (raw text, lab records, single order): 31 of 237 labels differ

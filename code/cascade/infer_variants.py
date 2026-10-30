@@ -64,44 +64,49 @@ def main() -> None:
     tok = AutoTokenizer.from_pretrained(a.model)
     if tok.pad_token_id is None:
         tok.pad_token = tok.eos_token
-    base = AutoModelForSequenceClassification.from_pretrained(a.model, num_labels=N_EVASION, dtype=torch.bfloat16,
-                                                              device_map={"": cfg.device})
-    base.config.pad_token_id = tok.pad_token_id
     fr = frames()
     seqs = {v: encode_df(tok, df, cfg) for v, df in fr.items()}
-    model, prev, report = None, None, []
+    rep_path = OUT / "infer_report.json"
+    report = {(r["run"], r["seed"]): r for r in json.loads(rep_path.read_text())} if rep_path.exists() else {}
     for run in a.runs.split(","):
         for k in seed_list(a.seeds):
-            src = RUNS / run / f"seed{k}"
+            src, dst = RUNS / run / f"seed{k}", OUT / run / f"seed{k}"
             if not (src / "adapter_best").exists():
                 print(f"[skip] {src}: no adapter_best", flush=True)
                 continue
-            t0, name = time.time(), f"{run}_s{k}"
-            if model is None:
-                model = PeftModel.from_pretrained(base, str(src / "adapter_best"), adapter_name=name)
-            else:
-                model.load_adapter(str(src / "adapter_best"), adapter_name=name)
-                model.set_adapter(name)
-                model.delete_adapter(prev)
-            prev = name
-            dst = OUT / run / f"seed{k}"
+            if all((dst / f"{v}_probs.npy").exists() for v in seqs) and (run, k) in report:
+                print(f"[done] {dst} already scored", flush=True)
+                continue
+            # a fresh base model per adapter, as cascade.cost does: swapping adapters on one PeftModel
+            # (load_adapter / set_adapter / delete_adapter) did not reproduce the M1 seeds' saved probabilities
+            t0 = time.time()
+            base = AutoModelForSequenceClassification.from_pretrained(a.model, num_labels=N_EVASION,
+                                                                      dtype=torch.bfloat16, device_map={"": cfg.device})
+            base.config.pad_token_id = tok.pad_token_id
+            model = PeftModel.from_pretrained(base, str(src / "adapter_best")).eval()
             dst.mkdir(parents=True, exist_ok=True)
             probs = {v: predict(model, s, tok.pad_token_id, cfg) for v, s in seqs.items()}
+            del model, base
+            torch.cuda.empty_cache()
             for v, pr in probs.items():
                 np.save(dst / f"{v}_probs.npy", pr)
-            ctrl = {sp: float(np.abs(probs[f"{sp}_ctrl"] - np.load(src / f"{sp}_probs.npy")).max())
-                    for sp in ("dev", "test")}
+            saved = {sp: np.load(src / f"{sp}_probs.npy") for sp in ("dev", "test")}
+            ctrl = {sp: float(np.abs(probs[f"{sp}_ctrl"] - saved[sp]).max()) for sp in saved}
+            agree = {sp: float((probs[f"{sp}_ctrl"].argmax(1) == saved[sp].argmax(1)).mean()) for sp in saved}
             flips = {"dev_pert": float((probs["dev_pert"].argmax(1) != probs["dev_ctrl"].argmax(1)).mean()),
                      "test_norm": float((probs["test_norm"].argmax(1) != probs["test_ctrl"].argmax(1)).mean())}
-            row = {"run": run, "seed": k, "ctrl_max_abs_dp": ctrl, "argmax_flip": flips,
+            row = {"run": run, "seed": k, "ctrl_max_abs_dp": ctrl, "ctrl_argmax_agree": agree, "argmax_flip": flips,
                    "seconds": round(time.time() - t0, 1)}
-            report.append(row)
+            report[(run, k)] = row
             print(json.dumps(row), flush=True)
-    OUT.mkdir(parents=True, exist_ok=True)
-    (OUT / "infer_report.json").write_text(json.dumps(report, indent=1))
-    bad = [r for r in report if max(r["ctrl_max_abs_dp"].values()) >= 1e-3]
-    print(f"control: {len(report) - len(bad)}/{len(report)} seed folders reproduce their saved probabilities"
-          + (f"; FAILED: {[(r['run'], r['seed']) for r in bad]}" if bad else ""))
+            OUT.mkdir(parents=True, exist_ok=True)
+            rep_path.write_text(json.dumps(list(report.values()), indent=1))
+    rows = list(report.values())
+    bad = [r for r in rows if max(r["ctrl_max_abs_dp"].values()) >= 1e-3]
+    print(f"control: {len(rows) - len(bad)}/{len(rows)} seed folders reproduce their saved probabilities "
+          f"(max |dp| < 1e-3); argmax agreement with the saved dev predictions: min "
+          f"{min(r.get('ctrl_argmax_agree', {}).get('dev', float('nan')) for r in rows):.3f}"
+          + (f"; above tolerance: {[(r['run'], r['seed']) for r in bad]}" if bad else ""))
 
 
 if __name__ == "__main__":

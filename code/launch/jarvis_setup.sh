@@ -17,6 +17,7 @@ MAX_TOTAL_HOURS=${MAX_TOTAL_HOURS:-5}
 PARALLEL=${PARALLEL:-1}  # N > 1: up to N seeds train at once on the one GPU (E19, 2026-10-29); 1 = one after another
 AUTO_PAUSE=${AUTO_PAUSE:-1}
 PAUSE_DELAY=${PAUSE_DELAY:-60}
+IDLE_MIN=${IDLE_MIN:-30}  # watchdog: no log change for this long stops the pipeline
 NO_PROMPT=${NO_PROMPT:-0}
 SESSION=clarity-llm
 SELF=$(readlink -f "$0")
@@ -78,13 +79,40 @@ EOF
   fi
 }
 
-maybe_pause() {
+maybe_pause() {  # once, however the pipeline ends (2026-10-29): logs to HF, then DESTROY the instance if every
+  # seed is on the Hub, otherwise PAUSE it (disk kept, only storage billed). The laptop may be disconnected.
   load_keys
   [ "$AUTO_PAUSE" = 1 ] && [ -n "${JL_API_KEY:-}" ] && [ -n "${JL_MACHINE_ID:-}" ] && [ -x "$PY" ] || return 0
-  stage "pausing instance $JL_MACHINE_ID ($1) in $PAUSE_DELAY s -- Ctrl-C in tmux to keep it running"
+  mkdir "$LOGS/.stopping" 2>/dev/null || return 0
+  local action=pause seeds=() s
+  if [ -f "$CODE/code/.env" ]; then
+    guard upload --dest "logs/jarvis_$NAME" "$LOGS" --allow '*.log' 'summary.txt' >> "$LOGS/hf_uploads.log" 2>&1
+    for s in $SEEDS; do seeds+=("$NAME/seed$s/metrics.json"); done
+    [ "$1" = finished ] && guard verify "${seeds[@]}" >> "$LOGS/pipeline.log" 2>&1 && action=destroy
+  fi
+  stage "stopping instance $JL_MACHINE_ID ($1): $action in $PAUSE_DELAY s -- Ctrl-C in tmux to keep it running"
   sleep "$PAUSE_DELAY"
-  "$PY" -c "import os; from jarvislabs import Client; Client().instances.pause(int(os.environ['JL_MACHINE_ID']))" \
-    || "$VENV/bin/jl" pause "$JL_MACHINE_ID" --yes || stage "pause call failed -- pause by hand"
+  guard stop "$action" >> "$LOGS/pipeline.log" 2>&1 || stage "$action call failed -- stop the instance by hand"
+}
+
+guard() { (cd "$CODE/code" && "$PY" -m utils.vm_guard "$@"); }
+
+pipe_watch() {  # logs to HF every 10 min; stop everything if no log changes for IDLE_MIN minutes
+  local pid=$1 last=0 now
+  while kill -0 "$pid" 2>/dev/null; do
+    sleep 60
+    now=$(date +%s)
+    if (( now - last >= 600 )) && [ -f "$CODE/code/.env" ]; then
+      guard heartbeat --dest "logs/jarvis_$NAME" "$LOGS/pipeline.log" "$LOGS"/"$NAME"_seed*.log >/dev/null 2>&1
+      last=$now
+    fi
+    if [ -z "$(find "$LOGS" -type f -mmin -"$IDLE_MIN" -print -quit 2>/dev/null)" ]; then
+      stage "watchdog: no log change for $IDLE_MIN min -- stopping"
+      pkill -TERM -P "$pid"; pkill -TERM -f models.llm_classifier; sleep 20; kill -TERM "$pid" 2>/dev/null
+      maybe_pause "watchdog"
+      return
+    fi
+  done
 }
 
 setup() {
@@ -273,6 +301,9 @@ status() {
 }
 
 pipeline() {
+  rm -rf "$LOGS/.stopping"
+  trap 'maybe_pause "exit"' EXIT  # any unexpected exit still uploads the logs and stops the instance
+  pipe_watch $$ &
   stage "pipeline: start (NAME=$NAME SEEDS='$SEEDS' MODEL=$MODEL EXTRA_ARGS='$EXTRA_ARGS')"
   [ -x "$PY" ] && [ -f "$LOGS/.setup_done" ] || { setup && touch "$LOGS/.setup_done"; }
   check_pause_keys
@@ -283,6 +314,7 @@ pipeline() {
   summary
   package
   stage "pipeline: ALL DONE"
+  trap - EXIT
   maybe_pause "finished"
 }
 
