@@ -12,7 +12,7 @@ The talk runs 20 minutes, followed by 10 minutes of questions. The target is 17:
 - Each limitation is paired with what we did and what comes next.
 - The example from the mid-evaluation (three real dev items) follows the task slide. The "I already have" answer appears before Stage 3, is tested in Stage 4 and returns in the conclusions.
 
-## Main deck (28 slides)
+## Main deck (31 slides)
 
 | # | Stage | Title |
 |---|---|---|
@@ -32,31 +32,18 @@ The talk runs 20 minutes, followed by 10 minutes of questions. The target is 17:
 | 14 | Stage 2: the cascade | Deferral rate against cost on dev |
 | 15 | Example: a shared answer | One answer, two sub-questions, two labels |
 | 16 | Stage 3: which gains survive? | Controls on the cascade: routing, fusion and where the 27B helps |
-| 17 | Stage 3: which gains survive? | Option order changes the 27B's answers |
+| 17 | Stage 3: which gains survive? | The 27B prioritises option A |
 | 18 | Stage 3: which gains survive? | The frozen system compared with the winning system |
 | 19 | Stage 4: what it measures | Labels of one answer across its sub-questions |
 | 20 | Stage 4: what it measures | Validity check: removing or swapping the question |
 | 21 | Stage 4: what it measures | Does the question or the speaker drive evasion? Design |
 | 22 | Stage 4: what it measures | Evasion rates by role |
 | 23 | Stage 4: what it measures | What the role result shows and does not show |
-| 24 | Stage 5: cheaper? | Lower precision: FP8 and NF4 against 16-bit |
-| 25 | Conclusions | Registered predictions that steered the work |
-| 26 | Conclusions | Limitations, each with what we did and what comes next |
-| 27 | Conclusions | Conclusions |
-| 28 | Conclusions | Thank you. Questions? |
-
-## Backup (13 slides)
-
-- Is the comparison with the winning system fair?
-- Option order: what we measured, and how the final numbers were produced
-- What else changed with the backbone?
-- E25b: confounds, controls and per-model results
-- Is the instrument valid on LLM-written answers?
-- Is the cascade's tolerance of FP8 true by construction?
-- Choices made after seeing results, and how we logged them
-- The other Stage-3 tests
-- Cost on one GPU, and why the frozen system makes 1.43 calls per item
-- Shortcuts: answer prefixes and frozen-model probes
-- E25: the register of hypotheses
-- The metric and the 0.684 reference
-- Implementation details
+| 24 | Stage 4: what it measures | What the evasion study tells us to act on |
+| 25 | Stage 5: cheaper? | Cost of reduced precision: memory, throughput and latency |
+| 26 | Stage 5: cheaper? | Lower precision: accuracy lost and flipped decisions |
+| 27 | Conclusions | Registered predictions that steered the work |
+| 28 | Conclusions | Limitations, each with what we did and what comes next |
+| 29 | Conclusions | Future work: a question-side evasion prior |
+| 30 | Conclusions | Conclusions |
+| 31 | Conclusions | Thank you. Questions? |

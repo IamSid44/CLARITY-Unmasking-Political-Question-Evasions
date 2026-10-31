@@ -1,5 +1,5 @@
 \section{Conclusion}
 \label{sec:conclusion}
 
-A classifier on this task is limited by knowledge, not structure, and ranks better than it decides. A 27B adjudicator consulted only where it is unsure lifts dev \Stwo{} to 0.650 with fewer LLM calls and far fewer tokens than the winning system, and a distilled student matches the ten-model classifier at a quarter of its GPU time.
-As a frozen instrument, it shows that evasion is a relation between question and answer that relevance does not capture, that in the President's role LLMs answer directly what the Presidents answered directly (exploratory), and that the cascade's score stays within its own noise when its first stage runs in FP8.
+A classifier on this task is limited by knowledge, not structure, and ranks better than it decides. A 27B adjudicator consulted only where it is unsure lifts dev \Stwo{} to 0.650 with fewer LLM calls and tokens than the winning system.
+As a frozen instrument, it shows that evasion is a relation between question and answer, and that in the President's role LLMs answer directly what the Presidents answered directly (exploratory), which motivates a question-side prior as the next module. Run in FP8 without fused kernels, the classifier loses 0.045 \Stwo{} and is not faster, while the cascade loses 0.003.

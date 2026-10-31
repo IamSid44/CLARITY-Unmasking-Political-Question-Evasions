@@ -2,6 +2,9 @@
 \label{sec:cascade}
 \FigureFrontier
 
+\step{Question.}
+If M1's errors are choices among a few top candidates made where it is unsure, can a larger model consulted only there make better choices?
+
 \step{M1, the candidate generator (E14).}
 On ten seeds the 12-epoch classifier scores \pmsd{0.525}{0.042} per model (+0.049 over 3 epochs, 8/10 up) and 0.598 \Stwo{} / 0.743 \Sone{} as a system (M1, Figure~\ref{fig:system}).
 Three registered checks shaped the next module.
@@ -16,20 +19,18 @@ A screen on 300 cross-fitted training rows refuted two registered design assumpt
 
 \step{Result, and a correction.}
 The first dev analysis showed no gain. Explaining it, we found a bug that shared one $\tau$ between deferred and kept items and so switched off M1's logit adjustment on the 64\% of items meant to keep M1's answer.
-Corrected, deferring 30\% of items gives 0.669 \Stwo{} (0.660 over ten splits) and 0.798 \Sone{}, +0.067 \ci{+0.009}{+0.124} over M1 with the fitted parameters held fixed (Figure~\ref{fig:frontier}), with 33 items moving into the reference set and 9 out (McNemar $p = 0.0003$).
+Corrected, deferring the 30\% least confident items (by the slice threshold, 36\% of dev) gives 0.669 \Stwo{} (0.660 over ten splits) and 0.798 \Sone{}, +0.067 \ci{+0.009}{+0.124} over M1 with the fitted parameters held fixed (Figure~\ref{fig:frontier}), with 33 items moving into the reference set and 9 out (McNemar $p = 0.0003$).
 Deferring \emph{every} item is worse (0.609 over ten splits): where M1 is confident, the LLM is the weaker reader.
 
 \step{Where the cost goes (E16).}
 Timed on one GPU, an M1 seed costs 0.040 GPU-s per item and a 27B call 0.101, so the ten seeds are 92\% of the cascade's inference time and the 27B only 8\%.
-Removing prompt parts lowered dev \Stwo{} in the expected order, each step within noise (full 0.660, no confusion guide 0.637, no definitions 0.628, neither 0.617), so the full prompt stayed.
-With $K \le 5$ seeds M3 adds only +0.021 to +0.031 at $\delta = 0.3$, against +0.071 at $K = 10$.
 
 \step{M4, distillation for cost (E17--E18).}
 M3 relabelled every training row over its cross-fitted top four, and one student learned from $\tfrac12$gold $+ \tfrac12 q$, a weight fixed in advance \citep{hinton2015distilling}.
 The student beats M1 per model (0.573 vs 0.525, 9/10 seeds up) and is far better calibrated (mean top probability 0.58 vs 0.84), yet it ranks its errors no better (AUROC 0.686 for both), against our prediction.
-With M3 it missed the registered target at $\delta = 0.3$ (0.591 vs 0.614). At $\delta = 0.5$ it reaches 0.608 \Stwo{} / 0.790 \Sone{} at 0.098 GPU-s per item, above the ten-seed M1 alone at a quarter of its time, and it beats 25 of the 30 undistilled (seeds, $\delta$) points with less GPU time.
+With M3 it missed the registered target at $\delta = 0.3$ (0.591 vs 0.614). At $\delta = 0.5$ and with one option order it matches the ten-seed M1 alone (0.599 against 0.598 \Stwo{}, Table~\ref{tab:final}) at 0.098 GPU-s per item, a quarter of M1's time.
 Ensembles of students add almost nothing (+0.005 from one to ten, vs +0.065 for M1 seeds): students trained towards the same targets lose the diversity seed ensembles feed on.
 We froze an \emph{accuracy} point (M1 $\times$ 10 + M3, $\delta = 0.3$) and a \emph{distilled} point (one student + M3, $\delta = 0.5$).
 
 \step{What it raised.}
-The accuracy point rested on one ensemble whose M3 gain was twice that of any smaller one, on parameters fitted on 308 items, and, for the distilled point, on a $\delta$ chosen after the registered one failed.
+The accuracy point rested on one ensemble (smaller ensembles gained less from M3), on parameters fitted on 308 items, and, for the distilled point, on a $\delta$ chosen after the registered one failed.

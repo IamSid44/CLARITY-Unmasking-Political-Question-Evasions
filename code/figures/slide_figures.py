@@ -170,14 +170,13 @@ def frontier() -> None:
         if rows[0]["K"] == 10:
             ax.annotate("no LLM", (x[0], yv[0]), xytext=(-4, -2), textcoords="offset points", fontsize=7, ha="right",
                         va="center")
-            ax.annotate("defer all", (x[-1], yv[-1]), xytext=(4, 0), textcoords="offset points", fontsize=7, va="center")
     xs = 10 * c1 + next(r for r in u if r["K"] == 10 and r["delta"] == 0.3)["calls"] * c3
     ax.plot(xs, 0.669, marker="*", ms=11, color=NAVY, mec="white", mew=0.4, zorder=5)
     ax.annotate("defer 30%:\n0.669", (xs, 0.669), xytext=(-8, 0), textcoords="offset points", ha="right", va="center",
                 fontsize=7.8, color=NAVY, fontweight="bold")
     xd = c1 + next(r for r in s if r["delta"] == 0.5)["calls"] * c3
     ax.plot(xd, 0.608, marker="*", ms=11, color=MID, mec="white", mew=0.4, zorder=5)
-    ax.annotate("student: 0.608 at\n¼ of M1's GPU time", (xd, 0.608), xytext=(0.037, 0.655), textcoords="data",
+    ax.annotate("one student + 27B:\n¼ of M1's GPU time", (xd, 0.608), xytext=(0.037, 0.655), textcoords="data",
                 ha="left", va="center", fontsize=7.2,
                 arrowprops=dict(arrowstyle="-", color=MID, lw=0.5, shrinkB=4))
     ax.set_xscale("log")

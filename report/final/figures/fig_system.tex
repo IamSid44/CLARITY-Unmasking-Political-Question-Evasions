@@ -55,6 +55,9 @@
   \textbf{E26} M1 run in FP8 or NF4 instead of 16-bit};
 \node[side, anchor=west] (c5) at ($(out.east)+(7mm,0)$) {%
   \textbf{Measure} Clear-Reply share, label persistence, odds ratios, agreement};
+\node[side, anchor=west, dashed] (c6) at ($(m3.east)+(7mm,-1mm)$) {%
+  \textbf{M5 (future)} question-side prior: two LLMs answer $Q$ as the President, and the share that evade enters the fusion};
+\draw[arr, densely dashed] (c6.west) -- (m3.east);
 \draw[arr] (c1.west |- in.east) -- (in.east);
 \draw[arr, densely dashed] (c4.west) -- ++(-3.5mm,0) |- (m1.east);
 \draw[arr] (out.east) -- (c5.west);

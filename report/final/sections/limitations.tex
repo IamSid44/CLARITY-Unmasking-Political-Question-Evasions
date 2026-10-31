@@ -3,17 +3,17 @@
 \section*{Limitations, Challenges and Future Work}
 
 \paragraph{One small development set.}
-Every number is on 308 dev items, because the test labels were never released and the evaluation server has closed.
+Every system comparison is on 308 dev items, because the test labels were never released and the evaluation server has closed.
 Differences between systems therefore carry wide intervals, and parameters fitted on dev (by nested cross-validation) use dev labels.
 \emph{Next step:} score the frozen test predictions in the repository as soon as the organisers release the test labels, and re-run the instrument, unchanged, on a second evasion corpus such as parliamentary question periods.
 
 \paragraph{Validity of the instrument on LLM text.}
-The instrument was trained on presidential speech; our check on LLM answers is label-free, so it cannot rule out confident errors.
+The instrument was trained on presidential speech, and our check on LLM answers is label-free, so it cannot rule out confident errors.
 \emph{Challenge:} the registered human annotation of LLM answers was dropped for lack of time.
 \emph{Next step:} have two annotators label a stratified sample at the clarity level, blind to model and condition, and use the instrument only if its agreement with them is within 0.10 of their agreement with each other, as registered.
 
 \paragraph{Breadth of the LLM audit.}
-The audit covers two model families, one of which shares a family with the 27B judge. The role effect was not a registered hypothesis.
+The audit covers two model families, one of which shares a family with the 27B judge. The role effect was not a registered hypothesis. Labelling N and P with one instrument removes a question prior that acts alike on every answer, not one that interacts with answer style, and we had no working question-only control. The role odds ratio was not adjusted for answer length.
 \emph{Challenge:} two further families (Llama-3.1, OLMo-2) failed to load on the shared GPU because of context-length and memory settings.
 \emph{Next step:} re-run them with their own GPU and context limits, adjust the role odds ratio for answer length, and register the role effect as a hypothesis for that replication.
 Role play is also not politics: an LLM has no career at stake, so ``role'' here means the prompt, and conclusions about real politicians would need human studies.
@@ -26,6 +26,11 @@ The adjudicator's decisions depend on the serving stack, the GPU and the option 
 GPU time was measured with batched inference over the 308 dev items on one GPU type. Per-item cost depends on batch size and hardware, and our reduced-precision runs used unfused FP8 kernels, so they measure accuracy under quantization but not the speed a production kernel would give.
 The winning system's cost is known only in calls and tokens.
 \emph{Next step:} serve M1 through fused FP8 kernels, retrain the adapter on the 4-bit base (QLoRA), as our registered trigger requires, score the 27B on every item NF4 defers so its cascade comparison is complete, and report latency at batch size one alongside throughput.
+
+\paragraph{Information the system never sees: the question.}
+Every module reads the answer, yet the role study suggests that the question carries evasion signal of its own: models answering as the President, without the real answer, answered directly the questions the Presidents answered directly (Section~\ref{sec:measure}, exploratory).
+\emph{Next step:} add a question-side prior, module M5 in Figure~\ref{fig:system}. For the items M2 defers, two open LLMs answer the question in the President role, the frozen instrument labels their answers, and the share that evade enters the fusion as an extra term. Its weight would be fitted on the training rows (whose P-role answers must first be generated) and its prediction registered before dev is scored. We expect a small effect on the items M1 is unsure about, mainly on the evade-or-not decision. Appendix~\ref{sec:impl} gives a preliminary check.
+\emph{Challenge:} it costs two extra generations per deferred item and relies on the instrument being valid on LLM text.
 
 \paragraph{Labels and classes.}
 Training items carry one annotator's label, so the models cannot learn how disputed an item is, and the any-annotator metric credits labels that most annotators rejected.

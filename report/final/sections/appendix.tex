@@ -22,7 +22,7 @@ E12 & Gate, specialists, pair experts, soups? & $-$0.059 \dots{} $-$0.117 & fail
 E13 & Is the gap knowledge? & +0.092 per model, 10/10 & held & LLM classifier \\
 E14 & M1 at 10 seeds, can $K$ shrink? & 0.598, $K{=}5$: 0.555 & held / failed & M3, fused \\
 E15 & Does a 27B chooser help? & 0.669 (after bug fix) & held & accuracy point \\
-E16 & Prompt parts, cost, smaller ensembles? & seeds 92\% of time, gain +0.02--0.03 & -- & distil, distrust headline \\
+E16 & Prompt parts, cost, smaller ensembles? & seeds 92\% of time, smaller ensembles gain less & -- & distil, test the headline \\
 E17, E18 & One distilled student? & 0.608 with M3 at 0.25$\times$ M1's time & mixed & distilled point \\
 E19 & Controls on the cascade? & train rows +0.014 \ci{+0.002}{+0.026} & held & routing and fusion carry it \\
 E20 & Learned router? & loses 4/4 budgets & failed & confidence routing \\
@@ -33,7 +33,7 @@ E24 & What is the label a property of? & siblings 72\% vs 43\% & -- & evasion is
 E25a & Question read causally? & CR 0.253 $\rightarrow$ 0.013 & held & audit is valid \\
 E25b & Question or speaker? & OR 1.18 (N), 2.74 (P) & failed / expl. & question $\times$ role \\
 E25c, d & Early or frozen shortcut? & 66\% at half, probe 0.397 & failed & no shortcut \\
-E26 & Cheaper by lower precision? & FP8 0.83$\times$, M1 $-$0.020, instrument $-$0.003 & failed / held & fused kernels, QLoRA \\
+E26 & Cheaper by lower precision? & FP8 0.83$\times$, M1 $-$0.045, instrument $-$0.003 & failed / held & fused kernels, QLoRA \\
 \midrule
 \multicolumn{5}{@{}l}{\emph{Pre-checks rejected in E24 on existing outputs}} \\
 P3 & Route on seed disagreement? & 49 vs 53 of 115 errors caught & failed & -- \\
@@ -61,7 +61,7 @@ The prompt holds the task, definitions of all nine labels, a confusion guide for
 $q$ is averaged over four cyclic option orders.
 
 \paragraph{The frozen instrument.}
-All settings are in \texttt{code/experiments/e25/frozen\_system.json}: M1's ten seeds, slice calibration $\tau_C = 0.20$ and temperature $T = 2.15$, top-4 candidates, and deferral iff $u \ge 0.638$ (the slice's 70\% quantile). Kept items use $\tau_1 = 1.15$ and deferred items $\lambda = 0.5$, $\tau = -0.55$, fitted once on dev with the averaged records. The same procedure under nested CV gives 0.650 / 0.639.
+All settings are in \texttt{code/experiments/e25/frozen\_system.json}: M1's ten seeds, slice calibration $\tau_C = 0.20$ and temperature $T = 2.15$, top-4 candidates, and deferral iff $u \ge 0.638$ (the slice's 70\% quantile). Kept items use $\tau_1 = 1.15$ and deferred items $\lambda = 0.5$, $\tau = -0.55$, fitted once on dev with the averaged records. The same procedure under nested CV gives 0.650 at split 0 and 0.639 over ten splits.
 Run on dev with the E23 records, it reproduces the frozen predictions exactly.
 
 \paragraph{E25b prompts.}
@@ -73,6 +73,9 @@ N, P and B are generated once per interview turn and shared by its sub-questions
 GPU-s per item is the wall time of one batched pass over the 308 dev items divided by 308, with the GPU used by that job alone.
 To keep every comparison like for like, all reported times come from one session on one GPU (an RTX PRO 6000): an M1 seed (bf16, batch 16) takes 0.040\,GPU-s per item and a 27B call 0.098--0.101 per order.
 A system's time is $K$ seeds plus its realised 27B calls. Ratios computed from an earlier measurement on another card of the same model differ by at most 0.02$\times$ (\texttt{docs/raw/cost\_same\_gpu.txt}).
+
+\paragraph{Preliminary check for the question-side prior.}
+Written after the E25 results, on the 308 dev items only (\texttt{docs/raw/question\_prior\_check.txt}). Of the two P-role LLMs, the share whose answer the instrument labels evasive was 0, 0.5 or 1 for 101, 95 and 112 questions, and the President evaded on 61\%, 72\% and 88\% of them. As a score for ``the President evaded'' it reaches an AUROC of 0.661 (M1: 0.880, or 0.872 cross-validated) and correlates 0.31 with M1. In a cross-validated logistic regression it lifts M1's AUROC from 0.872 to 0.875 on all items and from 0.722 to 0.746 on the 111 items M1 is least sure of. This motivates a registered test and is not evidence for the module.
 
 \paragraph{Code.}
 Code, the pre-registered log and the raw output behind every number: \url{https://github.com/IamSid44/CLARITY-Unmasking-Political-Question-Evasions}.

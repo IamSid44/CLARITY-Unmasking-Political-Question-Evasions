@@ -1,6 +1,6 @@
 # Speaker notes: final presentation
 
-**Slot:** 30 minutes, made up of about 20 minutes of talk and 10 of questions. Aim to finish the talk at **17:45** so there is slack for speaker changes.
+**Slot:** 30 minutes, made up of about 20 minutes of talk and 10 of questions. Aim to finish the talk at **19:40** so there is slack for speaker changes.
 
 The script below is about 2,300 spoken words, roughly 17 minutes at 135 words a minute, and about 19 with pauses on the figures and the hand-overs. Read it aloud once with a timer, and use the running clock to see where you drift.
 
@@ -10,9 +10,9 @@ The script below is about 2,300 spoken words, roughly 17 minutes at 135 words a 
 |---|---|---|---|
 | A | 1–5 | Opening: the task, examples, shared-task results, overview | 2:55 |
 | B | 6–14 | Stage 1 and Stage 2: the encoder, the backbone change and the cascade | 5:55 |
-| C | 15–23 | Stage 3 and Stage 4: what survives, and what the instrument measures | 6:55 |
-| D | 24–28 | Stage 5 and close | 2:00 |
-| | | **Total** | **17:45** |
+| C | 15–24 | Stage 3 and Stage 4: what survives, and what the instrument measures | 6:55 |
+| D | 25–31 | Stage 5 and close | 3:15 |
+| | | **Total** | **19:40** |
 
 **Who speaks when** is the team's choice. One rule: each speaker should deliver the last line of their own section, the "What it raised" line. The next speaker then opens their section with that question. This hand-off is what makes the talk sound like one story.
 
@@ -165,9 +165,9 @@ The script below is about 2,300 spoken words, roughly 17 minutes at 135 words a 
 >
 > Right panel: the 27B fixes about as many items as it breaks where M1 is confident, and helps only where M1 is unsure. A learned fix-or-break router lost to confidence at all four budgets.
 
-## 17. Option order [11:00]
+## 17. The 27B prioritises option A [11:00]
 
-> One more check on the 27B. We show it four candidate labels as options A to D. In taxonomy order, slot A is usually Explicit, so preferring A and preferring Explicit cannot be told apart. And indeed it picks A for 40% of items in taxonomy order, against about a quarter in the other orders.
+> One more check on the 27B. We show it four candidate labels as options A to D. In taxonomy order, slot A is usually Explicit, so preferring A and preferring Explicit cannot be told apart. Known work shows that LLMs choosing among lettered options prefer some positions, Zheng and colleagues at ICLR 2024. Ours prioritises option A: it picks A for 40% of items in taxonomy order, against about a quarter in the other orders.
 >
 > Two orders of the same four candidates give the same pick on only 72% of dev items. So we average four cyclic orders. That costs four calls per deferred item, and it moved the system by 0.011 at one split but only 0.002 over ten.
 >
@@ -235,9 +235,29 @@ The script below is about 2,300 spoken words, roughly 17 minutes at 135 words a 
 >
 > **What it raised:** measuring this needs the whole answer and the fine-tuned ten-seed ensemble. There is no shortcut, and the details are in backup. Can it run cheaper?
 
+## 24. What the evasion study tells us to act on [16:25]
+
+> Everything so far comes from one pipeline: the classifier, the router and the 27B adjudicator, frozen as an instrument. Its results give three things to act on.
+>
+> First, labels follow the question, so the full question must always go in with the answer.
+>
+> Second, the question carries signal on its own. Models playing the President, who never saw the real answer, evade on the questions the Presidents evaded. No module uses that signal yet, and that is the next architectural element, a question-side prior we call M5.
+>
+> Third, there is no shortcut: the label needs the whole answer and the fine-tuned model. So instead of a smaller model, we try to make the full one cheaper. That is Stage 5.
+
 *[Hand over to Speaker D.]*
 
-## 24. Lower precision [16:25]
+## 25. Cost of reduced precision [17:05]
+
+> Quantization is supposed to save memory and time. These are the measured costs of running M1 in 8-bit and 4-bit, each against 16-bit on the same type of GPU.
+>
+> FP8 ran on the card's native FP8 tensor cores, but it was not faster. Throughput fell from 43 to 36 items per second, 0.83 times, against a predicted 1.3 times or better. Batch-1 latency improved slightly, and peak memory barely changed, 0.96 times. As implemented, activations are quantized in separate operations around each matrix product. Published FP8 speed-ups rely on kernels that fuse these steps, which we did not use.
+>
+> NF4 saves memory: 0.67 times, from 16.8 to 11.3 gigabytes. That is short of the 0.4 times we predicted. And it is slower, 0.82 times throughput and 1.5 times the batch-1 latency, because the 4-bit weights are stored compactly but computed in bf16. Its speed is not like for like, since the 16-bit reference was split over two cards.
+>
+> Applied to the accuracy point, FP8's speed would raise the cost from 0.538 to 0.619 GPU-seconds per item, 15% more.
+
+## 26. Lower precision: accuracy lost and flipped decisions [17:45]
 
 > The ten seeds are three quarters of the instrument's GPU time, so we ran them in 8-bit and 4-bit.
 >
@@ -247,7 +267,7 @@ The script below is about 2,300 spoken words, roughly 17 minutes at 135 words a 
 >
 > This is partly by design: flips happen near the margin, which is exactly what the router defers. The measurement tells you how much, and in which direction. A cheaper first stage is safe as long as its errors stay where the adjudicator looks.
 
-## 25. Registered predictions [16:55]
+## 27. Registered predictions [18:15]
 
 > These are the registered predictions that steered the work. Navy held; red failed.
 >
@@ -255,14 +275,24 @@ The script below is about 2,300 spoken words, roughly 17 minutes at 135 words a 
 >
 > Every registered prediction, held or not, is in the log in our repository.
 
-## 26. Limitations [17:15]
+## 28. Limitations [18:35]
 
 > Each limitation comes with what we already did and what comes next. The most important two:
 >
 > - Dev only: the frozen test predictions are ready to score when labels are released.
 > - The role finding needs a human check of the instrument on LLM text, and more model families, with the effect registered in advance.
 
-## 27. Conclusions [17:45]
+## 29. Future work: a question-side evasion prior [19:10]
+
+> One idea for future work. Every module reads the answer, but the role study suggests that the question carries evasion signal of its own.
+>
+> The proposal is a fifth module, M5, drawn dashed in the system diagram. For the items M2 defers, two open LLMs answer the question as the President, without ever seeing the real answer. The frozen instrument labels those answers, and the share that evade enters the fusion as an extra term.
+>
+> A first look on dev, which is exploratory: when neither model evades, the President evaded on 61% of questions. When both evade, 88%. Added to M1, though, it helps only a little: AUROC 0.872 to 0.875 overall, and 0.722 to 0.746 on the least confident items.
+>
+> So we expect a small gain, mainly on the evade-or-not decision. It would need training-row generations, a registered prediction, and a human check of the instrument on LLM text.
+
+## 30. Conclusions [19:40]
 
 > Three things to take away.
 >
@@ -272,24 +302,6 @@ The script below is about 2,300 spoken words, roughly 17 minutes at 135 words a 
 >
 > And our three words: "I already have" is Explicit for one question, Dodging for another, and Dodging for an unrelated one. The instrument gets all three, because it reads the pair.
 
-## 28. Thank you
+## 31. Thank you
 
 > Thank you. We are happy to take questions.
-
----
-
-## Questions: which backup slide answers what
-
-| Likely question | Backup slide | One-line answer |
-|---|---|---|
-| Is the comparison with TeleAI fair? | "Is the comparison with the winning system fair?" | Both are dev numbers. We claim on par on S2 with fewer calls, not "better". |
-| Is it knowledge, or just size? | "What else changed with the backbone?" | Many things changed together, so we say "stronger backbone". The gain falls on Non-Reply types, not the predicted boundary. |
-| Is the 2.74 result cherry-picked? Is the judge biased? | "E25b: confounds, controls and per-model results" | All four conditions are reported as registered, and Mistral alone gives 3.01. The question-only control is degenerate, so N vs P is the control. |
-| Can you trust the instrument on LLM text? | "Is the instrument valid on LLM-written answers?" | The label-free check shows it is more confident there. Human check is next. |
-| Isn't H26-4 true by construction? | "Is 'the adjudicator absorbs FP8's error' true by construction?" | Partly, and we said so in the registration. NF4 shows it is not automatic. |
-| Is the 27B biased to option A? Why is the final number 0.650 and not 0.669? | "Option order: what we measured, and how the final numbers were produced" | Position and label are confounded in taxonomy order, so four orders are averaged. The final instrument re-scored all records once on one serving setup. Both numbers are reported. |
-| Which parameters were changed after seeing results? | "Choices made after seeing results …" | Each one is listed with its time-stamped amendment. |
-| How are cost and calls counted? | "Cost on one GPU …" | All times are from one GPU and one session. Four calls per deferred item. |
-| Why not a frozen model, or reading half the answer? | "Shortcuts: answer prefixes and frozen-model probes" | Both failed their registered bars. |
-| Why not compare with the human ceiling (0.684)? | "The metric and the 0.684 reference" | That is a two-annotator score; ours uses three. Two-annotator, first-copy system: 0.589. |
-| Settings, hyperparameters? | "Implementation details" | |

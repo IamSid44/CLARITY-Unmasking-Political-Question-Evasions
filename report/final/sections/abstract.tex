@@ -1,10 +1,10 @@
 SemEval-2026 Task~6 (CLARITY) asks how a politician's answer responds to one interview question, as one of nine evasion types (Subtask~2) or three clarity levels (Subtask~1).
 We ask five questions in turn, each registered before its experiments and each raised by the answer to the one before.
 A controlled encoder study finds that architectural changes do not help, while swapping only the backbone for a LoRA-tuned Qwen3-8B does (+0.092 Subtask-2 macro-F1 per model, on ten of ten paired seeds).
-That classifier ranks better than it decides, so a 27B LLM chooses among its top four labels for the 30\% of items it is least sure of.
+That classifier ranks better than it decides, so a 27B LLM chooses among its top four labels for the items it is least sure of (30\% of a training slice, 36\% of dev).
 The resulting cascade scores 0.650 (Subtask~2) and 0.788 (Subtask~1) on the development set with 1.4 LLM calls and about 1.6k LLM input tokens per item, against 0.617 and 0.812 at 1.94 calls and about 7.3k tokens for the winning system.
 A distilled single-model variant matches the ten-model classifier at a quarter of its GPU time.
 We then freeze the cascade and use it as an instrument.
 The labels of one answer change with its sub-question far more often than annotator noise explains, and pairing an answer with an unrelated question cuts the Clear-Reply share from 25\% to 1\%, so evasion is a relation between a question and an answer.
-Put to two open LLMs, a neutral analyst's evasions show no clear link to the Presidents' (odds ratio 1.18), but in the President's role the models answer directly the questions the Presidents answered directly (2.74, exploratory), and a follow-up turns 66\% of their evasions into replies.
+When two open LLMs answer the Presidents' questions as a neutral analyst, their evasions show no clear link to the Presidents' (odds ratio 1.18), but in the President's role the models answer directly the questions the Presidents answered directly (2.74, exploratory), and a follow-up turns 66\% of their evasions into replies.
 Finally, running the classifier in FP8 costs it 0.045 Subtask-2 macro-F1 with all parameters frozen, while the full cascade loses 0.003.

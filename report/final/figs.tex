@@ -13,7 +13,7 @@
 \begin{figure*}[t]
 \centering
 \input{figures/fig_system}
-\caption{The whole system. Left: what is trained or fitted, and on which data. Middle: the cascade, frozen after E23 as the \emph{instrument}. Right: its use, on new inputs (E25) or with a lower-precision M1 (E26), always with the same settings.}
+\caption{The whole system. Left: what is trained or fitted, and on which data. Middle: the cascade, frozen after E23 as the \emph{instrument}. Right: its use, on new inputs (E25) or with a lower-precision M1 (E26), always with the same settings. Dashed boxes are optional (M4, E26) or proposed future work (M5).}
 \label{fig:system}
 \end{figure*}}
 
@@ -66,9 +66,28 @@
 \end{figure}}
 
 \newcommand{\FigurePrecision}{%
-\begin{figure}[t]
+\begin{figure*}[t]
+\centering
+\begin{minipage}[c]{0.485\textwidth}
 \centering
 \includegraphics[width=\columnwidth]{figures/fig_precision.pdf}
-\caption{E26 on dev, each format against 16-bit on the same GPU type. (a)~\Stwo{} lost, both with frozen parameters. (b)~FP8 flips that change reference-set membership. $^{\dagger}$Lower bound: 27B records missing for 60 NF4 items.}
+\end{minipage}\hfill
+\begin{minipage}[c]{0.505\textwidth}
+\centering
+\small
+\setlength{\tabcolsep}{2.5pt}
+\begin{tabular}{@{}lcc@{}}
+\toprule
+(c) M1, 16 bit $\rightarrow$ reduced & FP8 & NF4$^{\dagger}$ \\
+\midrule
+Label agreement (10 seeds) & 96.1\% & 86.7\% \\
+Throughput (items/s) & 43.1 $\rightarrow$ 35.9 (\textbf{0.83$\times$}) & 7.7 $\rightarrow$ 6.3 (\textbf{0.82$\times$}) \\
+Batch-1 latency p50 (ms) & 33.6 $\rightarrow$ 30.2 (0.90$\times$) & 169 $\rightarrow$ 259 (\textbf{1.53$\times$}) \\
+Peak memory (GB) & 21.9 $\rightarrow$ 20.9 (\textbf{0.96$\times$}) & 16.8 $\rightarrow$ 11.3 (\textbf{0.67$\times$}) \\
+\Stwo{} lost, frozen parameters & 0.045 & 0.029 \\
+\bottomrule
+\end{tabular}
+\end{minipage}
+\caption{E26 on dev, each format against 16 bit on the same GPU type. (a)~\Stwo{} lost, both with frozen parameters. (b)~FP8 flips that change reference-set membership. (c)~Cost of M1 in reduced precision. FP8: one RTX PRO 6000, batch 32 for both. NF4: two RTX A4000, 16 bit split over two cards at batch 8 and NF4 on one card at batch 16. For scale, the weights of an 8B model alone take about 16, 8 and 4.5\,GB in 16 bit, FP8 and NF4. $^{\dagger}$Lower bound for the full instrument: 27B records missing for 60 NF4 items.}
 \label{fig:precision}
-\end{figure}}
+\end{figure*}}

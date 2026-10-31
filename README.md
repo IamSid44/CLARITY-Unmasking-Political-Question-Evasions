@@ -3,8 +3,12 @@
 **SemEval-2026 Task 6.** A confidence-routed cascade for classifying evasion in political interviews, and what
 it measures: whether evasion lies in the question or in the person answering.
 
-Siddarth Gottumukkula, Vidvathama R, Sanjana Reddy Vonteri, Shashikanta Sahoo<br>
+Vidvathama R, Siddarth Gottumukkula, Sanjana Reddy Vonteri, Shashikanta Sahoo (Team Nier_ANLP)<br>
 Advanced NLP course project, International Institute of Information Technology, Hyderabad
+
+**Final report:** [`report/final_report.pdf`](report/final_report.pdf) &nbsp;·&nbsp; **Slides:** [`report/final_slides.pdf`](report/final_slides.pdf)
+&nbsp;·&nbsp; **Models:** [Hugging Face](https://huggingface.co/siddarthg44/clarity-semeval26)
+&nbsp;·&nbsp; **Training curves:** [Weights & Biases](https://wandb.ai/iamsid44-iiit-hyderabad/clarity-semeval26)
 
 ---
 
@@ -26,10 +30,11 @@ The project has three parts, each prompted by the one before:
    changes with the question far more often than annotator noise explains: **evasion is a relation**. The
    instrument reads the question causally (an answer paired with an unrelated question stops being a Clear
    Reply: 25% → 1%). Putting the Presidents' questions to LLMs shows that a model with no stake does not evade
-   where the Presidents did, but in the President's role it evades on the same questions (exploratory,
-   OR 2.7): **which questions get evaded depends on the role of the person answering**.
-3. **Making it cheaper (E26).** FP8 and NF4 versions of the classifier were not faster as implemented, but the
-   LLM adjudicator absorbs most of their error: FP8 costs the classifier 0.020 S2 and the full system 0.003.
+   where the Presidents did, but in the President's role it answers directly the questions the Presidents
+   answered directly (exploratory, OR 2.74). This suggests a question-side prior (M5) as future work.
+3. **Making it cheaper (E26).** FP8 (native tensor cores, unfused activation quantization) and NF4 versions of
+   the classifier were not faster as implemented. With frozen parameters FP8 costs the classifier 0.045 S2 and
+   the full cascade 0.003.
 
 Every hypothesis was registered before its run, every change was compared against a named control on paired
 seeds, and every reported number traces to a script and a raw output file.
@@ -46,10 +51,9 @@ seeds, and every reported number traces to a script and a raw output file.
 | TeleAI (1st place), multi-stage DeepSeek-V3 pipeline | 0.617 | 0.812 | 1.94 | – |
 | One human annotator scored against the other two (2-annotator regime) | 0.684 | – | – | – |
 
-Every system averages seeds and applies logit adjustment; its parameters and the adjudicator's fusion weights
-are fitted by nested cross-validation on dev (test labels were never released). With the fusion refitted inside
-each bootstrap replicate, the adjudicator's gain over M1 is +0.037 [−0.044, +0.120]. Test predictions are in
-`submissions/E23_*`.
+Every system averages seeds and applies logit adjustment. Its parameters and the adjudicator's fusion weights
+are fitted by nested cross-validation on dev (test labels were never released). On 3,448 cross-fitted training
+rows the cascade gains +0.014 [+0.002, +0.026] over M1. Test predictions are in `submissions/E23_*`.
 LLM calls count every 27B call: with four option orders averaged, one deferred item costs four. GPU-s are
 measured on one GPU in one session over the same 308 items (`docs/raw/cost_same_gpu.txt`).
 
@@ -59,7 +63,7 @@ measured on one GPU in one session over the same 308 items (`docs/raw/cost_same_
 | Is evasion question-driven? (E25b) | A no-stake LLM evades where Presidents did, OR ≥ 1.5 | **failed:** OR 1.18 |
 | Does the President's role matter? (E25b, exploratory) | — | same questions evaded, OR 2.74 [1.87, 4.17] |
 | Does pursuit work on LLMs? (E25b) | ≥ 50% of evasions become replies when pressed | **held:** 66% |
-| Does the cascade absorb FP8 error? (E26) | ≥ 50% of M1's flips on deferred items, fewer system flips | **held:** 71%; system −0.003 |
+| Does the cascade absorb FP8 error? (E26) | ≥ 50% of M1's flips on deferred items, fewer system flips | **held:** 71%; system −0.003 vs M1 −0.045 |
 
 <p align="center">
   <img src="docs/figures/E25_audit.png" alt="Evasion rate of two LLMs under four conditions against the Presidents' rate" width="560">
@@ -107,7 +111,7 @@ With every parameter frozen (`code/experiments/e25/frozen_system.json`), the acc
 ├── data/          cached train and dev, the official test file, fixed splits
 ├── docs/          the documents above; raw/ (every analysis output), figures/
 ├── logs/          training, queue and cloud-lane logs of every run
-├── report/        mid-evaluation report and slides; LaTeX source (latex/)
+├── report/        final_report.pdf, final_slides.pdf; LaTeX (final/, slides_final/); mid-evaluation (latex/, slides_beamer/)
 ├── runs/          per-seed probabilities and metrics, 27B records, labels (model weights on Hugging Face)
 ├── submissions/   Codabench predictions: DeBERTa systems, the cascade (E19_*), the final system (E23_*)
 └── paper/         the SemEval-2026 Task 6 results paper (reference)

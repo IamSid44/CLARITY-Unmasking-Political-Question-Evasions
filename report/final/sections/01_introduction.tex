@@ -9,8 +9,7 @@ A leaderboard shows which system is best, but not why the others stop where they
 
 This paper addresses those two questions in five stages (Figure~\ref{fig:path}). Figure~\ref{fig:system} shows the system it builds and how it is used.
 At each stage we wrote down a hypothesis, a prediction and a decision rule before running anything, and the result of each stage set the question of the next.
-Sections~\ref{sec:classifier}--\ref{sec:precision} are the five stages. Each opens with its question and closes with the question it raises.
 
-\noindent Our contributions follow the same order. First, controlled evidence that a stronger pretrained backbone helps where structural changes do not. Second, a cascade at 0.650 Subtask-2 macro-F1 with 1.4 LLM calls per item, and a distilled variant at a quarter of the classifier's GPU time, with controls showing which parts matter. Third, evidence that evasion is relational, and an exploratory LLM audit in which, in the President's role, models answer directly what the Presidents answered directly. Fourth, a measurement showing that the cascade's score stays within its own noise when its first stage runs in FP8.
-Every number is on the 308-item development set (the test labels were never released), with its seed spread, paired difference or bootstrap interval.
+\noindent Our contributions follow the same order. First, controlled evidence that a stronger pretrained backbone helps where structural changes do not. Second, a cascade at 0.650 Subtask-2 macro-F1 with 1.4 LLM calls per item, and a distilled variant at a quarter of the classifier's GPU time. Third, evidence that evasion is relational, and an exploratory LLM audit in which, in the President's role, models answer directly what the Presidents answered directly. Fourth, a measurement of what reduced precision costs the cascade.
+Every system comparison is on the 308-item development set, since the test labels were never released.
 Many registered hypotheses failed. We report them where they fell, because each failure changed what we did next.

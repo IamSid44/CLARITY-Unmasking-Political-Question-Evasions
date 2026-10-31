@@ -15,8 +15,8 @@
 \node[stage] (s2) at (\gap,0) {%
   \textbf{2\enspace Can a larger model\\\phantom{2\enspace}choose among them?}\\[1pt]
   {\itshape E14--E18, \S\ref{sec:cascade}}\\[2pt]
-  A 27B LLM picks among M1's top 4 for the 30\% least confident items; one distilled student replaces 10 seeds at a quarter of the GPU time.\\[2pt]
-  $\Rightarrow$ The headline is one favourable draw: is the gain real?};
+  A 27B LLM picks among M1's top 4 for the least confident items. One distilled student replaces 10 seeds at a quarter of the GPU time.\\[2pt]
+  $\Rightarrow$ Does the gain hold beyond one ensemble and dev-fitted parameters?};
 \node[stage, fill=black!4] (s3) at (2*\gap,0) {%
   \textbf{3\enspace Which gains\\\phantom{3\enspace}survive?}\\[1pt]
   {\itshape E19--E23, \S\ref{sec:robust}}\\[2pt]
@@ -25,12 +25,12 @@
 \node[stage] (s4) at (3*\gap,0) {%
   \textbf{4\enspace Is evasion in the\\\phantom{4\enspace}question or the speaker?}\\[1pt]
   {\itshape E24--E25, \S\ref{sec:measure}}\\[2pt]
-  Labels move with the question; the instrument reads it causally. In the President's role, LLMs answer directly what Presidents answered directly.\\[2pt]
-  $\Rightarrow$ It needs the whole answer and a fine-tuned model: no shortcut.};
+  Labels move with the question, and the instrument reads it causally. In the President's role, LLMs answer directly what Presidents answered directly.\\[2pt]
+  $\Rightarrow$ It needs the whole answer and a fine-tuned model: no shortcut. Future: M5, a question-side prior.};
 \node[stage, fill=black!4] (s5) at (4*\gap,0) {%
   \textbf{5\enspace Can it be made\\\phantom{5\enspace}cheaper?}\\[1pt]
   {\itshape E26, \S\ref{sec:precision}}\\[2pt]
-  FP8 is not faster as implemented and costs M1 0.045; the cascade loses 0.003, within its own noise.\\[2pt]
+  FP8 on native tensor cores, unfused, is not faster and costs M1 0.045. The cascade loses 0.003.\\[2pt]
   $\Rightarrow$ Future work: fused kernels, QLoRA.};
 \foreach \a/\b in {s1/s2, s2/s3, s3/s4, s4/s5}
   \draw[arr] ($(\a.north east)+(0,-4.5mm)$) -- ($(\b.north west)+(0,-4.5mm)$);
