@@ -192,45 +192,39 @@ def frontier() -> None:
 
 # ------------------------------------------------------------------------------------------------ Stage 3
 def robust() -> None:
-    """(a) gain over M1, held vs refitted vs train rows (raw/E19_tier0.txt A.2, C); (b) confidence vs random routing (E.1)."""
-    fig, (a, b) = plt.subplots(1, 2, figsize=(5.4, 1.75), gridspec_kw={"width_ratios": [1.2, 1], "wspace": 0.4})
-    rows = [("dev, parameters held", 0.067, 0.009, 0.124), ("dev, refitted", 0.037, -0.044, 0.120),
-            ("train rows, refitted", 0.014, 0.002, 0.026)]
-    for i, (lab, m, lo, hi) in enumerate(rows):
-        yy = 2 - i
-        col = NAVY if i == 1 else MID
-        a.plot([lo, hi], [yy, yy], color=col, lw=1.6)
-        a.plot(m, yy, "o", ms=5, color=col if i != 1 else "white", mec=col, mew=1.2)
-        a.text(hi + 0.006, yy, f"{m:+.3f}", va="center", fontsize=7.6, color=col, fontweight="bold" if i == 1 else "normal")
-    a.axvline(0, color=INK, lw=0.7, ls=":")
-    a.set_yticks([2, 1, 0], [r[0] for r in rows])
-    a.tick_params(axis="y", length=0, right=False)
-    a.set_ylim(-0.6, 2.6)
-    a.set_xlim(-0.06, 0.17)
-    a.set_xticks([0, 0.05, 0.1])
-    a.set_xlabel("gain over M1 (95% CI)")
-    title(a, "Is the gain real?")
+    """(a) confidence vs random routing (E.1); (b) net fixes of the 27B by M1 confidence on leak-free train rows
+    (raw/E20_router.txt S1)."""
+    fig, (a, b) = plt.subplots(1, 2, figsize=(5.4, 1.75), gridspec_kw={"width_ratios": [1.1, 1], "wspace": 0.4})
     dl = [0.1, 0.2, 0.3, 0.5]
     conf, rmean, rsd = [0.597, 0.635, 0.669, 0.628], [0.599, 0.601, 0.604, 0.608], np.array([0.009, 0.014, 0.015, 0.018])
-    b.fill_between(dl, np.array(rmean) - 2 * rsd, np.array(rmean) + 2 * rsd, color=PALE, lw=0)
-    b.plot(dl, rmean, color=MID, lw=1.0, ls="--")
-    b.plot(dl, conf, color=NAVY, lw=1.6, marker="o", ms=4)
-    b.text(0.3, 0.675, "confidence routing", color=NAVY, fontsize=7.6, ha="center", va="bottom", fontweight="bold")
-    b.text(0.5, 0.583, "200 random routings", color=MID, fontsize=7.2, ha="right", va="top")
-    b.set_xticks(dl, ["10%", "20%", "30%", "50%"])
-    b.set_ylim(0.56, 0.70)
-    b.set_xlabel("share of items deferred")
-    b.set_ylabel("dev S2")
-    title(b, "Which items to defer?")
+    a.fill_between(dl, np.array(rmean) - 2 * rsd, np.array(rmean) + 2 * rsd, color=PALE, lw=0)
+    a.plot(dl, rmean, color=MID, lw=1.0, ls="--")
+    a.plot(dl, conf, color=NAVY, lw=1.6, marker="o", ms=4)
+    a.text(0.3, 0.675, "confidence routing", color=NAVY, fontsize=7.6, ha="center", va="bottom", fontweight="bold")
+    a.text(0.5, 0.583, "200 random routings", color=MID, fontsize=7.2, ha="right", va="top")
+    a.set_xticks(dl, ["10%", "20%", "30%", "50%"])
+    a.set_ylim(0.56, 0.70)
+    a.set_xlabel("share of items deferred")
+    a.set_ylabel("dev S2")
+    title(a, "Which items to defer?")
+    net, lo, hi = [0, -7, 2, 7, 12], [-7, -20, -14, -11, -5], [7, 5, 19, 24, 28]
+    xs = np.arange(1, 6)
+    b.bar(xs, net, width=0.62, color=[NAVY if v > 0 else LIGHT for v in net], edgecolor=INK, linewidth=0.5)
+    b.errorbar(xs, net, yerr=[np.subtract(net, lo), np.subtract(hi, net)], fmt="none", ecolor=MID, elinewidth=0.6,
+               capsize=1.5)
+    b.axhline(0, color=INK, lw=0.6)
+    b.set_xticks(xs, ["sure", "", "", "", "unsure"])
+    b.set_xlabel("M1 confidence fifth")
+    b.set_ylabel("27B fixes $-$ breaks")
+    title(b, "Where does the 27B help?")
     save(fig, "s_robust")
 
 
 def nondet() -> None:
-    """Stage 3: the 27B is not a fixed function of (weights, item). (a) agreement between presentation orders of the same
-    four candidates; (b) agreement between two copies of the same weights, by how decisive the lab copy was (all from
-    preregistered_analyses.final_checks, sections A and B)."""
-    from preregistered_analyses.final_checks import copies, order
-    O, C = quiet(order), quiet(copies)
+    """Stage 3: the 27B depends on option order. (a) agreement between presentation orders of the same four candidates
+    (preregistered_analyses.final_checks, section A); (b) option-A picks by order (raw/E21_E22_analysis.txt B)."""
+    from preregistered_analyses.final_checks import order
+    O = quiet(order)
     fig, (a, b) = plt.subplots(1, 2, figsize=(5.4, 1.85), gridspec_kw={"width_ratios": [1, 1.05], "wspace": 0.34})
     cats = ["two orders:\nsame pick", "all four orders\nagree"]
     dev = [O["dev"]["mean_pair"], O["dev"]["all4"]]
@@ -246,21 +240,15 @@ def nondet() -> None:
     a.set_yticks([0, 0.5, 1], ["0", "50%", "100%"])
     a.legend(loc="upper right", fontsize=7, handlelength=1.0, borderaxespad=0.0, ncol=2, columnspacing=0.8)
     title(a, "(a) Same weights, other option order")
-    t = C["terciles"]
-    lab = ["least\ndecisive", "middle", "most\ndecisive"]
-    vals = [v[2] for v in t]
-    b.bar(range(3), vals, width=0.6, color=[NAVY, LIGHT, LIGHT], edgecolor=INK, linewidth=0.5)
-    for xi, v in zip(range(3), vals):
-        b.text(xi, v + 0.025, f"{v:.0%}", ha="center", fontsize=7.8, color=NAVY if xi == 0 else INK,
-               fontweight="bold" if xi == 0 else "normal")
-    b.axhline(C["agree"], color=MID, lw=0.7, ls="--")
-    b.text(-0.45, C["agree"] + 0.025, f"all items: {C['agree']:.1%}", ha="left", va="bottom", fontsize=7, color=MID)
-    b.set_xticks(range(3), lab)
-    b.set_ylim(0, 1.18)
-    b.set_xlim(-0.5, 2.5)
-    b.set_yticks([0, 0.5, 1], ["0", "50%", "100%"])
-    b.set_xlabel("gap between the top two options", fontsize=7.6)
-    title(b, "(b) Same weights, other server")
+    orders, pa = ["tax.", "+1", "+2", "+3", "rev."], [0.400, 0.293, 0.247, 0.250, 0.220]
+    b.bar(orders, pa, width=0.62, color=[NAVY] + [LIGHT] * 4, edgecolor=INK, linewidth=0.5)
+    b.axhline(0.25, color=INK, lw=0.6, ls=":")
+    b.text(4.45, 0.262, "chance", fontsize=7, ha="right", va="bottom")
+    b.set_ylim(0, 0.46)
+    b.set_yticks([0, 0.2, 0.4], ["0", "20%", "40%"])
+    b.set_xlabel("order of the four options")
+    b.set_ylabel("picks option A")
+    title(b, "(b) Option A, by order")
     save(fig, "s_nondet")
 
 
@@ -462,7 +450,6 @@ def main() -> None:
     frontier()
     robust()
     nondet()
-    robust_backup()
     relation()
     swap(R)
     audit(R)

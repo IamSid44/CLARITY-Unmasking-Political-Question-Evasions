@@ -159,24 +159,11 @@ def frontier() -> None:
 
 
 def stage3() -> None:
-    """Stage 3 (E19-E22). (a) gain over M1 (raw/E19_tier0.txt A.2, C); (b) routing at matched budgets (E.1);
-    (c) net fixes of the 27B by M1-uncertainty fifth on leak-free singleton train rows (raw/E20_router.txt S1);
-    (d) letter-A rate by option order on the 300 screen rows (raw/E21_E22_analysis.txt B)."""
-    fig, axs = plt.subplots(1, 4, figsize=(FULL, 1.62), gridspec_kw={"width_ratios": [1.25, 1, 1, 1]})
-    a, b, c, d = axs
-    rows = [("dev, parameters held", 0.067, 0.009, 0.124), ("dev, parameters refit", 0.037, -0.044, 0.120),
-            ("train rows, refit", 0.014, 0.002, 0.026)]
-    for i, (lab, m, lo, hi) in enumerate(rows):
-        yy = len(rows) - 1 - i
-        a.plot([lo, hi], [yy, yy], color=INK, lw=0.9)
-        a.plot(m, yy, "o", ms=3.6, color=INK if i != 1 else "white", mec=INK, mew=0.8)
-    a.axvline(0, color=INK, lw=0.6, ls=":")
-    a.set_yticks(range(len(rows)), [r[0] for r in rows][::-1])
-    a.tick_params(axis="y", length=0)
-    a.set_ylim(-0.6, 2.6)
-    a.set_xlabel("gain over M1 (95% CI)")
-    title(a, "(a) Is the gain real?")
-
+    """Stage 3 (E19-E22). (a) routing at matched budgets (E.1); (b) net fixes of the 27B by M1-uncertainty fifth on
+    leak-free singleton train rows (raw/E20_router.txt S1); (c) letter-A rate by option order on the 300 screen rows
+    (raw/E21_E22_analysis.txt B)."""
+    fig, axs = plt.subplots(1, 3, figsize=(FULL, 1.62), gridspec_kw={"width_ratios": [1.1, 1, 1]})
+    b, c, d = axs
     dl = [0.1, 0.2, 0.3, 0.5]
     conf, rmean, rsd = [0.597, 0.635, 0.669, 0.628], [0.599, 0.601, 0.604, 0.608], [0.009, 0.014, 0.015, 0.018]
     b.fill_between(dl, np.subtract(rmean, 2 * np.array(rsd)), np.add(rmean, 2 * np.array(rsd)), color=PALE, lw=0)
@@ -190,7 +177,7 @@ def stage3() -> None:
     b.set_ylabel("dev S2")
     b.legend(loc="upper left", fontsize=5.8, handlelength=1.6, borderaxespad=0.1, labelspacing=0.25)
     b.set_yticks([0.6, 0.65, 0.7])
-    title(b, "(b) Which items to defer?")
+    title(b, "(a) Which items to defer?")
 
     net, lo, hi = [0, -7, 2, 7, 12], [-7, -20, -14, -11, -5], [7, 5, 19, 24, 28]
     xs = np.arange(1, 6)
@@ -201,7 +188,7 @@ def stage3() -> None:
     c.set_xticks(xs, ["most", "2", "3", "4", "least"])
     c.set_xlabel("M1 confidence fifth")
     c.set_ylabel("27B fixes $-$ breaks")
-    title(c, "(c) Where does the 27B help?")
+    title(c, "(b) Where does the 27B help?")
 
     orders, pa = ["tax.", "+1", "+2", "+3", "rev."], [0.400, 0.293, 0.247, 0.250, 0.220]
     d.bar(orders, pa, width=0.6, color=[INK] + [LIGHT] * 4, edgecolor=INK, linewidth=0.6)
@@ -210,7 +197,7 @@ def stage3() -> None:
     d.set_ylim(0, 0.46)
     d.set_ylabel("picks letter A")
     d.set_xlabel("option order")
-    title(d, "(d) Option-order bias")
+    title(d, "(c) Option-order bias")
     for ax in axs:
         for sp in ("top", "right"):
             ax.spines[sp].set_visible(False)
