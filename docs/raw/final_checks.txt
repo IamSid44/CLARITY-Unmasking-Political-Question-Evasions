@@ -1,0 +1,51 @@
+Final-report checks (descriptive, written after the results were known; docs/results_sources.md section 18).
+
+==============================================================================================================
+A. Option order: agreement between presentation orders of the same four candidates
+==============================================================================================================
+   screen (n = 300): pairwise same pick 0.600-0.710, mean 0.672; all four orders agree on 0.410 of items
+      a single order vs the average (itself one of its four members; circular): taxonomy 0.790, shift1 0.827, shift2 0.827, shift3 0.793
+      the 'average of 4' row is the score of the AVERAGED PROBABILITIES: accuracy 0.343, NLL 1.431; the arithmetic mean of the four single-order scores is 0.327 / 1.588
+      standard error of an accuracy on 300 rows is about 0.027, so +0.017 is within noise
+   dev (n = 308): pairwise same pick 0.662-0.805, mean 0.720; all four orders agree on 0.500 of items
+      a single order vs the average (itself one of its four members; circular): taxonomy 0.769, shift1 0.854, shift2 0.857, shift3 0.860
+
+==============================================================================================================
+B. Two copies of the same 27B weights: lab server vs cloud VM, dev (308 items, identical candidate sets)
+==============================================================================================================
+   n = 308: same pick on 0.925 (23 items differ); mean max |dq| 0.0382
+   agreement by the gap between the lab copy's top two options (terciles, small to large):
+      tercile 1: gap 0.00-0.19, same pick 0.786 (n = 103)
+      tercile 2: gap 0.19-0.53, same pick 0.990 (n = 103)
+      tercile 3: gap 0.53-1.00, same pick 1.000 (n = 102)
+   median gap of the differing items 0.044; of the agreeing items 0.382
+   by prompt length (terciles, short to long): 654-906 tokens 0.932, 915-1208 tokens 0.942, 1210-2277 tokens 0.902
+   CAUTION: the cloud lane's first run ('jarvis') and its re-score ('vm') hold the very same dev records (identical log-probabilities and timing stamps on 1.000 of 308 items), so their 100% agreement is not an independent repeat; no clean same-copy repeat exists
+
+==============================================================================================================
+C. E25b as plain rates (dev; pooled over Mistral-7B and Qwen3-8B unless stated)
+==============================================================================================================
+   share of answers that evade, when the President evaded / when the President answered:
+      N: 0.559 / 0.519  (n = 458 / 158)
+      P: 0.581 / 0.335  (n = 458 / 158)
+      F: 0.229 / 0.120  (n = 458 / 158)
+      B: 0.635 / 0.291  (n = 458 / 158)
+      mistral_7b  N: 0.590 / 0.595
+      mistral_7b  P: 0.585 / 0.316
+      qwen3_8b    N: 0.528 / 0.443
+      qwen3_8b    P: 0.576 / 0.354
+   do the neutral analyst (N) and the President-role model (P) evade on the same questions?
+      mistral_7b: same evade/not label on 0.666 of 308 questions (chance given the rates 0.503)
+      qwen3_8b: same evade/not label on 0.734 of 308 questions (chance given the rates 0.500)
+
+==============================================================================================================
+D. E26: which route do FP8 / NF4 flips take, and what does each lose with the frozen parameters on both sides?
+==============================================================================================================
+   fp8 vs bf16 on rtxpro: M1 decisions flipped 17 (on deferred items: 12, on kept items: 5); system decisions flipped 16; the deferral set changes on 12 items
+      system flips by route: deferred in both 7 of 106, in one run only 4 of 12, kept in both 5 of 190; flips shared with M1: 5
+      flips that change reference-set membership: M1 loses 10, gains 0; system loses 5, gains 7
+      S2 with the frozen parameters (in-sample): M1 0.617 -> 0.572 (-0.045); system 0.653 -> 0.649 (-0.003)
+   nf4 vs bf16 on a4000: M1 decisions flipped 45 (on deferred items: 22, on kept items: 23); system decisions flipped 57; the deferral set changes on 50 items
+      system flips by route: deferred in both 26 of 99, in one run only 18 of 50, kept in both 13 of 159; flips shared with M1: 30
+      flips that change reference-set membership: M1 loses 20, gains 7; system loses 25, gains 15
+      S2 with the frozen parameters (in-sample): M1 0.601 -> 0.572 (-0.029); system 0.624 -> 0.615 (-0.010)  [27B records missing for 60 of 136 deferred items in nf4: lower bound]

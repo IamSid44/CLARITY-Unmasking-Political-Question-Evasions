@@ -1,0 +1,53 @@
+==============================================================================================================
+A. Unit costs, all on one GPU in one session (NVIDIA RTX PRO 6000 Blackwell Server Edition; dev, 308 items, batched)
+==============================================================================================================
+   one M1 seed (Qwen3-8B + LoRA, bf16, batch 16):   0.0397 GPU-s per item (489 tokens)
+   one 27B call, order jarvis  :                  0.1013 GPU-s (1114 prompt tokens, 1 output token)
+   one 27B call, order shift1  :                  0.0978 GPU-s (1114 prompt tokens, 1 output token)
+   one 27B call, order shift2  :                  0.0978 GPU-s (1114 prompt tokens, 1 output token)
+   one 27B call, order shift3  :                  0.0978 GPU-s (1114 prompt tokens, 1 output token)
+   four orders together:                            0.3947 GPU-s per deferred item
+   cache-aligned prompt (E22a, not adopted):        0.0495 GPU-s per call (0.49x)
+   ratio 27B call / M1 seed: 2.55  (lab card, E19 mix of two sessions: 2.90)
+==============================================================================================================
+B. Systems (dev). Scores from raw/E23_systems.txt; LLM calls and tokens are 27B calls per item
+==============================================================================================================
+   system                                         S2 sp0 S2 10sp     S1  calls 27B tok in   GPU-s   x M1
+   M1, 10 seeds                                    0.598   0.601  0.743   0.00          0   0.397  1.00x
+   accuracy point, 4 orders (frozen instrument)    0.650   0.639  0.788   1.43       1591   0.538  1.36x
+   accuracy point, 1 order                         0.639   0.637  0.787   0.36        398   0.433  1.09x
+   distilled point, 4 orders                       0.608   0.606  0.785   2.30       2559   0.266  0.67x
+   distilled point, 1 order                        0.599   0.606  0.784   0.57        640   0.098  0.25x
+   escalation ladder (E22c primary), 1 order         -     0.600  0.785   0.36        399   0.163  0.41x
+   TeleAI (1st place; DeepSeek-V3 through an API): S2 0.617, S1 0.812, 1.94 calls, ~7,300 input and ~380 output
+   tokens per item. Its GPU time is not published and its model differs, so only calls and tokens compare.
+   share of the frozen instrument's GPU time spent in M1's ten seeds: 0.74 (single order: 0.92)
+==============================================================================================================
+C. The E16/E17 frontier re-costed on this scale (single order, as run); calls realised per subset
+==============================================================================================================
+                K delta  calls     S2   GPU-s
+   M1           1   0.0  0.000  0.533   0.040
+   M1           1   0.1  0.114  0.544   0.051
+   M1           1   0.2  0.237  0.552   0.064
+   M1           1   0.3  0.350  0.558   0.075
+   M1           1   0.5  0.592  0.575   0.100
+   M1           1   1.0  1.000  0.593   0.141
+   M1          10   0.0  0.000  0.598   0.397
+   M1          10   0.1  0.110  0.597   0.408
+   M1          10   0.2  0.231  0.635   0.420
+   M1          10   0.3  0.357  0.669   0.433
+   M1          10   0.5  0.649  0.628   0.463
+   M1          10   1.0  1.000  0.636   0.498
+   student      1   0.0  0.000  0.570   0.040
+   student      1   0.1  0.106  0.571   0.050
+   student      1   0.2  0.216  0.580   0.062
+   student      1   0.3  0.336  0.591   0.074
+   student      1   0.5  0.574  0.608   0.098
+   student      1   1.0  1.000  0.612   0.141
+   undistilled points dominated by a student point: 25 of 30 (E17 on the cost.json scale: 25 of 30)
+   student + 27B at delta 0.5: S2 0.608 at 0.098 GPU-s = 0.25x M1 x 10 (S2 0.598)
+==============================================================================================================
+D. Cross-check on the lab card (E19 numbers, two sessions): the ratios to M1 move by at most 0.02
+==============================================================================================================
+   accuracy point, 1 order        lab 1.10x   this GPU 1.09x
+   distilled point, 1 order       lab 0.27x   this GPU 0.25x

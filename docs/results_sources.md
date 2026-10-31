@@ -405,3 +405,46 @@ nothing is refitted on the new inputs. The hypotheses and their thresholds were 
 | NF4's M1 flips on deferred items (exploratory) | 0.489 of 45 | a4000 |
 | QLoRA trigger (> 0.02 S2 or > 5% flips) | met | Registered hypotheses |
 | GPU spend: E25 / E26 FP8 (JarvisLabs) | ₹555 / ₹90 | log §E25, §E26 |
+
+## 17. Inference cost on one GPU (final report, 2026-10-31)
+
+Source: `raw/cost_same_gpu.txt`, written by `python -m preregistered_analyses.cost_same_gpu` (CPU, seconds). It replaces
+the cost numbers of §12–§15 in the final report. Two corrections:
+- **One GPU.** Every time comes from the E22a lane (one RTX PRO 6000 Server Edition, one session, one batched pass over
+  the 308 dev items): M1 seed 0.0397 GPU-s per item (`runs/E22/cost_jarvis.json`), 27B call 0.1013 (taxonomy order)
+  and 0.0978 (each shifted order). The E18/E19 tables mixed an M1 seed timed alone on the lab card (E16) with 27B calls
+  from other sessions (0.103 with prefix reuse, or 0.151 from the E15 night run).
+- **Four calls per deferred item.** The frozen system averages q over four option orders, so its 27B calls per item are
+  4 x the deferral rate. E23's tables reported the deferral rate (one call per deferred item).
+
+| Number | Value | Section |
+|---|---|---|
+| M1 seed / 27B call (one order) / four orders | 0.0397 / 0.1013 / 0.3947 GPU-s | A |
+| M1 x 10 | 0.397 GPU-s, 0 calls | B |
+| accuracy point, 4 orders (frozen instrument) | 0.650 / 0.788; 1.43 calls; ~1,591 27B input tokens; 0.538 GPU-s (1.36x M1) | B |
+| accuracy point, 1 order | 0.639 / 0.787; 0.36 calls; 0.433 GPU-s (1.09x) | B |
+| distilled point, 4 orders / 1 order | 0.608 / 0.599 S2 (10 splits 0.606 both); 2.30 / 0.57 calls; 0.266 / 0.098 GPU-s (0.67x / 0.25x) | B |
+| escalation ladder (E22c primary) | 10-split 0.600; 0.163 GPU-s (0.41x) | B |
+| M1's share of the instrument's GPU time | 0.74 (single order 0.92) | B |
+| undistilled frontier points beaten by a student point on this scale | 25 of 30 (unchanged) | C |
+| lab-card ratios (E19) vs this GPU | 1.10x vs 1.09x; 0.27x vs 0.25x | D |
+
+## 18. Final-report checks (2026-10-31)
+
+Source: `raw/final_checks.txt`, written by `python -m preregistered_analyses.final_checks` (CPU, seconds). Descriptive
+checks written after the results were known; none is a registered test.
+
+| Number | Value | Section |
+|---|---|---|
+| two option orders of the same four candidates give the same pick (dev / screen) | 0.720 / 0.672; all four orders 0.500 / 0.410 | A |
+| averaged-q accuracy vs the mean of four single-order accuracies (screen) | 0.343 vs 0.327 | A |
+| lab copy vs cloud copy of the 27B, same pick on dev | 0.925 (23 of 308 differ) | B |
+| agreement by decisiveness tercile (least to most) | 0.786 / 0.990 / 1.000 | B |
+| cloud-lane 'jarvis' vs 're-score' records | identical on 308 of 308, so not an independent repeat | B |
+| evasion rate where the President evaded / answered: N, P, F, B | 0.559/0.519, 0.581/0.335, 0.229/0.120, 0.635/0.291 | C |
+| N and P give the same evade label on the same question (Mistral / Qwen; chance) | 0.666 (0.503) / 0.734 (0.500) | C |
+| FP8: M1 flips (deferred / kept), system flips | 17 (12 / 5), 16 | D |
+| FP8 flips that change reference-set membership: M1, system | loses 10, gains 0; loses 5, gains 7 | D |
+| FP8 S2 with frozen parameters, in sample: M1, system | 0.617 to 0.572 (-0.045); 0.653 to 0.649 (-0.003) | D |
+| NF4 S2 with frozen parameters, in sample: M1, system (lower bound, 60 records missing) | -0.029; -0.010 | D |
+

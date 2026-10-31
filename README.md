@@ -40,9 +40,9 @@ seeds, and every reported number traces to a script and a raw output file.
 |---|---|---|---|---|
 | DeBERTa-v3-large, 10-seed ensemble | 0.405 | 0.648 | 0 | – |
 | Qwen3-8B + LoRA, 3 epochs, 10 seeds (mid-evaluation) | 0.543 | 0.746 | 0 | – |
-| M1: Qwen3-8B + LoRA, 12 epochs, 10 seeds | 0.598 | 0.743 | 0 | 0.522 |
-| **Accuracy point:** M1 + 27B adjudicator, 30% deferred | **0.650** | **0.788** | 0.36 | 0.576 |
-| **Cost point:** distilled student + 27B adjudicator, 50% deferred | **0.608** | **0.785** | 0.57 | 0.139 |
+| M1: Qwen3-8B + LoRA, 12 epochs, 10 seeds | 0.598 | 0.743 | 0 | 0.397 |
+| **Accuracy point:** M1 + 27B adjudicator, 30% deferred, 4 option orders | **0.650** | **0.788** | 1.43 | 0.538 |
+| **Cost point:** distilled student + 27B adjudicator, 50% deferred, 4 option orders (1 order: 0.599, 0.57 calls, 0.098 GPU-s) | **0.608** | **0.785** | 2.30 | 0.266 |
 | TeleAI (1st place), multi-stage DeepSeek-V3 pipeline | 0.617 | 0.812 | 1.94 | – |
 | One human annotator scored against the other two (2-annotator regime) | 0.684 | – | – | – |
 
@@ -50,6 +50,8 @@ Every system averages seeds and applies logit adjustment; its parameters and the
 are fitted by nested cross-validation on dev (test labels were never released). With the fusion refitted inside
 each bootstrap replicate, the adjudicator's gain over M1 is +0.037 [−0.044, +0.120]. Test predictions are in
 `submissions/E23_*`.
+LLM calls count every 27B call: with four option orders averaged, one deferred item costs four. GPU-s are
+measured on one GPU in one session over the same 308 items (`docs/raw/cost_same_gpu.txt`).
 
 | Research question | Registered test | Result |
 |---|---|---|

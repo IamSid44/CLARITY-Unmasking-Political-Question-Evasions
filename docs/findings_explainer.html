@@ -138,7 +138,7 @@ footer { margin-top: 64px; padding-top: 16px; border-top: 1px solid var(--line);
 <ol>
   <li><strong>Structure did not help.</strong> On DeBERTa, hierarchy, rebalanced losses, specialist experts, re-rankers and model soups all failed against paired controls. Only longer training and giving the full question helped (0.315 → 0.384 per model).</li>
   <li><strong>So we tested knowledge.</strong> Changing <em>only</em> the backbone to Qwen3-8B gained more than all encoder changes together: +0.092 per model, on 10 of 10 seeds.</li>
-  <li><strong>The 8B ranks better than it decides.</strong> An acceptable label is first for 60% of items but in its top 3 for 93%. So a 27B model picks among the 8B's top 4, for only the 30% least confident items (0.36 LLM calls per item).</li>
+  <li><strong>The 8B ranks better than it decides.</strong> An acceptable label is first for 60% of items but in its top 3 for 93%. So a 27B model picks among the 8B's top 4, for only the 30% least confident items (36% of items are deferred; with four option orders averaged that is 1.43 LLM calls per item).</li>
   <li><strong>For cost,</strong> one student trained on the 27B's soft labels replaces the 10 seeds: 0.608 at 0.27× the GPU cost.</li>
 </ol>
 <div class="card caveat"><div class="label">Honest uncertainty</div>

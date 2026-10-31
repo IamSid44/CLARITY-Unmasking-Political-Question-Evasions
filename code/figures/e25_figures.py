@@ -22,7 +22,7 @@ from qevasion.paths import FIGURES, REPORT_FIGURES, RUNS  # noqa: E402
 SERIES = ["#2a78d6", "#eb6834", "#1baf7a", "#eda100"]
 MARKERS = ["o", "s", "D", "^"]
 INK, MUTED, GRID = "#1f1f1e", "#6b6a64", "#e4e3de"
-CONDS = {"N": "Neutral analyst", "P": "As the President", "F": "After a follow-up", "B": "Briefed with his answer"}
+CONDS = {"N": "Neutral analyst", "P": "As the President", "F": "After a follow-up", "B": "Briefed with the answer"}
 MODELS = {"llama31_8b": "Llama-3.1-8B", "mistral_7b": "Mistral-7B", "qwen3_8b": "Qwen3-8B", "olmo2_7b": "OLMo-2-7B"}
 
 plt.rcParams.update({"font.family": "serif", "font.size": 8, "axes.edgecolor": MUTED, "axes.labelcolor": INK,
@@ -80,21 +80,22 @@ def audit(R: dict) -> None:
 
 
 def swap_prefix_probe(R: dict) -> None:
-    fig, (a, b, c) = plt.subplots(1, 3, figsize=(6.6, 2.1))
+    fig, (a, b, c) = plt.subplots(1, 3, figsize=(6.6, 2.3))
     e = R["e25a"]
     conds = [("own", "own"), ("rand", "unrelated"), ("null", "none")]
     for k, (split, mk) in enumerate((("dev", "o"), ("test", "s"))):
         ys = [e[f"{split}_{cc}"]["cr"] for cc, _ in conds]
         a.plot(range(3), ys, marker=mk, color=SERIES[k], lw=1.5, ms=4.5, label=f"{split}: Clear-Reply share",
                mec="white", mew=0.6)
-        ps = [e[f"{split}_{cc}"]["persist"] for cc, _ in conds]
-        a.plot(range(3), ps, marker=mk, color=SERIES[k], lw=1.2, ls="--", ms=4, label=f"{split}: label unchanged",
+        # the own question keeps every label by definition, so persistence starts at the second frame
+        ps = [e[f"{split}_{cc}"]["persist"] for cc, _ in conds[1:]]
+        a.plot(range(1, 3), ps, marker=mk, color=SERIES[k], lw=1.2, ls="--", ms=4, label=f"{split}: label unchanged",
                mec="white", mew=0.6)
     a.set_xticks(range(3), [n for _, n in conds])
     a.set_ylim(0, 1.05)
     a.set_title("Swapping the question", fontsize=8, color=INK)
     a.set_xlabel("Question paired with the answer")
-    a.legend(fontsize=5.8, loc="upper center", bbox_to_anchor=(0.5, -0.32), ncol=1)
+    a.set_ylabel("Share of dev / test items")
     p = R["prefix"]
     xs = [25, 50, 75, 100]
     for k, split in enumerate(s for s in ("dev", "test") if f"{s}_25" in p):
@@ -116,7 +117,11 @@ def swap_prefix_probe(R: dict) -> None:
     c.set_ylabel("Dev S2 macro-F1")
     c.set_ylim(0, 0.7)
     c.set_title("Probing the frozen model", fontsize=8, color=INK)
-    fig.tight_layout(w_pad=1.2)
+    fig.tight_layout(w_pad=1.2, rect=(0, 0.13, 1, 1))
+    # one legend under the first panel's row, so it never overlaps the axis labels
+    h, lab = a.get_legend_handles_labels()
+    fig.legend(h, lab, loc="lower left", bbox_to_anchor=(0.02, 0.0), ncol=4, fontsize=6.5, handlelength=2.2,
+               columnspacing=1.0)
     save(fig, "E25_swap_prefix_probe")
 
 
