@@ -75,7 +75,8 @@
 \begin{minipage}[c]{0.505\textwidth}
 \centering
 \small
-\setlength{\tabcolsep}{2.5pt}
+\setlength{\tabcolsep}{3pt}
+\resizebox{\linewidth}{!}{%
 \begin{tabular}{@{}lcc@{}}
 \toprule
 (c) M1, 16 bit $\rightarrow$ reduced & FP8 & NF4$^{\dagger}$ \\
@@ -86,8 +87,8 @@ Batch-1 latency p50 (ms) & 33.6 $\rightarrow$ 30.2 (0.90$\times$) & 169 $\righta
 Peak memory (GB) & 21.9 $\rightarrow$ 20.9 (\textbf{0.96$\times$}) & 16.8 $\rightarrow$ 11.3 (\textbf{0.67$\times$}) \\
 \Stwo{} lost, frozen parameters & 0.045 & 0.029 \\
 \bottomrule
-\end{tabular}
+\end{tabular}}
 \end{minipage}
-\caption{E26 on dev, each format against 16 bit on the same GPU type. (a)~\Stwo{} lost, both with frozen parameters. (b)~FP8 flips that change reference-set membership. (c)~Cost of M1 in reduced precision. FP8: one RTX PRO 6000, batch 32 for both. NF4: two RTX A4000, 16 bit split over two cards at batch 8 and NF4 on one card at batch 16. For scale, the weights of an 8B model alone take about 16, 8 and 4.5\,GB in 16 bit, FP8 and NF4. $^{\dagger}$Lower bound for the full instrument: 27B records missing for 60 NF4 items.}
+\caption{E26 on dev, each format against 16 bit on the same GPU type. (a)~\Stwo{} lost, both with frozen parameters. (b)~FP8 flips that change reference-set membership. (c)~Cost of M1 in reduced precision. FP8: native FP8 tensor cores of one RTX PRO 6000, batch 32 for both. NF4: two RTX A4000, 16 bit split over two cards at batch 8 and NF4 on one card at batch 16. For scale, the weights of an 8B model alone take about 16, 8 and 4.5\,GB in 16 bit, FP8 and NF4. $^{\dagger}$Lower bound for the full instrument: 27B records missing for 60 NF4 items.}
 \label{fig:precision}
 \end{figure*}}
