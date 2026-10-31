@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""E17 (module M4): the pre-registered analyses (docs/02_experiment_log.md, E17).
+"""E17 (module M4): the pre-registered analyses (docs/experiment_log.md, E17).
 
     # after the students finish: their own top-4 candidates scored by M3, then the system frontier
     python -m cascade.frontier jobs --run Q8_distill_a05 --ks 1 --seeds 0,1,2

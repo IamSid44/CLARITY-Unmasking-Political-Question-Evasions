@@ -6,7 +6,7 @@
 The official test answers come from presidential transcripts and carry formatting that train and dev do not:
 a leading speaker tag ("THE PRESIDENT.", "The President.", "President Bush."), footnote markers ("[25.]"),
 all-caps header lines, and turns by other speakers ("The Prime Minister. ..."). `normalize_answer` removes
-them, by the rules registered in docs/02_experiment_log.md §E21:
+them, by the rules registered in docs/experiment_log.md §E21:
   * drop the leading speaker tag, and the tag of any later turn by the president;
   * drop footnote markers;
   * drop all-caps header lines;

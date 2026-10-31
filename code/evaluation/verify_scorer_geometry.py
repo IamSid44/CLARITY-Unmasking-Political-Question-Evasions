@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Regenerate every number in docs/01_scorer_geometry.md."""
+"""Regenerate every number in docs/scorer_geometry.md."""
 
 from __future__ import annotations
 

@@ -6203,7 +6203,7 @@ queued: /scratch/shlok/Temp/CLARITY-Unmasking-Political-Question-Evasions/clarit
 Upload 0 LFS files: 0it [00:00, ?it/s]Upload 0 LFS files: 0it [00:00, ?it/s]
 No files have been modified since last commit. Skipping to prevent empty commit.
 [hf] uploaded /scratch/shlok/Temp/CLARITY-Unmasking-Political-Question-Evasions/clarity/runs/R1_rerank/seed4 -> siddarthg44/clarity-semeval26/R1_rerank/seed4
-queued: /tmp/claude-1004/smoke_q/SMOKE_cfg/seed2
+queued: /tmp/smoke/smoke_q/SMOKE_cfg/seed2
 Upload 4 LFS files:   0%|          | 0/4 [00:00<?, ?it/s]
 dev_probs.npy:   0%|          | 0.00/11.2k [00:00<?, ?B/s][A
 
@@ -6650,9 +6650,9 @@ queued: /tmp/claude-1004/smoke_q/SMOKE_cfg/seed2
 
 model.pt: 100%|█████████▉| 369M/369M [00:25<00:00, 12.2MB/s][A[A[A[Amodel.pt: 100%|██████████| 369M/369M [00:25<00:00, 14.5MB/s]
 Upload 4 LFS files: 100%|██████████| 4/4 [00:25<00:00,  7.90s/it]Upload 4 LFS files: 100%|██████████| 4/4 [00:25<00:00,  6.45s/it]
-[hf] uploaded /tmp/claude-1004/smoke_q/SMOKE_cfg/seed2 -> siddarthg44/clarity-semeval26/SMOKE_cfg/seed2
-queued: /tmp/claude-1004/smoke_q/SMOKE_cfg/seed0
-queued: /tmp/claude-1004/smoke_q/SMOKE_cfg/seed1
+[hf] uploaded /tmp/smoke/smoke_q/SMOKE_cfg/seed2 -> siddarthg44/clarity-semeval26/SMOKE_cfg/seed2
+queued: /tmp/smoke/smoke_q/SMOKE_cfg/seed0
+queued: /tmp/smoke/smoke_q/SMOKE_cfg/seed1
 Upload 4 LFS files:   0%|          | 0/4 [00:00<?, ?it/s]
 test_probs.npy:   0%|          | 0.00/8.66k [00:00<?, ?B/s][A
 

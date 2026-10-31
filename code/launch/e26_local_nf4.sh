@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# E26, NF4 half (docs/02 E26): run on the local machine with the RTX A4000s (3 x 16 GB). Free; ~1-1.5 h.
+# E26, NF4 half (docs/experiment_log.md, E26): run on the local machine with the RTX A4000s (3 x 16 GB). Free; ~1-1.5 h.
 #   cd <repo> && bash code/launch/e26_local_nf4.sh            # from the repository root (git pull first)
 # Runs, in parallel: the 16-bit reference split over GPUs 0+1, and NF4 on GPU 2 (each: 890 items x 10 seeds).
 # At the end it packs runs/E26/a4000 into e26_a4000.tgz in the repository root: copy that file to the laptop's

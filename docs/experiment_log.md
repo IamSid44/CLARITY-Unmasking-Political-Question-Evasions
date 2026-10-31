@@ -1,41 +1,30 @@
-# 02 — Experiment log
+# Experiment log
 
-The encoder track from its first run to now, in the order things happened. Each
-entry says **why** it was run, **what** was run, what **came out**, and what it
-**changed** about the plan. Mistakes are recorded where they happened, because
-several of them changed the plan as much as the results did.
+The pre-registered record of every experiment, E0–E26, in the order they ran. Each entry gives the hypothesis
+and its decision rule (written before the run), the setup, the result, and what it changed. Amendments are
+time-stamped where they happened, and mistakes are kept where they were made. The argument in short form is in
+[`findings.md`](findings.md); the source of every reported number is in [`results_sources.md`](results_sources.md).
 
-All numbers are **dev Subtask-2 macro-F1** (308 items, three annotators,
-multi-reference scoring) unless marked otherwise. "± " is the standard deviation
-over seeds. Raw outputs behind the headline tables are in `docs/raw/`.
+All numbers are **dev Subtask-2 macro-F1** (308 items, three annotators, multi-reference scoring) unless marked.
+"±" is the standard deviation over seeds. Raw outputs are in [`raw/`](raw/).
 
-| | |
-|---|---|
-| Period | 2026-09-19 → 2026-10-02 (mid-evaluation); Phase 2 from 2026-10-06: E14 (M1) 10-06, E15 (M3) 10-14, E16 (M2) 10-14, E17 (M4) 10-15, E18 (freeze) 10-15; final push from 10-27: E19–E23 |
-| Hardware | 1× RTX PRO 6000 (96 GB), shared with other users' jobs; E13 on JarvisLabs VMs with the same GPU; E14 on the lab server's GPU 0 plus two GPU-1 MIG slices (48 GB each) when free; E15–E17 on the lab server's GPU 0 (vLLM for the 27B LLM), plus the JarvisLabs Model API for the API arms ($0.26); E19–E22 on on-demand JarvisLabs RTX PRO 6000 VMs (the lab server is fully booked) |
-| Backbone | `microsoft/deberta-v3-large` (435M parameters) through E12; `Qwen/Qwen3-8B-Base` + LoRA from E13 |
-| Final system (E11, by a rule fixed in advance) | full question + 16 epochs, **10-seed** ensemble + logit adjustment: dev S2 **0.405** (0.412 over CV splits), dev S1 **0.648**; the 10-seed baseline system scores 0.428 / 0.601 — not distinguishable on S2 |
-| Latest | E12: training on all of train is the one variant that helps (S2 +0.029 per model, 4/5 seeds; 5-seed system 0.489); the hierarchy of specialist encoders, boundary experts and model soups do not |
-| Latest | **E13: Qwen3-8B + LoRA, the backbone as the one change, 10 seeds.** Single model S2 0.476 ± 0.043 vs 0.384 (+0.092, 10/10 up); **10-seed system S2 0.543 / S1 0.746 vs DeBERTa 0.405 / 0.648** (+0.136, 95% [+0.054, +0.224]). 12 epochs adopted on the slice (3-seed screen); all of train +0.017 per model, not distinguishable |
-| Latest | **E14 (module M1, Phase 2 step 1) done 2026-10-06.** Qwen 12 epochs at 10 seeds: single model S2 0.525 ± 0.042 (+0.049 vs 3 epochs, 8/10 up); **10-seed system S2 0.598 / S1 0.743** (+0.057 vs 0.543, 95% [−0.003, +0.125]); 2-annotator mean 0.549. Cross-fitted train probabilities for all 3,448 rows. Candidate sets must be rank-based; u(x) = 1 − top prob; oracle headroom at δ = 0.3 is 0.727, so M3 goes ahead |
-| Latest | **E15 (module M3) done 2026-10-14; dev numbers corrected the same day (a fusion bug, see E15 correction).** Local Qwen3.8-27B-FP8 over M1's top 4, no examples, fused on the 30% least confident items: **dev S2 0.669 (10 splits 0.660), +0.067 [+0.009, +0.124] over M1; S1 0.798 (+0.055); 0.36 LLM calls/item**, against TeleAI's 0.617 / 0.812 at 1.94 calls. 2-annotator mean 0.589. API spend $0.26 *E16 caveat: averaged over seed subsets, M3 adds +0.02 to +0.03; the 10-seed point is likely optimistic* |
-| Latest | **E16 (M2 completion) done 2026-10-14.** Prompt ablation: `full` kept (on dev, full > no guide > no definitions > bare; within noise). Measured cost: an M1 seed 0.052 GPU-s/item, an M3 call 0.103, so the 10-seed M1 is ~93% of the cost. Frontier: M3 adds +0.02 to +0.03 (δ = 0.3) at every K ≤ 5; K = 10's +0.071 is an outlier, so **E15's 0.669 is likely optimistic**. K = 1 + M3 at δ = 1 matches the 10-seed M1 alone (0.593 vs 0.598) at 3.4× less cost |
-| Latest | **E17 (M4) done 2026-10-15.** One distilled student (soft targets from M3) instead of 10 seeds: single model S2 0.573 vs 0.525 (+0.048, 9/10), S1 +0.031; **student + M3 at δ = 0.5: 0.608 / 0.790 at 0.111 GPU-s per item vs the 10-seed M1 alone at 0.598 / 0.743 and 0.522 GPU-s (4.7× cheaper)**. Adopted as the cost operating point: no undistilled point is cheaper and better |
-| **Current system (2026-10-15)** | Two operating points on dev. **Accuracy:** 10-seed M1 + M3 at δ = 0.3, S2 0.669 (10 splits 0.660) / S1 0.798, 0.36 LLM calls and 0.558 GPU-s per item. **Cost:** E17 student + M3 at δ = 0.5, S2 0.608 / S1 0.790 (mean of 10 students), 0.57 calls and 0.111 GPU-s per item. TeleAI (1st place): 0.617 / 0.812 at 1.94 calls |
-| Latest | **E18 (freeze numbers) done 2026-10-15.** Final dev numbers for both operating points: accuracy point (M1 × 10 + M3, δ = 0.3) S2 0.669 / 0.660 over 10 splits, S1 0.798, 2-annotator 0.589; cost point (student + M3, δ = 0.5) S2 0.608 ± 0.027, S1 0.790, 2-annotator 0.567, at 0.21× the GPU cost of M1 (0.27× after E19's cost correction). Ensembles of distilled students do not help (≤ +0.02; the students lack diversity), so there is no middle operating point. Figure: `docs/figures/E18_frontier.pdf` |
-| Latest | **E19 Tier 0 done 2026-10-27** (`raw/E19_tier0.txt`). Two corrections to E15–E18. (1) **Refitting λ and τ inside each bootstrap replicate,** the accuracy point's gain over M1 is +0.037 [−0.044, +0.120] (P(≤ 0) = 0.20), no longer significant; the earlier +0.067 [+0.009, +0.124] held them fixed. (2) **M3 costs 0.151 GPU-s per call, not 0.103,** so the cost point is 0.139 GPU-s (0.27× M1, not 0.21×) and the accuracy point 0.576. What holds: confidence routing beats random routing (0.669 vs 0.604 ± 0.015 at δ = 0.3); the gain comes from M3, not from re-thresholding; and the LLM's value changes sign with M1's uncertainty |
-| **Final system (2026-10-30, E23)** | One 27B copy (VM), order-averaged q, normalized test text. **Accuracy point:** M1 × 10 + M3, δ = 0.3: dev S2 **0.650** (10 splits 0.639) / S1 0.788, 0.36 calls. **Cost point:** student + M3, δ = 0.5: S2 0.608 (10 splits 0.606) / S1 0.785 (mean of 10 students), 0.139 GPU-s. Lab-record reference: 0.669 / 0.608. Test files: `submissions/E23_*` |
-| Latest | **E19–E22 done 2026-10-29/30** (`raw/E21_E22_analysis.txt`, `raw/E20_router.txt`, `raw/E23_systems.txt`). The 27B on the JarvisLabs VM agrees with the lab server's copy on only 92.5% of dev (faith gate failed), so everything was re-scored on one copy. Order-averaged q adopted (E19 B). LLM alone over 9 labels 0.591 < M1 (E19 A). Distillation: the M3-taught student beats self-distillation by only +0.012 single-model (H-E fails), +0.026 as a system. On leak-free train rows the LLM's value map is 0/−7/+2/+7/+12: the big losses on confident items were sibling leakage; the learned router loses to confidence routing (E20). Test answers carry transcript artifacts that cost M1 0.048 S2 on dev when injected, so the test files use normalized text (E21). Cached prompt halves the 27B's cost but changes its answers (E22a). Ladder 0.600 at 0.221 GPU-s, not adopted (E22c). E19 D and F not run |
-| Latest | **E24 pre-checks done 2026-10-30** (`raw/E24_prechecks.txt`, CPU only), for the research extension in [`07_research_extension_plan.md`](07_research_extension_plan.md). 61.5% of 3,079 train sibling pairs (same answer, different sub-question) carry different labels; sibling disagreement 72% vs 43% between annotators on one item, so evasion is relational, not annotator noise. M1 reads the question (same label on only 19% of disjoint dev sibling pairs). Question–answer relevance does not measure answering (AUC 0.566 for Clear Reply). Five candidate modules rejected: epistemic routing, sibling decoding, single-order debiasing, conformal set routing (0.564–0.617 vs 0.641–0.663), metric-optimal rule (no gain over CV-tuned logit adjustment) |
-| Latest | **E25 done 2026-10-30** (`raw/E25_analysis.txt`). The instrument reads the question causally (unrelated question: Clear Reply 25% → 1%). Question or speaker: a no-stake LLM does not evade where Presidents did (OR 1.18), but in the President's role the same models evade on the same questions (OR 2.74, exploratory) at the same rate; a follow-up turns 66% of evasions into replies. Detection needs most of the answer, and only fine-tuning binds labels to questions |
-| Latest | **E26 done 2026-10-31** (`raw/E26_analysis.txt`). Reduced precision of M1, each against 16-bit on the same GPU type: FP8 (RTX PRO 6000) 96.1% label agreement, M1 −0.020, full system −0.003; NF4 (RTX A4000) 86.7%, M1 −0.034. Neither is faster as implemented (0.83× / 0.82×). The cascade absorbs most of FP8's error (71% of flips land on items the 27B re-decides) |
-| Running | nothing. **Experiments closed.** No JarvisLabs instance exists; credit left ₹140.18 |
+| Phase | Experiments | Dates | Hardware |
+|---|---|---|---|
+| Encoder study (to the mid-evaluation) | E0–E12, DeBERTa-v3-large | 2026-09-19 → 09-29 | lab server, shared RTX PRO 6000 |
+| LLM classifier | E13, Qwen3-8B-Base + LoRA | 10-02 | JarvisLabs RTX PRO 6000 |
+| The cascade: M1–M4 | E14–E18 | 10-06 → 10-15 | lab server (27B served with vLLM) |
+| Robustness and the final system | E19–E23 | 10-27 → 10-30 | lab server, JarvisLabs RTX PRO 6000 |
+| Evasion as a question–answer relation | E24 (CPU), E25 | 10-30 | JarvisLabs H100 |
+| Reduced precision | E26 | 10-30 → 10-31 | JarvisLabs RTX PRO 6000, lab RTX A4000s |
+
+**Final systems (E23):** accuracy point (10-seed M1 + 27B on the 30% least confident items) S2 **0.650** / S1
+**0.788**; cost point (one distilled student + 27B on 50%) S2 **0.608** / S1 **0.785**.
 
 ---
 
 ## Scoreboard
 
-Every configuration so far, one row each; the sections below explain each row in
+Every classifier configuration through E17, one row each; the sections below explain each row in
 the order it was run. Single-model numbers are the mean ± std over 5 seeds.
 "+ rule" is the 5-seed ensemble followed by logit adjustment, the form a final
 system takes.
@@ -101,9 +90,18 @@ system (`../submissions/FINAL_fullq_16ep_10seed_logitadj/`); Codabench is closed
 - [E11 — Replication on new seeds, and the final system](#e11--replication-on-new-seeds-and-the-final-system-launched-2026-09-27)
 - [E12 — Groundwork, plan and runs](#e12--groundwork-plan-and-runs-launched-2026-09-28)
 - [E13 — Is the encoder's gap a knowledge gap? A LoRA-tuned Qwen3-8B classifier](#e13--is-the-encoders-gap-a-knowledge-gap-a-lora-tuned-qwen3-8b-classifier-registered-2026-10-02)
+- [E13x, E13b, E13c — 10 seeds, a longer schedule, all of train](#e13x-e13b-e13c--10-seeds-a-longer-schedule-all-of-train-registered-2026-10-02-1120-ist)
 - [E14 — Module M1: the 12-epoch Qwen at 10 seeds, cross-fitting, candidate sets and uncertainty](#e14--module-m1-the-12-epoch-qwen-at-10-seeds-cross-fitting-candidate-sets-and-uncertainty-registered-2026-10-06)
-  - [E14 results](#e14-results-all-12-runs-finished-2026-10-06-2205-ist)
-- [Deferred](#deferred)
+- [E15 — Module M3: a candidate-constrained LLM adjudicator, fused with M1](#e15--module-m3-a-candidate-constrained-llm-adjudicator-fused-with-m1-registered-2026-10-13)
+- [E16 — Finishing M2: the prompt-part ablation, measured cost, and the accuracy-vs-cost frontier](#e16--finishing-m2-the-prompt-part-ablation-measured-cost-and-the-accuracy-vs-cost-frontier-registered-2026-10-14)
+- [E17 — Module M4: distilling M3 into one M1 model, for cost](#e17--module-m4-distilling-m3-into-one-m1-model-for-cost-registered-2026-10-14)
+- [E18 — Freeze: final numbers for both operating points, and ensembles of distilled students](#e18--freeze-final-numbers-for-both-operating-points-and-ensembles-of-distilled-students-registered-2026-10-15)
+- [E19 — Robustness, baselines and controls for the final submission](#e19--robustness-baselines-and-controls-for-the-final-submission-registered-2026-10-27-1855)
+- [E20 — Spotlight: where should the LLM think? A value-of-compute map and a learned router](#e20--spotlight-where-should-the-llm-think-a-value-of-compute-map-and-a-learned-router-registered-2026-10-27-1855)
+- [E19/E20 amendments, E21 and E22](#e19e20-amendments-e21-and-e22-registered-2026-10-29-1330-ist-before-any-run-they-describe)
+- [E24 — Pre-checks for the research extension](#e24--pre-checks-for-the-research-extension-2026-10-30-cpu-only)
+- [E25 — Is evasion in the question or in the answerer?](#e25--is-evasion-in-the-question-or-in-the-answerer-registered-2026-10-30-1430-ist-before-any-run)
+- [E26 — Reduced precision: does the instrument survive FP8 and NF4, and what does it save?](#e26--reduced-precision-does-the-instrument-survive-fp8-and-nf4-and-what-does-it-save-registered-2026-10-30-2225-ist-before-any-run)
 
 ---
 
@@ -139,7 +137,7 @@ spending GPU time. All CPU, from the data and the scorer.
    `macro-F1 = (classes named at least once) / 9` exactly. Which acceptable label
    you name is worth nothing. This corrects `higrec/reports/03_data_audit.md` §6,
    whose "+0.1166 headroom" was the cost of leaving 33 items unpredicted.
-   Full derivation and reproduction: `01_scorer_geometry.md`.
+   Full derivation and reproduction: `scorer_geometry.md`.
 2. **Two quantities matter: in-set rate** (does the prediction land in the
    reference set?) **and coverage** (how many of the nine classes are ever
    named?). Every run from here on logs both.
@@ -377,7 +375,7 @@ scores all nine at once and does not benefit the same way.
 
 ## E6 — A second encoder as re-ranker (negative result)
 
-The re-ranker design and failure analysis are retold in `03_research_narrative.md` §10. In short:
+The re-ranker design and failure analysis, in short:
 
 **Why.** E3: a correct label is in the top-3 for 89.6% of items, and choosing among
 three should be easier than among nine.
@@ -1914,8 +1912,8 @@ seed takes 15–16 min and a 12-epoch seed about 59 min, peaking at 53 GiB.
 
 ## E14 — Module M1: the 12-epoch Qwen at 10 seeds, cross-fitting, candidate sets and uncertainty *(registered 2026-10-06)*
 
-*Written before any E14 run started.* This is the first step of the Phase 2 cascade (report §7;
-[`05_phase2_plan_and_budget.md`](05_phase2_plan_and_budget.md)).
+*Written before any E14 run started.* This is the first step of the Phase 2 cascade (mid-evaluation report §7, and the
+phase-2 plan, kept in the git history as `docs/05_phase2_plan_and_budget.md`).
 
 **What was already known when this was written.** The registration does not pretend otherwise.
 - **E13b's seeds 0–2 dev numbers are known.** S2 0.531 / 0.560 / 0.539.
@@ -2079,7 +2077,7 @@ a model trained on 80% of train. Seeds 0–2 are E13b's runs (dev S2 0.531 / 0.5
   - the queue log reports the selected epoch's score instead of the last epoch's;
   - `QUEUE_NEED_GB` forces checkpointing on demand.
 
-**Decisions this leaves for M3** (see `05_phase2_plan_and_budget.md` §2.1):
+**Decisions this leaves for M3** (phase-2 plan §2.1):
 1. **C(x) is rank-based.** Either a fixed top-3 (dev any-reference 0.925, train out-of-fold 0.768), or
    all nine labels with p̄ fused in. The data favour top-3 or top-4 for the prompt, with fusion so the
    LLM can fall back on M1.
@@ -2492,7 +2490,7 @@ operating point; M4 was done as E17; no submission file is needed yet.)*
 
 ## E16 — Finishing M2: the prompt-part ablation, measured cost, and the accuracy-vs-cost frontier *(registered 2026-10-14)*
 
-*Written before any E16 run.* Plan: `05_phase2_plan_and_budget.md` §7.2.
+*Written before any E16 run.* Plan: phase-2 plan §7.2.
 
 **Why.**
 - **The report promises an ablation of each prompt part,** and E15 removed only the examples.
@@ -2576,7 +2574,7 @@ items, 2,071 reused.
 - **One M3 call** (vLLM, batched): **0.103 GPU-s**, ~1.1k prompt tokens and 1 output token.
 - **FP8** was not measured: the transformers FP8 kernels package is missing, and it was not installed over
   this server's unreliable network.
-- **Correction of the plan's estimate:** §7.1 of docs/05 put an M1 seed at 0.2–0.3 GPU-s, read from E13's
+- **Correction of the plan's estimate:** the phase-2 plan put an M1 seed at 0.2–0.3 GPU-s, read from E13's
   epoch timings, which include evaluation overhead. The measured cost is 4–6× lower. The conclusion holds:
   the 10-seed M1 is 0.52 GPU-s per item and M3 at δ = 0.3 adds 0.04, so **M1 is ~93% of the cost**.
 - **H2:** an M1 seed was predicted at 0.15–0.35, measured 0.052 (failed: cheaper); an M3 call was
@@ -2623,7 +2621,7 @@ K = 10 is one ensemble):
 
 ## E17 — Module M4: distilling M3 into one M1 model, for cost *(registered 2026-10-14)*
 
-*Written before any E17 run.* Plan: `05_phase2_plan_and_budget.md` §7.3.
+*Written before any E17 run.* Plan: phase-2 plan §7.3.
 
 **Why.** The aim is a cheaper system, not a more accurate one (the user, 2026-10-14). If a single
 student model with M3 matches the 10-seed M1 with M3, inference cost drops about tenfold (E16's H2). The
@@ -3031,8 +3029,7 @@ on held-out train folds**: selection is on train, not dev. Dev numbers are repor
 ## E19/E20 amendments, E21 and E22 *(registered 2026-10-29, 13:30 IST, before any run they describe)*
 
 *Written after the E19 arm-E lanes started (13:03) and before any of their results; nothing below depends
-on a result.* The operational plan, budget and timetable are in
-[`06_final_push_handover.md`](06_final_push_handover.md).
+on a result.* How the cloud lanes run is in [`reproducing.md`](reproducing.md) §6.
 
 **What changed since 2026-10-27, and why.**
 - **Compute.**
@@ -3044,7 +3041,7 @@ on a result.* The operational plan, budget and timetable are in
     run.
   - **Every GPU arm therefore runs on RTX PRO 6000 VMs.** The H200 attempt and the reachability probes
     cost ₹122; the balance at 13:00 was ₹3,748.
-- **The laptop drives Jarvis from Windows Git Bash** (`JL_PY`, see 06 §4). WSL's network ran at about
+- **The laptop drives Jarvis from Windows Git Bash** (`JL_PY`, see `reproducing.md` §6). WSL's network ran at about
   13 KB/s on the hotspot.
 - **A review of the plan (2026-10-29)** found the issues fixed below. It also added three findings that
   E21 and E22 act on:
@@ -3214,7 +3211,7 @@ The runs are on HF:
 - **Two inference lanes on Jarvis RTX PRO 6000 VMs:**
   - **2026-10-29:** a first lane. A reporting bug crashed it at 14:09, and with no monitor running the VM sat
     idle until 18:45 (≈ ₹950). It was then rerun.
-  - **2026-10-30, 11:53–12:18:** a second pass, with the self-managing lanes of 06 §6.
+  - **2026-10-30, 11:53–12:18:** a second pass, with the self-managing lanes (`reproducing.md` §6).
 - **E19 arm E:** two lanes, 6 seeds, done 16:04 on 2026-10-29.
 - **Credit:** ₹3,748 at the start of 2026-10-29 → ₹785.80 at the end. Arm F (14B) was not run.
 
@@ -3353,7 +3350,7 @@ VM's 27B and order-averaged q:
 ## E24 — Pre-checks for the research extension *(2026-10-30, CPU only)*
 
 **Why.** The mid-evaluation asked for more than the shared task. Seven literature scouts proposed ~60 candidate
-additions (doc 07). Before spending any of the remaining ₹785.80, each candidate that can be tested on existing
+additions (the extension plan, summarised in `findings.md` §7–9). Before spending any of the remaining ₹785.80, each candidate that can be tested on existing
 artifacts was tested; a module goes to the GPU only if its pre-check passes.
 
 **What.** `python -m preregistered_analyses.e24_prechecks` (≈ 5 min) → `raw/E24_prechecks.txt`. P1 sibling
@@ -3376,8 +3373,8 @@ with the system's nested-CV fusion; P8 question–answer relevance (E22 specific
 | P8 | relevance ordered (p = 2e-12) but AUC 0.566 for Clear Reply; Deflection as identifiable as Explicit | relevance ≠ answerhood |
 
 **What it changed.** The extension leads with evasion as a relation (P1, P2, P8) and an LLM evasion audit, not
-with new routing or decision methods; the rejected modules become a negative-results ledger. Plan and GPU budget:
-doc 07.
+with new routing or decision methods; the rejected modules become a negative-results ledger. The plan is summarised in
+`findings.md` §7–9.
 
 ---
 
@@ -3616,7 +3613,7 @@ training-time probabilities on 97.9% of per-seed labels (the same as the RTX PRO
 | dev label agreement | 78.9% per seed, **86.7%** 10-seed mean | 93–97% → worse |
 | M1 system dev S2 (nested CV, 10 splits) | 0.598 → 0.565, **−0.034** | −0.01 to −0.03 → slightly worse |
 | routing identical / top-4 identical | 83.8% / 62.3% | — |
-| batched throughput | **0.82×** (7.7 → 6.3 items/s, batch 16) | ≤ 1.0× → held |
+| batched throughput | **0.82×** (7.7 → 6.3 items/s; bf16 at batch 8 split over two cards, NF4 at batch 16 on one) | ≤ 1.0× → held |
 | batch-1 latency p50 | 169 → 259 ms (slower) | — |
 | peak memory | 16.8 → 11.3 GB (0.67×; includes per-process creep) | ≤ 0.4× → not met as measured |
 | **QLoRA trigger** (> 0.02 S2 or > 5% flips) | **met** | QLoRA is the named fix (future work) |
@@ -3635,14 +3632,3 @@ robust to a degraded first stage**, which is what a cheaper first stage would ne
 faster here because activations are quantized in unfused PyTorch ops (per-token scales, casts, padding) around each
 FP8 matmul; a speed-up needs fused kernels (e.g. vLLM's FP8 path), which is future work. The peak-memory figure
 (21.9 vs 20.9 GB) includes loading the 16-bit model before conversion, so it does not measure FP8's footprint.
-
----
-
-## Deferred
-
-- **An LLM in the re-ranking slot.** The encoder pipeline comes first; the
-  cross-fitted candidates and fall-back fusion from E6 are ready for it.
-- **Training on all of train.** Every run holds out 10% of train to choose its best
-  epoch. Once an epoch count is settled, a final model could be retrained on
-  100% with that fixed count — about 10% more data, at the cost of not being able
-  to choose its checkpoint.

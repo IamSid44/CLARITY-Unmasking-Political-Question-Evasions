@@ -146,7 +146,7 @@ def undertraining() -> None:
 
 
 def decision_rules() -> None:
-    """E4: held-out score of four decision rules on the E0 5-seed ensemble (docs/02_experiment_log.md, E4)."""
+    """E4: held-out score of four decision rules on the E0 5-seed ensemble (docs/experiment_log.md, E4)."""
     rules = ["Argmax\n(0 params)", "Set member.\n(0 params)", "Logit adj.\n(1 param)", "Per-class\n(9 params)"]
     held = [0.365, 0.365, 0.438, 0.394]
     gap = [-0.001, None, 0.018, 0.098]  # in-fold minus held-out; not reported for set membership
@@ -178,7 +178,7 @@ def decision_rules() -> None:
 
 
 def negative_results() -> None:
-    """Each structural or loss variant against its own named control (docs/02_experiment_log.md E4-E12, Report 4)."""
+    """Each structural or loss variant against its own named control (docs/experiment_log.md E4-E12, Report 4)."""
     rows = [  # label, change in dev S2, comparison level
         ("Per-class weights (E4)", -0.044, "system"),
         ("Hard hierarchical routing (E5)", +0.004, "ensemble"),

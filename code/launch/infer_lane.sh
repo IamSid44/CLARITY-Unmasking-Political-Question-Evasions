@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# The E19/E21/E22 inference lane on one rented GPU VM (docs/06_final_push_handover.md §6). Runs on the instance
+# The E19/E21/E22 inference lane on one rented GPU VM (docs/reproducing.md §6). Runs on the instance
 # after `jarvis_drive.sh push`:
 #
 #   bash /home/clarity_llm/code/code/launch/infer_lane.sh start     # everything, in tmux session clarity-infer
@@ -224,7 +224,7 @@ pass2() {
   fi
 }
 
-# ---------------------------------------------------------------- PASS=3: E25 (docs/02 E25 registration)
+# ---------------------------------------------------------------- PASS=3: E25 (docs/experiment_log.md, E25 registration)
 SUBJECTS="llama31_8b=meta-llama/Llama-3.1-8B-Instruct mistral_7b=mistralai/Mistral-7B-Instruct-v0.3 qwen3_8b=Qwen/Qwen3-8B olmo2_7b=allenai/OLMo-2-1124-7B-Instruct"
 
 fetch_subjects() {  # the four answering LLMs, safetensors only (no duplicate consolidated/original weights)

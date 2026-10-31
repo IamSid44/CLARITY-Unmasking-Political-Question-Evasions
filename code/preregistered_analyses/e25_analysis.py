@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""E25 analysis (registered 2026-10-30, docs/02 E25): is evasion in the question or in the answerer?
+"""E25 analysis (registered 2026-10-30, docs/experiment_log.md, E25): is evasion in the question or in the answerer?
 
     python -m preregistered_analyses.e25_analysis > ../docs/raw/E25_analysis.txt        # CPU, a few minutes
     python -m preregistered_analyses.e25_analysis sheet    # the blind 100-answer annotation sheet (docs/annotation/)
@@ -489,7 +489,7 @@ def main() -> None:
         return sheet()
     if len(sys.argv) > 1 and sys.argv[1] == "kappa":
         return kappa(sys.argv[2], sys.argv[3])
-    print("E25 analysis (registered 2026-10-30 14:30 IST; docs/02 E25). Labels: the frozen E23 instrument "
+    print("E25 analysis (registered 2026-10-30 14:30 IST; docs/experiment_log.md, E25). Labels: the frozen E23 instrument "
           "(code/experiments/e25/frozen_system.json).")
     controls()
     e25a()

@@ -1,26 +1,29 @@
+# Python
 __pycache__/
 *.pyc
-.DS_Store
 .pytest_cache/
+.DS_Store
+*.tmp
 
-# run outputs: per-seed probabilities, metrics, configs, 27B records and labels are tracked (~45 MB; the same
-# files are on Hugging Face). Not tracked: model weights (see below), the Hub download cache, and E25's
-# hidden states (158 MB; on Hugging Face under E25/hidden/)
+# keys (copy code/.env.example to code/.env)
+.env
+
+# run outputs: probabilities, metrics, configs, LLM records and labels are tracked. Model weights, the Hub
+# download cache and E25's hidden states (158 MB) are on Hugging Face only.
+*.safetensors
+adapters_*.tgz
 runs/.cache/
 runs/**/.hf_pushed
 runs/E25/hidden/*.npy
 wandb/
-*.tmp
 
-# keys
-.env
-code/.env
-
-# submission packaging
-Nier_ANLP-Mid.zip
+# packaging: submission zips and the cloud code bundle built by launch/jarvis_setup.sh
+*-Mid.zip
+*-Final.zip
 Nier_ANLP-Mid/
+jarvis_bundle.tgz
 
-# packaged predictions: only the three reported systems are tracked
+# only the reported systems' predictions are tracked
 submissions/*
 !submissions/L0_large_base/
 !submissions/L0_large_base_logitadj/
@@ -30,12 +33,3 @@ submissions/*
 !submissions/E23_m1_10seed/
 !submissions/E23_accuracy_point/
 !submissions/E23_cost_point_student0/
-
-.claude/
-
-# the code bundle that launch/jarvis_setup.sh builds for cloud instances
-jarvis_bundle.tgz
-
-# model weights: too large for git (GitHub refuses files over 100 MB); every adapter is on Hugging Face
-*.safetensors
-adapters_*.tgz

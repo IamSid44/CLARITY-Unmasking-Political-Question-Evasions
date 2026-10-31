@@ -1,41 +1,38 @@
-# Knowledge over Structure: Response Clarity Classification in Political Interviews
+# CLARITY: Unmasking Political Question Evasions
 
-**SemEval-2026 Task 6 (CLARITY): Unmasking Political Question Evasions**
+**SemEval-2026 Task 6.** A confidence-routed cascade for classifying evasion in political interviews, and what
+it measures: whether evasion lies in the question or in the person answering.
 
 Siddarth Gottumukkula, Vidvathama R, Sanjana Reddy Vonteri, Shashikanta Sahoo<br>
 Advanced NLP course project, International Institute of Information Technology, Hyderabad
-
-> **Status: experiments closed (2026-10-31); final report and slides due 2026-10-31.** The mid-evaluation is
-> complete ([report](report/mid_evaluation_report.pdf), [slides](report/mid_evaluation_slides.pdf)). After it,
-> the system below became a measurement instrument for a research question, *is evasion in the question or in the
-> answerer?* (E24–E25), and was tested at reduced precision (E26). **Start with [`docs/documentation.md`](docs/documentation.md)**: every experiment, why it
-> was run, and how each led to the next. All numbers are on the official dev set.
 
 ---
 
 ## Overview
 
-Given a journalist's question and a politician's answer, the task is to classify how clearly the
-answer responds. Subtask 2 assigns one of nine evasion types (Explicit, Implicit, Dodging, General,
-Deflection, Partial/half-answer, Declining to answer, Claims ignorance, Clarification). Subtask 1
-groups them into three clarity levels (Clear Reply, Ambivalent, Clear Non-Reply). Scoring is macro-F1,
-and a prediction counts as correct if any annotator gave that label.
+Given a journalist's question and a politician's answer, the task is to classify how clearly the answer responds.
+Subtask 2 assigns one of nine evasion types (Explicit, Implicit, Dodging, General, Deflection, Partial,
+Declining to answer, Claims ignorance, Clarification); Subtask 1 groups them into three clarity levels (Clear
+Reply, Ambivalent, Clear Non-Reply). Scoring is macro-F1, where a prediction counts if any annotator gave it.
 
-We ran a controlled study of what limits a fine-tuned classifier on this task, then built a
-confidence-routed cascade on the result:
+The project has three parts, each prompted by the one before:
 
-- **Controlled encoder study.** On DeBERTa-v3-large, every change was tested against a named control
-  on paired seeds: hierarchical heads, rebalancing losses, specialist experts, re-rankers, model soups
-  and decision rules. Beyond logit adjustment, only longer training and adding the full question
-  helped (0.315 → 0.384 Subtask 2 macro-F1 per model); the structural changes did not.
-- **Knowledge over structure.** Changing only the backbone to Qwen3-8B-Base + LoRA, with the same
-  data, input and selection rule, gained more (+0.092 per model, 10/10 seeds up) than all
-  encoder-side changes combined (+0.069).
-- **A cascade that asks a bigger model only when unsure.** The 8B classifier ranks better than it
-  decides: an acceptable label is first for 60% of items but in its top 3 for 93%. A 27B LLM picks
-  among the top four candidates for only the least confident items.
-- **Distillation for cost.** One student trained on the LLM's soft labels replaces the 10-seed
-  ensemble. With the LLM on half the items, it beats the 10-seed classifier at 0.27× its GPU cost.
+1. **Building an instrument (E0–E23).** On DeBERTa-v3-large, architectural changes (hierarchical heads,
+   rebalancing losses, specialist experts, re-rankers, model soups) did not help. Changing only the backbone to
+   Qwen3-8B + LoRA gained more than all of them combined (+0.092 per model, 10/10 seeds). That classifier
+   *ranks* better than it *decides* (an acceptable label is in its top 3 for 93% of items), so a 27B LLM picks
+   among its top four candidates, only for the least confident 30% of items.
+2. **What the instrument measures (E24–E25).** One answer often serves several sub-questions, and its label
+   changes with the question far more often than annotator noise explains: **evasion is a relation**. The
+   instrument reads the question causally (an answer paired with an unrelated question stops being a Clear
+   Reply: 25% → 1%). Putting the Presidents' questions to LLMs shows that a model with no stake does not evade
+   where the Presidents did, but in the President's role it evades on the same questions (exploratory,
+   OR 2.7): **which questions get evaded depends on the role of the person answering**.
+3. **Making it cheaper (E26).** FP8 and NF4 versions of the classifier were not faster as implemented, but the
+   LLM adjudicator absorbs most of their error: FP8 costs the classifier 0.020 S2 and the full system 0.003.
+
+Every hypothesis was registered before its run, every change was compared against a named control on paired
+seeds, and every reported number traces to a script and a raw output file.
 
 ## Results (dev, 308 items)
 
@@ -44,31 +41,26 @@ confidence-routed cascade on the result:
 | DeBERTa-v3-large, 10-seed ensemble | 0.405 | 0.648 | 0 | – |
 | Qwen3-8B + LoRA, 3 epochs, 10 seeds (mid-evaluation) | 0.543 | 0.746 | 0 | – |
 | M1: Qwen3-8B + LoRA, 12 epochs, 10 seeds | 0.598 | 0.743 | 0 | 0.522 |
-| **Accuracy point:** M1 + LLM adjudicator, 30% deferred | **0.650** | **0.788** | 0.36 | 0.576 |
-| **Cost point:** distilled student + LLM adjudicator, 50% deferred | **0.608** | **0.785** | 0.57 | 0.139 |
+| **Accuracy point:** M1 + 27B adjudicator, 30% deferred | **0.650** | **0.788** | 0.36 | 0.576 |
+| **Cost point:** distilled student + 27B adjudicator, 50% deferred | **0.608** | **0.785** | 0.57 | 0.139 |
 | TeleAI (1st place), multi-stage DeepSeek-V3 pipeline | 0.617 | 0.812 | 1.94 | – |
 | One human annotator scored against the other two (2-annotator regime) | 0.684 | – | – | – |
 
-Every system averages seeds and applies logit adjustment. Its parameters (and the fusion weights of the
-adjudicator) are fitted by nested cross-validation on dev, and test labels were never released.
+Every system averages seeds and applies logit adjustment; its parameters and the adjudicator's fusion weights
+are fitted by nested cross-validation on dev (test labels were never released). With the fusion refitted inside
+each bootstrap replicate, the adjudicator's gain over M1 is +0.037 [−0.044, +0.120]. Test predictions are in
+`submissions/E23_*`.
 
-The two operating points are the final system (E23).
-- **One copy of the LLM throughout:** the adjudicator is a single serving of Qwen3.8-27B-FP8, with its answer
-  averaged over four orderings of the candidate labels.
-- **The earlier figure:** the same weights served on our lab server gave 0.669 for the accuracy point. The two
-  copies disagree on 7.5% of decisions.
-- **The test predictions** (`submissions/E23_*`) use test answers cleaned of transcript artifacts.
-
-How sure we are of the adjudicator's gain over M1:
-- **With the fitted parameters held fixed,** the gain is +0.067, 95% bootstrap interval [+0.009, +0.124].
-- **With them refitted inside each bootstrap replicate,** it is +0.037 [−0.044, +0.120].
-- **Averaged over smaller seed subsets,** it is +0.02 to +0.04.
-
-The official test has two annotators per item. Under that regime, the accuracy point scores 0.589,
-against 0.684 for one human annotator scored against the other.
+| Research question | Registered test | Result |
+|---|---|---|
+| Does the instrument read the question causally? (E25a) | Clear-Reply share halves when the question is swapped | **held:** 0.253 → 0.013 |
+| Is evasion question-driven? (E25b) | A no-stake LLM evades where Presidents did, OR ≥ 1.5 | **failed:** OR 1.18 |
+| Does the President's role matter? (E25b, exploratory) | — | same questions evaded, OR 2.74 [1.87, 4.17] |
+| Does pursuit work on LLMs? (E25b) | ≥ 50% of evasions become replies when pressed | **held:** 66% |
+| Does the cascade absorb FP8 error? (E26) | ≥ 50% of M1's flips on deferred items, fewer system flips | **held:** 71%; system −0.003 |
 
 <p align="center">
-  <img src="docs/figures/E18_frontier.png" alt="Dev Subtask 2 macro-F1 against GPU-seconds per item for seed ensembles and distilled students, with and without the LLM adjudicator" width="560">
+  <img src="docs/figures/E25_audit.png" alt="Evasion rate of two LLMs under four conditions against the Presidents' rate" width="560">
 </p>
 
 ## Method
@@ -89,33 +81,34 @@ flowchart LR
 |---|---|
 | **M1** Candidate generator | Fine-tuned Qwen3-8B-Base (LoRA) ensemble; outputs the top-4 label set and an uncertainty score |
 | **M2** Router | Sends only the δ least confident items onward; the threshold is set on a held-out train slice |
-| **M3** LLM adjudicator | A local 27B LLM chooses among M1's four candidates with one output token; its distribution is fused with M1's |
-| **M4** Distillation | M3 relabels train; a single student trained on 0.5 · gold + 0.5 · M3 replaces the ensemble |
+| **M3** LLM adjudicator | A local 27B LLM chooses among M1's four candidates with one output token, averaged over four option orders; fused with M1 |
+| **M4** Distillation | M3 relabels train; one student trained on 0.5 · gold + 0.5 · M3 replaces the ensemble |
 
-The protocol behind every number: hypotheses are registered before each run, every change is compared
-against a named control on paired seeds, and every reported value traces to a script and a raw output
-file ([`docs/04_results_sources.md`](docs/04_results_sources.md)).
+With every parameter frozen (`code/experiments/e25/frozen_system.json`), the accuracy point is the
+**instrument** used in E25 and E26.
+
+## Documentation
+
+| Document | Contents |
+|---|---|
+| [`docs/findings.md`](docs/findings.md) | **Start here.** The whole project as one argument: every experiment, why it was run, what it showed |
+| [`docs/codebase.md`](docs/codebase.md) | Where each code file is, what it does, and its important functions |
+| [`docs/reproducing.md`](docs/reproducing.md) | Setup, commands for every analysis and GPU step, hardware and cost |
+| [`docs/experiment_log.md`](docs/experiment_log.md) | The pre-registered record: hypotheses, decision rules, amendments and results, E0–E26 |
+| [`docs/results_sources.md`](docs/results_sources.md) | Every reported number, with the script and output file it comes from |
+| [`docs/scorer_geometry.md`](docs/scorer_geometry.md) | What the multi-reference scorer rewards, and what that implies for decision rules |
 
 ## Repository structure
 
 ```text
-├── code/                  source code (run every command from here)
-│   ├── qevasion/          data loading, labels, official-scorer replica
-│   ├── models/            DeBERTa encoder, Qwen3-8B + LoRA classifier, encoder variants
-│   ├── cascade/           M1 candidates, M3 adjudicator, fusion, frontier, M4 distillation targets
-│   ├── decision_rules/    seed ensembling and logit adjustment
-│   ├── evaluation/        metrics, run comparison, submission packaging
-│   ├── preregistered_analyses/   the analyses behind each reported number
-│   ├── figures/           report and slide figures
-│   ├── experiments/       run lists for each experiment
-│   └── launch/            run queue and cloud GPU launchers
-├── data/                  task evaluation file, fixed splits, cached train and dev
-├── docs/                  experiment log, research narrative, code guide, raw outputs, figures
-├── logs/                  training and pipeline logs of every run
-├── report/                mid-evaluation report and slides, with LaTeX source
-├── runs/                  per-seed probabilities, metrics, 27B records and labels of the Qwen runs, the cascade
-│                          and E21–E26 (model weights and the DeBERTa runs are on Hugging Face)
-└── submissions/           Codabench predictions: the DeBERTa systems, the cascade (E19_*), the final system (E23_*)
+├── code/          source (run every command from here); see docs/codebase.md
+├── data/          cached train and dev, the official test file, fixed splits
+├── docs/          the documents above; raw/ (every analysis output), figures/
+├── logs/          training, queue and cloud-lane logs of every run
+├── report/        mid-evaluation report and slides; LaTeX source (latex/)
+├── runs/          per-seed probabilities and metrics, 27B records, labels (model weights on Hugging Face)
+├── submissions/   Codabench predictions: DeBERTa systems, the cascade (E19_*), the final system (E23_*)
+└── paper/         the SemEval-2026 Task 6 results paper (reference)
 ```
 
 ## Getting started
@@ -123,21 +116,21 @@ file ([`docs/04_results_sources.md`](docs/04_results_sources.md)).
 ```bash
 pip install -r requirements.txt
 cd code
-python -m preregistered_analyses.e13_analysis     # after fetching the published runs (see below)
+python -m preregistered_analyses.e23_systems      # the final operating points, from the tracked runs (CPU)
+python -m preregistered_analyses.e25_analysis     # the evasion study
 ```
 
-The train and dev data download automatically. To re-run the analyses without a GPU, fetch the
-per-seed probabilities from Hugging Face. [`docs/reproducing.md`](docs/reproducing.md) covers this,
-training and the cascade. [`docs/code_guide.md`](docs/code_guide.md) describes every module.
+Every analysis runs on CPU from the outputs in `runs/`. Training, the 27B adjudicator and the E25/E26 GPU
+steps are in [`docs/reproducing.md`](docs/reproducing.md).
 
 ## Resources
 
 | | |
 |---|---|
-| Trained runs (per-seed probabilities, metrics, LoRA adapters) | [huggingface.co/siddarthg44/clarity-semeval26](https://huggingface.co/siddarthg44/clarity-semeval26) |
-| Training curves | [wandb.ai/iamsid44-iiit-hyderabad/clarity-semeval26](https://wandb.ai/iamsid44-iiit-hyderabad/clarity-semeval26) |
+| Trained runs and LoRA adapters (Hugging Face) | [huggingface.co/siddarthg44/clarity-semeval26](https://huggingface.co/siddarthg44/clarity-semeval26) |
+| Training curves (Weights & Biases) | [wandb.ai/iamsid44-iiit-hyderabad/clarity-semeval26](https://wandb.ai/iamsid44-iiit-hyderabad/clarity-semeval26) |
 | Dataset (QEvasion) | [huggingface.co/datasets/ailsntua/QEvasion](https://huggingface.co/datasets/ailsntua/QEvasion) |
-| Full experiment record | [`docs/`](docs/) |
+| Base models | [Qwen3-8B-Base](https://huggingface.co/Qwen/Qwen3-8B-Base), [Qwen3.8-27B-FP8](https://huggingface.co/Qwen/Qwen3.8-27B-FP8), [DeBERTa-v3-large](https://huggingface.co/microsoft/deberta-v3-large) |
 
 ## References
 

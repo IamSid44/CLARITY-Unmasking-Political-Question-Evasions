@@ -1,4 +1,4 @@
-# 01 — What the Subtask-2 scorer actually rewards
+# What the Subtask-2 scorer actually rewards
 
 **Status:** correction to two committed documents.
 **Reproduce:** `python -m evaluation.verify_scorer_geometry` (CPU, seconds; needs
@@ -151,7 +151,7 @@ Two consequences for how C4 must be evaluated:
 ### Outcome (measured after this section was written)
 
 Both evaluations were run on the 5-seed baseline ensemble
-(`02_experiment_log.md`, E4):
+(`experiment_log.md`, E4):
 
 - **The one-scalar control won.** Logit adjustment: 0.365 → 0.438 held-out, with
   an in-fold/held-out gap of 0.018. Nine fitted multipliers: 0.394, gap 0.098 —

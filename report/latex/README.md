@@ -25,13 +25,13 @@ validate_pdf.sh           checks A4 size and embedded fonts, renders pages to qa
 
 | Section | Evidence |
 |---|---|
-| §2 Task, data and evaluation | `docs/raw/taxonomy_counts.txt`, `docs/01_scorer_geometry.md`, `docs/raw/mideval/mideval_analysis.txt` |
-| §4 Encoder track | `docs/02_experiment_log.md` (E0–E12), `docs/raw/E11_replication.txt` |
+| §2 Task, data and evaluation | `docs/raw/taxonomy_counts.txt`, `docs/scorer_geometry.md`, `docs/raw/mideval/mideval_analysis.txt` |
+| §4 Encoder track | `docs/experiment_log.md` (E0–E12), `docs/raw/E11_replication.txt` |
 | §5 LLM classifier | `code/models/llm_classifier.py`, `docs/raw/E13_*.txt` |
 | §6 Analysis | `docs/raw/mideval/`, `docs/raw/E13_final_analysis.txt`, `docs/raw/E13_Q8_topk_confidence.txt` |
-| §7 Plan, Appendix A | `docs/02_experiment_log.md`, `docs/raw/E13_pilots_and_timing.txt` |
+| §7 Plan, Appendix A | `docs/experiment_log.md`, `docs/raw/E13_pilots_and_timing.txt` |
 
-[`docs/04_results_sources.md`](../../docs/04_results_sources.md) maps every number in the report to the
+[`docs/results_sources.md`](../../docs/results_sources.md) maps every number in the report to the
 script and output file behind it.
 
 ## Build

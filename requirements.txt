@@ -6,11 +6,14 @@ numpy
 pandas
 pyarrow
 scikit-learn
+scipy
 joblib
 threadpoolctl
 matplotlib
 huggingface_hub
 python-dotenv
 wandb
-python-pptx
-openai          # M3 API arms (JarvisLabs Model API); local M3 runs use a separate vLLM 0.31 env
+openai          # M3 API arms (OpenAI-compatible API)
+bitsandbytes    # E26 NF4 only
+jarvislabs      # cloud GPU driver only (launch/jarvis_drive.sh)
+# the 27B adjudicator and E25's LLM answers run in a separate environment with vllm==0.31

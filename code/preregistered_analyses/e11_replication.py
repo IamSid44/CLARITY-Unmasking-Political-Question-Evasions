@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""E11: the pre-registered replication analysis (docs/02_experiment_log.md §E11)."""
+"""E11: the pre-registered replication analysis (docs/experiment_log.md §E11)."""
 
 from __future__ import annotations
 

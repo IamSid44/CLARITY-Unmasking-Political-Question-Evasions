@@ -1,4 +1,4 @@
-# 04 — Results: every number with its source
+# Results: every number with its source
 
 All on the 308-item dev set. "S2" = Subtask 2 (9 classes, multi-reference macro-F1);
 "S1" = Subtask 1 (3 classes, derived from the 9-way prediction).
@@ -10,10 +10,10 @@ fitted on one half of dev and scored on the other, both directions.
 
 The main sources are:
 - `raw/mideval/mideval_analysis.txt`, written by `python -m preregistered_analyses.mideval_analysis` (CPU, 24 s).
-- `docs/02_experiment_log.md` (the log), and the raw outputs it cites in
+- `docs/experiment_log.md` (the log), and the raw outputs it cites in
   `docs/raw/`.
 - For the Qwen classifier (§9): `docs/raw/E13_final_analysis.txt`, written by
-  `python -m preregistered_analyses.e13_analysis` (CPU, about 3 min, needs the run folders from the HF repo).
+  `python -m preregistered_analyses.e13_analysis` (CPU, about 3 min).
 
 ## 1. Main table
 
@@ -400,7 +400,7 @@ nothing is refitted on the new inputs. The hypotheses and their thresholds were 
 | FP8: batched throughput; batch-1 latency p50 | 0.83×; 33.6 → 30.2 ms | rtxpro |
 | H26-1 fidelity / H26-2 speed | failed / failed | Registered hypotheses |
 | NF4 vs 16-bit, 2 × RTX A4000: dev label agreement (10 seeds) | 0.867 | a4000 |
-| NF4: M1 system S2 (nested CV, 10 splits); throughput; peak memory | 0.598 → 0.565 (−0.034); 0.82×; 0.67× | a4000 |
+| NF4: M1 system S2 (nested CV, 10 splits); throughput (bf16 batch 8 on two cards, NF4 batch 16 on one); peak memory | 0.598 → 0.565 (−0.034); 0.82×; 0.67× | a4000 |
 | NF4 full system with the RTX PRO run's 27B records (exploratory, lower bound) | 0.624 → 0.615 (−0.010); 60 of 136 deferred items unscored | a4000 |
 | NF4's M1 flips on deferred items (exploratory) | 0.489 of 45 | a4000 |
 | QLoRA trigger (> 0.02 S2 or > 5% flips) | met | Registered hypotheses |

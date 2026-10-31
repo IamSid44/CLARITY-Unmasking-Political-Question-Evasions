@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""E14 (module M1): the pre-registered analyses (docs/02_experiment_log.md, E14).
+"""E14 (module M1): the pre-registered analyses (docs/experiment_log.md, E14).
 
     python -m preregistered_analyses.e14_m1_analysis > ../docs/raw/E14_m1_analysis.txt
 

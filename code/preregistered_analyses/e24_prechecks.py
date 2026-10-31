@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""E24 pre-checks: CPU-only tests of the candidate modules for the research extension (docs/07), run on the
+"""E24 pre-checks: CPU-only tests of the candidate modules for the research extension (docs/experiment_log.md, E24), run on the
 existing artifacts before any GPU is spent. A module goes on to a GPU run only if its pre-check passes.
 
     python -m preregistered_analyses.e24_prechecks > ../docs/raw/E24_prechecks.txt     # CPU, ~5 min

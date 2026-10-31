@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""E19 A/B, E21a and E22a/b/e: the registered checks that need no new GPU work (docs/02_experiment_log.md §E19-E22).
+"""E19 A/B, E21a and E22a/b/e: the registered checks that need no new GPU work (docs/experiment_log.md §E19-E22).
 
     python -m preregistered_analyses.e21_e22_analysis > ../docs/raw/E21_E22_analysis.txt    # CPU, < 1 min
 

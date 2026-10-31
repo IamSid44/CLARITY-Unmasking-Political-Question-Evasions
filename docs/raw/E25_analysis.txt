@@ -1,4 +1,4 @@
-E25 analysis (registered 2026-10-30 14:30 IST; docs/02 E25). Labels: the frozen E23 instrument (code/experiments/e25/frozen_system.json).
+E25 analysis (registered 2026-10-30 14:30 IST; docs/experiment_log.md, E25). Labels: the frozen E23 instrument (code/experiments/e25/frozen_system.json).
 
 ==============================================================================================================
 A. Controls

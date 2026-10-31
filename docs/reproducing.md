@@ -1,122 +1,148 @@
 # Reproducing the results
 
-All commands run from `code/`. Train and dev data download automatically on first use.
+All commands run from `code/`. Train and dev data are in `data/cache/` (re-downloaded if missing).
 
-## Setup
+1. [Setup](#1-setup)
+2. [Re-run every analysis (CPU only)](#2-re-run-every-analysis-cpu-only)
+3. [Train the classifiers (GPU)](#3-train-the-classifiers-gpu)
+4. [The cascade (GPU)](#4-the-cascade-gpu)
+5. [After the shared task: E24–E26](#5-after-the-shared-task-e24e26)
+6. [Where the GPU work ran, and what it cost](#6-where-the-gpu-work-ran-and-what-it-cost)
+
+## 1. Setup
 
 ```bash
-pip install -r requirements.txt      # Python 3.12
+pip install -r requirements.txt      # Python 3.11+
 cd code
 ```
 
-**Optional keys.** For W&B logging, Hugging Face uploads or the API arm of M3, copy `code/.env.example`
-to `code/.env` and fill it in. Without keys, uploads are skipped and runs still complete.
+**Keys (optional).** For W&B logging, Hugging Face uploads, the M3 API arms or the cloud driver, copy
+`code/.env.example` to `code/.env` and fill it in. Without keys, uploads are skipped and runs still complete.
 
-## 1. Re-run the analyses from the published runs (CPU only)
+The 27B adjudicator (Qwen3.8-27B-FP8) and E25's LLM answers use vLLM 0.31 in a separate environment
+(`$VPY` below), so the training environment is untouched.
 
-Fetch the per-seed probabilities and metrics (no model weights):
+## 2. Re-run every analysis (CPU only)
+
+The per-seed probabilities, 27B records and labels behind the reported numbers are in `runs/`. A few early
+DeBERTa ablations (E8, E9, E12b–d) and all model weights are only on Hugging Face:
 
 ```python
-from huggingface_hub import snapshot_download
+from huggingface_hub import snapshot_download     # optional: the remaining runs, without weights
 snapshot_download("siddarthg44/clarity-semeval26", local_dir="../runs",
-                  allow_patterns=["*/seed*/*.npy", "*/seed*/*.json"])
+                  allow_patterns=["*/seed*/*.npy", "*/seed*/*.json", "*/fold*/*.npy", "*/fold*/*.json"])
 ```
 
-Then:
+Each script prints the file committed under `docs/raw/`:
 
 ```bash
-python -m preregistered_analyses.e13_analysis          # Qwen vs DeBERTa, per seed and as systems
 python -m preregistered_analyses.mideval_analysis      # main table, error analysis, human ceiling
 python -m preregistered_analyses.e11_replication       # DeBERTa replication on fresh seeds
-python -m decision_rules.decide --run-dir ../runs/E10_fullq_16ep
-python -m evaluation.verify_scorer_geometry
-python -m figures.paper_figures                        # report figures -> report/latex/figures/
+python -m preregistered_analyses.e13_analysis          # Qwen vs DeBERTa, per seed and as systems
+python -m preregistered_analyses.e14_m1_analysis       # M1
+python -m preregistered_analyses.e17_m4_analysis       # M4
+python -m preregistered_analyses.e18_final             # both operating points, frontier figure
+python -m preregistered_analyses.e19_tier0             # robustness checks (~7 min)
+python -m preregistered_analyses.e20_router
+python -m preregistered_analyses.e21_e22_analysis
+python -m preregistered_analyses.e23_systems           # final operating points (~15 min)
+python -m preregistered_analyses.e24_prechecks         # ~5 min
+python -m preregistered_analyses.e25_analysis
+python -m preregistered_analyses.e26_analysis
+python -m evaluation.verify_scorer_geometry            # docs/scorer_geometry.md
+python -m figures.paper_figures && python -m figures.e25_figures
 ```
 
-The cascade analyses (E14–E26) use the Qwen runs (`runs/Q8_*`) and the cascade outputs (`runs/M1`, `runs/M3`,
-`runs/M4`, `runs/E21`–`runs/E26`). These are tracked in this repository, so they need no download; the
-DeBERTa runs (E8–E12, L0) and all model weights are on Hugging Face only.
+Submission files: `python -m evaluation.make_final_submission` writes `submissions/E23_*/`.
 
-## 2. Train the classifiers (GPU)
+## 3. Train the classifiers (GPU)
 
-**DeBERTa-v3-large** (24 GB is enough). For example, the first run of experiment E10:
+**DeBERTa-v3-large** (24 GB is enough), e.g. the first run of E10:
 
 ```bash
 python -m models.encoder $(cat experiments/E10/common.args) \
     --name E10_fullq_16ep --seed 0 --input full --max-len 1024 --a-budget 256
 ```
 
-**Qwen3-8B-Base + LoRA** (we used one 96 GB RTX PRO 6000):
+**Qwen3-8B-Base + LoRA** (≈ 53 GB without gradient checkpointing; we used 96 GB RTX PRO 6000s):
 
 ```bash
 python -m models.llm_classifier --name Q8_fullq_lora --seed 0                    # E13, 3 epochs
-python -m models.llm_classifier --name Q8_fullq_lora_12ep --seed 0 --epochs 12   # E14, M1
+python -m models.llm_classifier --name Q8_fullq_lora_12ep --seed 0 --epochs 12   # E14, M1 (seeds 0-9)
 python -m models.llm_classifier --name Q8_12ep_crossfit --seed 0 --fold 2 \
     --select last --epochs 12                                                    # cross-fitted train rows
 ```
 
-## 3. The cascade
+Whole experiments run through the queue on a shared server: `bash launch/start.sh E14` reads
+`experiments/E14/`, runs one lane per GPU, resumes interrupted runs from their last epoch and uploads finished
+ones to Hugging Face and W&B.
+
+## 4. The cascade (GPU)
 
 ```bash
 # M1: candidate sets and uncertainty from the 10-seed ensemble (CPU)
 python -m cascade.candidates --run Q8_fullq_lora_12ep --crossfit Q8_12ep_crossfit --method aps --alpha 0.1
 
-# M3: LLM adjudicator over M1's top 4 (local vLLM, Qwen3.8-27B-FP8), then fusion and the deferral curve
+# M3: the 27B over M1's top 4, then fusion and the deferral curve
 python -m cascade.exemplars embed
 bash launch/m3_local.sh screen && bash launch/m3_local.sh full 0
 python -m cascade.fuse dev --tag qwen38_27b_k0
 
 # M2: accuracy vs cost over seed count x deferral rate
-python -m cascade.frontier jobs
-python -m cascade.frontier analyse
+python -m cascade.frontier jobs && python -m cascade.frontier analyse
 
 # M4: soft targets, then one student per seed
 python -m cascade.distill_targets --alpha 0.5
 python -m models.llm_classifier --name Q8_distill_a05 --seed 0 --epochs 12 --soft-targets ../runs/M4/targets_a0.5.npy
 
-# Final numbers and the frontier figure
-python -m preregistered_analyses.e18_final > ../docs/raw/E18_final.txt
+# E19-E23: the robustness checks and the final system use the same modules; the second 27B pass's jobs:
+python -m cascade.pass2_jobs
 ```
 
-The exact order used, with the server environments, is in
-[`05_phase2_plan_and_budget.md`](05_phase2_plan_and_budget.md) §6, and each run list is in
-`code/experiments/`.
+## 5. After the shared task: E24–E26
 
-## 4. Robustness analyses and the final push (E19–E23)
+The frozen instrument's parameters are in `experiments/e25/frozen_system.json` (`python -m audit.system freeze`).
 
 ```bash
-python -m preregistered_analyses.e19_tier0 > ../docs/raw/E19_tier0.txt   # CPU, ~7 min
-python -m evaluation.make_cascade_submission                              # test files -> submissions/E19_*
-# after the inference lanes (06 §6; their outputs are on HF under E21/, E22/, M3/qwen38_27b_k0_*):
-python -m preregistered_analyses.e21_e22_analysis > ../docs/raw/E21_E22_analysis.txt
-python -m preregistered_analyses.e20_router > ../docs/raw/E20_router.txt
-python -m cascade.pass2_jobs                       # jobs of the second 27B pass (PASS=2 lane)
-python -m preregistered_analyses.e23_systems > ../docs/raw/E23_systems.txt      # ~15 min
-python -m evaluation.make_final_submission > ../docs/raw/E23_final_submission.txt   # -> submissions/E23_*
+# E25, one GPU (we used an H100; launch/infer_lane.sh PASS=3 runs these in order)
+python -m audit.frames build                               # question swaps and answer prefixes
+$VPY -m audit.generate --model mistral_7b=mistralai/Mistral-7B-Instruct-v0.3 --model qwen3_8b=Qwen/Qwen3-8B
+python -m audit.frames llm                                 # the LLM answers as a frame
+python -m audit.infer --frames 'dev_*,test_*' && python -m audit.infer --frames llm
+python -m audit.system jobs '*'                            # deferred items -> runs/E25/jobs_27b.jsonl
+for o in taxonomy shift1 shift2 shift3; do                  # the 27B in four option orders
+  $VPY -m cascade.adjudicate --backend vllm --model Qwen/Qwen3.8-27B-FP8 --k 0 --tag e25_$o --splits "" \
+      --jobs-file ../runs/E25/jobs_27b.jsonl --order $o; done
+python -m audit.system label '*'
+python -m audit.hidden dump && python -m audit.hidden probe
+
+# E26: each precision against 16-bit on the same GPU type
+python -m audit.quant --precision bf16 --site rtxpro && python -m audit.quant --precision fp8 --site rtxpro
+python -m audit.quant_system jobs --site rtxpro            # then the 27B; then:
+python -m audit.quant_system label --site rtxpro
+E26_MAX_MEM_GIB=12 python -m audit.quant --precision bf16 --site a4000 --device-map auto --batch 8  # split over two 16 GB GPUs
+python -m audit.quant --precision nf4 --site a4000 --batch 16                # one 16 GB GPU (launch/e26_lab_*.sh)
+python -m audit.quant_system label --site a4000 --records-from rtxpro
 ```
 
-The GPU arms of E19–E22 run on rented RTX PRO 6000 VMs. The commands, the machine choice and the costs
-are in [`06_final_push_handover.md`](06_final_push_handover.md) §5–6.
+The outputs in `runs/E25/` and `runs/E26/` are what the analyses in §2 read; the E25 hidden states
+(`runs/E25/hidden/*.npy`) are on Hugging Face under `E25/hidden/`.
 
-## 5. After the shared task (E24–E26)
+## 6. Where the GPU work ran, and what it cost
 
-All CPU, from the tracked outputs in `runs/E25` and `runs/E26` (`runs/E25/hidden/*.npy`, needed only for the
-probes, is on Hugging Face under `E25/hidden/`):
+| Work | Hardware | Cost |
+|---|---|---|
+| E0–E12 (DeBERTa, ~120 runs), E14 (M1), E15–E17 (local 27B, students) | lab server, shared RTX PRO 6000 | free |
+| E13 (Qwen pilots and 3-epoch seeds) | JarvisLabs, RTX PRO 6000 VMs | ₹1,851 |
+| E15 API arms (DeepSeek, Gemma) | JarvisLabs Model API | ₹23 ($0.26) |
+| E19–E23 (controls, inference lanes, second 27B pass) | JarvisLabs, RTX PRO 6000 VMs | ₹2,962 |
+| E25 | JarvisLabs, H100 | ₹555 |
+| E26 FP8 / NF4 | JarvisLabs RTX PRO 6000 / lab RTX A4000s | ₹90 / free |
 
-```bash
-python -m preregistered_analyses.e24_prechecks > ../docs/raw/E24_prechecks.txt      # ~5 min
-python -m preregistered_analyses.e25_analysis > ../docs/raw/E25_analysis.txt        # a few minutes
-python -m figures.e25_figures                                                     # -> docs/figures/E25_*
-python -m audit.quant_system label --site a4000 --records-from rtxpro              # NF4 labels (exploratory)
-python -m preregistered_analyses.e26_analysis > ../docs/raw/E26_analysis.txt
-```
-
-The GPU parts and where they ran:
-- **E25:** `audit.frames`, `audit.generate` (vLLM), `audit.infer`, `audit.hidden`, `audit.system jobs/label`
-  and the 27B, on one rented H100 (`jarvis_drive.sh lane` with `PASS=3`).
-- **E26 FP8:** `audit.quant --precision bf16|fp8 --site rtxpro`, then the 27B on the deferred items, on one rented
-  RTX PRO 6000 (`PASS=4`).
-- **E26 NF4:** `audit.quant --precision bf16|nf4 --site a4000`, on two lab RTX A4000s
-  (`launch/e26_lab_run.sh`, then `launch/e26_lab_resume.sh`).
-
-The frozen instrument's parameters are in `code/experiments/e25/frozen_system.json` (`python -m audit.system freeze`).
+**Cloud lanes.** `launch/jarvis_drive.sh` drives a rented instance from a laptop (Git Bash works; set `JL_PY` to
+a Python with the `jarvislabs` SDK): `create`, `push` (code bundle and `code/.env`), then `start` (training
+pipeline) or `lane` (inference, `launch/infer_lane.sh` with `PASS=1…4`). Every lane looks after itself
+(`utils/vm_guard.py`): it copies its logs to Hugging Face every 10 minutes, stops on a watchdog
+(`IDLE_MIN`, `MAX_HOURS`), uploads and verifies its outputs, then **destroys** the instance on success or
+**pauses** it on failure. `launch/e25_collect.sh` and `e26_collect.sh` wait on the laptop, copy the outputs
+back and run the analysis.

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""E13 family: the pre-registered analyses (docs/02_experiment_log.md, E13 and E13x/b/c)."""
+"""E13 family: the pre-registered analyses (docs/experiment_log.md, E13 and E13x/b/c)."""
 
 from __future__ import annotations
 

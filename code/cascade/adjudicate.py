@@ -2,7 +2,7 @@
 """M3: score M1's top-4 candidates with an LLM, one request and one output token per item (E15).
 
     # local model, vLLM venv (GPU):
-    /scratch/shlok/Temp/.venv-vllm/bin/python -m cascade.adjudicate --backend vllm \
+    $VPY -m cascade.adjudicate --backend vllm \
         --model Qwen/Qwen3.8-27B-FP8 --tag qwen38_27b_k10 --k 10 --splits screen
     # JarvisLabs Model API (key JARVIS_API_KEY in code/.env); always dry-run first:
     python -m cascade.adjudicate --backend api --model <id> --tag deepseek_k10 --k 10 --splits screen --dry-run

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""E26 analysis (registered 2026-10-30, docs/02 E26): does the instrument survive reduced precision, and what does
+"""E26 analysis (registered 2026-10-30, docs/experiment_log.md, E26): does the instrument survive reduced precision, and what does
 it save? Every quantized run is compared with a 16-bit run of the same models on the SAME GPU type.
 
     python -m preregistered_analyses.e26_analysis > ../docs/raw/E26_analysis.txt     # CPU
@@ -115,7 +115,7 @@ def site_report(site: str) -> dict:
         lb_, lq2 = rep["bf16"]["seed0"].get("latency_batch1", {}), rep[prec]["seed0"].get("latency_batch1", {})
         mb = np.mean([rep["bf16"][f"seed{k}"]["peak_mem_gb"] for k in range(10)])
         mq = np.mean([rep[prec][f"seed{k}"]["peak_mem_gb"] for k in range(10)])
-        print(f"   throughput (batch {rep[prec]['batch']}): bf16 {tb:.1f} items/s, {prec} {tq:.1f} items/s -> {tq / tb:.2f}x; "
+        print(f"   throughput (batch: bf16 {rep['bf16']['batch']}, {prec} {rep[prec]['batch']}): bf16 {tb:.1f} items/s, {prec} {tq:.1f} items/s -> {tq / tb:.2f}x; "
               f"batch-1 latency p50 bf16 {lb_.get('p50_ms', float('nan')):.1f} ms, {prec} {lq2.get('p50_ms', float('nan')):.1f} ms "
               f"(p95 {lb_.get('p95_ms', float('nan')):.1f} / {lq2.get('p95_ms', float('nan')):.1f}); peak memory "
               f"{mb:.1f} GB vs {mq:.1f} GB ({mq / mb:.2f}x)")
@@ -151,7 +151,7 @@ def verdicts(R: dict) -> None:
 
 
 def main() -> None:
-    print("E26 analysis (registered 2026-10-30; docs/02 E26): reduced precision of the frozen M1, each against a 16-bit "
+    print("E26 analysis (registered 2026-10-30; docs/experiment_log.md, E26): reduced precision of the frozen M1, each against a 16-bit "
           "run on the same GPU type.")
     R = {}
     for site in ("rtxpro", "a4000"):

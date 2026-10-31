@@ -1,4 +1,4 @@
-E26 analysis (registered 2026-10-30; docs/02 E26): reduced precision of the frozen M1, each against a 16-bit run on the same GPU type.
+E26 analysis (registered 2026-10-30; docs/experiment_log.md, E26): reduced precision of the frozen M1, each against a 16-bit run on the same GPU type.
 
 ==============================================================================================================
 Site rtxpro
@@ -14,7 +14,7 @@ Site rtxpro
    full system dev S2 (frozen params, in-sample): bf16 0.653, fp8 0.649 (-0.003); S1 0.796 vs 0.784
    M1 decisions alone (frozen tau_M1): bf16 0.617, fp8 0.572 (-0.045)
    H26-4 cascade absorbs: M1 decisions flipped 17 (0.055); share of them among items deferred to the 27B 0.706 (dev deferral 0.364); system decisions flipped 16 (0.052)
-   throughput (batch 32): bf16 43.1 items/s, fp8 35.9 items/s -> 0.83x; batch-1 latency p50 bf16 33.6 ms, fp8 30.2 ms (p95 62.7 / 49.6); peak memory 21.9 GB vs 20.9 GB (0.96x)
+   throughput (batch: bf16 32, fp8 32): bf16 43.1 items/s, fp8 35.9 items/s -> 0.83x; batch-1 latency p50 bf16 33.6 ms, fp8 30.2 ms (p95 62.7 / 49.6); peak memory 21.9 GB vs 20.9 GB (0.96x)
    accuracy point cost at this speed ratio: M1 0.522 -> 0.627 GPU-s/item; system 0.576 -> 0.681 (+18%)
 
 ==============================================================================================================
@@ -31,7 +31,7 @@ Site a4000
    full system dev S2 (frozen params, in-sample): bf16 0.624, nf4 0.615 (-0.010); S1 0.790 vs 0.735  [27B records incomplete: nf4 60 of 136 deferred items unscored, bf16 3 of 112; M1 decision kept there]
    M1 decisions alone (frozen tau_M1): bf16 0.601, nf4 0.572 (-0.029)
    exploratory (not registered) cascade absorbs: M1 decisions flipped 45 (0.146); share of them among items deferred to the 27B 0.489 (dev deferral 0.364); system decisions flipped 57 (0.185)
-   throughput (batch 16): bf16 7.7 items/s, nf4 6.3 items/s -> 0.82x; batch-1 latency p50 bf16 169.0 ms, nf4 259.2 ms (p95 343.9 / 475.0); peak memory 16.8 GB vs 11.3 GB (0.67x)
+   throughput (batch: bf16 8, nf4 16): bf16 7.7 items/s, nf4 6.3 items/s -> 0.82x; batch-1 latency p50 bf16 169.0 ms, nf4 259.2 ms (p95 343.9 / 475.0); peak memory 16.8 GB vs 11.3 GB (0.67x)
    accuracy point cost at this speed ratio: M1 0.522 -> 0.636 GPU-s/item; system 0.576 -> 0.690 (+20%)
 
 ==============================================================================================================

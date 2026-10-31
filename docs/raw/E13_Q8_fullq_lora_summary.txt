@@ -1,5 +1,5 @@
 E13 (Q8_fullq_lora): Qwen3-8B-Base + LoRA, seeds 0-2, JarvisLabs VM, 1x RTX PRO 6000 Blackwell 96 GB.
-Copied from the run's outputs on 2026-10-02 (clarity/logs/jarvis/, clarity/runs/Q8_fullq_lora/; both gitignored).
+Copied from the run's outputs on 2026-10-02 (now in logs/jarvis/E13/ and runs/Q8_fullq_lora/).
 
 == summary.txt (written on the instance by jarvis_setup.sh summary)
 Q8_fullq_lora: single models on dev (multi-reference S2, S1), epoch chosen on the train slice
