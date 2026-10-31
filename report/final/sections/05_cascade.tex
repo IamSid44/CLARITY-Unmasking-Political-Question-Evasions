@@ -1,0 +1,35 @@
+\section{Stage 2: Can a Larger Model Choose Among the Candidates?}
+\label{sec:cascade}
+\FigureFrontier
+
+\step{M1, the candidate generator (E14).}
+On ten seeds the 12-epoch classifier scores \pmsd{0.525}{0.042} per model (+0.049 over 3 epochs, 8/10 up) and 0.598 \Stwo{} / 0.743 \Sone{} as a system (M1, Figure~\ref{fig:system}).
+Three registered checks shaped the next module.
+An oracle re-deciding the 30\% least confident items within the top three would reach 0.727, but a \emph{random} choice there lowers \Stwo{} to 0.587: M1's first choice carries information, so an adjudicator must be \emph{fused} with M1, not substituted for it.
+Candidate sets defined by probability mass did not transfer from the slice to cross-fitted rows (coverage 0.98 vs 0.76) while rank-based sets did, so $C(x)$ is the top four.
+And five seeds did not score within 0.01 of ten as predicted (0.555 vs 0.598), so M1 kept ten seeds and became the dominant cost.
+
+\step{M3, the adjudicator (E15).}
+Qwen3.8-27B-FP8, run locally without thinking, reads the label definitions, a guide to the most-confused pairs and the item, and answers with one letter among the four candidates, and $q(c \mid x)$ is the softmax over the letters' log-probabilities.
+On deferred items the label is $\arg\max_{c \in C(x)} \lambda \log \bar p + (1-\lambda) \log q - \tau \log \pi_c$, with $(\lambda, \tau)$ fitted by nested CV. Other items keep M1's answer.
+A screen on 300 cross-fitted training rows refuted two registered design assumptions: retrieved examples \emph{hurt} (fused accuracy 0.353 with none, 0.330 with ten), and a 304B mixture-of-experts model was worse than the local 27B (0.317).
+
+\step{Result, and a correction.}
+The first dev analysis showed no gain. Explaining it, we found a bug that shared one $\tau$ between deferred and kept items and so switched off M1's logit adjustment on the 64\% of items meant to keep M1's answer.
+Corrected, deferring 30\% of items gives 0.669 \Stwo{} (0.660 over ten splits) and 0.798 \Sone{}, +0.067 \ci{+0.009}{+0.124} over M1 with the fitted parameters held fixed (Figure~\ref{fig:frontier}), with 33 items moving into the reference set and 9 out (McNemar $p = 0.0003$).
+Deferring \emph{every} item is worse (0.609 over ten splits): where M1 is confident, the LLM is the weaker reader.
+
+\step{Where the cost goes (E16).}
+Timed on one GPU, an M1 seed costs 0.040 GPU-s per item and a 27B call 0.101, so the ten seeds are 92\% of the cascade's inference time and the 27B only 8\%.
+Removing prompt parts lowered dev \Stwo{} in the expected order, each step within noise (full 0.660, no confusion guide 0.637, no definitions 0.628, neither 0.617), so the full prompt stayed.
+With $K \le 5$ seeds M3 adds only +0.021 to +0.031 at $\delta = 0.3$, against +0.071 at $K = 10$.
+
+\step{M4, distillation for cost (E17--E18).}
+M3 relabelled every training row over its cross-fitted top four, and one student learned from $\tfrac12$gold $+ \tfrac12 q$, a weight fixed in advance \citep{hinton2015distilling}.
+The student beats M1 per model (0.573 vs 0.525, 9/10 seeds up) and is far better calibrated (mean top probability 0.58 vs 0.84), yet it ranks its errors no better (AUROC 0.686 for both), against our prediction.
+With M3 it missed the registered target at $\delta = 0.3$ (0.591 vs 0.614). At $\delta = 0.5$ it reaches 0.608 \Stwo{} / 0.790 \Sone{} at 0.098 GPU-s per item, above the ten-seed M1 alone at a quarter of its time, and it beats 25 of the 30 undistilled (seeds, $\delta$) points with less GPU time.
+Ensembles of students add almost nothing (+0.005 from one to ten, vs +0.065 for M1 seeds): students trained towards the same targets lose the diversity seed ensembles feed on.
+We froze an \emph{accuracy} point (M1 $\times$ 10 + M3, $\delta = 0.3$) and a \emph{distilled} point (one student + M3, $\delta = 0.5$).
+
+\step{What it raised.}
+The accuracy point rested on one ensemble whose M3 gain was twice that of any smaller one, on parameters fitted on 308 items, and, for the distilled point, on a $\delta$ chosen after the registered one failed.

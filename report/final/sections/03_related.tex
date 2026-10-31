@@ -1,0 +1,17 @@
+\section{Related Work}
+\label{sec:related}
+
+\paragraph{The task and its systems.}
+\citet{thomas-etal-2024-never} introduced the clarity and evasion taxonomy and found that predicting the nine-way type and mapping it up beats predicting clarity directly.
+In the shared task \citep{thomas-etal-2026-semeval}, fine-tuned encoders levelled off near 0.50 on test \Stwo{} and the strongest systems prompted LLMs.
+TeleAI \citep{shi-etal-2026-teleai} won with three confidence-routed chain-of-thought stages on DeepSeek-V3 (1.94 calls per item, dev 0.617 \Stwo{} and 0.812 \Sone{}), and also reported a fine-tuned Qwen2.5-7B at 0.495.
+ChulaNLP \citep{peerachaidecho-rutherford-2026-chulanlp} passed a DeBERTa model's top five labels to a prompted LLM (dev 0.52).
+The parts of our cascade are not new. We add a controlled account of which parts matter, and its use as an instrument.
+
+\paragraph{Cascades and LLM choosers.}
+Sending only some inputs to a larger model, as FrugalGPT \citep{chen2023frugalgpt} does for LLM APIs, is the idea behind our router.
+LLMs choosing among lettered options are sensitive to option order \citep{zheng2024large}, which we measure and correct, and we distil the adjudicator into the classifier with soft targets \citep{hinton2015distilling}.
+
+\paragraph{Evasion as a property of the exchange.}
+Conversation analysis defines evasion relative to the question: an answer evades by failing to meet the agenda the question sets \citep{clayman-2001-answers}.
+\citet{alvarez-morrier-2025-measuring} score answer quality by how identifiable an answer is among others given its question. We test whether such relevance captures the taxonomy's labels, and we use LLMs as speakers with no political stake under the same instrument.

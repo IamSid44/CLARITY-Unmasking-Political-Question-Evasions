@@ -1,0 +1,80 @@
+% Appendix (at most two pages): the experiment ledger, implementation details and the frozen instrument.
+% Sources: docs/experiment_log.md (E0-E26), docs/raw/*, code/experiments/e25/frozen_system.json.
+\section{Experiment Ledger}
+\label{sec:ledger}
+
+Table~\ref{tab:ledger} lists every experiment in the order it ran. The hypotheses, decision rules and amendments are in the repository's pre-registered log.
+
+\begin{table*}[t]
+\centering
+\scriptsize
+\setlength{\tabcolsep}{4pt}
+\begin{tabular}{@{}lllll@{}}
+\toprule
+Exp. & Question & Key result (dev \Stwo{}) & Verdict & Led to \\
+\midrule
+E0--E3 & Where does DeBERTa fail? & gold in top 3: 90\% & -- & decision rules \\
+E4 & Decision rule? & LA 0.365 $\rightarrow$ 0.438 & held & LA in every system \\
+E5, E6 & Taxonomy routing, definition re-ranker? & 0.369, 0.354 vs 0.365 & failed & knowledge, not structure \\
+E8, E9 & Rebalanced loss, hierarchical head? & 0.379, 0.370 vs 0.438 & failed & train longer \\
+E10, E11 & 16 epochs, full question? & +0.047, +0.022 per model & held & ten paired seeds \\
+E12 & Gate, specialists, pair experts, soups? & $-$0.059 \dots{} $-$0.117 & failed & change the backbone \\
+E13 & Is the gap knowledge? & +0.092 per model, 10/10 & held & LLM classifier \\
+E14 & M1 at 10 seeds, can $K$ shrink? & 0.598, $K{=}5$: 0.555 & held / failed & M3, fused \\
+E15 & Does a 27B chooser help? & 0.669 (after bug fix) & held & accuracy point \\
+E16 & Prompt parts, cost, smaller ensembles? & seeds 92\% of time, gain +0.02--0.03 & -- & distil, distrust headline \\
+E17, E18 & One distilled student? & 0.608 with M3 at 0.25$\times$ M1's time & mixed & distilled point \\
+E19 & Controls on the cascade? & train rows +0.014 \ci{+0.002}{+0.026} & held & routing and fusion carry it \\
+E20 & Learned router? & loses 4/4 budgets & failed & confidence routing \\
+E21 & Test transcripts differ? & 15.6\% labels change & held & normalised test \\
+E22 & Cache, ladder, relevance? & cache 0.49$\times$ but 9.4\% flips, 0.600 $<$ 0.625, $\rho = +0.095$ & failed / held & E24 \\
+E23 & Final re-scoring, one setup & 0.650 / 0.608 & -- & frozen instrument \\
+E24 & What is the label a property of? & siblings 72\% vs 43\% & -- & evasion is relational \\
+E25a & Question read causally? & CR 0.253 $\rightarrow$ 0.013 & held & audit is valid \\
+E25b & Question or speaker? & OR 1.18 (N), 2.74 (P) & failed / expl. & question $\times$ role \\
+E25c, d & Early or frozen shortcut? & 66\% at half, probe 0.397 & failed & no shortcut \\
+E26 & Cheaper by lower precision? & FP8 0.83$\times$, M1 $-$0.020, instrument $-$0.003 & failed / held & fused kernels, QLoRA \\
+\midrule
+\multicolumn{5}{@{}l}{\emph{Pre-checks rejected in E24 on existing outputs}} \\
+P3 & Route on seed disagreement? & 49 vs 53 of 115 errors caught & failed & -- \\
+P4 & Decode siblings jointly? & $\pm$0.01, sign flips & failed & -- \\
+P5 & Untuned metric-optimal rule? & 0.594 vs 0.598 & failed & -- \\
+P6 & One debiased option order? & agreement 0.85 $\rightarrow$ 0.79 & failed & -- \\
+P7 & Conformal sets as router? & 0.564--0.617 vs 0.641--0.663 & failed & -- \\
+\bottomrule
+\end{tabular}
+\caption{Every experiment, in order. E0--E13 precede the mid-evaluation and E14--E26 follow it. LA is logit adjustment, CR the Clear-Reply share, OR the odds ratio and expl.\ exploratory.}
+\label{tab:ledger}
+\end{table*}
+
+\section{Implementation and the Frozen Instrument}
+\label{sec:impl}
+
+\paragraph{M1 and the students.}
+Qwen3-8B-Base in bf16 with LoRA ($r = 16$, $\alpha = 32$, dropout 0.05) on all attention and feed-forward projections and a new nine-way head on the last non-padding token. Training uses AdamW at $10^{-4}$, a cosine schedule with 5\% warm-up, effective batch 16 and 12 epochs, keeping the epoch with the best slice macro-F1. The input is ``Sub-question / Full question'' ($\le$256 tokens) and the answer, $\le$1,024 tokens in all, with a fixed closing question.
+Students use the same recipe with the soft-target cross-entropy.
+Cross-fitted candidates for distillation come from five models trained on four fifths of train each.
+
+\paragraph{M3.}
+Qwen3.8-27B-FP8 served with vLLM, thinking disabled, greedy decoding, one output token, top-20 log-probabilities.
+The prompt holds the task, definitions of all nine labels, a confusion guide for the most-confused pairs (Explicit--Implicit, Implicit--General, Explicit--General, Deflection vs Implicit/General, Dodging--Deflection), the item in full and the four lettered candidates.
+$q$ is averaged over four cyclic option orders.
+
+\paragraph{The frozen instrument.}
+All settings are in \texttt{code/experiments/e25/frozen\_system.json}: M1's ten seeds, slice calibration $\tau_C = 0.20$ and temperature $T = 2.15$, top-4 candidates, and deferral iff $u \ge 0.638$ (the slice's 70\% quantile). Kept items use $\tau_1 = 1.15$ and deferred items $\lambda = 0.5$, $\tau = -0.55$, fitted once on dev with the averaged records. The same procedure under nested CV gives 0.650 / 0.639.
+Run on dev with the E23 records, it reproduces the frozen predictions exactly.
+
+\paragraph{E25b prompts.}
+All conditions are one user message asking for spoken prose, no lists, at most 250 words, with greedy decoding and at most 400 new tokens.
+N casts the model as a neutral analyst who is not the President, and P as the President in that interview, on its date. F appends to P's conversation ``With respect, you haven't answered the question.'' and the sub-question. B adds the President's real answer to P as private notes.
+N, P and B are generated once per interview turn and shared by its sub-questions, as the President's one answer is.
+
+\paragraph{Cost measurement.}
+GPU-s per item is the wall time of one batched pass over the 308 dev items divided by 308, with the GPU used by that job alone.
+To keep every comparison like for like, all reported times come from one session on one GPU (an RTX PRO 6000): an M1 seed (bf16, batch 16) takes 0.040\,GPU-s per item and a 27B call 0.098--0.101 per order.
+A system's time is $K$ seeds plus its realised 27B calls. Ratios computed from an earlier measurement on another card of the same model differ by at most 0.02$\times$ (\texttt{docs/raw/cost\_same\_gpu.txt}).
+
+\paragraph{Code.}
+Code, the pre-registered log and the raw output behind every number: \url{https://github.com/IamSid44/CLARITY-Unmasking-Political-Question-Evasions}.
+
+\FigureSwap

@@ -1,0 +1,19 @@
+\section{Stage 5: Can the Instrument Be Made Cheaper?}
+\label{sec:precision}
+\FigurePrecision
+
+\step{Design and predictions.}
+The ten seeds are three quarters of the instrument's GPU time.
+Distilling them into one student (\S\ref{sec:cascade}) builds a different model with different labels, whereas reduced precision changes only the arithmetic, so we ran the frozen M1 at reduced precision and compared each format with 16-bit on the same GPU type.
+FP8 (8-bit weights and activations) was compared through the full instrument, NF4 (4-bit weights, as in QLoRA, \citealp{dettmers2023qlora}) at the level of M1.
+We predicted that FP8 would change no more than changing GPU does (H26-1: $\ge$98\% label agreement, \Stwo{} within 0.01) and be at least 1.3$\times$ faster at the same batch size (H26-2).
+The non-obvious prediction, H26-4, was that FP8's flips would fall where the 27B re-decides, so the instrument would lose less than M1.
+
+\step{Result.}
+Both FP8 predictions about M1 failed: FP8 changes 3.9\% of ensemble labels and lowers M1's \Stwo{} by 0.045 with the parameters frozen, and as implemented it lowers batched throughput to 0.83$\times$, because activations are quantized in unfused operations around each FP8 matrix product.
+H26-4 held on its two registered counts (Figure~\ref{fig:precision}): 71\% of FP8's 17 flips land on items the 27B re-decides, twice the chance rate, and the system flips 16 decisions, one fewer than M1.
+That count is a technicality, since only 5 of the 16 are M1's own, and what differs is the direction.
+All 10 of M1's membership-changing flips lose reference-set membership, whereas the system's go both ways (5 lose, 7 gain), so with the same frozen parameters it loses 0.003 against M1's 0.045.
+The cascade does not undo the flips but turns a one-sided loss into noise.
+NF4 changes more (86.7\% ensemble agreement) and meets our registered QLoRA trigger. Its cascade comparison is incomplete (27B records are missing for 60 of 136 deferred items), so we draw no conclusion from it, and its speed was not comparable because the 16-bit reference ran split over two cards.
+Precision is not a cost lever with these kernels.

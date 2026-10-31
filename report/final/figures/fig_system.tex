@@ -1,0 +1,70 @@
+% Figure 2: the whole system in one picture (TikZ, monochrome, within the 160 mm text width). Input by \FigureSystem.
+% Three columns: (left) what is trained or fitted, and on which data; (middle) the cascade, which after E23 is the
+% frozen instrument; (right) how the instrument is used in E25/E26. Each side box sits level with the stage it
+% feeds, so every arrow is straight. Widths: side 38 mm, middle 54 mm, gaps 7 mm (frames span ~153 mm).
+\begin{tikzpicture}[
+  font=\scriptsize,
+  box/.style={draw, rounded corners=1.5pt, align=center, inner xsep=2pt, inner ysep=2pt},
+  side/.style={box, align=left, text width=38mm},
+  arr/.style={-{Stealth[length=3.2pt]}, thin},
+  head/.style={font=\footnotesize\bfseries, anchor=south, inner sep=2pt, text height=1.7ex, text depth=0.4ex},
+  frame/.style={draw, densely dotted, rounded corners=3pt, inner sep=2mm},
+]
+% ---------------- middle column: the cascade ----------------
+\node[box, fill=black!6, text width=54mm, anchor=north] (in) at (80mm,0) {%
+  \textbf{Input} $x$:\enspace sub-question $q$,\enspace full question $Q$,\enspace answer $a$};
+\node[box, text width=54mm, anchor=north] (m1) at ($(in.south)+(0,-9mm)$) {%
+  \textbf{M1}\enspace Qwen3-8B + LoRA, 10 seeds $\rightarrow$ mean $\bar p(c \mid x)$\\
+  candidates $C(x)$ = top 4;\enspace uncertainty $u(x)$};
+\node[box, text width=54mm, anchor=north] (m2) at ($(m1.south)+(0,-5mm)$) {%
+  \textbf{M2}\enspace defer iff $u(x) \ge \theta$\enspace(the 30\% least confident)};
+\node[box, text width=19mm, anchor=north west] (keep) at ($(m2.south west)+(0,-6mm)$) {%
+  \textbf{Keep M1}\\ $\arg\max_c \bar p / \pi_c^{\tau_1}$};
+\node[box, text width=31mm, anchor=north east] (m3) at ($(m2.south east)+(0,-6mm)$) {%
+  \textbf{M3}\enspace Qwen3.8-27B\\ picks one letter in $C(x)$;\\
+  $q$ over 4 option orders,\\ fused with $\bar p$};
+\node[box, fill=black!6, text width=54mm, anchor=north] (out) at ($(m2.south)+(0,-23mm)$) {%
+  \textbf{Subtask 2} evasion type (9) $\rightarrow$ \textbf{Subtask 1} level (3)};
+\draw[arr] (in) -- (m1);
+\draw[arr] (m1) -- (m2);
+\draw[arr] (m2.south -| keep.north) -- node[right, inner sep=1pt] {no} (keep.north);
+\draw[arr] (m2.south -| m3.north) -- node[right, inner sep=1pt] {yes} (m3.north);
+\draw[arr] (keep.south) -- (keep.south |- out.north);
+\draw[arr] (m3.south) -- (m3.south |- out.north);
+
+% ---------------- left column: training and fitting ----------------
+\node[side, anchor=east] (a1) at ($(m1.west)+(-7mm,0)$) {%
+  \textbf{Train} 10 LoRA seeds on 3,103 train rows, 12 epochs; epoch chosen on the train slice};
+\node[side, anchor=east] (a2) at ($(m2.west)+(-7mm,-1.5mm)$) {%
+  \textbf{Calibrate} on the train slice (345 rows): temperature, top-4 rule, threshold $\theta$};
+\node[side, anchor=east] (a5) at ($(keep.west)+(-7mm,0)$) {%
+  \textbf{Fit on dev by nested CV:} $\tau_1$ for kept items; $\lambda, \tau$ of the fusion};
+\node[side, anchor=north east, dashed] (a4) at ($(a5.south east)+(0,-2.5mm)$) {%
+  \textbf{M4}\enspace M3 labels every train row's cross-fitted top 4; one student on $\tfrac12$gold${}+\tfrac12 q$ replaces M1's seeds};
+\draw[arr] (a1.east) -- (m1.west);
+\draw[arr] (a2.east) -- (a2.east -| m2.west);
+\draw[arr] (a5.east) -- (keep.west);
+
+% ---------------- right column: using the frozen instrument ----------------
+\node[side, anchor=north west] (c1) at ($(in.north east)+(7mm,0)$) {%
+  \textbf{E25} new inputs, same instrument:\\
+  (a) each answer with its own, an unrelated or no question;
+  (b) LLM answers to the Presidents' questions in four roles;
+  (c) the first 25/50/75\% of each answer};
+\node[side, anchor=west, dashed] (c4) at ($(m2.east)+(7mm,1.5mm)$) {%
+  \textbf{E26} M1 run in FP8 or NF4 instead of 16-bit};
+\node[side, anchor=west] (c5) at ($(out.east)+(7mm,0)$) {%
+  \textbf{Measure} Clear-Reply share, label persistence, odds ratios, agreement};
+\draw[arr] (c1.west |- in.east) -- (in.east);
+\draw[arr, densely dashed] (c4.west) -- ++(-3.5mm,0) |- (m1.east);
+\draw[arr] (out.east) -- (c5.west);
+% ---------------- frames: one shared top (the input) and bottom (the lowest box) ----------------
+\coordinate (top) at (in.north);
+\coordinate (bot) at (c5.south);
+\node[frame, fit=(a1)(a4)(a1.west |- top)(a1.west |- bot)] (train) {};
+\node[frame, fit=(in)(out)(in.west |- bot)] (cascade) {};
+\node[frame, fit=(c1)(c5)(c1.east |- top)(c1.east |- bot)] (use) {};
+\node[head] at (train.north) {Training and fitting};
+\node[head] at (cascade.north) {The cascade = the instrument};
+\node[head] at (use.north) {Using the frozen instrument};
+\end{tikzpicture}

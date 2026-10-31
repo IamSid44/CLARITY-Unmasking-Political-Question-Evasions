@@ -1,0 +1,86 @@
+\section{Stage 4: What Does the Instrument Measure?}
+\label{sec:measure}
+
+\subsection{Labels across the sub-questions of one answer (E24)}
+\label{sec:relation}
+\FigureRelation
+
+\step{Question.}
+If evasion were a property of an answer's style, one answer would get one label whatever it was asked. Answers shared by several sub-questions test this (CPU only, existing outputs).
+
+\step{Result.}
+Of the 3,079 training pairs of siblings (two sub-questions, one answer), 61.5\% carry different evasion types and 40.6\% different clarity levels.
+This is not annotator noise: on dev, moving to a sibling's sub-question changes the label almost as often as moving to an unrelated exchange, and far more often than two annotators disagree on the same item (Figure~\ref{fig:relation}a).
+The label belongs to the pair, not to the answer.
+M1 already behaves accordingly, repeating its label on only 19\% of the 58 dev sibling pairs with disjoint annotator sets.
+
+\step{Relevance is not answerhood.}
+Political scientists score answer quality by how specific an answer is to its question \citep{alvarez-morrier-2025-measuring}. We computed this with the frozen Qwen3-8B as the gain in the answer's log-likelihood under its own sub-question over three random ones.
+It is ordered across the nine labels (Kruskal--Wallis $p = 2 \times 10^{-12}$) but barely discriminative (AUROC 0.566 for Clear Reply against the rest): Partial, Implicit, Deflection and General answers fit their own question as well as Explicit ones do (Figure~\ref{fig:relation}b).
+An answer can be \emph{about} the question without \emph{answering} it, which is the distinction the taxonomy draws.
+Five further module ideas (epistemic-uncertainty routing, joint decoding of siblings, a parameter-free metric-optimal decision rule, single-order debiasing, conformal candidate sets) were tested on existing outputs and rejected before any new run (Appendix~\ref{sec:ledger}).
+
+\subsection{Does the instrument read the question causally? (E25a)}
+
+\step{Registered prediction (H25a-1).}
+An answer paired with a question from another interview has, by the taxonomy's definition, not replied to it.
+If the instrument models the relation, the Clear-Reply share should fall by at least half and at most 50\% of items should keep their label. If it labels answer style, labels should persist.
+This is not obvious: training never showed a mismatched pair.
+
+\step{Result.}
+Held (Figure~\ref{fig:swap} in the appendix, left).
+With an unrelated question the Clear-Reply share falls from 0.253 to 0.013, only 18.8\% of items keep their label, and 62 of the 78 Clear Replies become Dodging. The label-free replication on test runs in the same direction (0.338 to 0.110).
+Without any question the share \emph{rises} to 0.640: with nothing asked, nothing can be evaded.
+The instrument models the relation, the precondition for using it on new speakers.
+
+\subsection{Does the question or the speaker drive evasion? (E25b)}
+
+\step{Design.}
+If evasion is relational, it could be driven by the question (some questions are hard to answer for anyone) or by the speaker (Presidents evade strategically).
+We put the 308 dev sub-questions (191 interview turns) to two open instruction-tuned LLMs, Mistral-7B-Instruct-v0.3 \citep{jiang2023mistral} and Qwen3-8B with thinking off \citep{qwen3}, in four conditions that each differ from P in one factor. \textbf{N} is a neutral analyst with no stake, \textbf{P} the President in that interview on its date, \textbf{F} P followed by ``With respect, you haven't answered the question'', and \textbf{B} P with the President's real answer as private notes.
+The frozen instrument labelled all 2,464 answers against their sub-questions. Statistics use a cluster bootstrap over turns and Mantel--Haenszel odds ratios pooled over models.
+
+\FigureAudit
+
+\begin{table}[t]
+\centering
+\small
+\setlength{\tabcolsep}{3pt}
+\begin{tabular}{@{}llll@{}}
+\toprule
+ & Registered prediction & Result & Verdict \\
+\midrule
+a-1 & unrelated question: CR $\le \tfrac12$ & 0.253 $\rightarrow$ 0.013 & held \\
+b-1 & no stake: OR $\ge 1.5$ & 1.18 & failed \\
+b-2 & stake: P $-$ N $\ge +0.10$ & $-$0.031 & failed \\
+b-3 & pursuit: $\ge$50\% replies & 66\% & held \\
+b-4 & notes: indirect $-$ non $\ge +0.15$ & +0.113 & failed \\
+c & half answer: $\ge$70\% agree & 66\% & failed \\
+d-1 & frozen probe: \Stwo{} $\ge 0.45$ & 0.397 & failed \\
+d-2 & probe: siblings same $\ge$30\% & 45\% & held \\
+\bottomrule
+\end{tabular}
+\caption{E25's registered hypotheses (dev, frozen instrument). CR is the Clear-Reply share and OR the odds ratio, shown beside each pair in Figure~\ref{fig:audit}b.}
+\label{tab:e25}
+\end{table}
+
+\step{Results.}
+Both registered hypotheses about the question and the stake failed (Table~\ref{tab:e25}, Figure~\ref{fig:audit}): a neutral analyst does not evade more on the questions the Presidents evaded (OR 1.18), and playing the President does not raise the evasion \emph{rate} ($-$0.031).
+In the President's role, though, the same models evade on the questions the Presidents evaded (OR 2.74 \ci{1.87}{4.17}, with 3.0 for Mistral and 2.5 for Qwen). We did not register this comparison, so it is exploratory.
+In plain rates (Figure~\ref{fig:audit}b), the neutral analyst evades on 56\% of the questions the Presidents evaded and on 52\% of those they answered. In the President's role the models evade on 58\% and 34\%.
+The move therefore comes from the questions the Presidents answered directly, which the models now also answer directly, not from the questions the Presidents dodged. A neutral analyst addressed as ``Mr.\ President'' evades about half of everything, because it is not the addressee.
+The role changes \emph{where} models evade, not how often (52\% against 55\%). A question's answerability shows only for a speaker who can answer it, and our data cannot tell this apart from strategic evasion.
+Labelling N and P with one instrument removes a question prior that acts alike on every answer, not one that interacts with answer style, and the question-only control was degenerate.
+Pursuit works: a follow-up turns 66\% of evasive answers into clear replies.
+With the President's answer as notes, indirect answers become replies more often than non-answers, by less than the registered margin. Condition effects survive a length covariate, but the role odds ratio was not length-adjusted.
+
+\step{Is the instrument valid on LLM text?}
+The registered human check was dropped for lack of time. Without labels, the instrument is \emph{more} confident on LLM answers than on the Presidents' (seed agreement 0.81 vs 0.73), though confident errors remain possible.
+
+\subsection{Is there a shortcut? (E25c--d)}
+A shortcut would exist if evasion were visible early in an answer or encoded in the frozen base model. Neither holds (Figure~\ref{fig:swap}b--c).
+Half an answer agrees with the full-answer label on only 66\% of items: refusals show early, General and Dodging only at the end.
+Linear probes on the frozen Qwen3-8B-Base reach 0.397 \Stwo{} at best, against 0.525 for one fine-tuned seed, and they give disjoint siblings the same label 45\% of the time, against 19\% for M1. Fine-tuning is what ties the label to the question.
+
+\step{What it raised.}
+Measuring evasion needs the whole answer and the fine-tuned ten-seed ensemble, so one lever that leaves the instrument's model, and so its labels, unchanged is numeric precision.

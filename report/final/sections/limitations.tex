@@ -1,0 +1,38 @@
+% Course rule: this section holds only challenges, limitations and future work (no results), and sits just
+% before the references; it is not counted in the page limit. Each limitation names the step that addresses it.
+\section*{Limitations, Challenges and Future Work}
+
+\paragraph{One small development set.}
+Every number is on 308 dev items, because the test labels were never released and the evaluation server has closed.
+Differences between systems therefore carry wide intervals, and parameters fitted on dev (by nested cross-validation) use dev labels.
+\emph{Next step:} score the frozen test predictions in the repository as soon as the organisers release the test labels, and re-run the instrument, unchanged, on a second evasion corpus such as parliamentary question periods.
+
+\paragraph{Validity of the instrument on LLM text.}
+The instrument was trained on presidential speech; our check on LLM answers is label-free, so it cannot rule out confident errors.
+\emph{Challenge:} the registered human annotation of LLM answers was dropped for lack of time.
+\emph{Next step:} have two annotators label a stratified sample at the clarity level, blind to model and condition, and use the instrument only if its agreement with them is within 0.10 of their agreement with each other, as registered.
+
+\paragraph{Breadth of the LLM audit.}
+The audit covers two model families, one of which shares a family with the 27B judge. The role effect was not a registered hypothesis.
+\emph{Challenge:} two further families (Llama-3.1, OLMo-2) failed to load on the shared GPU because of context-length and memory settings.
+\emph{Next step:} re-run them with their own GPU and context limits, adjust the role odds ratio for answer length, and register the role effect as a hypothesis for that replication.
+Role play is also not politics: an LLM has no career at stake, so ``role'' here means the prompt, and conclusions about real politicians would need human studies.
+
+\paragraph{Reproducibility of LLM decisions.}
+The adjudicator's decisions depend on the serving stack, the GPU and the option order, not only on the weights and the item, and we never repeated a run, so its own run-to-run noise is unmeasured.
+\emph{Next step:} repeat the 27B's dev run several times, pin the serving software and hardware in the frozen file, and report decision agreement across repeats alongside every result that uses an LLM.
+
+\paragraph{Cost measurements.}
+GPU time was measured with batched inference over the 308 dev items on one GPU type. Per-item cost depends on batch size and hardware, and our reduced-precision runs used unfused FP8 kernels, so they measure accuracy under quantization but not the speed a production kernel would give.
+The winning system's cost is known only in calls and tokens.
+\emph{Next step:} serve M1 through fused FP8 kernels, retrain the adapter on the 4-bit base (QLoRA), as our registered trigger requires, score the 27B on every item NF4 defers so its cascade comparison is complete, and report latency at batch size one alongside throughput.
+
+\paragraph{Labels and classes.}
+Training items carry one annotator's label, so the models cannot learn how disputed an item is, and the any-annotator metric credits labels that most annotators rejected.
+Partial/half-answer and General remain the weakest classes.
+\emph{Next step:} train on soft labels where several annotations exist, and add targeted contrast examples for the weakest classes.
+We also cannot rule out that the pretraining data of the LLMs include the public interview transcripts.
+
+\paragraph{Process challenges.}
+Shared hardware forced two deviations from our plans (a different GPU type for E25, and two LLM families dropped), both logged before results were seen.
+A fusion bug in our own analysis was found and corrected in the log. Every analysis now reproduces its saved predictions before it reports a number.

@@ -1,0 +1,82 @@
+% Nier_ANLP -- SemEval-2026 Task 6 (CLARITY) final report.
+% Built on the official ACL template (acl-org/acl-style-files @ d5adc82);
+% acl.sty and acl_natbib.bst are unmodified copies. Compile with pdfLaTeX + BibTeX.
+% Page budget (course rules): at most 8 pages of main text, then Limitations (not counted, placed just
+% before the references), references, and at most 2 pages of appendix.
+\documentclass[11pt]{article}
+
+% "final": the camera-ready (non-anonymous) version, as the template's comment describes.
+\usepackage[final]{acl}
+
+% Standard package includes (as in the official template)
+\usepackage{times}
+\usepackage{latexsym}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{microtype}
+\usepackage{inconsolata}
+\usepackage{graphicx}
+
+% Content packages (no layout changes)
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{booktabs}
+\usepackage{array}
+\newcolumntype{L}[1]{>{\raggedright\arraybackslash}p{#1}}
+\usepackage{xurl}
+\usepackage{tikz}
+\usetikzlibrary{positioning,arrows.meta,fit,calc,backgrounds,shapes.geometric}
+
+% Shared notation
+\newcommand{\Stwo}{S2}
+\newcommand{\Sone}{S1}
+\newcommand{\pmsd}[2]{#1\,{\scriptsize$\pm$\,#2}}
+\newcommand{\ci}[2]{[#1,\,#2]}
+% Run-in labels that give every experiment the same shape: question, prediction, result, consequence.
+\newcommand{\step}[1]{\textbf{#1}\enspace}
+
+% Figures (data figures from code/figures/; the diagrams are TikZ)
+\input{figs}
+
+\title{Evasion Is a Relation: A Confidence-Routed Cascade for\\Political Question Evasion, and What It Measures}
+
+\author{%
+  \begin{tabular}[t]{@{}c@{\hspace{1.1em}}c@{\hspace{1.1em}}c@{\hspace{1.1em}}c@{}}
+    Vidvathama R & Siddarth Gottumukkula & Sanjana Reddy Vonteri & Shashikanta Sahoo \\
+    {\normalfont\small 2024122002} & {\normalfont\small 2023102040} &
+    {\normalfont\small 2026901007} & {\normalfont\small 2026900007}
+  \end{tabular}
+  \AND
+  {\normalfont Team Nier\_ANLP} \\
+  {\normalfont International Institute of Information Technology, Hyderabad}}
+
+\hypersetup{pdftitle={Evasion Is a Relation: A Confidence-Routed Cascade for Political Question Evasion, and What It Measures},
+  pdfauthor={Vidvathama R, Siddarth Gottumukkula, Sanjana Reddy Vonteri, Shashikanta Sahoo (Team Nier\_ANLP, IIIT Hyderabad)}}
+
+\begin{document}
+\maketitle
+\begin{abstract}
+\input{sections/abstract}
+\end{abstract}
+
+\input{sections/01_introduction}
+\input{sections/02_task}
+\input{sections/03_related}
+\input{sections/04_classifier}
+\input{sections/05_cascade}
+\input{sections/06_robustness}
+\input{sections/07_measure}
+\input{sections/08_precision}
+\input{sections/09_conclusion}
+
+% Not counted in the page limit: Limitations, challenges and future work, just before the references.
+\input{sections/limitations}
+\input{sections/ethics}
+
+\bibliography{references}
+
+\clearpage
+\appendix
+\input{sections/appendix}
+
+\end{document}

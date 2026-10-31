@@ -1,0 +1,37 @@
+% Figure 1: the research path, five stages in one row (TikZ, monochrome). Input by \FigurePath in figs.tex.
+% Box width 25.4 mm text + 2 x 1.6 mm padding; four 3.6 mm gaps: 5 x 28.6 + 4 x 3.6 = 157.4 mm (text width 160 mm).
+\begin{tikzpicture}[
+  font=\scriptsize,
+  stage/.style={draw, rounded corners=1.5pt, align=left, text width=25.4mm, inner xsep=1.6mm, inner ysep=1.8pt,
+                anchor=north west, minimum height=34mm},
+  arr/.style={-{Stealth[length=3.5pt]}, thick},
+]
+\def\gap{32.2mm}
+\node[stage, fill=black!4] (s1) at (0,0) {%
+  \textbf{1\enspace What limits a\\\phantom{1\enspace}classifier?}\\[1pt]
+  {\itshape E0--E13, \S\ref{sec:classifier}}\\[2pt]
+  Hierarchies, experts, losses and soups fail on DeBERTa. Swapping only the backbone for Qwen3-8B: +0.092 per model, 10/10 seeds.\\[2pt]
+  $\Rightarrow$ It \emph{ranks} better than it decides: top-3 holds an acceptable label for 93\%.};
+\node[stage] (s2) at (\gap,0) {%
+  \textbf{2\enspace Can a larger model\\\phantom{2\enspace}choose among them?}\\[1pt]
+  {\itshape E14--E18, \S\ref{sec:cascade}}\\[2pt]
+  A 27B LLM picks among M1's top 4 for the 30\% least confident items; one distilled student replaces 10 seeds at a quarter of the GPU time.\\[2pt]
+  $\Rightarrow$ The headline is one favourable draw: is the gain real?};
+\node[stage, fill=black!4] (s3) at (2*\gap,0) {%
+  \textbf{3\enspace Which gains\\\phantom{3\enspace}survive?}\\[1pt]
+  {\itshape E19--E23, \S\ref{sec:robust}}\\[2pt]
+  Routing and fusion ablations, option order, distillation controls: 0.650 \Stwo{}, frozen.\\[2pt]
+  $\Rightarrow$ Its parts are not new, and relevance barely predicts errors: what does it measure?};
+\node[stage] (s4) at (3*\gap,0) {%
+  \textbf{4\enspace Is evasion in the\\\phantom{4\enspace}question or the speaker?}\\[1pt]
+  {\itshape E24--E25, \S\ref{sec:measure}}\\[2pt]
+  Labels move with the question; the instrument reads it causally. In the President's role, LLMs answer directly what Presidents answered directly.\\[2pt]
+  $\Rightarrow$ It needs the whole answer and a fine-tuned model: no shortcut.};
+\node[stage, fill=black!4] (s5) at (4*\gap,0) {%
+  \textbf{5\enspace Can it be made\\\phantom{5\enspace}cheaper?}\\[1pt]
+  {\itshape E26, \S\ref{sec:precision}}\\[2pt]
+  FP8 is not faster as implemented and costs M1 0.045; the cascade loses 0.003, within its own noise.\\[2pt]
+  $\Rightarrow$ Future work: fused kernels, QLoRA.};
+\foreach \a/\b in {s1/s2, s2/s3, s3/s4, s4/s5}
+  \draw[arr] ($(\a.north east)+(0,-4.5mm)$) -- ($(\b.north west)+(0,-4.5mm)$);
+\end{tikzpicture}

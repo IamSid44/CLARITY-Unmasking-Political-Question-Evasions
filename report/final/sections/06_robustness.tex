@@ -1,0 +1,48 @@
+\section{Stage 3: Which Gains Survive?}
+\label{sec:robust}
+\FigureStageThree
+
+\step{Question.}
+The Stage~2 gain rests on one ensemble, one adjudicator and one prompt. Each simpler alternative predicts a specific failure, so we registered one test per alternative (Figure~\ref{fig:stage3}), decided on training rows or held-out folds, never on dev.
+
+\step{Result.}
+Three findings change how the cascade should be read.
+On 3,448 cross-fitted training rows the cascade gains a small but significant +0.014 \ci{+0.002}{+0.026}, less than on dev, where its parameters were fitted.
+The gain is carried by the two parts a simpler system lacks: confidence routing, which no random routing matches (Figure~\ref{fig:stage3}a), and fusion (the 27B alone over all nine labels scores 0.591, below M1's 0.598, and deciding the deferred items alone scores 0.631).
+The 27B breaks as many confident decisions as it fixes and helps only where M1 is unsure (b), which is why a learned fix/break router lost to confidence at all four budgets.
+And the 27B's decisions depend on more than the item.
+In taxonomy order slot A is usually Explicit, so position and label are confounded (c). Two orders of the same four candidates give the same pick on only 72\% of dev items, so we average four, which costs four calls and moved the system by +0.011 at split 0 but +0.002 over ten splits.
+Two cost ideas failed their registered bars (a cache-aligned prompt halved the 27B's time per call but changed 9.4\% of its decisions, and an escalation ladder reached 0.600, not 0.625). Two results also changed what we claim. A student taught by M1's own soft targets came within the registered margin of the M3-taught one, so the distilled point is a soft-target effect, not ``the LLM's knowledge''. Transcript artifacts in 97\% of test answers changed 15.6\% of M1's labels when injected into dev, so test predictions use normalised text.
+
+\step{The frozen instrument (E23).}
+Re-scoring every record on one serving setup of the 27B with order-averaged $q$ gives the final operating points (Table~\ref{tab:final}).
+Averaging four orders costs four 27B calls per deferred item, so the accuracy point, 0.650 \Stwo{} (0.639 over ten splits) and 0.788 \Sone{}, makes 1.43 calls per item and takes 1.36$\times$ M1's GPU time (Table~\ref{tab:final} gives the one-order variants).
+Against the winning system it is higher on \Stwo{} and lower on \Sone{}, with three quarters of its calls and a fifth of its LLM input tokens (its GPU time is not published).
+Every setting of the accuracy point is fixed in one file (Appendix~\ref{sec:impl}). From here on it is the \emph{instrument}, and nothing in it is refitted.
+
+\begin{table}[t]
+\centering
+\small
+\setlength{\tabcolsep}{2.2pt}
+\begin{tabular}{@{}lcccc@{}}
+\toprule
+System (dev) & \Stwo{} & \Sone{} & calls & GPU-s \\
+\midrule
+DeBERTa-v3-large, 10 seeds & 0.405 & 0.648 & 0 & -- \\
+M1: Qwen3-8B, 10 seeds & 0.598 & 0.743 & 0 & 0.397 \\
+\textbf{Accuracy point} (M1 + M3) & \textbf{0.650} & \textbf{0.788} & 1.43 & 0.538 \\
+\quad one option order & 0.639 & 0.787 & 0.36 & 0.433 \\
+\textbf{Distilled point} (student + M3) & \textbf{0.608} & \textbf{0.785} & 2.30 & 0.266 \\
+\quad one option order & 0.599 & 0.784 & 0.57 & 0.098 \\
+\midrule
+TeleAI, 1st place & 0.617 & 0.812 & 1.94 & n/a \\
+Human vs.\ two others (2-ann.) & 0.684 & -- & -- & -- \\
+\bottomrule
+\end{tabular}
+\caption{Final systems (E23, one serving setup, nested-CV split 0). Calls: 27B calls per item (four per deferred item with order-averaged $q$). GPU-s: inference per item on one GPU (Appendix~\ref{sec:impl}). TeleAI uses ${\sim}$7.3k LLM input tokens per item, the accuracy point ${\sim}$1.6k.}
+\label{tab:final}
+\end{table}
+
+\step{What it raised.}
+The cascade's parts were already in use in the task's system papers, and question--answer relevance, added as a router feature, barely tracked clarity (AUROC 0.566).
+If the label is not a property of the answer's relevance, what is it a property of?

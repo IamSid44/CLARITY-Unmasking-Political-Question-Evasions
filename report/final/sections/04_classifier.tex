@@ -1,0 +1,29 @@
+\section{Stage 1: What Limits a Fine-Tuned Classifier?}
+\label{sec:classifier}
+\FigureStageOne
+
+\step{Question.}
+Label noise, a decision rule that does not fit the metric, missing knowledge and labels too subtle for 3,448 examples each predict a different fix.
+We tested these explanations on DeBERTa-v3-large \citep{he2023debertav3}, fully fine-tuned with a nine-way head, changing one thing at a time against a named control (Figure~\ref{fig:stage1}a).
+
+\step{Result: structure fails, the decision rule and training length help.}
+Every system averages the softmax outputs of ten seeds that differ only in their random seed, which reduces variance, and then applies a one-parameter logit adjustment, $\hat y = \arg\max_c \bar p(c \mid x)/\pi_c^{\tau}$.
+Dividing by the train prior $\pi_c$ lifts the rare classes that an argmax under-predicts and that macro-F1 weights equally. It raised an encoder system from 0.365 to 0.438 (E4), whereas nine free class weights reached only 0.394 and overfit dev (in-fold gain +0.098).
+A one-parameter logit adjustment, longer training and the full journalist question improved the model: 0.315 to 0.384 per model, 9 of 10 seeds up.
+Every structural idea failed: hierarchies did not beat a flat softmax that already scores all nine labels jointly, rebalanced losses over-corrected towards rare classes (Explicit F1 0.68 $\rightarrow$ 0.32), and boundary experts rarely overturned decisions the flat model made from the same input.
+The definition re-ranker is the telling failure: gold was in the encoder's top three for 90\% of items, yet a second encoder given label definitions chose worse.
+
+\step{Why: the model, not the labels.}
+Of the encoder ensemble's predictions, 44.5\% fell outside the reference set, 53 of them on items where all three annotators agreed, while a human annotator scores 0.684 against the other two.
+So label noise does not explain the gap, and nothing trained on the same 3,448 rows moved the system.
+
+\step{Hypothesis E13: the gap is knowledge.}
+We replaced only the backbone with Qwen3-8B-Base \citep{qwen3}, adapted with LoRA \citep{hu2022lora} (rank 16, all linear layers) and a new linear head on the last token, keeping the data, input, loss and selection rule.
+We expected the gain to concentrate on the commitment boundary (Explicit--Implicit--General), where the encoder's errors sit, and on unanimous items.
+The gain was +0.092 \Stwo{} and +0.095 \Sone{} per model on all ten seeds, more than the whole encoder track gained. The 10-seed system reached 0.543 \Stwo{} and 0.746 \Sone{} (95\% CI of the gain over DeBERTa \ci{+0.054}{+0.224}).
+The location was not as expected: the gain was broad (seven of nine classes), largest on Claims ignorance (+0.40) and Declining (+0.22), the classes that depend on recognising \emph{what kind of statement} an answer is.
+Twelve epochs, adopted on the slice (+0.084 F1, 3/3 seeds), became the default.
+
+\step{What it raised.}
+The 8B classifier ranks far better than it decides, and it knows when it is unsure (Figure~\ref{fig:stage1}b--c).
+Most remaining errors are choices among a few candidates it already ranks highly, made where it is unsure.

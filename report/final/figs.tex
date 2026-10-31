@@ -1,0 +1,74 @@
+% Figure macros. Diagrams are TikZ (figures/fig_*.tex); data figures are PDFs drawn by
+% code/figures/e25_figures.py (E25_*) and code/figures/paper_figures.py via E18 (E18_frontier).
+
+\newcommand{\FigurePath}{%
+\begin{figure*}[t]
+\centering
+\input{figures/fig_path}
+\caption{The research path. Each stage answers one question, and its answer (last line of each box) raises the next. Experiment ids refer to the ledger in Appendix~\ref{sec:ledger}.}
+\label{fig:path}
+\end{figure*}}
+
+\newcommand{\FigureSystem}{%
+\begin{figure*}[t]
+\centering
+\input{figures/fig_system}
+\caption{The whole system. Left: what is trained or fitted, and on which data. Middle: the cascade, frozen after E23 as the \emph{instrument}. Right: its use, on new inputs (E25) or with a lower-precision M1 (E26), always with the same settings.}
+\label{fig:system}
+\end{figure*}}
+
+\newcommand{\FigureAudit}{%
+\begin{figure*}[t]
+\centering
+\includegraphics[width=\textwidth]{figures/fig_e25_audit.pdf}
+\caption{E25b, labelled by the frozen instrument. (a)~Share of LLM answers that evade, with 95\% cluster-bootstrap intervals (dashed line: the Presidents' gold rate). (b)~The association as plain rates: the share of answers that evade where the President evaded (filled) and where the President answered (open), pooled over the two models, with the odds ratio beside each pair.}
+\label{fig:audit}
+\end{figure*}}
+
+\newcommand{\FigureSwap}{%
+\begin{figure*}[t]
+\centering
+\includegraphics[width=\textwidth]{figures/fig_e25_swap_probe.pdf}
+\caption{E25a, c and d. (a)~Each answer paired with its own question, a question from another interview, or none. ``Label unchanged'' is the share of items keeping their own-question label. (b)~Agreement of the label on the first 25/50/75\% of the answer with the full-answer label (dev). (c)~Linear probes on every fourth layer of the frozen Qwen3-8B-Base.}
+\label{fig:swap}
+\end{figure*}}
+
+\newcommand{\FigureStageOne}{%
+\begin{figure*}[t]
+\centering
+\includegraphics[width=\textwidth]{figures/fig_stage1.pdf}
+\caption{Stage~1 on dev \Stwo{}. (a)~Each change against its named control (E0--E13): per model for training and input changes, per system for the rest. (b, c)~The Qwen3-8B classifier ranks better than it decides, and correctness rises with confidence (3 epochs, seeds 0--2).}
+\label{fig:stage1}
+\end{figure*}}
+
+\newcommand{\FigureFrontier}{%
+\begin{figure}[t]
+\centering
+\includegraphics[width=\columnwidth]{figures/fig_frontier.pdf}
+\caption{The cascade on dev: \Stwo{} against inference GPU-s per item, for deferral rates $\delta = 0, 0.1, 0.2, 0.3, 0.5, 1$ (left to right on each curve, first scoring, one option order). All times are on one GPU (Appendix~\ref{sec:impl}). TeleAI's GPU time is not published.}
+\label{fig:frontier}
+\end{figure}}
+
+\newcommand{\FigureStageThree}{%
+\begin{figure*}[t]
+\centering
+\includegraphics[width=\textwidth]{figures/fig_stage3.pdf}
+\caption{Stage~3 (E19--E22), registered tests of the Stage~2 result. (a)~Confidence routing against 200 random routings. (b)~Net fixes of the 27B by M1's confidence, on 1,067 leak-free training rows. (c)~How often the 27B picks the first option, by order.}
+\label{fig:stage3}
+\end{figure*}}
+
+\newcommand{\FigureRelation}{%
+\begin{figure}[t]
+\centering
+\includegraphics[width=\columnwidth]{figures/fig_relation.pdf}
+\caption{Evasion is a relation (E24). (a)~Share of dev label pairs from two annotators that differ: same item, two sub-questions of one answer, random items. (b)~Share of three random questions under which the answer is less likely than under its own, by gold label (train): Partial, Implicit, Deflection and General answers are as relevant as Explicit ones.}
+\label{fig:relation}
+\end{figure}}
+
+\newcommand{\FigurePrecision}{%
+\begin{figure}[t]
+\centering
+\includegraphics[width=\columnwidth]{figures/fig_precision.pdf}
+\caption{E26 on dev, each format against 16-bit on the same GPU type. (a)~\Stwo{} lost, both with frozen parameters. (b)~FP8 flips that change reference-set membership. $^{\dagger}$Lower bound: 27B records missing for 60 NF4 items.}
+\label{fig:precision}
+\end{figure}}

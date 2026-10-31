@@ -1,0 +1,52 @@
+\section{Task, Data and Protocol}
+\label{sec:task}
+\FigureSystem
+
+\paragraph{Task.}
+Each item is a triple $x = (q, Q, a)$ from a U.S.\ presidential interview \citep{thomas-etal-2024-never}: a sub-question $q$ (median 15 tokens), the journalist's full turn $Q$ it was split from (62 tokens) and the President's whole answer $a$ (266 tokens).
+Subtask~2 (\Stwo{}) asks for one of nine evasion types $\mathcal{Y}_9$, describing how $a$ responds to \emph{that} sub-question, and each type fixes one of three clarity levels for Subtask~1 (\Sone{}, Table~\ref{tab:taxonomy}).
+Like the top systems, we predict the nine-way type and map it to the clarity level.
+
+\begin{table}[t]
+\centering
+\small
+\setlength{\tabcolsep}{3.5pt}
+\begin{tabular}{@{}llrr@{}}
+\toprule
+Evasion type (\Stwo{}) & Clarity level (\Sone{}) & Train \% & Dev sets \\
+\midrule
+Explicit            & Clear Reply     & 30.5 & 115 \\
+\midrule
+Implicit            & Ambivalent      & 14.2 & 99 \\
+Dodging             & Ambivalent      & 20.5 & 96 \\
+General             & Ambivalent      & 11.2 & 113 \\
+Deflection          & Ambivalent      & 11.0 & 51 \\
+Partial/half-answer & Ambivalent      & 2.3  & 14 \\
+\midrule
+Declining to answer & Clear Non-Reply & 4.2  & 17 \\
+Claims ignorance    & Clear Non-Reply & 3.5  & 15 \\
+Clarification       & Clear Non-Reply & 2.7  & 4 \\
+\bottomrule
+\end{tabular}
+\caption{The taxonomy. Train \% is the share of the 3,448 training labels. Dev sets is the number of the 308 dev items whose reference set contains the type.}
+\label{tab:taxonomy}
+\end{table}
+
+\paragraph{Data.}
+Train has 3,448 items with one label each.
+Dev has 308 items with three annotators: 125 are unanimous, 150 split two to one and 33 receive three labels, so the reference set $G_i$ of an item holds one to three types.
+The 237 test items have two annotators, but their labels were never released, so every comparison is on dev, and we also rescore dev against each of its three two-annotator subsets (the test regime).
+One property shapes the whole paper: 69\% of training rows share their answer with another sub-question of the same turn (\emph{siblings}).
+
+\paragraph{Metric.}
+\Stwo{} is scored by multi-reference macro-F1: a prediction is a true positive if it lies in $G_i$, and every class counts equally.
+It rewards both the \emph{in-set rate} and \emph{coverage} of rare classes.
+Always predicting Explicit scores 0.060, TF-IDF with logistic regression 0.257, and a human annotator against the other two 0.684.
+
+\paragraph{Protocol.}
+Epochs, calibration and routing thresholds are chosen on the \emph{train slice}, a fixed stratified 10\% of train (345 rows).
+The few parameters that must be fitted on dev are chosen by 5-fold nested cross-validation, and we report the first split and the mean over ten splits.
+A \emph{system} averages seeds and applies logit adjustment \citep{menon2021longtail}, $\hat y = \arg\max_c \bar p(c \mid x)/\pi_c^{\tau}$ with $\pi_c$ the train prior and $\tau$ the only fitted parameter.
+Claims rest on ten paired seeds, and a change must first pass a three-seed screen (+0.015, at least two of three seeds up).
+Before each experiment we registered its hypotheses, predictions and decision rules. Later changes were logged as amendments before results were seen.
+From \S\ref{sec:measure} on, every label comes from one \emph{frozen} system, so no parameter changes between experiments.
