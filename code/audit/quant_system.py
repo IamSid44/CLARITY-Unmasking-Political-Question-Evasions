@@ -3,10 +3,12 @@
 
     python -m audit.quant_system jobs  --site rtxpro    # 27B jobs: deferred dev/test items of every precision
     python -m audit.quant_system label --site rtxpro    # final labels; 27B records under tags e26_<site>_<order>
+    python -m audit.quant_system label --site a4000 --records-from rtxpro   # NF4 with the RTX PRO run's 27B records
 
 Calibration (tau_C, T), the routing threshold and the fusion (tau_M1, lam, tau) are the frozen E23 values
 (code/experiments/e25/frozen_system.json); nothing is refitted on quantized outputs. A site without 27B records
-(the local A4000s) is labelled with M1's decision wherever the 27B would have been asked, and says so.
+(the local A4000s) is labelled with M1's decision wherever the 27B would have been asked, and says so; with
+--records-from, it uses another site's 27B records where the candidate sets match (exploratory: a lower bound).
 """
 
 from __future__ import annotations
@@ -69,7 +71,7 @@ def records(site: str, frame: str) -> dict:
     return {k: np.mean([d[k] for d in per], 0) for k in per[0] if all(k in d for d in per)}
 
 
-def label(site: str) -> None:
+def label(site: str, records_from: str | None = None) -> None:
     f = json.loads(FROZEN.read_text())
     calib, *_ = calibration()
     (E26 / site / "labels").mkdir(parents=True, exist_ok=True)
@@ -77,7 +79,7 @@ def label(site: str) -> None:
         for fr in ADJ + ("slice",):
             z = inputs(site, prec, fr, calib)
             defer = z["u"] >= f["u_threshold"]
-            look = records(site, fr) if fr in ADJ else {}
+            look = records(records_from or site, fr) if fr in ADJ else {}
             lq = np.full((len(defer), N_EVASION), -np.inf)
             for i in np.where(defer)[0]:
                 q = look.get((int(i), tuple(int(c) for c in z["cand"][i])))
@@ -94,8 +96,9 @@ def main() -> None:
     p = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     p.add_argument("what", choices=("jobs", "label"))
     p.add_argument("--site", required=True)
+    p.add_argument("--records-from", help="label with another site's 27B records (the 27B does not fit an A4000)")
     a = p.parse_args()
-    jobs(a.site) if a.what == "jobs" else label(a.site)
+    jobs(a.site) if a.what == "jobs" else label(a.site, a.records_from)
 
 
 if __name__ == "__main__":

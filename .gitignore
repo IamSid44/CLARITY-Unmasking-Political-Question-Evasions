@@ -3,18 +3,12 @@ __pycache__/
 .DS_Store
 .pytest_cache/
 
-# generated locally (runs and logs are on Hugging Face / W&B)
-# exceptions (E19, 2026-10-27): the distillation targets the Jarvis lanes train on, and the data cache the
-# Jarvis bundle needs, are tracked so instances can be launched from a machine without a Python env
-runs/*
-!runs/M4/
-# E25 (2026-10-30): the LLM answers, frames, labels and probe results behind the final report (~10 MB); the
-# hidden states (158 MB) stay on Hugging Face only
-!runs/E25/
+# run outputs: per-seed probabilities, metrics, configs, 27B records and labels are tracked (~45 MB; the same
+# files are on Hugging Face). Not tracked: model weights (see below), the Hub download cache, and E25's
+# hidden states (158 MB; on Hugging Face under E25/hidden/)
+runs/.cache/
+runs/**/.hf_pushed
 runs/E25/hidden/*.npy
-runs/E25/jobs_27b.jsonl
-# E26 (2026-10-30): reduced-precision M1 outputs, reports and labels (small)
-!runs/E26/
 wandb/
 *.tmp
 

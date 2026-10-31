@@ -1,0 +1,634 @@
+/home/clarity_llm/venv/lib/python3.12/site-packages/huggingface_hub/hf_api.py:5250: UserWarning: It seems that you are about to commit a data file (E25/frames/dev_null.parquet) to a model repository. You are sure this is intended? If you are trying to upload a dataset, please set `repo_type='dataset'` or `--repo-type=dataset` in a CLI.
+  warnings.warn(
+/home/clarity_llm/venv/lib/python3.12/site-packages/huggingface_hub/hf_api.py:5250: UserWarning: It seems that you are about to commit a data file (E25/frames/dev_own.parquet) to a model repository. You are sure this is intended? If you are trying to upload a dataset, please set `repo_type='dataset'` or `--repo-type=dataset` in a CLI.
+  warnings.warn(
+/home/clarity_llm/venv/lib/python3.12/site-packages/huggingface_hub/hf_api.py:5250: UserWarning: It seems that you are about to commit a data file (E25/frames/dev_pre25.parquet) to a model repository. You are sure this is intended? If you are trying to upload a dataset, please set `repo_type='dataset'` or `--repo-type=dataset` in a CLI.
+  warnings.warn(
+/home/clarity_llm/venv/lib/python3.12/site-packages/huggingface_hub/hf_api.py:5250: UserWarning: It seems that you are about to commit a data file (E25/frames/dev_pre50.parquet) to a model repository. You are sure this is intended? If you are trying to upload a dataset, please set `repo_type='dataset'` or `--repo-type=dataset` in a CLI.
+  warnings.warn(
+/home/clarity_llm/venv/lib/python3.12/site-packages/huggingface_hub/hf_api.py:5250: UserWarning: It seems that you are about to commit a data file (E25/frames/dev_pre75.parquet) to a model repository. You are sure this is intended? If you are trying to upload a dataset, please set `repo_type='dataset'` or `--repo-type=dataset` in a CLI.
+  warnings.warn(
+/home/clarity_llm/venv/lib/python3.12/site-packages/huggingface_hub/hf_api.py:5250: UserWarning: It seems that you are about to commit a data file (E25/frames/dev_qonly.parquet) to a model repository. You are sure this is intended? If you are trying to upload a dataset, please set `repo_type='dataset'` or `--repo-type=dataset` in a CLI.
+  warnings.warn(
+/home/clarity_llm/venv/lib/python3.12/site-packages/huggingface_hub/hf_api.py:5250: UserWarning: It seems that you are about to commit a data file (E25/frames/dev_rand.parquet) to a model repository. You are sure this is intended? If you are trying to upload a dataset, please set `repo_type='dataset'` or `--repo-type=dataset` in a CLI.
+  warnings.warn(
+/home/clarity_llm/venv/lib/python3.12/site-packages/huggingface_hub/hf_api.py:5250: UserWarning: It seems that you are about to commit a data file (E25/frames/llm.parquet) to a model repository. You are sure this is intended? If you are trying to upload a dataset, please set `repo_type='dataset'` or `--repo-type=dataset` in a CLI.
+  warnings.warn(
+/home/clarity_llm/venv/lib/python3.12/site-packages/huggingface_hub/hf_api.py:5250: UserWarning: It seems that you are about to commit a data file (E25/frames/test_null.parquet) to a model repository. You are sure this is intended? If you are trying to upload a dataset, please set `repo_type='dataset'` or `--repo-type=dataset` in a CLI.
+  warnings.warn(
+/home/clarity_llm/venv/lib/python3.12/site-packages/huggingface_hub/hf_api.py:5250: UserWarning: It seems that you are about to commit a data file (E25/frames/test_own.parquet) to a model repository. You are sure this is intended? If you are trying to upload a dataset, please set `repo_type='dataset'` or `--repo-type=dataset` in a CLI.
+  warnings.warn(
+/home/clarity_llm/venv/lib/python3.12/site-packages/huggingface_hub/hf_api.py:5250: UserWarning: It seems that you are about to commit a data file (E25/frames/test_pre25.parquet) to a model repository. You are sure this is intended? If you are trying to upload a dataset, please set `repo_type='dataset'` or `--repo-type=dataset` in a CLI.
+  warnings.warn(
+/home/clarity_llm/venv/lib/python3.12/site-packages/huggingface_hub/hf_api.py:5250: UserWarning: It seems that you are about to commit a data file (E25/frames/test_pre50.parquet) to a model repository. You are sure this is intended? If you are trying to upload a dataset, please set `repo_type='dataset'` or `--repo-type=dataset` in a CLI.
+  warnings.warn(
+/home/clarity_llm/venv/lib/python3.12/site-packages/huggingface_hub/hf_api.py:5250: UserWarning: It seems that you are about to commit a data file (E25/frames/test_pre75.parquet) to a model repository. You are sure this is intended? If you are trying to upload a dataset, please set `repo_type='dataset'` or `--repo-type=dataset` in a CLI.
+  warnings.warn(
+/home/clarity_llm/venv/lib/python3.12/site-packages/huggingface_hub/hf_api.py:5250: UserWarning: It seems that you are about to commit a data file (E25/frames/test_rand.parquet) to a model repository. You are sure this is intended? If you are trying to upload a dataset, please set `repo_type='dataset'` or `--repo-type=dataset` in a CLI.
+  warnings.warn(
+Upload 138 LFS files:   0%|          | 0/138 [00:00<?, ?it/s]
+dev_own.parquet:   0%|          | 0.00/248k [00:00<?, ?B/s][A
+
+dev_null.parquet:   0%|          | 0.00/195k [00:00<?, ?B/s][A[A
+
+
+dev_pre25.parquet:   0%|          | 0.00/110k [00:00<?, ?B/s][A[A[A
+
+
+
+dev_pre50.parquet:   0%|          | 0.00/156k [00:00<?, ?B/s][A[A[A[A
+
+
+
+
+dev_pre75.parquet:   0%|          | 0.00/201k [00:00<?, ?B/s][A[A[A[A[A
+
+dev_null.parquet:  34%|███▎      | 65.5k/195k [00:00<00:00, 606kB/s][A[A
+
+
+
+dev_pre50.parquet:  42%|████▏     | 65.5k/156k [00:00<00:00, 602kB/s][A[A[A[A
+
+
+dev_pre25.parquet:  59%|█████▉    | 65.5k/110k [00:00<00:00, 586kB/s][A[A[A
+
+
+
+
+dev_pre75.parquet:  33%|███▎      | 65.5k/201k [00:00<00:00, 600kB/s][A[A[A[A[A
+dev_own.parquet:  26%|██▋       | 65.5k/248k [00:00<00:00, 522kB/s][Adev_pre25.parquet: 100%|██████████| 110k/110k [00:00<00:00, 139kB/s] 
+dev_own.parquet: 100%|██████████| 248k/248k [00:01<00:00, 238kB/s] 
+dev_pre75.parquet: 100%|██████████| 201k/201k [00:01<00:00, 181kB/s] 
+dev_null.parquet: 100%|██████████| 195k/195k [00:01<00:00, 167kB/s] 
+Upload 138 LFS files:   1%|          | 1/138 [00:01<02:46,  1.21s/it]
+dev_qonly.parquet:   0%|          | 0.00/61.2k [00:00<?, ?B/s][Adev_pre50.parquet: 100%|██████████| 156k/156k [00:01<00:00, 118kB/s] 
+
+
+dev_rand.parquet:   0%|          | 0.00/235k [00:00<?, ?B/s][A[AUpload 138 LFS files:   1%|▏         | 2/138 [00:01<01:33,  1.45it/s]
+
+
+llm.parquet:   0%|          | 0.00/2.19M [00:00<?, ?B/s][A[A[AUpload 138 LFS files:   2%|▏         | 3/138 [00:01<01:00,  2.23it/s]
+
+
+
+test_null.parquet:   0%|          | 0.00/68.3k [00:00<?, ?B/s][A[A[A[A
+
+
+
+
+test_own.parquet:   0%|          | 0.00/102k [00:00<?, ?B/s][A[A[A[A[Adev_qonly.parquet: 100%|██████████| 61.2k/61.2k [00:00<00:00, 115kB/s]
+
+
+
+llm.parquet:  18%|█▊        | 393k/2.19M [00:00<00:00, 3.36MB/s][A[A[AUpload 138 LFS files:   4%|▍         | 6/138 [00:02<00:35,  3.76it/s]
+test_pre25.parquet:   0%|          | 0.00/57.6k [00:00<?, ?B/s][Atest_null.parquet: 100%|██████████| 68.3k/68.3k [00:00<00:00, 120kB/s]
+test_pre25.parquet: 100%|██████████| 57.6k/57.6k [00:00<00:00, 133kB/s]
+Upload 138 LFS files:   5%|▌         | 7/138 [00:02<00:40,  3.21it/s]
+test_pre50.parquet:   0%|          | 0.00/71.8k [00:00<?, ?B/s][Atest_own.parquet: 100%|██████████| 102k/102k [00:01<00:00, 92.1kB/s]
+dev_rand.parquet: 100%|██████████| 235k/235k [00:01<00:00, 179kB/s]
+llm.parquet: 100%|██████████| 2.19M/2.19M [00:01<00:00, 1.76MB/s]
+
+
+test_pre75.parquet:   0%|          | 0.00/87.0k [00:00<?, ?B/s][A[AUpload 138 LFS files:   6%|▌         | 8/138 [00:03<00:41,  3.12it/s]Upload 138 LFS files:   7%|▋         | 9/138 [00:03<00:38,  3.37it/s]
+
+
+test_rand.parquet:   0%|          | 0.00/92.6k [00:00<?, ?B/s][A[A[A
+
+
+
+dev_own.npy:   0%|          | 0.00/93.4M [00:00<?, ?B/s][A[A[A[A
+
+
+
+dev_own.npy:   0%|          | 393k/93.4M [00:00<00:28, 3.30MB/s][A[A[A[Atest_pre75.parquet: 100%|██████████| 87.0k/87.0k [00:00<00:00, 216kB/s]
+
+
+
+
+dev_own.npy:   3%|▎         | 2.36M/93.4M [00:00<00:08, 11.0MB/s][A[A[A[A
+
+test_own.npy:   0%|          | 0.00/71.8M [00:00<?, ?B/s][A[AUpload 138 LFS files:   8%|▊         | 11/138 [00:03<00:28,  4.53it/s]
+
+test_own.npy:   2%|▏         | 1.38M/71.8M [00:00<00:05, 12.3MB/s][A[A
+
+
+
+dev_own.npy:   6%|▋         | 6.03M/93.4M [00:00<00:04, 20.1MB/s][A[A[A[Atest_pre50.parquet: 100%|██████████| 71.8k/71.8k [00:01<00:00, 71.7kB/s]
+
+
+test_own.npy:   8%|▊         | 5.77M/71.8M [00:00<00:02, 23.8MB/s][A[Atest_rand.parquet: 100%|██████████| 92.6k/92.6k [00:00<00:00, 157kB/s]
+
+dev_null.npz:   0%|          | 0.00/26.7k [00:00<?, ?B/s][AUpload 138 LFS files:   9%|▊         | 12/138 [00:03<00:33,  3.76it/s]
+
+test_own.npy:  15%|█▌        | 10.8M/71.8M [00:00<00:02, 24.1MB/s][A[A
+
+
+
+dev_own.npy:  11%|█         | 10.5M/93.4M [00:00<00:06, 12.9MB/s][A[A[A[A
+
+
+dev_own.npz:   0%|          | 0.00/38.7k [00:00<?, ?B/s][A[A[AUpload 138 LFS files:   9%|▉         | 13/138 [00:04<00:30,  4.10it/s]
+
+test_own.npy:  18%|█▊        | 13.2M/71.8M [00:00<00:03, 16.6MB/s][A[A
+
+
+
+dev_own.npy:  13%|█▎        | 12.1M/93.4M [00:01<00:07, 11.4MB/s][A[A[A[A
+
+
+
+
+dev_pre25.npz:   0%|          | 0.00/38.7k [00:00<?, ?B/s][A[A[A[A[AUpload 138 LFS files:  10%|█         | 14/138 [00:04<00:28,  4.37it/s]dev_null.npz: 100%|██████████| 26.7k/26.7k [00:00<00:00, 69.5kB/s]
+
+
+test_own.npy:  21%|██        | 15.0M/71.8M [00:00<00:03, 16.4MB/s][A[A
+
+
+
+dev_own.npy:  15%|█▍        | 14.0M/93.4M [00:01<00:06, 12.3MB/s][A[A[A[A
+dev_pre50.npz:   0%|          | 0.00/38.8k [00:00<?, ?B/s][AUpload 138 LFS files:  11%|█         | 15/138 [00:04<00:43,  2.85it/s]dev_own.npz: 100%|██████████| 38.7k/38.7k [00:00<00:00, 43.1kB/s]
+
+
+test_own.npy:  23%|██▎       | 16.7M/71.8M [00:01<00:08, 6.43MB/s][A[A
+
+
+
+dev_own.npy:  17%|█▋        | 16.1M/93.4M [00:01<00:12, 6.01MB/s][A[A[A[Adev_pre25.npz: 100%|██████████| 38.7k/38.7k [00:00<00:00, 42.4kB/s]
+
+
+test_own.npy:  30%|███       | 21.8M/71.8M [00:01<00:04, 10.9MB/s][A[A
+
+
+
+dev_own.npy:  20%|█▉        | 18.3M/93.4M [00:02<00:10, 7.06MB/s][A[A[A[Adev_pre50.npz: 100%|██████████| 38.8k/38.8k [00:00<00:00, 90.3kB/s]
+Upload 138 LFS files:  12%|█▏        | 16/138 [00:05<00:45,  2.68it/s]
+dev_pre75.npz:   0%|          | 0.00/38.7k [00:00<?, ?B/s][A
+
+
+
+dev_own.npy:  22%|██▏       | 20.9M/93.4M [00:02<00:08, 8.84MB/s][A[A[A[A
+
+
+dev_qonly.npz:   0%|          | 0.00/36.2k [00:00<?, ?B/s][A[A[AUpload 138 LFS files:  12%|█▏        | 17/138 [00:05<00:40,  2.99it/s]dev_pre75.npz: 100%|██████████| 38.7k/38.7k [00:00<00:00, 99.8kB/s]
+
+dev_rand.npz:   0%|          | 0.00/37.6k [00:00<?, ?B/s][AUpload 138 LFS files:  13%|█▎        | 18/138 [00:05<00:34,  3.53it/s]dev_qonly.npz: 100%|██████████| 36.2k/36.2k [00:00<00:00, 100kB/s]
+dev_rand.npz: 100%|██████████| 37.6k/37.6k [00:00<00:00, 106kB/s]
+
+llm.npz:   0%|          | 0.00/291k [00:00<?, ?B/s][AUpload 138 LFS files:  14%|█▍        | 19/138 [00:06<00:37,  3.17it/s]
+
+
+
+dev_own.npy:  27%|██▋       | 25.5M/93.4M [00:02<00:08, 7.72MB/s][A[A[A[A
+
+
+
+dev_own.npy:  29%|██▉       | 26.9M/93.4M [00:03<00:08, 7.61MB/s][A[A[A[AUpload 138 LFS files:  14%|█▍        | 20/138 [00:06<00:33,  3.52it/s]
+
+
+test_null.npz:   0%|          | 0.00/24.9k [00:00<?, ?B/s][A[A[A
+
+test_own.npy:  37%|███▋      | 26.8M/71.8M [00:02<00:06, 6.61MB/s][A[A
+
+
+
+
+test_own.npz:   0%|          | 0.00/30.2k [00:00<?, ?B/s][A[A[A[A[AUpload 138 LFS files:  15%|█▌        | 21/138 [00:06<00:27,  4.30it/s]
+
+
+
+dev_own.npy:  31%|███       | 28.9M/93.4M [00:03<00:07, 8.83MB/s][A[A[A[A
+
+test_own.npy:  39%|███▉      | 28.3M/71.8M [00:03<00:06, 6.54MB/s][A[Atest_null.npz: 100%|██████████| 24.9k/24.9k [00:00<00:00, 78.5kB/s]
+
+
+test_own.npy:  42%|████▏     | 30.0M/71.8M [00:03<00:05, 7.04MB/s][A[Atest_own.npz: 100%|██████████| 30.2k/30.2k [00:00<00:00, 73.6kB/s]
+llm.npz: 100%|██████████| 291k/291k [00:00<00:00, 385kB/s]
+Upload 138 LFS files:  16%|█▌        | 22/138 [00:07<00:38,  2.97it/s]
+test_rand.npz:   0%|          | 0.00/29.9k [00:00<?, ?B/s][A
+
+
+
+dev_own.npy:  34%|███▍      | 32.1M/93.4M [00:03<00:09, 6.49MB/s][A[A[A[A
+
+
+seed0.npy:   0%|          | 0.00/11.2k [00:00<?, ?B/s][A[A[AUpload 138 LFS files:  17%|█▋        | 23/138 [00:07<00:34,  3.29it/s]
+
+
+
+dev_own.npy:  40%|████      | 37.8M/93.4M [00:04<00:04, 11.2MB/s][A[A[A[Atest_rand.npz: 100%|██████████| 29.9k/29.9k [00:00<00:00, 94.9kB/s]
+Upload 138 LFS files:  17%|█▋        | 24/138 [00:07<00:27,  4.09it/s]
+seed1.npy:   0%|          | 0.00/11.2k [00:00<?, ?B/s][Aseed0.npy: 100%|██████████| 11.2k/11.2k [00:00<00:00, 37.6kB/s]
+
+
+test_own.npy:  45%|████▍     | 32.1M/71.8M [00:04<00:07, 5.06MB/s][A[A
+
+test_own.npy:  54%|█████▎    | 38.6M/71.8M [00:04<00:03, 9.86MB/s][A[Aseed1.npy: 100%|██████████| 11.2k/11.2k [00:00<00:00, 35.1kB/s]
+
+seed2.npy:   0%|          | 0.00/11.2k [00:00<?, ?B/s][AUpload 138 LFS files:  18%|█▊        | 25/138 [00:07<00:32,  3.44it/s]
+
+
+seed3.npy:   0%|          | 0.00/11.2k [00:00<?, ?B/s][A[A[AUpload 138 LFS files:  19%|█▉        | 26/138 [00:08<00:30,  3.73it/s]
+
+
+
+dev_own.npy:  47%|████▋     | 43.5M/93.4M [00:04<00:05, 9.43MB/s][A[A[A[A
+
+test_own.npy:  62%|██████▏   | 44.2M/71.8M [00:04<00:02, 11.4MB/s][A[Aseed2.npy: 100%|██████████| 11.2k/11.2k [00:00<00:00, 35.9kB/s]
+
+seed4.npy:   0%|          | 0.00/11.2k [00:00<?, ?B/s][AUpload 138 LFS files:  20%|█▉        | 27/138 [00:08<00:24,  4.50it/s]
+
+
+
+dev_own.npy:  49%|████▊     | 45.3M/93.4M [00:05<00:05, 9.16MB/s][A[A[A[A
+
+test_own.npy:  65%|██████▍   | 46.4M/71.8M [00:04<00:02, 10.9MB/s][A[Aseed3.npy: 100%|██████████| 11.2k/11.2k [00:00<00:00, 33.9kB/s]
+
+
+
+
+dev_own.npy:  50%|█████     | 46.9M/93.4M [00:05<00:04, 9.89MB/s][A[A[A[Aseed4.npy: 100%|██████████| 11.2k/11.2k [00:00<00:00, 32.0kB/s]
+Upload 138 LFS files:  20%|██        | 28/138 [00:08<00:29,  3.68it/s]
+seed5.npy:   0%|          | 0.00/11.2k [00:00<?, ?B/s][AUpload 138 LFS files:  21%|██        | 29/138 [00:08<00:27,  3.96it/s]
+
+
+seed6.npy:   0%|          | 0.00/11.2k [00:00<?, ?B/s][A[A[Aseed5.npy: 100%|██████████| 11.2k/11.2k [00:00<00:00, 35.4kB/s]
+Upload 138 LFS files:  22%|██▏       | 30/138 [00:08<00:23,  4.54it/s]
+seed7.npy:   0%|          | 0.00/11.2k [00:00<?, ?B/s][Aseed6.npy: 100%|██████████| 11.2k/11.2k [00:00<00:00, 35.2kB/s]
+
+
+test_own.npy:  67%|██████▋   | 48.1M/71.8M [00:05<00:03, 6.63MB/s][A[A
+
+
+
+dev_own.npy:  52%|█████▏    | 48.5M/93.4M [00:05<00:07, 5.87MB/s][A[A[A[Aseed7.npy: 100%|██████████| 11.2k/11.2k [00:00<00:00, 33.7kB/s]
+
+
+test_own.npy:  80%|████████  | 57.5M/71.8M [00:05<00:01, 13.8MB/s][A[A
+
+
+
+dev_own.npy:  59%|█████▉    | 55.1M/93.4M [00:05<00:03, 11.2MB/s][A[A[A[AUpload 138 LFS files:  22%|██▏       | 31/138 [00:09<00:28,  3.75it/s]
+seed8.npy:   0%|          | 0.00/11.2k [00:00<?, ?B/s][A
+
+
+
+dev_own.npy:  67%|██████▋   | 62.9M/93.4M [00:06<00:01, 18.4MB/s][A[A[A[AUpload 138 LFS files:  23%|██▎       | 32/138 [00:09<00:26,  4.00it/s]
+
+
+seed9.npy:   0%|          | 0.00/11.2k [00:00<?, ?B/s][A[A[A
+
+
+
+
+seed0.npy:   0%|          | 0.00/11.2k [00:00<?, ?B/s][A[A[A[A[AUpload 138 LFS files:  24%|██▍       | 33/138 [00:09<00:22,  4.66it/s]
+
+test_own.npy:  89%|████████▉ | 64.1M/71.8M [00:06<00:00, 14.4MB/s][A[Aseed8.npy: 100%|██████████| 11.2k/11.2k [00:00<00:00, 28.2kB/s]
+seed9.npy: 100%|██████████| 11.2k/11.2k [00:00<00:00, 34.2kB/s]
+seed0.npy: 100%|██████████| 11.2k/11.2k [00:00<00:00, 36.0kB/s]
+Upload 138 LFS files:  25%|██▍       | 34/138 [00:10<00:29,  3.48it/s]
+seed1.npy:   0%|          | 0.00/11.2k [00:00<?, ?B/s][A
+
+
+
+dev_own.npy:  71%|███████▏  | 66.6M/93.4M [00:06<00:02, 11.3MB/s][A[A[A[Atest_own.npy: 100%|██████████| 71.8M/71.8M [00:06<00:00, 10.8MB/s]
+Upload 138 LFS files:  25%|██▌       | 35/138 [00:10<00:24,  4.17it/s]
+
+seed2.npy:   0%|          | 0.00/11.2k [00:00<?, ?B/s][A[A
+
+
+
+dev_own.npy:  79%|███████▉  | 74.0M/93.4M [00:06<00:01, 16.7MB/s][A[A[A[A
+
+
+seed3.npy:   0%|          | 0.00/11.2k [00:00<?, ?B/s][A[A[AUpload 138 LFS files:  26%|██▌       | 36/138 [00:10<00:20,  4.99it/s]seed1.npy: 100%|██████████| 11.2k/11.2k [00:00<00:00, 36.7kB/s]
+seed2.npy: 100%|██████████| 11.2k/11.2k [00:00<00:00, 36.7kB/s]
+seed3.npy: 100%|██████████| 11.2k/11.2k [00:00<00:00, 38.0kB/s]
+Upload 138 LFS files:  27%|██▋       | 37/138 [00:10<00:24,  4.17it/s]
+seed4.npy:   0%|          | 0.00/11.2k [00:00<?, ?B/s][A
+
+
+
+dev_own.npy:  86%|████████▌ | 80.1M/93.4M [00:07<00:00, 15.9MB/s][A[A[A[A
+
+
+
+dev_own.npy:  96%|█████████▌| 89.8M/93.4M [00:07<00:00, 24.3MB/s][A[A[A[AUpload 138 LFS files:  28%|██▊       | 38/138 [00:10<00:21,  4.66it/s]
+
+seed5.npy:   0%|          | 0.00/11.2k [00:00<?, ?B/s][A[A
+
+
+seed6.npy:   0%|          | 0.00/11.2k [00:00<?, ?B/s][A[A[AUpload 138 LFS files:  28%|██▊       | 39/138 [00:10<00:17,  5.51it/s]seed4.npy: 100%|██████████| 11.2k/11.2k [00:00<00:00, 35.0kB/s]
+
+seed7.npy:   0%|          | 0.00/11.2k [00:00<?, ?B/s][AUpload 138 LFS files:  29%|██▉       | 40/138 [00:11<00:17,  5.54it/s]seed5.npy: 100%|██████████| 11.2k/11.2k [00:00<00:00, 34.1kB/s]
+dev_own.npy: 100%|██████████| 93.4M/93.4M [00:07<00:00, 11.9MB/s]
+seed6.npy: 100%|██████████| 11.2k/11.2k [00:00<00:00, 33.3kB/s]
+
+
+seed8.npy:   0%|          | 0.00/11.2k [00:00<?, ?B/s][A[AUpload 138 LFS files:  30%|██▉       | 41/138 [00:11<00:22,  4.35it/s]seed7.npy: 100%|██████████| 11.2k/11.2k [00:00<00:00, 30.2kB/s]
+
+seed9.npy:   0%|          | 0.00/11.2k [00:00<?, ?B/s][AUpload 138 LFS files:  31%|███       | 43/138 [00:11<00:15,  5.99it/s]
+
+
+seed0.npy:   0%|          | 0.00/11.2k [00:00<?, ?B/s][A[A[A
+
+
+
+seed1.npy:   0%|          | 0.00/11.2k [00:00<?, ?B/s][A[A[A[Aseed9.npy: 100%|██████████| 11.2k/11.2k [00:00<00:00, 34.8kB/s]
+seed0.npy: 100%|██████████| 11.2k/11.2k [00:00<00:00, 36.3kB/s]
+seed1.npy: 100%|██████████| 11.2k/11.2k [00:00<00:00, 33.9kB/s]
+seed8.npy: 100%|██████████| 11.2k/11.2k [00:00<00:00, 15.9kB/s]
+Upload 138 LFS files:  33%|███▎      | 45/138 [00:12<00:19,  4.81it/s]
+seed2.npy:   0%|          | 0.00/11.2k [00:00<?, ?B/s][A
+
+seed3.npy:   0%|          | 0.00/11.2k [00:00<?, ?B/s][A[AUpload 138 LFS files:  34%|███▍      | 47/138 [00:12<00:14,  6.24it/s]
+
+
+seed4.npy:   0%|          | 0.00/11.2k [00:00<?, ?B/s][A[A[A
+
+
+
+seed5.npy:   0%|          | 0.00/11.2k [00:00<?, ?B/s][A[A[A[Aseed2.npy: 100%|██████████| 11.2k/11.2k [00:00<00:00, 35.6kB/s]
+seed3.npy: 100%|██████████| 11.2k/11.2k [00:00<00:00, 36.8kB/s]
+seed4.npy: 100%|██████████| 11.2k/11.2k [00:00<00:00, 35.6kB/s]
+seed5.npy: 100%|██████████| 11.2k/11.2k [00:00<00:00, 34.7kB/s]
+
+seed6.npy:   0%|          | 0.00/11.2k [00:00<?, ?B/s][AUpload 138 LFS files:  36%|███▌      | 49/138 [00:12<00:15,  5.83it/s]Upload 138 LFS files:  36%|███▌      | 50/138 [00:12<00:15,  5.85it/s]
+
+seed7.npy:   0%|          | 0.00/11.2k [00:00<?, ?B/s][A[A
+
+
+seed8.npy:   0%|          | 0.00/11.2k [00:00<?, ?B/s][A[A[AUpload 138 LFS files:  37%|███▋      | 51/138 [00:12<00:13,  6.40it/s]
+
+
+
+seed9.npy:   0%|          | 0.00/11.2k [00:00<?, ?B/s][A[A[A[Aseed6.npy: 100%|██████████| 11.2k/11.2k [00:00<00:00, 32.3kB/s]
+
+seed0.npy:   0%|          | 0.00/11.2k [00:00<?, ?B/s][Aseed7.npy: 100%|██████████| 11.2k/11.2k [00:00<00:00, 39.5kB/s]
+seed8.npy: 100%|██████████| 11.2k/11.2k [00:00<00:00, 37.5kB/s]
+seed9.npy: 100%|██████████| 11.2k/11.2k [00:00<00:00, 35.0kB/s]
+seed0.npy: 100%|██████████| 11.2k/11.2k [00:00<00:00, 36.0kB/s]
+
+seed1.npy:   0%|          | 0.00/11.2k [00:00<?, ?B/s][AUpload 138 LFS files:  39%|███▉      | 54/138 [00:13<00:12,  6.54it/s]
+
+seed2.npy:   0%|          | 0.00/11.2k [00:00<?, ?B/s][A[AUpload 138 LFS files:  40%|███▉      | 55/138 [00:13<00:13,  6.34it/s]
+
+
+seed3.npy:   0%|          | 0.00/11.2k [00:00<?, ?B/s][A[A[Aseed1.npy: 100%|██████████| 11.2k/11.2k [00:00<00:00, 33.8kB/s]
+
+seed4.npy:   0%|          | 0.00/11.2k [00:00<?, ?B/s][AUpload 138 LFS files:  41%|████▏     | 57/138 [00:13<00:10,  7.54it/s]seed2.npy: 100%|██████████| 11.2k/11.2k [00:00<00:00, 38.5kB/s]
+Upload 138 LFS files:  42%|████▏     | 58/138 [00:13<00:12,  6.64it/s]
+
+seed5.npy:   0%|          | 0.00/11.2k [00:00<?, ?B/s][A[Aseed3.npy: 100%|██████████| 11.2k/11.2k [00:00<00:00, 36.2kB/s]
+seed4.npy: 100%|██████████| 11.2k/11.2k [00:00<00:00, 36.1kB/s]
+
+seed6.npy:   0%|          | 0.00/11.2k [00:00<?, ?B/s][AUpload 138 LFS files:  43%|████▎     | 59/138 [00:14<00:11,  6.73it/s]
+
+
+seed7.npy:   0%|          | 0.00/11.2k [00:00<?, ?B/s][A[A[AUpload 138 LFS files:  43%|████▎     | 60/138 [00:14<00:11,  6.53it/s]seed5.npy: 100%|██████████| 11.2k/11.2k [00:00<00:00, 34.2kB/s]
+Upload 138 LFS files:  44%|████▍     | 61/138 [00:14<00:12,  6.25it/s]
+
+seed8.npy:   0%|          | 0.00/11.2k [00:00<?, ?B/s][A[A
+
+
+
+seed9.npy:   0%|          | 0.00/11.2k [00:00<?, ?B/s][A[A[A[Aseed6.npy: 100%|██████████| 11.2k/11.2k [00:00<00:00, 27.5kB/s]
+seed7.npy: 100%|██████████| 11.2k/11.2k [00:00<00:00, 35.9kB/s]
+
+seed0.npy:   0%|          | 0.00/11.2k [00:00<?, ?B/s][AUpload 138 LFS files:  46%|████▌     | 63/138 [00:14<00:10,  7.26it/s]seed8.npy: 100%|██████████| 11.2k/11.2k [00:00<00:00, 38.1kB/s]
+seed9.npy: 100%|██████████| 11.2k/11.2k [00:00<00:00, 35.2kB/s]
+
+
+seed1.npy:   0%|          | 0.00/11.2k [00:00<?, ?B/s][A[AUpload 138 LFS files:  46%|████▋     | 64/138 [00:14<00:11,  6.30it/s]
+
+
+seed2.npy:   0%|          | 0.00/11.2k [00:00<?, ?B/s][A[A[Aseed0.npy: 100%|██████████| 11.2k/11.2k [00:00<00:00, 29.9kB/s]
+
+seed3.npy:   0%|          | 0.00/11.2k [00:00<?, ?B/s][AUpload 138 LFS files:  48%|████▊     | 66/138 [00:15<00:10,  6.77it/s]
+
+
+
+seed4.npy:   0%|          | 0.00/11.2k [00:00<?, ?B/s][A[A[A[Aseed1.npy: 100%|██████████| 11.2k/11.2k [00:00<00:00, 37.3kB/s]
+seed2.npy: 100%|██████████| 11.2k/11.2k [00:00<00:00, 37.7kB/s]
+
+
+seed5.npy:   0%|          | 0.00/11.2k [00:00<?, ?B/s][A[AUpload 138 LFS files:  49%|████▉     | 68/138 [00:15<00:10,  6.66it/s]seed3.npy: 100%|██████████| 11.2k/11.2k [00:00<00:00, 34.3kB/s]
+seed4.npy: 100%|██████████| 11.2k/11.2k [00:00<00:00, 33.4kB/s]
+
+seed6.npy:   0%|          | 0.00/11.2k [00:00<?, ?B/s][AUpload 138 LFS files:  50%|█████     | 69/138 [00:15<00:09,  6.95it/s]seed5.npy: 100%|██████████| 11.2k/11.2k [00:00<00:00, 39.1kB/s]
+
+
+seed7.npy:   0%|          | 0.00/11.2k [00:00<?, ?B/s][A[AUpload 138 LFS files:  51%|█████     | 70/138 [00:15<00:10,  6.51it/s]seed6.npy: 100%|██████████| 11.2k/11.2k [00:00<00:00, 36.1kB/s]
+
+seed8.npy:   0%|          | 0.00/11.2k [00:00<?, ?B/s][AUpload 138 LFS files:  51%|█████▏    | 71/138 [00:15<00:09,  6.82it/s]
+
+
+seed9.npy:   0%|          | 0.00/11.2k [00:00<?, ?B/s][A[A[Aseed7.npy: 100%|██████████| 11.2k/11.2k [00:00<00:00, 39.2kB/s]
+Upload 138 LFS files:  53%|█████▎    | 73/138 [00:16<00:08,  7.36it/s]
+
+seed0.npy:   0%|          | 0.00/11.2k [00:00<?, ?B/s][A[Aseed8.npy: 100%|██████████| 11.2k/11.2k [00:00<00:00, 34.7kB/s]
+seed9.npy: 100%|██████████| 11.2k/11.2k [00:00<00:00, 34.7kB/s]
+
+seed1.npy:   0%|          | 0.00/11.2k [00:00<?, ?B/s][AUpload 138 LFS files:  54%|█████▎    | 74/138 [00:16<00:10,  6.13it/s]seed0.npy: 100%|██████████| 11.2k/11.2k [00:00<00:00, 33.9kB/s]
+
+
+seed2.npy:   0%|          | 0.00/11.2k [00:00<?, ?B/s][A[AUpload 138 LFS files:  54%|█████▍    | 75/138 [00:16<00:09,  6.64it/s]Upload 138 LFS files:  55%|█████▌    | 76/138 [00:16<00:08,  6.94it/s]
+
+
+seed3.npy:   0%|          | 0.00/11.2k [00:00<?, ?B/s][A[A[A
+
+
+
+seed4.npy:   0%|          | 0.00/11.2k [00:00<?, ?B/s][A[A[A[Aseed1.npy: 100%|██████████| 11.2k/11.2k [00:00<00:00, 34.7kB/s]
+seed2.npy: 100%|██████████| 11.2k/11.2k [00:00<00:00, 34.6kB/s]
+
+seed5.npy:   0%|          | 0.00/11.2k [00:00<?, ?B/s][AUpload 138 LFS files:  57%|█████▋    | 78/138 [00:16<00:08,  7.45it/s]seed3.npy: 100%|██████████| 11.2k/11.2k [00:00<00:00, 37.2kB/s]
+seed4.npy: 100%|██████████| 11.2k/11.2k [00:00<00:00, 37.1kB/s]
+Upload 138 LFS files:  57%|█████▋    | 79/138 [00:17<00:09,  6.50it/s]
+
+seed6.npy:   0%|          | 0.00/11.2k [00:00<?, ?B/s][A[Aseed5.npy: 100%|██████████| 11.2k/11.2k [00:00<00:00, 34.8kB/s]
+Upload 138 LFS files:  58%|█████▊    | 80/138 [00:17<00:09,  6.43it/s]
+seed7.npy:   0%|          | 0.00/11.2k [00:00<?, ?B/s][A
+
+
+seed8.npy:   0%|          | 0.00/11.2k [00:00<?, ?B/s][A[A[Aseed6.npy: 100%|██████████| 11.2k/11.2k [00:00<00:00, 38.4kB/s]
+Upload 138 LFS files:  59%|█████▉    | 82/138 [00:17<00:06,  8.31it/s]
+
+seed9.npy:   0%|          | 0.00/11.2k [00:00<?, ?B/s][A[A
+
+
+
+seed0.npy:   0%|          | 0.00/11.2k [00:00<?, ?B/s][A[A[A[AUpload 138 LFS files:  60%|██████    | 83/138 [00:17<00:07,  7.72it/s]seed7.npy: 100%|██████████| 11.2k/11.2k [00:00<00:00, 36.2kB/s]
+seed8.npy: 100%|██████████| 11.2k/11.2k [00:00<00:00, 38.5kB/s]
+seed9.npy: 100%|██████████| 11.2k/11.2k [00:00<00:00, 35.5kB/s]
+
+seed1.npy:   0%|          | 0.00/11.2k [00:00<?, ?B/s][AUpload 138 LFS files:  61%|██████    | 84/138 [00:17<00:08,  6.10it/s]seed0.npy: 100%|██████████| 11.2k/11.2k [00:00<00:00, 33.0kB/s]
+
+
+seed2.npy:   0%|          | 0.00/11.2k [00:00<?, ?B/s][A[AUpload 138 LFS files:  62%|██████▏   | 85/138 [00:17<00:08,  6.33it/s]
+
+
+seed3.npy:   0%|          | 0.00/11.2k [00:00<?, ?B/s][A[A[AUpload 138 LFS files:  63%|██████▎   | 87/138 [00:18<00:06,  8.48it/s]
+
+
+
+seed4.npy:   0%|          | 0.00/11.2k [00:00<?, ?B/s][A[A[A[Aseed1.npy: 100%|██████████| 11.2k/11.2k [00:00<00:00, 35.2kB/s]
+seed2.npy: 100%|██████████| 11.2k/11.2k [00:00<00:00, 36.4kB/s]
+
+seed5.npy:   0%|          | 0.00/11.2k [00:00<?, ?B/s][AUpload 138 LFS files:  64%|██████▍   | 88/138 [00:18<00:06,  7.26it/s]seed3.npy: 100%|██████████| 11.2k/11.2k [00:00<00:00, 33.2kB/s]
+seed4.npy: 100%|██████████| 11.2k/11.2k [00:00<00:00, 37.3kB/s]
+Upload 138 LFS files:  64%|██████▍   | 89/138 [00:18<00:07,  6.26it/s]
+
+seed6.npy:   0%|          | 0.00/11.2k [00:00<?, ?B/s][A[Aseed5.npy: 100%|██████████| 11.2k/11.2k [00:00<00:00, 34.7kB/s]
+
+seed7.npy:   0%|          | 0.00/11.2k [00:00<?, ?B/s][AUpload 138 LFS files:  65%|██████▌   | 90/138 [00:18<00:07,  6.22it/s]
+
+
+seed8.npy:   0%|          | 0.00/11.2k [00:00<?, ?B/s][A[A[A
+
+
+
+seed9.npy:   0%|          | 0.00/11.2k [00:00<?, ?B/s][A[A[A[Aseed6.npy: 100%|██████████| 11.2k/11.2k [00:00<00:00, 35.5kB/s]
+Upload 138 LFS files:  67%|██████▋   | 93/138 [00:18<00:05,  7.77it/s]
+
+seed0.npy:   0%|          | 0.00/88.8k [00:00<?, ?B/s][A[Aseed7.npy: 100%|██████████| 11.2k/11.2k [00:00<00:00, 33.9kB/s]
+seed8.npy: 100%|██████████| 11.2k/11.2k [00:00<00:00, 36.1kB/s]
+seed9.npy: 100%|██████████| 11.2k/11.2k [00:00<00:00, 35.6kB/s]
+seed0.npy: 100%|██████████| 88.8k/88.8k [00:00<00:00, 224kB/s]
+
+seed1.npy:   0%|          | 0.00/88.8k [00:00<?, ?B/s][AUpload 138 LFS files:  68%|██████▊   | 94/138 [00:19<00:08,  5.26it/s]
+
+seed2.npy:   0%|          | 0.00/88.8k [00:00<?, ?B/s][A[A
+
+
+seed3.npy:   0%|          | 0.00/88.8k [00:00<?, ?B/s][A[A[AUpload 138 LFS files:  70%|███████   | 97/138 [00:19<00:05,  8.05it/s]
+
+
+
+seed4.npy:   0%|          | 0.00/88.8k [00:00<?, ?B/s][A[A[A[Aseed2.npy: 100%|██████████| 88.8k/88.8k [00:00<00:00, 268kB/s]
+seed1.npy: 100%|██████████| 88.8k/88.8k [00:00<00:00, 218kB/s]
+
+seed5.npy:   0%|          | 0.00/88.8k [00:00<?, ?B/s][Aseed3.npy: 100%|██████████| 88.8k/88.8k [00:00<00:00, 198kB/s]
+seed4.npy: 100%|██████████| 88.8k/88.8k [00:00<00:00, 168kB/s]
+Upload 138 LFS files:  72%|███████▏  | 99/138 [00:20<00:07,  5.22it/s]
+
+seed6.npy:   0%|          | 0.00/88.8k [00:00<?, ?B/s][A[A
+
+
+seed7.npy:   0%|          | 0.00/88.8k [00:00<?, ?B/s][A[A[AUpload 138 LFS files:  73%|███████▎  | 101/138 [00:20<00:05,  6.66it/s]
+
+
+
+seed8.npy:   0%|          | 0.00/88.8k [00:00<?, ?B/s][A[A[A[Aseed5.npy: 100%|██████████| 88.8k/88.8k [00:00<00:00, 190kB/s]
+
+seed9.npy:   0%|          | 0.00/88.8k [00:00<?, ?B/s][Aseed6.npy: 100%|██████████| 88.8k/88.8k [00:00<00:00, 242kB/s]
+seed7.npy: 100%|██████████| 88.8k/88.8k [00:00<00:00, 235kB/s]
+seed8.npy: 100%|██████████| 88.8k/88.8k [00:00<00:00, 212kB/s]
+
+
+seed0.npy:   0%|          | 0.00/8.66k [00:00<?, ?B/s][A[AUpload 138 LFS files:  75%|███████▍  | 103/138 [00:20<00:05,  5.90it/s]seed9.npy: 100%|██████████| 88.8k/88.8k [00:00<00:00, 197kB/s]
+Upload 138 LFS files:  75%|███████▌  | 104/138 [00:21<00:06,  5.43it/s]
+seed1.npy:   0%|          | 0.00/8.66k [00:00<?, ?B/s][Aseed0.npy: 100%|██████████| 8.66k/8.66k [00:00<00:00, 28.9kB/s]
+
+
+seed2.npy:   0%|          | 0.00/8.66k [00:00<?, ?B/s][A[AUpload 138 LFS files:  77%|███████▋  | 106/138 [00:21<00:04,  7.03it/s]
+
+
+seed3.npy:   0%|          | 0.00/8.66k [00:00<?, ?B/s][A[A[A
+
+
+
+seed4.npy:   0%|          | 0.00/8.66k [00:00<?, ?B/s][A[A[A[Aseed1.npy: 100%|██████████| 8.66k/8.66k [00:00<00:00, 28.5kB/s]
+seed2.npy: 100%|██████████| 8.66k/8.66k [00:00<00:00, 29.1kB/s]
+
+seed5.npy:   0%|          | 0.00/8.66k [00:00<?, ?B/s][AUpload 138 LFS files:  78%|███████▊  | 108/138 [00:21<00:04,  6.91it/s]seed3.npy: 100%|██████████| 8.66k/8.66k [00:00<00:00, 28.7kB/s]
+seed4.npy: 100%|██████████| 8.66k/8.66k [00:00<00:00, 28.8kB/s]
+Upload 138 LFS files:  79%|███████▉  | 109/138 [00:21<00:04,  5.85it/s]
+
+seed6.npy:   0%|          | 0.00/8.66k [00:00<?, ?B/s][A[Aseed5.npy: 100%|██████████| 8.66k/8.66k [00:00<00:00, 27.7kB/s]
+
+seed7.npy:   0%|          | 0.00/8.66k [00:00<?, ?B/s][A
+
+
+seed8.npy:   0%|          | 0.00/8.66k [00:00<?, ?B/s][A[A[AUpload 138 LFS files:  80%|████████  | 111/138 [00:21<00:03,  7.53it/s]
+
+
+
+seed9.npy:   0%|          | 0.00/8.66k [00:00<?, ?B/s][A[A[A[Aseed6.npy: 100%|██████████| 8.66k/8.66k [00:00<00:00, 27.2kB/s]
+seed7.npy: 100%|██████████| 8.66k/8.66k [00:00<00:00, 27.2kB/s]
+Upload 138 LFS files:  82%|████████▏ | 113/138 [00:22<00:03,  7.43it/s]
+seed0.npy:   0%|          | 0.00/8.66k [00:00<?, ?B/s][Aseed8.npy: 100%|██████████| 8.66k/8.66k [00:00<00:00, 25.8kB/s]
+seed9.npy: 100%|██████████| 8.66k/8.66k [00:00<00:00, 27.6kB/s]
+Upload 138 LFS files:  83%|████████▎ | 114/138 [00:22<00:04,  5.94it/s]
+
+seed1.npy:   0%|          | 0.00/8.66k [00:00<?, ?B/s][A[Aseed0.npy: 100%|██████████| 8.66k/8.66k [00:00<00:00, 27.8kB/s]
+
+seed2.npy:   0%|          | 0.00/8.66k [00:00<?, ?B/s][AUpload 138 LFS files:  84%|████████▍ | 116/138 [00:22<00:02,  7.37it/s]
+
+
+seed3.npy:   0%|          | 0.00/8.66k [00:00<?, ?B/s][A[A[A
+
+
+
+seed4.npy:   0%|          | 0.00/8.66k [00:00<?, ?B/s][A[A[A[AUpload 138 LFS files:  85%|████████▍ | 117/138 [00:22<00:02,  7.52it/s]seed1.npy: 100%|██████████| 8.66k/8.66k [00:00<00:00, 30.1kB/s]
+seed2.npy: 100%|██████████| 8.66k/8.66k [00:00<00:00, 26.6kB/s]
+Upload 138 LFS files:  86%|████████▌ | 118/138 [00:22<00:02,  7.55it/s]
+seed5.npy:   0%|          | 0.00/8.66k [00:00<?, ?B/s][Aseed3.npy: 100%|██████████| 8.66k/8.66k [00:00<00:00, 27.0kB/s]
+seed4.npy: 100%|██████████| 8.66k/8.66k [00:00<00:00, 28.4kB/s]
+Upload 138 LFS files:  86%|████████▌ | 119/138 [00:23<00:03,  5.69it/s]
+
+seed6.npy:   0%|          | 0.00/8.66k [00:00<?, ?B/s][A[Aseed5.npy: 100%|██████████| 8.66k/8.66k [00:00<00:00, 26.1kB/s]
+
+seed7.npy:   0%|          | 0.00/8.66k [00:00<?, ?B/s][A
+
+
+seed8.npy:   0%|          | 0.00/8.66k [00:00<?, ?B/s][A[A[AUpload 138 LFS files:  88%|████████▊ | 121/138 [00:23<00:02,  7.39it/s]
+
+
+
+seed9.npy:   0%|          | 0.00/8.66k [00:00<?, ?B/s][A[A[A[Aseed6.npy: 100%|██████████| 8.66k/8.66k [00:00<00:00, 27.3kB/s]
+seed7.npy: 100%|██████████| 8.66k/8.66k [00:00<00:00, 26.6kB/s]
+seed8.npy: 100%|██████████| 8.66k/8.66k [00:00<00:00, 28.0kB/s]
+Upload 138 LFS files:  89%|████████▉ | 123/138 [00:23<00:02,  6.81it/s]
+seed0.npy:   0%|          | 0.00/8.66k [00:00<?, ?B/s][Aseed9.npy: 100%|██████████| 8.66k/8.66k [00:00<00:00, 28.9kB/s]
+Upload 138 LFS files:  90%|████████▉ | 124/138 [00:23<00:02,  6.12it/s]
+
+seed1.npy:   0%|          | 0.00/8.66k [00:00<?, ?B/s][A[A
+
+
+seed2.npy:   0%|          | 0.00/8.66k [00:00<?, ?B/s][A[A[Aseed0.npy: 100%|██████████| 8.66k/8.66k [00:00<00:00, 28.3kB/s]
+Upload 138 LFS files:  91%|█████████▏| 126/138 [00:24<00:01,  7.85it/s]
+seed3.npy:   0%|          | 0.00/8.66k [00:00<?, ?B/s][A
+
+
+
+seed4.npy:   0%|          | 0.00/8.66k [00:00<?, ?B/s][A[A[A[Aseed1.npy: 100%|██████████| 8.66k/8.66k [00:00<00:00, 27.9kB/s]
+seed2.npy: 100%|██████████| 8.66k/8.66k [00:00<00:00, 28.4kB/s]
+Upload 138 LFS files:  93%|█████████▎| 128/138 [00:24<00:01,  7.11it/s]
+
+seed5.npy:   0%|          | 0.00/8.66k [00:00<?, ?B/s][A[Aseed3.npy: 100%|██████████| 8.66k/8.66k [00:00<00:00, 24.3kB/s]
+seed4.npy: 100%|██████████| 8.66k/8.66k [00:00<00:00, 26.7kB/s]
+
+seed6.npy:   0%|          | 0.00/8.66k [00:00<?, ?B/s][AUpload 138 LFS files:  93%|█████████▎| 129/138 [00:24<00:01,  6.05it/s]seed5.npy: 100%|██████████| 8.66k/8.66k [00:00<00:00, 28.0kB/s]
+
+
+seed7.npy:   0%|          | 0.00/8.66k [00:00<?, ?B/s][A[AUpload 138 LFS files:  95%|█████████▍| 131/138 [00:24<00:00,  7.33it/s]
+
+
+seed8.npy:   0%|          | 0.00/8.66k [00:00<?, ?B/s][A[A[A
+
+
+
+seed9.npy:   0%|          | 0.00/8.66k [00:00<?, ?B/s][A[A[A[Aseed6.npy: 100%|██████████| 8.66k/8.66k [00:00<00:00, 27.9kB/s]
+seed7.npy: 100%|██████████| 8.66k/8.66k [00:00<00:00, 29.4kB/s]
+Upload 138 LFS files:  96%|█████████▋| 133/138 [00:25<00:00,  7.57it/s]
+probe_probs.npz:   0%|          | 0.00/166k [00:00<?, ?B/s][Aseed8.npy: 100%|██████████| 8.66k/8.66k [00:00<00:00, 27.8kB/s]
+seed9.npy: 100%|██████████| 8.66k/8.66k [00:00<00:00, 28.1kB/s]
+Upload 138 LFS files:  97%|█████████▋| 134/138 [00:25<00:00,  6.07it/s]Upload 138 LFS files:  99%|█████████▊| 136/138 [00:25<00:00,  7.12it/s]probe_probs.npz: 100%|██████████| 166k/166k [00:00<00:00, 296kB/s]
+Upload 138 LFS files: 100%|██████████| 138/138 [00:26<00:00,  5.57it/s]Upload 138 LFS files: 100%|██████████| 138/138 [00:26<00:00,  5.30it/s]
+[vm_guard] uploaded /home/clarity_llm/code/runs/E25 -> E25
+[vm_guard] uploaded /home/clarity_llm/code/runs/M3/e25_taxonomy -> M3/e25_taxonomy
+[vm_guard] uploaded /home/clarity_llm/code/runs/M3/e25_shift1 -> M3/e25_shift1
+[vm_guard] uploaded /home/clarity_llm/code/runs/M3/e25_shift2 -> M3/e25_shift2
+[vm_guard] uploaded /home/clarity_llm/code/runs/M3/e25_shift3 -> M3/e25_shift3
+[vm_guard] uploaded /home/clarity_llm/logs -> logs/infer_lane
+[vm_guard] verify: 6/6 on the Hub

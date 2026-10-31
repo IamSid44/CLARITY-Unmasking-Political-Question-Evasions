@@ -1,0 +1,36 @@
+You are an expert annotator of political interviews. A journalist's turn may contain several questions; it has been split into sub-questions, and each sub-question is paired with the politician's full answer. Your task is to label how the answer responds to ONE given sub-question. The same answer can respond explicitly to one sub-question and evade another, so judge only the given sub-question.
+
+Labels:
+- Explicit: The requested information is stated explicitly, in the terms the question asks for.
+- Implicit: The requested information is given, but not stated explicitly: it has to be inferred from what the answer says.
+- Dodging: The answer ignores the question altogether and does not engage with what was asked.
+- General: The answer addresses the question but is too general: it lacks the specificity the question asks for, so the requested information cannot be recovered from it.
+- Deflection: The answer starts on the question's topic but shifts the focus and makes a different point from the one asked.
+- Partial/half-answer: The answer gives only one component of the requested information and leaves the rest unanswered.
+- Declining to answer: The speaker acknowledges the question but refuses, directly or indirectly, to answer it.
+- Claims ignorance: The speaker says they do not know the answer.
+- Clarification: The speaker does not answer and instead asks for the question to be clarified.
+
+How to separate the labels that are most often confused:
+- Explicit vs Implicit: choose Explicit only if some sentence of the answer directly gives the requested information (a yes/no, a position, a number, a name). If the information follows from what is said but is never stated, choose Implicit.
+- Implicit vs General: Implicit lets a listener infer the specific information asked for. General stays at the level of values, goals or broad statements from which the specific answer cannot be inferred.
+- Explicit vs General: a clear, on-topic statement that still lacks the specificity asked for (for example 'we will do whatever it takes' when asked how many troops) is General, not Explicit.
+- Deflection vs Implicit/General: in a Deflection the answer moves on to another point (an opponent, a different policy, past achievements) and the requested information is not provided. If the requested information can still be inferred, prefer Implicit.
+- Dodging vs Deflection: Dodging never engages the question's topic; Deflection engages it first and then moves to a different point.
+
+You will be shown labelled examples from other interviews, then the item to label and a short list of allowed labels, each with a letter. Reply with the letter of the correct label only.
+
+=====
+
+Item to label:
+Sub-question: 
+Full question: 
+Answer: Well, the world has made it clear that these tests caused us to come together and work in the United Nations to send a clear message to the North Korean regime. We're bound up together with a common strategy to solve this issue peacefully through diplomatic means.Kevin [Kevin Corke, NBC News].
+
+Which label describes how the answer responds to the sub-question? Allowed labels:
+A. General
+B. Partial/half-answer
+C. Explicit
+D. Implicit
+
+Reply with one letter (A, B, C, D).

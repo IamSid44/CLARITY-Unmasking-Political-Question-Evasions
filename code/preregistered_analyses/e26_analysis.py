@@ -93,11 +93,16 @@ def site_report(site: str) -> dict:
             print(f"   full system dev S2 (frozen params, in-sample): bf16 {sb:.3f}, {prec} {sq:.3f} ({sq - sb:+.3f}); "
                   f"S1 {score_subtask1(leaf_to_official_clarity(lb['pred']), CLAR).macro_f1:.3f} vs "
                   f"{score_subtask1(leaf_to_official_clarity(lq_['pred']), CLAR).macro_f1:.3f}"
-                  + ("" if full else "  [27B records incomplete: M1 fallback on unscored items]"))
+                  + ("" if full else f"  [27B records incomplete: {prec} {(lq_['defer'] & ~lq_['scored']).sum()} of "
+                                     f"{lq_['defer'].sum()} deferred items unscored, bf16 "
+                                     f"{(lb['defer'] & ~lb['scored']).sum()} of {lb['defer'].sum()}; M1 decision kept there]"))
             m1_flip = lb["m1_pred"] != lq_["m1_pred"]
             sys_flip = lb["pred"] != lq_["pred"]
             in_def = lb["defer"][m1_flip].mean() if m1_flip.any() else float("nan")
-            print(f"   H26-4 cascade absorbs: M1 decisions flipped {m1_flip.sum()} ({m1_flip.mean():.3f}); share of them "
+            sm_b, sm_q = (score_subtask2(z["m1_pred"], GOLD).macro_f1 for z in (lb, lq_))
+            print(f"   M1 decisions alone (frozen tau_M1): bf16 {sm_b:.3f}, {prec} {sm_q:.3f} ({sm_q - sm_b:+.3f})")
+            tag = "H26-4" if prec == "fp8" else "exploratory (not registered)"
+            print(f"   {tag} cascade absorbs: M1 decisions flipped {m1_flip.sum()} ({m1_flip.mean():.3f}); share of them "
                   f"among items deferred to the 27B {in_def:.3f} (dev deferral {lb['defer'].mean():.3f}); system decisions "
                   f"flipped {sys_flip.sum()} ({sys_flip.mean():.3f})")
             res["absorb"] = {"m1_flips": int(m1_flip.sum()), "in_deferred": float(in_def), "sys_flips": int(sys_flip.sum())}

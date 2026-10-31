@@ -1,0 +1,19 @@
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+/home/clarity_llm/code/code/audit/quant.py:93: UserWarning: Converting a tensor with requires_grad=True to a scalar may lead to unexpected behavior.
+Consider using tensor.detach() first. (Triggered internally at /pytorch/torch/csrc/autograd/generated/python_variable_methods.cpp:836.)
+  rel = float((y - ref).norm() / ref.norm())
+[fp8] rowwise: relative error vs bf16 on a random layer 0.0367
+Loading weights:   0%|          | 0/398 [00:00<?, ?it/s]Loading weights:  13%|█▎        | 53/398 [00:00<00:00, 519.61it/s]Loading weights:  26%|██▋       | 105/398 [00:00<00:00, 473.67it/s]Loading weights:  39%|███▉      | 157/398 [00:00<00:00, 486.11it/s]Loading weights:  52%|█████▏    | 206/398 [00:00<00:00, 473.33it/s]Loading weights:  64%|██████▍   | 256/398 [00:00<00:00, 474.19it/s]Loading weights:  76%|███████▋  | 304/398 [00:00<00:00, 469.64it/s]Loading weights:  89%|████████▉ | 355/398 [00:00<00:00, 466.39it/s]Loading weights: 100%|██████████| 398/398 [00:00<00:00, 478.08it/s]
+[transformers] [1mQwen3ForSequenceClassification LOAD REPORT[0m from: Qwen/Qwen3-8B-Base
+Key            | Status     | 
+---------------+------------+-
+lm_head.weight | UNEXPECTED | 
+score.weight   | MISSING    | 
+
+Notes:
+- UNEXPECTED:	can be ignored when loading from different task/architecture; not ok if you expect identical arch.
+- MISSING:	those params were newly initialized because missing from the checkpoint. Consider training on your downstream task.
+[fp8] 252 decoder Linear layers converted (rowwise)
+[smoke] fp8: max |dp| vs saved bf16 0.243, argmax agreement 0.938, 12.9 items/s
+{"seed": 0, "load_s": 2.4, "dev_own": {"items": 32, "seconds": 2.47, "items_per_s": 12.94}, "peak_mem_gb": 20.95}
+done

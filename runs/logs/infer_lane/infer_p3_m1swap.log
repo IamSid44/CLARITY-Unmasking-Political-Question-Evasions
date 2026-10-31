@@ -1,0 +1,16 @@
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+frames: {'dev_null': 308, 'dev_own': 308, 'dev_pre25': 308, 'dev_pre50': 308, 'dev_pre75': 308, 'dev_qonly': 308, 'dev_rand': 308, 'test_null': 237, 'test_own': 237, 'test_pre25': 237, 'test_pre50': 237, 'test_pre75': 237, 'test_rand': 237}
+Loading weights:   0%|          | 0/398 [00:00<?, ?it/s]Loading weights:   7%|▋         | 26/398 [00:00<00:01, 253.15it/s]Loading weights:  13%|█▎        | 52/398 [00:00<00:01, 230.85it/s]Loading weights:  19%|█▉        | 76/398 [00:00<00:01, 190.63it/s]Loading weights:  26%|██▌       | 104/398 [00:00<00:01, 215.25it/s]Loading weights:  32%|███▏      | 127/398 [00:00<00:01, 216.61it/s]Loading weights:  38%|███▊      | 150/398 [00:00<00:01, 217.95it/s]Loading weights:  43%|████▎     | 173/398 [00:00<00:01, 216.70it/s]Loading weights:  49%|████▉     | 195/398 [00:00<00:00, 214.82it/s]Loading weights:  55%|█████▍    | 217/398 [00:01<00:00, 213.26it/s]Loading weights:  60%|██████    | 239/398 [00:01<00:00, 212.35it/s]Loading weights:  66%|██████▌   | 261/398 [00:01<00:00, 208.93it/s]Loading weights:  71%|███████   | 283/398 [00:01<00:00, 212.01it/s]Loading weights:  77%|███████▋  | 305/398 [00:01<00:00, 208.15it/s]Loading weights:  82%|████████▏ | 326/398 [00:01<00:00, 208.56it/s]Loading weights:  87%|████████▋ | 347/398 [00:01<00:00, 205.36it/s]Loading weights:  92%|█████████▏| 368/398 [00:01<00:00, 202.94it/s]Loading weights:  98%|█████████▊| 390/398 [00:01<00:00, 203.82it/s]Loading weights: 100%|██████████| 398/398 [00:01<00:00, 213.58it/s]
+[transformers] [1mQwen3ForSequenceClassification LOAD REPORT[0m from: Qwen/Qwen3-8B-Base
+Key            | Status     | 
+---------------+------------+-
+lm_head.weight | UNEXPECTED | 
+score.weight   | MISSING    | 
+
+Notes:
+- UNEXPECTED:	can be ignored when loading from different task/architecture; not ok if you expect identical arch.
+- MISSING:	those params were newly initialized because missing from the checkpoint. Consider training on your downstream task.
+[transformers] `use_return_dict` is deprecated! Use `return_dict` instead!
+{"frame": "dev_null", "seed": 0, "items": 308, "seconds": 19.97, "items_per_s": 15.42}
+{"frame": "dev_own", "seed": 0, "items": 308, "seconds": 21.01, "items_per_s": 14.66, "ctrl_max_abs_dp": 0.19586187601089478, "ctrl_argmax_agree": 0.987012987012987}
+CONTROL FAILED: dev_own seed 0 differs from the saved dev_probs.npy

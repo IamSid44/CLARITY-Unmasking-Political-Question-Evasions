@@ -5,10 +5,10 @@
 Siddarth Gottumukkula, Vidvathama R, Sanjana Reddy Vonteri, Shashikanta Sahoo<br>
 Advanced NLP course project, International Institute of Information Technology, Hyderabad
 
-> **Status: experiments closed (2026-10-30); final report and slides due 2026-10-31.** The mid-evaluation is
+> **Status: experiments closed (2026-10-31); final report and slides due 2026-10-31.** The mid-evaluation is
 > complete ([report](report/mid_evaluation_report.pdf), [slides](report/mid_evaluation_slides.pdf)). After it,
 > the system below became a measurement instrument for a research question, *is evasion in the question or in the
-> answerer?* (E24–E25). **Start with [`docs/documentation.md`](docs/documentation.md)**: every experiment, why it
+> answerer?* (E24–E25), and was tested at reduced precision (E26). **Start with [`docs/documentation.md`](docs/documentation.md)**: every experiment, why it
 > was run, and how each led to the next. All numbers are on the official dev set.
 
 ---
@@ -113,7 +113,8 @@ file ([`docs/04_results_sources.md`](docs/04_results_sources.md)).
 ├── docs/                  experiment log, research narrative, code guide, raw outputs, figures
 ├── logs/                  training and pipeline logs of every run
 ├── report/                mid-evaluation report and slides, with LaTeX source
-├── runs/M4/               distillation targets (all other run outputs are on Hugging Face)
+├── runs/                  per-seed probabilities, metrics, 27B records and labels of the Qwen runs, the cascade
+│                          and E21–E26 (model weights and the DeBERTa runs are on Hugging Face)
 └── submissions/           Codabench predictions: the DeBERTa systems, the cascade (E19_*), the final system (E23_*)
 ```
 

@@ -1,0 +1,8 @@
+2026-10-31 00:53:36 resume: NF4 seeds 3-4 (GPU 0) and 8-9 (GPU 2)
+2026-10-31 00:58:03 NF4 seeds: 10/10
+2026-10-31 00:58:03 resume: bf16 seeds 1-9 over GPUs 0+2 (12 GiB per card)
+2026-10-31 01:26:21 bf16 seeds: 10/10
+merged NF4 seeds: ['seed0', 'seed1', 'seed2', 'seed3', 'seed4', 'seed5', 'seed6', 'seed7', 'seed8', 'seed9']
+-rw-rw-r-- 1 vidvatha.ramesh vidvatha.ramesh 600K Oct 31 01:26 /home2/vidvatha.ramesh/e26_clarity/e26_a4000.tgz
+2026-10-31 01:26:25 ALL DONE
+

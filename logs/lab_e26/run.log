@@ -1,0 +1,10 @@
+2026-10-30 23:44:04 phase 0: setup in /home2/vidvatha.ramesh/e26_clarity
+2026-10-31 00:31:38 phase 0 done
+2026-10-31 00:31:38 phase 1: NF4
+[smoke] nf4: max |dp| vs saved bf16 0.785, argmax agreement 0.812, 1.7 items/s
+2026-10-31 00:48:50 phase 1 done: torch.OutOfMemoryError: CUDA out of memory. Tried to allocate 384.00 MiB. GPU 0 has a total capacity of 15.72 GiB of which 321.94 MiB is free. Including non-PyTorch memory, this process 
+2026-10-31 00:48:50 phase 2: bf16 reference over GPUs 0+2
+2026-10-31 00:51:36 phase 2 done: torch.OutOfMemoryError: CUDA out of memory. Tried to allocate 192.00 MiB. GPU 1 has a total capacity of 15.72 GiB of which 160.62 MiB is free. Including non-PyTorch memory, this process 
+2026-10-31 00:51:36 phase 3: merge and pack
+2026-10-31 00:51:39 ALL DONE
+

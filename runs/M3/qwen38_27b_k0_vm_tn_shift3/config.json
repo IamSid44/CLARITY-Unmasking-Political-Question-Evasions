@@ -1,0 +1,23 @@
+{
+  "backend": "vllm",
+  "model": "Qwen/Qwen3.8-27B-FP8",
+  "k": 0,
+  "prompt_version": "m3-v1",
+  "prompt_variant": "full",
+  "top_k": 4,
+  "order": "shift3",
+  "cache_pad": false,
+  "think_budget": 0,
+  "test_text": "normalized",
+  "m1_inputs": "runs/M1/Q8_fullq_lora_12ep_fixed_a0.05/cascade_inputs.npz",
+  "extra_body": {
+    "chat_template_kwargs": {
+      "enable_thinking": false
+    }
+  },
+  "chat_template_kwargs": {
+    "enable_thinking": false
+  },
+  "samples": 0,
+  "started": "2026-10-30 06:45:37"
+}

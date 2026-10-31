@@ -1,0 +1,5 @@
+{
+  "model": "Qwen/Qwen3-Embedding-0.6B",
+  "text": "Sub-question + Answer",
+  "pooling": "last token, L2-normalised"
+}

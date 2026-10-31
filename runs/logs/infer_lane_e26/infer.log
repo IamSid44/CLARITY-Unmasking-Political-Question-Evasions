@@ -1,0 +1,38 @@
+2026-10-30 16:57:00 lane: start (PASS=4, IDLE_MIN=20, MAX_HOURS=0.9, AUTO_STOP=1, keys: yes)
+2026-10-30 16:58:47 deps: start
+2026-10-30 16:58:48 deps: done ( + threadpoolctl==3.7.0)
+2026-10-30 16:58:48 fetch: start
+2026-10-30 17:01:55 fetch: done (fetched into /home/clarity_llm/code/runs)
+2026-10-30 17:01:55 m1inputs: start
+2026-10-30 17:01:58 m1inputs: done (cascade inputs reproduce the saved candidate sets)
+2026-10-30 17:01:58 p4_frames: start
+2026-10-30 17:01:58 p4_frames: done (frames: {'dev_own': 308, 'dev_qonly': 308, 'dev_rand': 308, 'dev_null': 308, 'dev_pre25': 308, 'dev_pre50': 308, 'dev_pre75': 308, 'test_own': 237, 't)
+2026-10-30 17:01:58 p4_smoke: start
+2026-10-30 17:02:12 FAILED: p4_smoke (logs/infer_p4_smoke.log:     raise ValueError("Cannot handle batch sizes > 1 if no padding token is defined.") ValueError: Cannot handle batch sizes > 1 if no padding token is defined. )
+2026-10-30 17:02:12 p4_bf16: start
+2026-10-30 17:02:22 FAILED: p4_bf16 (logs/infer_p4_bf16.log:     raise ValueError("Cannot handle batch sizes > 1 if no padding token is defined.") ValueError: Cannot handle batch sizes > 1 if no padding token is defined. )
+2026-10-30 17:02:22 waiting for the 27B download and vLLM install
+2026-10-30 17:02:22 lane: steps finished
+2026-10-30 17:02:22 finish: done
+2026-10-30 17:02:22 upload: start
+2026-10-30 17:04:09 lane: start (PASS=4, IDLE_MIN=20, MAX_HOURS=0.75, AUTO_STOP=1, keys: yes)
+2026-10-30 17:04:09 deps: already done
+2026-10-30 17:04:09 fetch: already done
+2026-10-30 17:04:09 m1inputs: already done
+2026-10-30 17:04:09 p4_frames: already done
+2026-10-30 17:04:09 p4_smoke: start
+2026-10-30 17:04:19 p4_smoke: done (done)
+2026-10-30 17:04:19 p4_bf16: start
+2026-10-30 17:08:37 p4_bf16: done (done)
+2026-10-30 17:08:37 p4_fp8: start
+2026-10-30 17:13:47 p4_fp8: done (done)
+2026-10-30 17:13:47 p4_jobs: start
+2026-10-30 17:13:48 p4_jobs: done (rtxpro: precisions ['bf16', 'fp8']; 27B jobs (deferred, distinct candidate sets): 136)
+2026-10-30 17:13:48 waiting for the 27B download and vLLM install
+2026-10-30 17:13:48 p4_27b: start
+2026-10-30 17:19:56 p4_27b: done ((EngineCore pid=13367) INFO 10-30 17:19:51 [core.py:1422] [shutdown] EngineCore: exiting busy loop)
+2026-10-30 17:19:56 p4_label: start
+2026-10-30 17:19:57 p4_label: done (rtxpro fp8 slice: 345 items, deferred 107, 27B-scored 0)
+2026-10-30 17:19:57 lane: steps finished
+2026-10-30 17:19:57 finish: done
+2026-10-30 17:19:57 upload: start

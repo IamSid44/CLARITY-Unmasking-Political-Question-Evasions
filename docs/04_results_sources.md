@@ -358,3 +358,50 @@ All 27B numbers here come from one copy of the model (the JarvisLabs VM).
 | 27B call: original vs cache-aligned prompt (GPU-s); argmax agreement | 0.101 vs 0.050; 0.906 | same, C |
 | specificity: Spearman with clarity order (train); AUROC Clear Reply | +0.095 [+0.060, +0.131]; 0.566 | same, F |
 | ladder, primary: 10-split S2, GPU-s; minus random escalation | 0.600, 0.221; +0.018 | `E23_systems.txt` S4 |
+
+## 16. After the shared task: is evasion in the question or the answerer? (E24–E26, done 2026-10-30/31)
+
+Sources:
+- `raw/E24_prechecks.txt` (`preregistered_analyses/e24_prechecks.py`, CPU);
+- `raw/E25_analysis.txt` (`preregistered_analyses/e25_analysis.py`, CPU, on the outputs in `runs/E25/`);
+- `raw/E26_analysis.txt` (`preregistered_analyses/e26_analysis.py`, CPU, on the outputs in `runs/E26/`).
+
+Every E25/E26 label comes from the frozen E23 accuracy point (`code/experiments/e25/frozen_system.json`);
+nothing is refitted on the new inputs. The hypotheses and their thresholds were registered before each run
+(log §E24–E26). "Persistence" = share of items whose label is unchanged when the question is swapped.
+
+| Number | Value | Source |
+|---|---|---|
+| train sibling pairs (same answer, different sub-question): different S2 label | 61.5% of 3,079 | `E24_prechecks.txt` P1 |
+| P(two annotators' labels differ): same item / sibling items / random items | 0.432 / 0.716 / 0.834 | P2 |
+| M1 predicts the same label on dev siblings with disjoint gold sets | 19.0% (11/58) | P2 |
+| routing: M1 errors caught in the top 30%, total / aleatoric / epistemic uncertainty | 53 / 53 / 49 of 115 | P3 |
+| question–answer specificity (PMI), AUC Clear Reply vs rest | 0.566 | P8 |
+| modules rejected by their pre-checks (P3, P4, P5, P6, P7) | 5 | P3–P7 |
+| M1 dev control on the H100 (registered tolerance 1e-3) | max \|dp\| 0.196: failed, amended | `E25_analysis.txt` A |
+| instrument on dev: H100 27B calls vs frozen predictions, agreement | 0.981 | A |
+| **H25a-1** Clear-Reply share, dev: own question / random question; persistence | **0.253 / 0.013**; 0.188 (held) | B |
+| same, test (label-free replication) | 0.338 / 0.110; 0.367 | B |
+| persistence with the question removed (null) / question only (qonly) | 0.354 / 0.143 | B |
+| LLM answers analysed (2 models × 4 conditions × 308) | 2,464 | C |
+| evasion rate, pooled: N / P / F / B; Presidents (gold) | 0.549 / 0.518 / 0.201 / 0.547; 0.744 | C |
+| **H25b-1** odds ratio, N (neutral analyst) | 1.18 [0.80, 1.73] (failed) | C |
+| odds ratio, P / F / B (exploratory) | 2.74 [1.87, 4.17] / 2.19 / 4.13 | C |
+| H25b-2 stake, P − N | −0.031 [−0.081, +0.022] (failed) | C |
+| **H25b-3** pursuit: evasive P answers that F turns into a Clear Reply | **0.661** of 319 (held) | C |
+| H25b-4 information, B: indirect minus non-answer questions | +0.113 [−0.006, +0.225] (failed) | C |
+| H25c answer prefixes, dev 50%: agreement with full-answer label; S2 drop | 0.662; 0.150 (failed) | D |
+| H25d-1 frozen-base probe, slice-chosen layer 28, dev S2 | 0.397 (failed) | E |
+| **H25d-2** its same-label rate on disjoint siblings (M1 0.19) | 0.448 (held) | E |
+| label-free check: mean u / deferred, Presidents vs LLM answers | 0.540 / 0.360 vs 0.462 / 0.293 | G |
+| FP8 vs 16-bit, RTX PRO 6000: dev label agreement (10 seeds) | 0.961 | `E26_analysis.txt` rtxpro |
+| FP8: M1 system S2 (nested CV, 10 splits); full system S2 | 0.599 → 0.579 (−0.020); 0.653 → 0.649 (−0.003) | rtxpro |
+| **H26-4** FP8's M1 flips that fall on items deferred to the 27B | **0.706** of 17; 16 system flips (held) | rtxpro |
+| FP8: batched throughput; batch-1 latency p50 | 0.83×; 33.6 → 30.2 ms | rtxpro |
+| H26-1 fidelity / H26-2 speed | failed / failed | Registered hypotheses |
+| NF4 vs 16-bit, 2 × RTX A4000: dev label agreement (10 seeds) | 0.867 | a4000 |
+| NF4: M1 system S2 (nested CV, 10 splits); throughput; peak memory | 0.598 → 0.565 (−0.034); 0.82×; 0.67× | a4000 |
+| NF4 full system with the RTX PRO run's 27B records (exploratory, lower bound) | 0.624 → 0.615 (−0.010); 60 of 136 deferred items unscored | a4000 |
+| NF4's M1 flips on deferred items (exploratory) | 0.489 of 45 | a4000 |
+| QLoRA trigger (> 0.02 S2 or > 5% flips) | met | Registered hypotheses |
+| GPU spend: E25 / E26 FP8 (JarvisLabs) | ₹555 / ₹90 | log §E25, §E26 |

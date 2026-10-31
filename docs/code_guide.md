@@ -85,6 +85,10 @@ Every command runs from inside `code/`. Every path is defined once, in `code/qev
 | `cascade.cost` | `models.llm_classifier` |
 | `preregistered_analyses.e18_final` | `cascade.frontier`, `cascade.fuse`, `decision_rules.decide` |
 | `preregistered_analyses.e19_tier0`, `evaluation.make_cascade_submission` | `preregistered_analyses.e19_lib`, `cascade.fuse`, `cascade.frontier`, `cascade.candidates`, `decision_rules.decide`, `evaluation.make_submission` |
+| `audit.system` | `cascade.candidates`, `decision_rules.decide`, `preregistered_analyses.e19_lib`, `preregistered_analyses.e23_systems` |
+| `audit.infer`, `audit.quant`, `audit.hidden` | `models.llm_classifier` (`audit.hidden` also `cascade.candidates`, `decision_rules.decide`) |
+| `audit.quant_system`, `preregistered_analyses.e25_analysis`, `preregistered_analyses.e26_analysis` | `audit.system` |
+| `preregistered_analyses.e24_prechecks` | `cascade.fuse`, `cascade.prompts`, `decision_rules.decide` |
 
 ## 3. File reference
 
@@ -132,6 +136,18 @@ Every command runs from inside `code/`. Every path is defined once, in `code/qev
 | `api_budget.py`, `api_probe.py` | API price table, spend ledger with a hard cap, and an API capability probe |
 | `publish.py` | Uploads cascade outputs to Hugging Face and logs results to W&B |
 
+### `audit/`: the frozen instrument applied to new inputs (E25–E26)
+
+| File | Purpose |
+|---|---|
+| `system.py` | The frozen instrument: `freeze` fits the E23 accuracy point once and writes `experiments/e25/frozen_system.json`; `jobs` routes a frame's items and lists the 27B jobs; `label` gives final labels from M1 + the 27B records. Nothing is refitted on new inputs |
+| `frames.py` | **E25a/c.** Input frames with one controlled change each: own, random and empty question, question only, answer prefixes (25/50/75%), and the LLM answers (`llm`) |
+| `generate.py` | **E25b.** Puts the Presidents' dev questions to open LLMs (vLLM) under four conditions: neutral analyst (N), persona (P), follow-up (F), briefed (B) |
+| `infer.py` | The frozen M1 (10 seeds) on the E25 frames, with the registered reproduction control |
+| `hidden.py` | **E25d.** Layer-wise linear probes on the frozen base model's hidden states, and early-exit latency |
+| `quant.py` | **E26.** M1 at reduced precision: bf16 reference, FP8 W8A8 (`torch._scaled_mm`), NF4 (bitsandbytes, adapter unmerged) |
+| `quant_system.py` | **E26.** Routes and labels each precision's M1 outputs through the frozen instrument |
+
 ### `evaluation/`
 
 | File | Purpose |
@@ -160,6 +176,9 @@ Every command runs from inside `code/`. Every path is defined once, in `code/qev
 | `e21_e22_analysis.py` | E19 A/B, E21a, E22a/b/e: the LLM alone, option order, cached prompt, faithfulness, test-artifact sensitivity, specificity → `docs/raw/E21_E22_analysis.txt` |
 | `e20_router.py` | E20 (amended): value map and learned router on the leak-free singleton train rows → `docs/raw/E20_router.txt` |
 | `e23_systems.py` | Final operating points with one 27B copy (single and order-averaged q), E19-E system part, E22c ladder → `docs/raw/E23_systems.txt` |
+| `e24_prechecks.py` | E24: CPU pre-checks P1–P8 of the candidate research modules on existing outputs → `docs/raw/E24_prechecks.txt` |
+| `e25_analysis.py` | E25: controls, question swaps, question or speaker, answer prefixes, probes, label-free validity check → `docs/raw/E25_analysis.txt`, `runs/E25/analysis.json` |
+| `e26_analysis.py` | E26: each precision against 16-bit on the same GPU type; registered verdicts → `docs/raw/E26_analysis.txt` |
 
 ### `figures/`
 
@@ -170,6 +189,7 @@ Every command runs from inside `code/`. Every path is defined once, in `code/qev
 | `paper_example.py` | The report's worked example (one dev item through both systems) |
 | `taxonomy_counts.py` | Per-class counts for the taxonomy table |
 | `e13_figures.py`, `mideval_figures.py` | Figures in `docs/figures/` |
+| `e25_figures.py` | E25 figures (audit; swaps, prefixes and probes) in `docs/figures/` and `report/latex/figures/` |
 
 ### `utils/`
 
@@ -184,7 +204,10 @@ Every command runs from inside `code/`. Every path is defined once, in `code/qev
 `launch/` holds the scripts used to run experiments on our hardware: a tmux run queue for a shared GPU
 server (`start.sh`, `run_queue.sh`, `gpu_watch.sh`, `m3_local.sh`, `e16_gpu.sh`, `e17_post.sh`,
 `download_model.sh`) and a driver for rented cloud GPU instances (`jarvis_drive.sh`, `jarvis_setup.sh`, and
-`infer_lane.sh` for the E19–E22 inference lane).
+`infer_lane.sh` for the inference lanes: E19–E22, E25 (`PASS=3`) and E26's FP8 half (`PASS=4`)).
+`e25_collect.sh` and `e26_collect.sh` run on the laptop: they wait for a lane, copy its outputs from HF, make sure
+the instance is destroyed, and run the analysis. E26's NF4 half ran on the lab's A4000s with `e26_lab_run.sh`
+and `e26_lab_resume.sh` (`e26_local_nf4.sh` is the same run for a machine with three free 16 GB GPUs).
 They are specific to that infrastructure; every run can also be started directly with `python -m`.
 - **Running the cloud driver from Windows Git Bash:** set `JL_PY` to a Python that has the `jarvislabs`
   SDK installed, instead of using `uvx`.
@@ -205,9 +228,11 @@ arguments; each line of a `lane_gpu<N>_<x>.txt` file is one run: `<run name> <se
 
 ## 4. Generated folders
 
-These are created when the code runs and are not tracked:
+These are created when the code runs:
 
-- `runs/`: one folder per configuration and seed, with probabilities, metrics and checkpoints.
-  The published runs are on [Hugging Face](https://huggingface.co/siddarthg44/clarity-semeval26).
-- `logs/`: training and queue logs.
+- `runs/`: one folder per configuration and seed, with probabilities, metrics and checkpoints. The
+  probabilities, metrics, configs, 27B records and labels behind the reported numbers are tracked; model
+  weights and E25's hidden states are not, and are on
+  [Hugging Face](https://huggingface.co/siddarthg44/clarity-semeval26) with everything else.
+- `logs/`: training, queue and cloud-lane logs (tracked).
 - `data/cache/`: the downloaded train and dev parquet files.

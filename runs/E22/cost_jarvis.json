@@ -1,0 +1,14 @@
+{
+  "gpu": "NVIDIA RTX PRO 6000 Blackwell Server Edition",
+  "run": "Q8_fullq_lora_12ep",
+  "seed": 3,
+  "n_items": 308,
+  "m1_seed_gpu_s_per_item": 0.03969112619177088,
+  "m1_tokens_per_item": 489.37987012987014,
+  "m1_max_abs_diff_vs_saved_probs": 0.0,
+  "m1_argmax_agreement_vs_saved": 1.0,
+  "m3_tag": "qwen38_27b_k0_jarvis",
+  "m3_call_gpu_s": 0.10133766233766234,
+  "m3_prompt_tokens": 1114.3538961038962,
+  "m3_output_tokens": 1
+}

@@ -1,0 +1,8 @@
+split      n    lead_tag    footnote      header  other_turn   changed  median words raw/norm
+train   3448       0.000       0.000       0.000       0.000     0.000  207/207
+  after             0.000       0.000       0.000       0.000
+dev      308       0.000       0.000       0.000       0.000     0.000  292/292
+  after             0.000       0.000       0.000       0.000
+test     237       0.962       0.105       0.076       0.063     0.970  59/52
+  after             0.000       0.000       0.000       0.000
+registered check: normalization must change <= 1% of train and dev answers

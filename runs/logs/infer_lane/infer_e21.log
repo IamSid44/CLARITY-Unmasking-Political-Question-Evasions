@@ -1,0 +1,22 @@
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+[done] /home/clarity_llm/code/runs/E21/Q8_fullq_lora_12ep/seed0 already scored
+[done] /home/clarity_llm/code/runs/E21/Q8_fullq_lora_12ep/seed1 already scored
+[done] /home/clarity_llm/code/runs/E21/Q8_fullq_lora_12ep/seed2 already scored
+[done] /home/clarity_llm/code/runs/E21/Q8_fullq_lora_12ep/seed3 already scored
+[done] /home/clarity_llm/code/runs/E21/Q8_fullq_lora_12ep/seed4 already scored
+[done] /home/clarity_llm/code/runs/E21/Q8_fullq_lora_12ep/seed5 already scored
+[done] /home/clarity_llm/code/runs/E21/Q8_fullq_lora_12ep/seed6 already scored
+[done] /home/clarity_llm/code/runs/E21/Q8_fullq_lora_12ep/seed7 already scored
+[done] /home/clarity_llm/code/runs/E21/Q8_fullq_lora_12ep/seed8 already scored
+[done] /home/clarity_llm/code/runs/E21/Q8_fullq_lora_12ep/seed9 already scored
+[done] /home/clarity_llm/code/runs/E21/Q8_distill_a05/seed0 already scored
+[done] /home/clarity_llm/code/runs/E21/Q8_distill_a05/seed1 already scored
+[done] /home/clarity_llm/code/runs/E21/Q8_distill_a05/seed2 already scored
+[done] /home/clarity_llm/code/runs/E21/Q8_distill_a05/seed3 already scored
+[done] /home/clarity_llm/code/runs/E21/Q8_distill_a05/seed4 already scored
+[done] /home/clarity_llm/code/runs/E21/Q8_distill_a05/seed5 already scored
+[done] /home/clarity_llm/code/runs/E21/Q8_distill_a05/seed6 already scored
+[done] /home/clarity_llm/code/runs/E21/Q8_distill_a05/seed7 already scored
+[done] /home/clarity_llm/code/runs/E21/Q8_distill_a05/seed8 already scored
+[done] /home/clarity_llm/code/runs/E21/Q8_distill_a05/seed9 already scored
+control: 20/20 seed folders reproduce their saved probabilities (max |dp| < 1e-3); argmax agreement with the saved dev predictions: min 1.000

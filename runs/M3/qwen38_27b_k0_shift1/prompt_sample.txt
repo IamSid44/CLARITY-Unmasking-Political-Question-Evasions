@@ -1,0 +1,36 @@
+You are an expert annotator of political interviews. A journalist's turn may contain several questions; it has been split into sub-questions, and each sub-question is paired with the politician's full answer. Your task is to label how the answer responds to ONE given sub-question. The same answer can respond explicitly to one sub-question and evade another, so judge only the given sub-question.
+
+Labels:
+- Explicit: The requested information is stated explicitly, in the terms the question asks for.
+- Implicit: The requested information is given, but not stated explicitly: it has to be inferred from what the answer says.
+- Dodging: The answer ignores the question altogether and does not engage with what was asked.
+- General: The answer addresses the question but is too general: it lacks the specificity the question asks for, so the requested information cannot be recovered from it.
+- Deflection: The answer starts on the question's topic but shifts the focus and makes a different point from the one asked.
+- Partial/half-answer: The answer gives only one component of the requested information and leaves the rest unanswered.
+- Declining to answer: The speaker acknowledges the question but refuses, directly or indirectly, to answer it.
+- Claims ignorance: The speaker says they do not know the answer.
+- Clarification: The speaker does not answer and instead asks for the question to be clarified.
+
+How to separate the labels that are most often confused:
+- Explicit vs Implicit: choose Explicit only if some sentence of the answer directly gives the requested information (a yes/no, a position, a number, a name). If the information follows from what is said but is never stated, choose Implicit.
+- Implicit vs General: Implicit lets a listener infer the specific information asked for. General stays at the level of values, goals or broad statements from which the specific answer cannot be inferred.
+- Explicit vs General: a clear, on-topic statement that still lacks the specificity asked for (for example 'we will do whatever it takes' when asked how many troops) is General, not Explicit.
+- Deflection vs Implicit/General: in a Deflection the answer moves on to another point (an opponent, a different policy, past achievements) and the requested information is not provided. If the requested information can still be inferred, prefer Implicit.
+- Dodging vs Deflection: Dodging never engages the question's topic; Deflection engages it first and then moves to a different point.
+
+You will be shown labelled examples from other interviews, then the item to label and a short list of allowed labels, each with a letter. Reply with the letter of the correct label only.
+
+=====
+
+Item to label:
+Sub-question: When will we see this resolution?
+Full question: Q. The Lebanese Prime Minister is demanding a quick and decisive cease-fire after an Israeli air raid today killed 40 people. When will we see this resolution? And if it's approved, when will we see a cessation of violence?
+Answer: I'll let Condi talk about the details of what she's going to do today, if you care to hear from her. But we will work with our partners to get the resolution laid down as quickly as possible. And the resolution will call for a cessation of violence. And the concern, by the way, from the parties in the region is whether or not the resolution will create a vacuum into which Hizballah and its sponsors will be able to promote more instability.We all agree that we ought to strengthen this Government, the Lebanese Government—that's the purpose of the resolutions, as well as to stop the violence.I don't know if you want to comment upon—— First of all, we are working from what we believe to be a strong basis for a cessation of hostilities, that is the U.S.-French draft, a strong basis for the cessation of hostilities, and then as the President said, to have a process then that can address the root causes. And we also believe that it's going to be very important that this first resolution lay a very quick foundation for passage of a second resolution. So these have to be worked, in a sense, together.I spoke last night and yesterday with Prime Minister Olmert, with Prime Minister Siniora, with Secretary General Kofi Annan, with a number of others, and I think we believe that there is a way forward.Now, we understand that this has been a very emotional and, indeed, devastating and tragic set of circumstances for Lebanon and for Israel. And obviously, the parties have views on how to stop this. Their views are not going to necessarily be consonant about how to stop it. The international community has a view, but, of course, we're going to take a little time and listen to the concerns of the parties and see how they can be addressed.But I want to just note, we believe that the extant draft resolution is a firm foundation, is the right basis, but, of course, we're going to listen to the concerns of the parties and see how they might be addressed. And that's really what's going to be going on today, particularly after the Arab League meets and Prime Minister Siniora emerges from that. The President. Yes, Peter [Peter Wallsten, Los Angeles Times].
+
+Which label describes how the answer responds to the sub-question? Allowed labels:
+A. General
+B. Deflection
+C. Partial/half-answer
+D. Implicit
+
+Reply with one letter (A, B, C, D).

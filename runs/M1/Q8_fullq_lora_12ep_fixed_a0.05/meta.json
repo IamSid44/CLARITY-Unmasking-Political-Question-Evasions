@@ -1,0 +1,36 @@
+{
+  "run": "Q8_fullq_lora_12ep",
+  "seeds": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9
+  ],
+  "crossfit": "Q8_12ep_crossfit",
+  "alpha": 0.05,
+  "tau_c": 0.20000000000000018,
+  "temperature": 2.154507377690599,
+  "method": "fixed",
+  "set_parameter": 3,
+  "features": [
+    "top_prob",
+    "margin",
+    "entropy",
+    "seed_disagreement",
+    "set_size"
+  ],
+  "u_coef": [
+    0.3686878913848878,
+    -0.6365859875954077,
+    0.7665615925517809,
+    0.045325898031204785,
+    0.0
+  ],
+  "u_intercept": -0.30706095467979944
+}

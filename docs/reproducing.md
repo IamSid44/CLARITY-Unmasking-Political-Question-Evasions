@@ -33,8 +33,9 @@ python -m evaluation.verify_scorer_geometry
 python -m figures.paper_figures                        # report figures -> report/latex/figures/
 ```
 
-The cascade analyses (E14–E18) also need the cascade outputs (`runs/M1`, `runs/M3`, `runs/M4`) from the
-same Hugging Face repository.
+The cascade analyses (E14–E26) use the Qwen runs (`runs/Q8_*`) and the cascade outputs (`runs/M1`, `runs/M3`,
+`runs/M4`, `runs/E21`–`runs/E26`). These are tracked in this repository, so they need no download; the
+DeBERTa runs (E8–E12, L0) and all model weights are on Hugging Face only.
 
 ## 2. Train the classifiers (GPU)
 
@@ -96,3 +97,26 @@ python -m evaluation.make_final_submission > ../docs/raw/E23_final_submission.tx
 
 The GPU arms of E19–E22 run on rented RTX PRO 6000 VMs. The commands, the machine choice and the costs
 are in [`06_final_push_handover.md`](06_final_push_handover.md) §5–6.
+
+## 5. After the shared task (E24–E26)
+
+All CPU, from the tracked outputs in `runs/E25` and `runs/E26` (`runs/E25/hidden/*.npy`, needed only for the
+probes, is on Hugging Face under `E25/hidden/`):
+
+```bash
+python -m preregistered_analyses.e24_prechecks > ../docs/raw/E24_prechecks.txt      # ~5 min
+python -m preregistered_analyses.e25_analysis > ../docs/raw/E25_analysis.txt        # a few minutes
+python -m figures.e25_figures                                                     # -> docs/figures/E25_*
+python -m audit.quant_system label --site a4000 --records-from rtxpro              # NF4 labels (exploratory)
+python -m preregistered_analyses.e26_analysis > ../docs/raw/E26_analysis.txt
+```
+
+The GPU parts and where they ran:
+- **E25:** `audit.frames`, `audit.generate` (vLLM), `audit.infer`, `audit.hidden`, `audit.system jobs/label`
+  and the 27B, on one rented H100 (`jarvis_drive.sh lane` with `PASS=3`).
+- **E26 FP8:** `audit.quant --precision bf16|fp8 --site rtxpro`, then the 27B on the deferred items, on one rented
+  RTX PRO 6000 (`PASS=4`).
+- **E26 NF4:** `audit.quant --precision bf16|nf4 --site a4000`, on two lab RTX A4000s
+  (`launch/e26_lab_run.sh`, then `launch/e26_lab_resume.sh`).
+
+The frozen instrument's parameters are in `code/experiments/e25/frozen_system.json` (`python -m audit.system freeze`).

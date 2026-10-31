@@ -1,0 +1,15 @@
+{
+  "gpu": "NVIDIA RTX PRO 6000 Blackwell Max-Q Workstation Edition",
+  "run": "Q8_fullq_lora_12ep",
+  "seed": 3,
+  "n_items": 308,
+  "m1_seed_gpu_s_per_item": 0.05216245759617199,
+  "m1_tokens_per_item": 489.37987012987014,
+  "m1_max_abs_diff_vs_saved_probs": 0.0,
+  "m1_argmax_agreement_vs_saved": 1.0,
+  "m1_fp8_error": "ImportError: finegrained-fp8 kernel unavailable: `kernels` is either not installed or uses an incompatible version. Please install a compatible version (0.16.0 <= version < 0.17.0), e.g. `pip install kernels==0.16.0`",
+  "m3_tag": "qwen38_27b_k0",
+  "m3_call_gpu_s": 0.10277895242671792,
+  "m3_prompt_tokens": 1093.7188851513695,
+  "m3_output_tokens": 1
+}

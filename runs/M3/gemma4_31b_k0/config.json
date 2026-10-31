@@ -1,0 +1,18 @@
+{
+  "backend": "api",
+  "model": "gemma-4-31b-it",
+  "k": 0,
+  "prompt_version": "m3-v1",
+  "top_k": 4,
+  "m1_inputs": "runs/M1/Q8_fullq_lora_12ep_fixed_a0.05/cascade_inputs.npz",
+  "extra_body": {
+    "chat_template_kwargs": {
+      "enable_thinking": false
+    }
+  },
+  "chat_template_kwargs": {
+    "enable_thinking": false
+  },
+  "samples": 0,
+  "started": "2026-10-13 23:44:55"
+}

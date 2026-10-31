@@ -3622,7 +3622,7 @@ training-time probabilities on 97.9% of per-seed labels (the same as the RTX PRO
 | **QLoRA trigger** (> 0.02 S2 or > 5% flips) | **met** | QLoRA is the named fix (future work) |
 
 *Exploratory (not registered for NF4): does the cascade absorb it?* Using the 27B records from the RTX PRO run (the
-27B does not fit on an A4000), NF4's full system loses −0.010 S2 against its M1's −0.029 (frozen τ), but only 49%
+27B does not fit on an A4000; `audit.quant_system label --site a4000 --records-from rtxpro`, then `raw/E26_analysis.txt`), NF4's full system loses −0.010 S2 against its M1's −0.029 (frozen τ), but only 49%
 of NF4's 45 M1 flips fall on deferred items, and 60 of the 136 items NF4 defers have no 27B record (their candidate
 sets differ from those scored), so they keep M1's decision: a partial absorption, measured as a lower bound.
 

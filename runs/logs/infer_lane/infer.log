@@ -1,0 +1,38 @@
+2026-10-30 08:57:02 lane: start (PASS=3, IDLE_MIN=30, MAX_HOURS=2.2, AUTO_STOP=1, keys: yes)
+2026-10-30 08:58:55 deps: start
+2026-10-30 08:58:56 deps: done ( + threadpoolctl==3.7.0)
+2026-10-30 08:58:56 fetch: start
+2026-10-30 09:02:44 fetch: done (fetched into /home/clarity_llm/code/runs)
+2026-10-30 09:02:44 m1inputs: start
+2026-10-30 09:02:48 m1inputs: done (cascade inputs reproduce the saved candidate sets)
+2026-10-30 09:02:48 p3_frames: start
+2026-10-30 09:02:48 p3_frames: done (frames: {'dev_own': 308, 'dev_qonly': 308, 'dev_rand': 308, 'dev_null': 308, 'dev_pre25': 308, 'dev_pre50': 308, 'dev_pre75': 308, 'test_own': 237, 't)
+2026-10-30 09:02:48 p3_m1swap: start
+2026-10-30 09:03:45 FAILED: p3_m1swap (logs/infer_p3_m1swap.log: {"frame": "dev_own", "seed": 0, "items": 308, "seconds": 21.01, "items_per_s": 14.66, "ctrl_max_abs_dp": 0.19586187601089478, "ctrl_argmax_agree": 0.987012987012987} CONTROL FAILED: dev_own seed 0 dif)
+2026-10-30 09:03:45 p3_hidden: start
+2026-10-30 09:08:05 p3_hidden: done (first 36 layers: batch-1 p50 48.0 ms, p95 82.8 ms)
+2026-10-30 09:08:05 waiting for the vLLM install and the subject models
+2026-10-30 09:08:05 p3_generate: start
+2026-10-30 09:15:54 FAILED: p3_generate (logs/infer_p3_generate.log:     For further information visit https://errors.pydantic.dev/2.14/v/value_error generation failed: olmo2_7b=/home/clarity_llm/hf/hub/models--allenai--OLMo-2-1124-7B-Instruct/snapshots/470b1fba1ae0158)
+2026-10-30 09:15:54 p3_llmframe: start
+2026-10-30 09:15:56 p3_llmframe: done (qwen3_8b    308  308  308  308)
+2026-10-30 09:15:56 p3_m1llm: start
+2026-10-30 09:27:25 p3_m1llm: done (all seeds scored)
+2026-10-30 09:27:25 p3_jobs: start
+2026-10-30 09:27:27 p3_jobs: done (27B jobs: 1618 deferred items; per frame (deferred, total): {'dev_null': (181, 308), 'dev_own': (111, 308), 'dev_pre25': (106, 308), 'dev_pre50': (121)
+2026-10-30 09:27:27 waiting for the 27B download
+2026-10-30 09:27:27 p3_27b: start
+2026-10-30 09:34:59 FAILED: p3_27b (logs/infer_p3_27b.log:     raise RuntimeError( RuntimeError: Engine core initialization failed. See root cause above. Failed core proc(s): {} )
+2026-10-30 09:34:59 p3_label: start
+2026-10-30 09:35:02 p3_label: done (test_rand: 237 items, deferred 60, 27B records missing 60)
+2026-10-30 09:35:02 waiting for the probes
+2026-10-30 10:01:31 fix: 27B rerun (max_num_seqs 512)
+2026-10-30 10:26:18 fix: 27B rerun ok=1 (   6472 total)
+2026-10-30 10:26:25 fix: relabel done (11 of 11 frames complete)
+2026-10-30 10:33:32 fix: fast probes done
+2026-10-30 10:33:32 fix: lane released
+2026-10-30 10:33:34 lane: steps finished
+2026-10-30 10:33:34 finish: done
+2026-10-30 10:33:34 upload: start
+2026-10-30 10:34:26 upload: done ([vm_guard] verify: 6/6 on the Hub)
+2026-10-30 10:34:28 finish: reason 'done', failed steps: p3_generate , uploaded: 1 -> pausing (disk kept)
