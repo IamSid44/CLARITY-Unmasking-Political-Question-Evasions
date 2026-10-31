@@ -1,0 +1,279 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Question or Answerer?</title>
+<meta name="description" content="Step-by-step explainer of the CLARITY project's findings and the narrative that connects them.">
+<style>
+:root {
+  --bg: #fbfaf7; --surface: #ffffff; --ink: #1f1f1e; --ink-2: #4a4944; --muted: #6b6a64; --line: #e4e3de;
+  --accent: #2a78d6; --accent-soft: #e8f1fc; --good: #0f7a3a; --good-soft: #e6f4ea; --bad: #b3261e; --bad-soft: #fbeaea;
+  --warn: #8a5a00; --warn-soft: #fdf3dc; --s1: #2a78d6; --s2: #eb6834; --s3: #1baf7a; --s4: #eda100;
+  --mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #161615; --surface: #1f1f1d; --ink: #f0efec; --ink-2: #c9c8bf; --muted: #9a998f; --line: #34332f;
+    --accent: #5598e7; --accent-soft: #1d2a3b; --good: #5cc287; --good-soft: #17281e; --bad: #f08a84; --bad-soft: #2e1918;
+    --warn: #e0b04f; --warn-soft: #2d2412; --s1: #3987e5; --s2: #d95926; --s3: #199e70; --s4: #c98500;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #161615; --surface: #1f1f1d; --ink: #f0efec; --ink-2: #c9c8bf; --muted: #9a998f; --line: #34332f;
+  --accent: #5598e7; --accent-soft: #1d2a3b; --good: #5cc287; --good-soft: #17281e; --bad: #f08a84; --bad-soft: #2e1918;
+  --warn: #e0b04f; --warn-soft: #2d2412; --s1: #3987e5; --s2: #d95926; --s3: #199e70; --s4: #c98500;
+}
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body { margin: 0; background: var(--bg); color: var(--ink); font: 16px/1.62 Georgia, "Iowan Old Style", "Palatino Linotype", serif; }
+.wrap { max-width: 860px; margin: 0 auto; padding: 32px 16px 80px; }
+header.hero { padding: 28px 0 12px; border-bottom: 1px solid var(--line); margin-bottom: 8px; }
+.kicker { font: 600 12px/1.4 system-ui, sans-serif; letter-spacing: .08em; text-transform: uppercase; color: var(--accent); }
+h1 { font-size: clamp(28px, 5vw, 40px); line-height: 1.15; margin: 8px 0 12px; }
+h2 { font-size: 24px; line-height: 1.25; margin: 48px 0 8px; }
+h3 { font-size: 18px; margin: 28px 0 6px; }
+p, li { color: var(--ink-2); }
+strong { color: var(--ink); }
+.lede { font-size: 19px; color: var(--ink); }
+nav.toc { font: 14px/1.5 system-ui, sans-serif; background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 14px 18px; margin: 20px 0; }
+nav.toc ol { margin: 6px 0 0; padding-left: 20px; }
+nav.toc a { color: var(--accent); text-decoration: none; }
+.step { font: 600 12px/1 system-ui, sans-serif; color: var(--muted); letter-spacing: .06em; text-transform: uppercase; margin-top: 56px; }
+.card { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 16px 18px; margin: 16px 0; }
+.q { border-left: 4px solid var(--accent); background: var(--accent-soft); }
+.held { border-left: 4px solid var(--good); background: var(--good-soft); }
+.failed { border-left: 4px solid var(--bad); background: var(--bad-soft); }
+.caveat { border-left: 4px solid var(--warn); background: var(--warn-soft); }
+.label { font: 700 11px/1 system-ui, sans-serif; letter-spacing: .08em; text-transform: uppercase; margin-bottom: 6px; }
+.held .label { color: var(--good); } .failed .label { color: var(--bad); } .caveat .label { color: var(--warn); } .q .label { color: var(--accent); }
+table { width: 100%; border-collapse: collapse; font: 14px/1.45 system-ui, sans-serif; margin: 12px 0; }
+th, td { text-align: left; padding: 8px 10px; border-bottom: 1px solid var(--line); vertical-align: top; color: var(--ink-2); }
+th { color: var(--ink); font-weight: 600; background: var(--surface); }
+td.n { font-variant-numeric: tabular-nums; text-align: right; white-space: nowrap; }
+.tablewrap { overflow-x: auto; }
+.bars { font: 13px/1.3 system-ui, sans-serif; margin: 10px 0 4px; }
+.bar { display: grid; grid-template-columns: minmax(120px, 34%) 1fr 52px; gap: 10px; align-items: center; margin: 7px 0; }
+.bar .name { color: var(--ink-2); }
+.bar .track { background: var(--line); border-radius: 4px; height: 12px; position: relative; }
+.bar .fill { height: 12px; border-radius: 4px; }
+.bar .val { text-align: right; font-variant-numeric: tabular-nums; color: var(--ink); }
+.flow { display: grid; gap: 10px; margin: 16px 0; }
+.flow .node { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 12px 14px; font: 14px/1.45 system-ui, sans-serif; color: var(--ink-2); }
+.flow .node b { color: var(--ink); }
+.flow .arrow { text-align: center; color: var(--muted); font: 18px/1 system-ui, sans-serif; }
+code, .mono { font-family: var(--mono); font-size: 13px; background: var(--line); padding: 1px 5px; border-radius: 4px; }
+.pill { display: inline-block; font: 600 11px/1 system-ui, sans-serif; padding: 4px 8px; border-radius: 999px; margin-right: 4px; }
+.pill.g { background: var(--good-soft); color: var(--good); } .pill.r { background: var(--bad-soft); color: var(--bad); } .pill.w { background: var(--warn-soft); color: var(--warn); }
+dl.gloss dt { font-weight: 700; color: var(--ink); margin-top: 10px; } dl.gloss dd { margin: 2px 0 0 0; color: var(--ink-2); }
+footer { margin-top: 64px; padding-top: 16px; border-top: 1px solid var(--line); font: 13px/1.5 system-ui, sans-serif; color: var(--muted); }
+.themebtn { float: right; font: 13px system-ui, sans-serif; background: var(--surface); color: var(--ink); border: 1px solid var(--line); border-radius: 8px; padding: 6px 10px; cursor: pointer; }
+@media (max-width: 560px) { .bar { grid-template-columns: 1fr 44px; } .bar .track { grid-column: 1 / -1; order: 3; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+<button class="themebtn" id="themebtn" type="button" aria-label="Toggle light or dark theme">Theme</button>
+<header class="hero">
+  <div class="kicker">CLARITY project · findings explained step by step · 30 Oct 2026</div>
+  <h1>Is evasion in the question or in the answerer?</h1>
+  <p class="lede">We started with a shared task (classify how a US president's answer responds to a journalist's question) and ended with a research question: when an answer evades, is that caused by <strong>the question</strong> or by <strong>the person answering</strong>? This page walks through every finding in the order the argument needs them.</p>
+</header>
+
+<nav class="toc" aria-label="Contents"><b>Contents</b>
+<ol>
+  <li><a href="#s0">The story in five sentences</a></li>
+  <li><a href="#s1">Why we changed direction</a></li>
+  <li><a href="#s2">Act 1: building the instrument</a></li>
+  <li><a href="#s3">Act 2: evasion is a relation</a></li>
+  <li><a href="#s4">What we tested and dropped</a></li>
+  <li><a href="#s5">Act 3: does the instrument read the question?</a></li>
+  <li><a href="#s6">Act 4: question or speaker?</a></li>
+  <li><a href="#s7">Act 5: how early, how cheap?</a></li>
+  <li><a href="#s8">How it all connects</a></li>
+  <li><a href="#s9">Honest caveats, each with its fix</a></li>
+  <li><a href="#s10">Glossary</a></li>
+</ol></nav>
+
+<div class="step" id="s0">Step 0</div>
+<h2>The story in five sentences</h2>
+<div class="card q">
+<ol>
+  <li><strong>Knowledge beats architecture.</strong> A big pretrained model, fine-tuned simply, beats every clever structure we put on a smaller one; and it ranks the right label better than it picks it, so a larger model adjudicates the uncertain cases. That system is our <em>instrument</em>.</li>
+  <li><strong>Evasion is a relation, not a property of the answer.</strong> The same answer gets different labels for different sub-questions, far more often than annotator noise explains, and "is the answer about the question?" does not capture it.</li>
+  <li><strong>We test causally whether the instrument reads the question,</strong> by swapping and removing questions while keeping the answer fixed.</li>
+  <li><strong>We ask the central question:</strong> we give the presidents' exact questions to language models that have no political stake, and check whether they evade on the same questions.</li>
+  <li><strong>We measure cost:</strong> how early in an answer evasion becomes visible, and whether a frozen model already encodes it.</li>
+</ol>
+</div>
+
+<div class="step" id="s1">Step 1</div>
+<h2>Why we changed direction</h2>
+<p>The mid-evaluation feedback said, in short: the experiments were <strong>disjoint</strong>, several gave the <strong>expected</strong> result, parameters were <strong>changed haphazardly</strong>, and limitations were listed that <strong>could not be acted on</strong>. A literature search (seven research agents, plus one acting as a hostile reviewer) added a second problem:</p>
+<div class="tablewrap"><table>
+<tr><th>What we built</th><th>Who already did it at SemEval-2026 Task 6</th></tr>
+<tr><td>Small model proposes top labels, an LLM chooses</td><td>ChulaNLP (2nd on Subtask 2)</td></tr>
+<tr><td>Confidence routing to a bigger model</td><td>TeleAI (1st), AsymVerify</td></tr>
+<tr><td>Distilling a large model into a small one</td><td>YNU-HPCC</td></tr>
+</table></div>
+<p>So our <em>pipeline</em> cannot be the contribution. It becomes the <strong>measurement instrument</strong>, and the contribution moves to what nobody in the 30 system papers did: test whether systems read the question, and use the taxonomy to measure something other than presidents. The new rules we follow from the feedback:</p>
+<ul>
+  <li><strong>One question, one chain:</strong> every experiment answers a question raised by the previous one.</li>
+  <li><strong>Predictions written down before the run</strong>, with a reason the outcome is not obvious (experiment log, E25 registration, 14:30 IST).</li>
+  <li><strong>One frozen instrument:</strong> every new label comes from the same system with every parameter fixed in advance. Nothing is re-tuned on new data.</li>
+  <li><strong>Every limitation paired with a test that addresses it.</strong></li>
+</ul>
+
+<div class="step" id="s2">Step 2</div>
+<h2>Act 1: building the instrument</h2>
+<p>All numbers are Subtask-2 macro-F1 on the 308-item dev set, where a prediction counts as correct if it matches <em>any</em> of the three annotators.</p>
+<div class="bars" role="img" aria-label="Dev Subtask 2 macro-F1 by system">
+  <div class="bar"><span class="name">DeBERTa-v3-large, 10 seeds</span><span class="track"><span class="fill" style="width:40.5%;background:var(--muted)"></span></span><span class="val">0.405</span></div>
+  <div class="bar"><span class="name">Qwen3-8B + LoRA, 10 seeds (M1)</span><span class="track"><span class="fill" style="width:59.8%;background:var(--s1)"></span></span><span class="val">0.598</span></div>
+  <div class="bar"><span class="name">M1 + 27B adjudicator (accuracy point)</span><span class="track"><span class="fill" style="width:65.0%;background:var(--s3)"></span></span><span class="val">0.650</span></div>
+  <div class="bar"><span class="name">Distilled student + 27B (cost point)</span><span class="track"><span class="fill" style="width:60.8%;background:var(--s4)"></span></span><span class="val">0.608</span></div>
+  <div class="bar"><span class="name">One human vs the other two</span><span class="track"><span class="fill" style="width:68.4%;background:var(--ink-2)"></span></span><span class="val">0.684</span></div>
+</div>
+<h3>How each step forced the next</h3>
+<ol>
+  <li><strong>Structure did not help.</strong> On DeBERTa, hierarchy, rebalanced losses, specialist experts, re-rankers and model soups all failed against paired controls. Only longer training and giving the full question helped (0.315 → 0.384 per model).</li>
+  <li><strong>So we tested knowledge.</strong> Changing <em>only</em> the backbone to Qwen3-8B gained more than all encoder changes together: +0.092 per model, on 10 of 10 seeds.</li>
+  <li><strong>The 8B ranks better than it decides.</strong> An acceptable label is first for 60% of items but in its top 3 for 93%. So a 27B model picks among the 8B's top 4, for only the 30% least confident items (0.36 LLM calls per item).</li>
+  <li><strong>For cost,</strong> one student trained on the 27B's soft labels replaces the 10 seeds: 0.608 at 0.27× the GPU cost.</li>
+</ol>
+<div class="card caveat"><div class="label">Honest uncertainty</div>
+The 27B's gain over M1 is +0.067 with the fusion settings held fixed, but +0.037 [−0.044, +0.120] when they are refitted inside each bootstrap. On 308 items, small gains are within noise. That is one reason the paper's weight moves to findings that do not depend on a few points of F1.</div>
+
+<div class="step" id="s3">Step 3</div>
+<h2>Act 2: evasion is a relation, not a property of the answer</h2>
+<p>A president's single answer often serves several sub-questions split out of one journalist turn. We call these <strong>siblings</strong>. They give a free natural experiment: same answer, different question.</p>
+<div class="card held"><div class="label">Finding 1 · the data is relational</div>
+69% of training rows share their answer with a sibling. Of the <strong>3,079 sibling pairs, 61.5% carry different evasion labels</strong> (40.6% different clarity levels).</div>
+<div class="card held"><div class="label">Finding 2 · it is not annotator noise</div>
+<p>Maybe sibling labels differ just because annotators are noisy. We tested that on dev, where each item has three annotators: how often do two labels by different annotators disagree?</p>
+<div class="bars" role="img" aria-label="Disagreement rates">
+  <div class="bar"><span class="name">Same item</span><span class="track"><span class="fill" style="width:43.2%;background:var(--s1)"></span></span><span class="val">43%</span></div>
+  <div class="bar"><span class="name">Sibling items (same answer)</span><span class="track"><span class="fill" style="width:71.6%;background:var(--s2)"></span></span><span class="val">72%</span></div>
+  <div class="bar"><span class="name">Random items</span><span class="track"><span class="fill" style="width:83.4%;background:var(--muted)"></span></span><span class="val">83%</span></div>
+</div>
+Siblings disagree far more than annotators do on one item: <strong>the label moves because the question moves.</strong></div>
+<div class="card held"><div class="label">Finding 3 · our model does read the question (we expected the opposite)</div>
+On the 58 dev sibling pairs whose annotators gave completely different labels, M1 repeats the same label only <strong>19%</strong> of the time. But both siblings are right in only <strong>40%</strong>: question grounding exists, and it is the bottleneck.</div>
+<div class="card held"><div class="label">Finding 4 · relevance is not answerhood</div>
+Political science measures answer quality by whether the answer can be picked out from its own question (Alvarez &amp; Morrier, 2025). We computed exactly that with the 8B model. It is ordered across labels (p = 2e-12) but barely separates replies from evasions: <strong>AUC 0.566</strong> for Clear Reply vs the rest. Deflections (0.80) and partial answers (0.84) look as tied to their question as explicit answers (0.82). <strong>An answer can be about the question without answering it.</strong> That is exactly the gap our instrument fills.</div>
+
+<div class="step" id="s4">Step 4</div>
+<h2>What we tested and dropped (before spending money)</h2>
+<p>The scouts proposed about 60 additions. Every one testable on existing outputs was tested on CPU first. Dropping them is a result: each is a paragraph in the paper's negative-results table.</p>
+<div class="tablewrap"><table>
+<tr><th>Idea</th><th>What happened</th><th>Verdict</th></tr>
+<tr><td>Route on "model" (epistemic) uncertainty</td><td>Caught 49 of 115 errors vs 53 for plain entropy</td><td><span class="pill r">dropped</span></td></tr>
+<tr><td>Decode sibling sub-questions jointly</td><td>±0.01, sign flips with settings</td><td><span class="pill w">not established</span></td></tr>
+<tr><td>Parameter-free metric-optimal decision rule</td><td>0.594 untuned vs 0.598 tuned: explains the old trick, no gain</td><td><span class="pill w">theory only</span></td></tr>
+<tr><td>One debiased option order instead of four</td><td>Agreement with the 4-order average <em>fell</em> (0.85 → 0.79)</td><td><span class="pill r">dropped</span></td></tr>
+<tr><td>Conformal candidate sets as router</td><td>Coverage guarantee held (0.977), but S2 0.564–0.617 vs 0.641–0.663</td><td><span class="pill r">dropped</span></td></tr>
+<tr><td>"Models ignore the question"</td><td>False for M1 (Finding 3)</td><td><span class="pill r">claim removed</span></td></tr>
+</table></div>
+
+<div class="step" id="s5">Step 5</div>
+<h2>Act 3: does the instrument read the question? Yes, causally.</h2>
+<p>Before using the instrument to measure anything, we checked it responds to the <em>question</em>, not just the answer's style. We kept every answer and changed only what it was paired with. All settings were frozen beforehand.</p>
+<div class="bars" role="img" aria-label="Share of answers labelled Clear Reply by question pairing">
+  <div class="bar"><span class="name">Own question</span><span class="track"><span class="fill" style="width:25.3%;background:var(--s1)"></span></span><span class="val">25.3%</span></div>
+  <div class="bar"><span class="name">Someone else's question</span><span class="track"><span class="fill" style="width:1.3%;background:var(--s2)"></span></span><span class="val">1.3%</span></div>
+  <div class="bar"><span class="name">No question at all</span><span class="track"><span class="fill" style="width:64%;background:var(--s3)"></span></span><span class="val">64.0%</span></div>
+</div>
+<div class="card held"><div class="label">Prediction held (H25a-1)</div>
+Paired with an unrelated question, an answer stops being a reply: <strong>62 of 78 Clear Replies become "Dodging"</strong>, exactly what the taxonomy defines. With no question at all, most answers are called Explicit (there is nothing to evade). The test set shows the same direction (33.8% → 11.0%). <strong>The instrument reads the relation, not the style.</strong></div>
+
+<div class="step" id="s6">Step 6</div>
+<h2>Act 4: question or speaker? Neither alone.</h2>
+<p>We put the presidents' exact questions (308 sub-questions) to two open language models, which have no political stake. Each condition changes one thing:</p>
+<div class="tablewrap"><table>
+<tr><th>Condition</th><th>What changes</th><th>Mistral-7B evades</th><th>Qwen3-8B evades</th></tr>
+<tr><td><b>N</b> neutral analyst</td><td>no stake</td><td class="n">59%</td><td class="n">51%</td></tr>
+<tr><td><b>P</b> as the President</td><td>the role</td><td class="n">52%</td><td class="n">52%</td></tr>
+<tr><td><b>F</b> after "you haven't answered"</td><td>pursuit</td><td class="n">23%</td><td class="n">17%</td></tr>
+<tr><td><b>B</b> with his own answer as notes</td><td>information</td><td class="n">61%</td><td class="n">48%</td></tr>
+<tr><td colspan="2"><b>The Presidents themselves</b> (annotators)</td><td class="n" colspan="2">74%</td></tr>
+</table></div>
+<div class="card failed"><div class="label">Prediction failed (H25b-1): the question alone does not drive it</div>
+A neutral analyst does <strong>not</strong> evade more on the questions presidents evaded (odds ratio 1.18, 95% CI 0.80–1.73). If evasion were purely about hard questions, it would.</div>
+<div class="card failed"><div class="label">Prediction failed (H25b-2): the role does not raise the rate</div>
+Playing the President changes the overall evasion rate by −3 points (CI −8 to +2).</div>
+<div class="card q"><div class="label">The interesting pattern (exploratory, needs confirming)</div>
+In the President's role, the same models evade on <strong>the same questions presidents evaded</strong>: odds ratio <strong>2.74</strong> (CI 1.87–4.17), in both models (Mistral 3.0, Qwen 2.5). So the role changes <em>where</em> models evade, not <em>how often</em>. It is not an instrument artefact: neutral and President answers are labelled by the same instrument on the same questions; only the answers differ.
+<p style="margin-bottom:0"><strong>Reading: evasion behaves like question × role.</strong> A question becomes evasion-prone when it is put to someone who holds the President's accountability.</p></div>
+<div class="card held"><div class="label">Prediction held (H25b-3): pressing works</div>
+When the journalist says "with respect, you haven't answered", <strong>66%</strong> of evasive answers become clear replies (only 5% go the other way).</div>
+<div class="card failed"><div class="label">Narrow miss (H25b-4): what the taxonomy means</div>
+Given the President's own answer as notes, models answer more clearly when that answer was <em>indirect</em> (Implicit, General, Partial) than when it was a <em>non-answer</em> (Dodging, Deflection, Declining). The difference is +11 points against a +15 bar (CI −1 to +23). Without notes it is −2, so the direction is as predicted, but not established.</div>
+<p>Style: language models overuse <em>Explicit</em> (41–83% vs presidents' 28%) and rarely <em>Dodge</em> (2–9% vs 18%).</p>
+
+<div class="step" id="s7">Step 7</div>
+<h2>Act 5: how early, how cheap?</h2>
+<div class="card failed"><div class="label">Prediction failed (H25c): you need most of the answer</div>
+Reading half the answer gives the same label only 66% of the time, and the score drops by 0.15. Outright refusals show early ("I won't comment": 82% agreement after a quarter), but General and Dodging only show at the end. Live detection after half an answer is not viable.</div>
+<div class="card failed"><div class="label">Prediction failed (H25d-1): no frozen fast path</div>
+A simple probe on the untuned 8B model reaches 0.397 at its best layer, against 0.525 for one fine-tuned seed.</div>
+<div class="card held"><div class="label">Prediction held (H25d-2): fine-tuning binds label to question</div>
+The frozen probe gives two sub-questions of the same answer the same label 45% of the time, against 19% for the fine-tuned model. <strong>Reading the relation is what fine-tuning teaches.</strong> Latency of the base model (batch 1, H100): 48 ms at full depth, 28 ms at half depth.</div>
+
+<div class="step" id="s8">Step 8</div>
+<h2>How it all connects</h2>
+<div class="flow">
+  <div class="node"><b>Mid-eval question:</b> what limits a classifier here? → structure doesn't help, knowledge does (one change, 10/10 seeds).</div>
+  <div class="arrow">↓</div>
+  <div class="node"><b>The 8B ranks better than it decides</b> (top-3 93%) → a 27B chooses among its top 4, only when unsure → distil for cost → stress-test → <b>the instrument</b> (0.650).</div>
+  <div class="arrow">↓</div>
+  <div class="node"><b>The instrument isn't novel</b> (other teams built it) → what can it <em>measure</em>?</div>
+  <div class="arrow">↓</div>
+  <div class="node"><b>Evasion is a relation:</b> the label moves with the question (72% vs 43%); relevance doesn't capture it (AUC 0.57).</div>
+  <div class="arrow">↓</div>
+  <div class="node"><b>Does the instrument read the relation?</b> Yes, causally (25% → 1% Clear Reply with an unrelated question).</div>
+  <div class="arrow">↓</div>
+  <div class="node"><b>Question or speaker?</b> Neither alone: no stake, no link; the President's role → the same questions evaded, at the same rate. Pressing works.</div>
+  <div class="arrow">↓</div>
+  <div class="node"><b>Cost:</b> it needs the whole answer and a fine-tuned model; fine-tuning is what binds label to question.</div>
+</div>
+<div class="card q"><div class="label">The thesis</div>
+<strong>Evasion is a relation between a question and an answer, and which questions get evaded depends on the role of the person answering.</strong></div>
+
+<div class="step" id="s9">Step 9</div>
+<h2>Honest caveats, each with its fix</h2>
+<div class="tablewrap"><table>
+<tr><th>Caveat</th><th>What addresses it</th></tr>
+<tr><td>Only two language models loaded (OLMo-2's context was too short for our setting; Llama-3.1 lacked GPU memory)</td><td>The role pattern is reported as exploratory; re-running both (known fixes, ~20 GPU-minutes) is the first item of future work</td></tr>
+<tr><td>Qwen3-8B shares a family with the 27B judge</td><td>Every result is reported per model; Mistral shows the same pattern (OR 3.0)</td></tr>
+<tr><td>The instrument was trained on presidents' speech, not on LLM text (no human labels)</td><td>A label-free check: on LLM answers it is <em>more</em> confident than on presidents' (uncertainty 0.46 vs 0.54; its 10 seeds agree 81% vs 73%). It is not out of its depth, though confident errors remain possible</td></tr>
+<tr><td>Long, polished LLM answers might just look different</td><td>Markdown stripped; effects unchanged with answer length as a covariate</td></tr>
+<tr><td>The run was on an H100, not the GPU the models were trained on</td><td>Labels agree 98% with the original system; every E25 comparison is within one run</td></tr>
+<tr><td>The role pattern was not a pre-registered hypothesis</td><td>Stated as exploratory; the replication with more models is registered first</td></tr>
+<tr><td>308 dev items</td><td>Cluster bootstrap over interview turns; test-set replication of the question-swap result</td></tr>
+</table></div>
+
+<div class="step" id="s10">Step 10</div>
+<h2>Glossary</h2>
+<dl class="gloss">
+  <dt>Subtask 2 (S2) / Subtask 1 (S1)</dt><dd>S2: 9 evasion types (Explicit, Implicit, Dodging, General, Deflection, Partial, Declining, Claims ignorance, Clarification). S1: 3 clarity levels (Clear Reply, Ambivalent, Clear Non-Reply), fixed by the S2 type.</dd>
+  <dt>Any-annotator macro-F1</dt><dd>The official metric: a prediction counts if any annotator gave that label; F1 is averaged over the 9 classes, so rare classes matter as much as common ones.</dd>
+  <dt>Siblings</dt><dd>Sub-questions split out of one journalist turn and answered by the same answer.</dd>
+  <dt>M1 / M3 / instrument</dt><dd>M1: Qwen3-8B fine-tuned (10 seeds). M3: the 27B model that picks among M1's top-4 labels for the 30% least confident items. The instrument: both together, with every setting frozen.</dd>
+  <dt>Evades</dt><dd>In the audit: the predicted clarity level is not Clear Reply.</dd>
+  <dt>Odds ratio (OR)</dt><dd>How much more likely an LLM is to evade on questions the president evaded than on questions he answered. OR = 1 means no link.</dd>
+  <dt>Pre-registration</dt><dd>Predictions and decision rules written in the experiment log before the run, so a result cannot be reinterpreted afterwards.</dd>
+</dl>
+
+<footer>Sources: <span class="mono">docs/02_experiment_log.md</span> (E13–E25), <span class="mono">docs/raw/E24_prechecks.txt</span>, <span class="mono">docs/raw/E25_analysis.txt</span>, <span class="mono">docs/07_research_extension_plan.md</span>. Every number on this page comes from one of these files.</footer>
+</div>
+<script>
+(function () {
+  var b = document.getElementById("themebtn"), r = document.documentElement;
+  b.addEventListener("click", function () {
+    var dark = r.getAttribute("data-theme") ? r.getAttribute("data-theme") === "dark" : window.matchMedia("(prefers-color-scheme: dark)").matches;
+    r.setAttribute("data-theme", dark ? "light" : "dark");
+  });
+})();
+</script>
+</body>
+</html>

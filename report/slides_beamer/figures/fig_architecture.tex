@@ -1,0 +1,60 @@
+% Figure 1: the classification pipeline (TikZ, monochrome). Input by \FigureArch in figs.tex.
+\begin{tikzpicture}[
+  font=\small,
+  node distance=2.6mm,
+  box/.style={draw, rounded corners=1.5pt, align=center, inner xsep=3pt, inner ysep=3pt, minimum height=#1},
+  box/.default=19mm,
+  sub/.style={draw, rounded corners=1.5pt, align=center, inner sep=2.5pt, minimum width=#1},
+  sub/.default=25mm,
+  arr/.style={-{Stealth[length=4pt]}, thin},
+  note/.style={font=\footnotesize\itshape, align=center},
+  band/.style={draw, densely dotted, rounded corners=2pt, inner sep=2.5pt, align=center, font=\footnotesize},
+]
+% Input
+\node[box, fill=black!6] (in) {%
+  \textbf{Input}\\[2pt]
+  sub-question $q$\\
+  full question $Q$\\
+  answer $a$\\[1pt]
+  {\footnotesize $\le$ 1{,}024 tokens}};
+
+% Backbone: one of two
+\node[sub, right=of in, yshift=5.2mm] (deb) {\textbf{DeBERTa-v3-large}\\{\footnotesize fine-tuned, \texttt{[CLS]}}};
+\node[sub, right=of in, yshift=-5.2mm] (qwen) {\textbf{Qwen3-8B-Base}\\{\footnotesize LoRA, last token}};
+\node[draw, dashed, rounded corners=2pt, inner sep=2pt, fit=(deb)(qwen)] (bb) {};
+\node[note, above=0.3mm of bb] {backbone (one of)};
+
+% Head
+\node[box, right=of bb] (head) {\textbf{Linear head}\\[2pt] 9 logits\\ softmax\\[1pt] $p_s(c \mid x)$};
+
+% Seed ensemble: stacked outlines stand for the ten trained seeds
+\node[box, right=of head, fill=white] (ens) {\textbf{Mean over}\\\textbf{10 seeds}\\[3pt] $\bar p(c \mid x)$};
+\begin{scope}[on background layer]
+  \draw[rounded corners=1.5pt, fill=white] ($(ens.south west)+(1.2mm,1.2mm)$) rectangle ($(ens.north east)+(1.2mm,1.2mm)$);
+  \draw[rounded corners=1.5pt, fill=white] ($(ens.south west)+(0.6mm,0.6mm)$) rectangle ($(ens.north east)+(0.6mm,0.6mm)$);
+\end{scope}
+
+% Logit adjustment
+\node[box, right=of ens, xshift=1.2mm] (la) {\textbf{Logit adjustment}\\[2pt]
+  $\arg\max\limits_c \dfrac{\bar p(c \mid x)}{\pi_c^{\,\tau}}$};
+
+% Outputs
+\node[sub=20mm, fill=black!6, right=of la, yshift=6.6mm] (s2) {\textbf{Subtask 2}\\{\footnotesize evasion type (9)}};
+\node[sub=20mm, fill=black!6, right=of la, yshift=-6.6mm] (s1) {\textbf{Subtask 1}\\{\footnotesize clarity level (3)}};
+
+% Arrows
+\draw[arr] (in) -- (bb);
+\draw[arr] (bb) -- (head);
+\draw[arr] (head) -- (ens);
+\draw[arr] ($(ens.east)+(1.2mm,0)$) -- (la);
+\draw[arr] (la.east) -- ++(1.8mm,0) |- (s2.west);
+\draw[arr] (s2) -- (s1);
+
+% Training and decision notes
+\path let \p1=(in.west), \p2=(head.east), \p3=(bb.south) in
+  node[band, anchor=north, text width=\x2-\x1-5pt] at ({(\x1+\x2)/2}, \y3-2mm) (train) {%
+  \textit{Training, per seed:} 3{,}103 train rows, cross-entropy, epoch chosen on the 345-row train slice};
+\path let \p1=(ens.west), \p2=(s1.east), \p3=(train.north) in
+  node[band, anchor=north, text width=\x2-\x1-5pt] at ({(\x1+\x2)/2}, \y3) (dec) {%
+  \textit{Decision:} $\pi_c$ is the class prior on train, and $\tau$ (nested CV) is the only parameter fitted on dev};
+\end{tikzpicture}
