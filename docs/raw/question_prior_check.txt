@@ -1,0 +1,15 @@
+Question-side prior, preliminary check (dev, n = 308; the President evaded on 0.744)
+
+President evaded, by the share of the two P-role LLMs whose answer the instrument labels evasive:
+   share 0.0: 101 items, the President evaded on 0.614
+   share 0.5: 95 items, the President evaded on 0.716
+   share 1.0: 112 items, the President evaded on 0.884
+
+AUROC for 'the President evaded' (no fitting):
+   M1, 1 - p(Explicit): 0.880
+   P-role evasion share: 0.661
+   correlation of the two: 0.312
+
+Cross-validated logistic regression, 5 folds, mean AUROC over 40 repeats:
+   all items:            M1 0.872   M1 + P-role share 0.875
+   least sure 36% (n = 111): M1 0.722   M1 + P-role share 0.746

@@ -448,3 +448,16 @@ checks written after the results were known; none is a registered test.
 | FP8 S2 with frozen parameters, in sample: M1, system | 0.617 to 0.572 (-0.045); 0.653 to 0.649 (-0.003) | D |
 | NF4 S2 with frozen parameters, in sample: M1, system (lower bound, 60 records missing) | -0.029; -0.010 | D |
 
+
+## 19. Question-side prior, preliminary check (final report, 2026-10-31)
+
+Source: `raw/question_prior_check.txt`, written by `python -m preregistered_analyses.question_prior_check` (CPU, seconds).
+Descriptive and written after the E25 results were known; dev only (308 items). It motivates the future-work module M5
+and is not a test of it.
+
+| Number | Value | Section |
+|---|---|---|
+| the President evaded, by the share of the two P-role LLMs whose answer is labelled evasive (0 / 0.5 / 1) | 0.614 (n = 101) / 0.716 (95) / 0.884 (112) | A |
+| AUROC for "the President evaded": M1 (1 − p(Explicit)) / P-role share; correlation | 0.880 / 0.661; 0.312 | A |
+| cross-validated AUROC, all items: M1 / M1 + P-role share | 0.872 / 0.875 | A |
+| cross-validated AUROC, least sure 36% (n = 111): M1 / M1 + P-role share | 0.722 / 0.746 | A |
