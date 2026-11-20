@@ -1,0 +1,11 @@
+Sibling errors, preliminary check (dev, n = 308; 203 items share their answer with another sub-question, 86 shared answers)
+
+frozen system (E25 replay): S2 0.659
+   correct (any annotator): answer given to one sub-question 0.724 (n = 105), shared answer 0.655 (n = 203)
+   errors on shared answers: 70; the wrong label is a sibling's reference label in 23 (32.9%); chance 18.2%
+   same label on sibling pairs whose reference sets are disjoint: 22.4% of 58
+
+M1 alone: S2 0.611
+   correct (any annotator): answer given to one sub-question 0.648 (n = 105), shared answer 0.616 (n = 203)
+   errors on shared answers: 78; the wrong label is a sibling's reference label in 20 (25.6%); chance 16.0%
+   same label on sibling pairs whose reference sets are disjoint: 15.5% of 58

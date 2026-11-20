@@ -2,7 +2,7 @@
 
 | File | Contents |
 |---|---|
-| `main.tex` | the deck in the same Madrid Beamer format as the mid-evaluation deck (`../slides_beamer/main.tex`): 31 slides. `backup.tex` holds former backup slides, no longer included |
+| `main.tex` | the deck in the same Madrid Beamer format as the mid-evaluation deck (`../slides_beamer/main.tex`): 22 slides, opening with a timeline of every experiment and closing with one diagram of the whole project and a thank-you slide with the links. `backup.tex` holds former backup slides, no longer included |
 | `figures/s_*.pdf` | data figures, from `code/figures/slide_figures.py` |
 | `STORYBOARD.md` | the narrative design, slide by slide |
 | `SPEAKER_NOTES.md` | the script, speaker split and running clock |

@@ -1,7 +1,9 @@
-% Nier_ANLP -- SemEval-2026 Task 6 (CLARITY): final presentation (20 min + 10 min questions).
+% Nier_ANLP -- SemEval-2026 Task 6 (CLARITY): final presentation, 22 slides (20 min talk + 10 min questions).
 % Same Beamer format as the mid-evaluation deck (report/slides_beamer/main.tex): Madrid theme, navy palette,
 % soft frame titles, navy-headed cards, red highlights. Build: bash build.sh -> main.pdf.
 % Figures: cd code && python -m figures.slide_figures.   Script and timings: SPEAKER_NOTES.md, STORYBOARD.md.
+% Structure: hook (1-5) -> timeline of everything we tried (6) -> five stages (7-19), each closing with the question
+% it raised -> limitations (20) -> the whole project in one diagram (21) -> thank you (22).
 \documentclass[aspectratio=169,10pt]{beamer}
 
 \usetheme{Madrid}
@@ -10,10 +12,11 @@
 \usepackage{graphicx}
 \usepackage{booktabs}
 \usepackage{array}
+\usepackage{multirow}
 \usepackage{amsmath}
 \usepackage{pifont}
 \usepackage{tikz}
-\usetikzlibrary{positioning,arrows.meta,calc,shapes.geometric,fit,backgrounds}
+\usetikzlibrary{positioning,arrows.meta,calc,shapes.geometric,fit,backgrounds,decorations.pathreplacing}
 
 % ---- the mid-evaluation palette and macros, unchanged ----
 \definecolor{navy}{RGB}{24,45,86}
@@ -31,35 +34,22 @@
 \setbeamertemplate{itemize items}[circle]
 \setbeamerfont{frametitle}{size=\large,series=\bfseries}
 \setbeamerfont{block title}{size=\small,series=\bfseries}
-\newcommand{\expsize}{\scriptsize}
 
 \newcommand{\hl}[1]{\textcolor{accent}{\textbf{#1}}}
-\newcommand{\takeaway}[1]{\par\vspace{2pt}{\small\textcolor{navy}{\textbf{Takeaway:}} #1}}
-\newcommand{\expcard}[4]{%
-  \begin{block}{#1}\expsize
-    \textcolor{navy}{\textbf{Why:}} #2\\[1pt]
-    \textcolor{navy}{\textbf{Result:}} #3\\[1pt]
-    \textcolor{navy}{\textbf{Takeaway:}} #4
-  \end{block}}
+\newcommand{\takeaway}[1]{\par\vspace{3pt}{\small\textcolor{navy}{\textbf{Takeaway:}} #1}}
 \newcommand{\excard}[4]{%
-  \begin{block}{#1}\scriptsize
+  \begin{block}{#1}\small
     \textcolor{navy}{\textbf{Sub-question:}} #2\\[3pt]
     \textcolor{navy}{\textbf{Answer:}} \emph{#3}\\[3pt]
     \textcolor{navy}{\textbf{Why this label:}} #4
   \end{block}}
 
 % ---- additions for the final deck, in the same palette ----
-\newcommand{\src}[1]{{\tiny\textcolor{gray}{#1}}}
+\newcommand{\src}[1]{{\scriptsize\textcolor{gray}{#1}}}
 \newcommand{\pred}[1]{\textcolor{navy}{\textbf{Predicted:}} #1}
 \newcommand{\found}[1]{\textcolor{navy}{\textbf{Found:}} #1}
-\newcommand{\raises}[1]{\par\vspace{3pt}{\small\textcolor{navy}{\textbf{What it raised:}} #1}}
-\newcommand{\tagnode}[3]{\tikz[baseline=(t.base)]\node[#1,rounded corners=1pt,inner xsep=2pt,inner ysep=1pt,font=\scriptsize\bfseries,text=#2](t){#3};}
-\newcommand{\held}{\tagnode{fill=navy}{white}{\ding{51}\,held}}
-\newcommand{\failed}{\tagnode{draw=accent,line width=0.5pt}{accent}{\ding{55}\,failed}}
-\newcommand{\explor}{\tagnode{fill=soft,draw=navy!40}{navy}{exploratory}}
-\newcommand{\hc}[1]{\tagnode{fill=navy}{white}{#1}}
-\newcommand{\fc}[1]{\tagnode{draw=accent,line width=0.5pt}{accent}{#1}}
-% the footline's middle cell names the stage (it was the short title in the mid-evaluation deck)
+\newcommand{\raises}[1]{\par\vspace{3pt}{\small\textcolor{accent}{\textbf{What it raised $\rightarrow$}} #1}}
+% the footline's middle cell names the stage
 \newcommand{\stagelabel}{Final evaluation}
 \newcommand{\setstage}[1]{\renewcommand{\stagelabel}{#1}}
 
@@ -68,7 +58,7 @@
   \small SemEval-2026 Task 6 (CLARITY)}{ (SemEval-2026 Task 6, CLARITY)}}
 \author[Team Nier\_ANLP]{Vidvathama R \and Siddarth Gottumukkula \and Sanjana Reddy Vonteri \and Shashikanta Sahoo\texorpdfstring{\\[2pt]\small Team Nier\_ANLP}{}}
 \institute[IIIT Hyderabad]{International Institute of Information Technology, Hyderabad}
-\date[October 2026]{Advanced NLP \quad\textbullet\quad October 2026}
+\date[November 2026]{Advanced NLP \quad\textbullet\quad Final evaluation \quad\textbullet\quad November 2026}
 
 \begin{document}
 \hypersetup{pdftitle={Evasion Is a Relation: A confidence-routed cascade for political question evasion, and what it measures (SemEval-2026 Task 6, final presentation)}}
@@ -80,44 +70,50 @@
 
 % ====================================================================== OPENING
 \setstage{Opening}
+% ---------------------------------------------------------------------- 2
 \begin{frame}{The task: how clearly does a politician answer each sub-question?}
   \begin{columns}[T]
-    \begin{column}{0.55\textwidth}
-      Each item pairs one \textbf{sub-question} from a journalist's turn, the \textbf{full question} and the
-      politician's \textbf{answer}. We predict the 9-way label and map it to the 3-way one.
-      \vspace{6pt}
+    \begin{column}{0.53\textwidth}
+      Each item is one \textbf{sub-question} $q$, the journalist's \textbf{full question} $Q$ and the President's
+      whole \textbf{answer} $a$. We predict the 9-way evasion type and map it to the 3-way clarity level.
+      \vspace{5pt}
 
       {\small
-      \begin{tabular}{@{}>{\raggedright\arraybackslash}p{2.3cm}>{\raggedright\arraybackslash}p{3.7cm}r@{}}
+      \renewcommand{\arraystretch}{1.08}
+      \setlength{\tabcolsep}{3.5pt}
+      \begin{tabular}{@{}>{\raggedright\arraybackslash}p{3.7cm} l r@{}}
         \toprule
-        Subtask 1 & Subtask 2 & train \\
+        \textbf{Subtask 2}: 9 evasion types & \textbf{Subtask 1} & \textbf{train} \\
         \midrule
-        Clear Reply & Explicit & 30.5\% \\
-        Ambivalent & Implicit, Dodging, General, Deflection, Partial/half-answer & 59.2\% \\
-        Clear Non-Reply & Declining to answer, Claims ignorance, Clarification & 10.3\% \\
+        Explicit & Clear Reply & 30.5\% \\
+        \midrule
+        Implicit, Dodging, General, Deflection, Partial/half-answer & Ambivalent & 59.2\% \\
+        \midrule
+        Declining to answer, Claims ignorance, Clarification & Clear Non-Reply & 10.3\% \\
         \bottomrule
       \end{tabular}}
     \end{column}
-    \begin{column}{0.42\textwidth}
+    \begin{column}{0.44\textwidth}
       \begin{block}{Data and metric}
         \small
         \begin{itemize}
-          \item Train 3,448 rows. Dev 308 items (3 annotators). Test 237 (2 annotators, labels unreleased)
-          \item Macro-F1 over 9 classes. A prediction counts if \emph{any} annotator gave it
-          \item Every score in this talk is on dev
+          \item Train 3,448 rows (1 label). Dev 308 items (3 annotators). Test 237 (2 annotators, \hl{labels never released})
+          \item Macro-F1 over 9 classes, where a prediction counts if \emph{any} annotator gave it
+          \item \textbf{Every score in this talk is on dev}
         \end{itemize}
       \end{block}
       \begin{block}{Why it is hard}
         \small
         \begin{itemize}
           \item 69\% of rows share their answer with another sub-question
-          \item Humans disagree: one annotator vs.\ the other two scores \hl{0.684}
+          \item Annotators disagree: one vs.\ the other two scores \hl{0.684}
         \end{itemize}
       \end{block}
     \end{column}
   \end{columns}
 \end{frame}
 
+% ---------------------------------------------------------------------- 3
 \begin{frame}{What are we classifying? Three real dev items}
   \begin{columns}[T]
     \begin{column}{0.32\textwidth}
@@ -146,225 +142,275 @@
   \end{itemize}
 \end{frame}
 
-\begin{frame}{Shared-task results: LLM pipelines won, fine-tuned encoders reached about 0.50}
+% ---------------------------------------------------------------------- 4
+\begin{frame}{One answer, two sub-questions, two labels}
+  \begin{block}{One journalist's turn at a President's news conference, and one answer}
+    \small ``Is that a make-or-break issue for you, in terms of domestic politics? There's a Republican in Pennsylvania who
+    says he doesn't think the troops should \ldots\ would you campaign for Mike Fitzpatrick?''
+    \par\vspace{3pt}\centering\textcolor{navy}{\Large\textbf{``I already have.''}}
+  \end{block}
   \begin{columns}[T]
-    \begin{column}{0.60\textwidth}
-      \centering\scriptsize
-      \renewcommand{\arraystretch}{1.05}\setlength{\tabcolsep}{4pt}
-      \begin{tabular}{@{}c l >{\raggedright\arraybackslash}p{4.5cm} c@{}}
-        \toprule
-        \textbf{Rank} & \textbf{Team} & \textbf{Approach (S2 ranking)} & \textbf{S2 test} \\
-        \midrule
-        1  & \hl{TeleAI} & DeepSeek-V3, 3 confidence-routed CoT stages & \hl{0.68} \\
-        2  & ChulaNLP & fine-tuned DeBERTa-large top-5 labels $\rightarrow$ few-shot Kimi-K2 & 0.61 \\
-        3  & CLaC & prompted LLMs, ahead of their fine-tuned encoders & 0.59 \\
-        12 & PFW & 50 DeBERTa models averaged (5 folds $\times$ 10 seeds) & 0.50 \\
-        \midrule
-        \multicolumn{2}{@{}l}{\textit{Organiser baseline}} & fine-tuned Llama-70B & 0.57 \\
-        \bottomrule
-      \end{tabular}\par\vspace{4pt}
-      \begin{itemize}\footnotesize\raggedright
-        \item 33 teams entered S2, with a median of about 0.52. Encoders level off near \hl{0.50}.
-        \item TeleAI on dev: 0.617 S2 / 0.812 S1, with 1.94 LLM calls and ${\sim}$7.3k input tokens per item.
-      \end{itemize}
-      {\tiny Test scores (237 items) are from Table 3 of the task overview paper. TeleAI's dev numbers are from its system paper. Our numbers are on dev.}
+    \begin{column}{0.48\textwidth}
+      \excard{Explicit \quad (Clear Reply, 3 of 3 annotators)}
+        {Would you campaign for Mike Fitzpatrick?}
+        {I already have.}
+        {the answer states what was asked.}
     \end{column}
-    \begin{column}{0.37\textwidth}
+    \begin{column}{0.48\textwidth}
+      \excard{Dodging \quad (Ambivalent, 3 of 3 annotators)}
+        {Is that a make-or-break issue for you?}
+        {I already have.}
+        {it says nothing about whether the issue is make-or-break.}
+    \end{column}
+  \end{columns}
+  \takeaway{the same three words are a reply to one question and an evasion of the other. Hold on to this answer: by the
+  end we show that this is the rule, not the exception, and that our system gets both labels right.}
+\end{frame}
+
+% ---------------------------------------------------------------------- 4
+\begin{frame}{The shared task: LLM pipelines won, fine-tuned encoders stalled near 0.50}
+  \begin{columns}[T]
+    \begin{column}{0.58\textwidth}
+      \centering\footnotesize
+      \renewcommand{\arraystretch}{1.12}\setlength{\tabcolsep}{4pt}
+      \begin{tabular}{@{}c l >{\raggedright\arraybackslash}p{3.9cm} c@{}}
+        \toprule
+        \textbf{Rank} & \textbf{Team} & \textbf{Approach} & \textbf{S2} \hl{test} \\
+        \midrule
+        1  & \textbf{TeleAI} & DeepSeek-V3, 3 confidence-routed chain-of-thought stages & \textbf{0.68} \\
+        2  & ChulaNLP & DeBERTa top-5 labels $\rightarrow$ few-shot Kimi-K2 & 0.61 \\
+        3  & CLaC & prompted LLMs & 0.59 \\
+        12 & PFW & 50 DeBERTa models averaged & 0.50 \\
+        \midrule
+        -- & Organisers & fine-tuned Llama-70B & 0.57 \\
+        \bottomrule
+      \end{tabular}\par\vspace{5pt}
+      \raggedright\small
+      \begin{itemize}
+        \item 33 teams, median S2 about 0.52. Encoders level off near \hl{0.50}.
+        \item TeleAI on \textbf{dev}: 0.617 S2 / 0.812 S1, 1.94 LLM calls and ${\sim}$7.3k input tokens per item. This is the
+              number we compare with.
+      \end{itemize}
+    \end{column}
+    \begin{column}{0.39\textwidth}
       \begin{block}{Our two questions}
         \small
-        \textbf{A.} Why do fine-tuned classifiers stop where they do?\\[4pt]
-        \textbf{B.} Once we have a good classifier of evasion, what can it tell us about evasion itself?
+        \textbf{A.}\enspace Why do fine-tuned classifiers stop where they do, and what gets past it?\\[6pt]
+        \textbf{B.}\enspace Once we have a good classifier of evasion, what can it tell us about evasion itself?
+      \end{block}
+      \begin{block}{How we worked}
+        \small
+        Every experiment's prediction and decision rule was written down \emph{before} it ran. One change at a time,
+        10 paired seeds, dev-fitted parameters by nested cross-validation.
       \end{block}
     \end{column}
   \end{columns}
 \end{frame}
 
-\begin{frame}{Overview: five stages, each asking one question}
+% ---------------------------------------------------------------------- 5  TIMELINE
+\begin{frame}{What we did: each experiment answering the last}
   \centering
+  \resizebox{\textwidth}{!}{%
   \begin{tikzpicture}[
-      font=\scriptsize,
-      phase/.style={draw=navy, rounded corners=3pt, align=center, fill=white, text width=22mm, minimum height=18mm, inner sep=2pt},
-      good/.style={phase, fill=soft, line width=0.9pt},
-      arr/.style={-{Stealth[length=5pt]}, navy, thick},
-      lab/.style={font=\scriptsize, text=navy!80}]
-    \node[phase] (s1) {\textbf{1}\\ What limits a fine-tuned classifier?};
-    \node[phase, right=5mm of s1] (s2) {\textbf{2}\\ Can a larger model choose among its candidates?};
-    \node[phase, right=5mm of s2] (s3) {\textbf{3}\\ Which of the gains survive?};
-    \node[good, right=5mm of s3] (s4) {\textbf{4}\\ Is evasion in the question or in the speaker?};
-    \node[phase, right=5mm of s4] (s5) {\textbf{5}\\ Can the measurement be made cheaper?};
-    \foreach \a/\b in {s1/s2,s2/s3,s3/s4,s4/s5} \draw[arr] (\a) -- (\b);
-    \foreach \n/\e in {s1/{E0--E13},s2/{E14--E18},s3/{E19--E23},s4/{E24--E25},s5/E26}
-      \node[below=1mm of \n, lab] {\e};
-    \draw[navy!60, thick] ([yshift=-7mm]s1.south west) -- ([yshift=-7mm]s3.south east)
-      node[midway, below=1mm, font=\small, text=black!80] {Question A: building an instrument};
-    \draw[navy, thick] ([yshift=-7mm]s4.south west) -- ([yshift=-7mm]s5.south east)
-      node[midway, below=1mm, font=\small, text=navy] {Question B: using it};
-  \end{tikzpicture}
-  \vspace{4pt}
-  \begin{itemize}\small\raggedright
-    \item Each experiment's plan, prediction and decision rule was written down \emph{before} the run. Results we did not register are marked \explor.
-    \item Each result slide shows what we \textbf{predicted} next to what we \textbf{found}, including the many predictions that failed.
-    \item Claims rest on 10 paired seeds. Parameters fitted on dev are scored by nested cross-validation, and the one choice made on dev after a failure ($\delta = 0.5$ for the distilled point) is flagged.
-    \item From Stage 4 on, one frozen system labels everything, so no parameter changes between experiments.
-  \end{itemize}
+      font=\footnotesize,
+      col/.style={draw=navy, rounded corners=2pt, fill=white, text width=36mm, align=left, inner sep=2.4pt, anchor=north,
+                  minimum height=37mm},
+      head/.style={fill=navy, text=white, rounded corners=2pt, text width=36mm, align=center, inner sep=2.4pt,
+                   anchor=south, font=\footnotesize\bfseries, minimum height=9.5mm},
+      date/.style={font=\footnotesize, text=navy, anchor=south, align=center},
+      arr/.style={-{Stealth[length=5pt]}, navy, thick}]
+    \def\dx{42mm}
+    % order axis: the experiments of each stage (no dates)
+    \draw[navy!45, line width=1.4pt, -{Stealth[length=7pt]}] (-19mm,12mm) -- (4*\dx+20mm,12mm);
+    \foreach \i/\e in {0/{E0--E13}, 1/{E14--E18}, 2/{E19--E23}, 3/{E24--E25}, 4/E26} {
+      \fill[navy] (\i*\dx,12mm) circle (1.5pt);
+      \node[date] at (\i*\dx,12.8mm) {\e};
+    }
+    % stage heads
+    \node[head] (h1) at (0*\dx,0) {1\enspace What limits\\a classifier?};
+    \node[head] (h2) at (1*\dx,0) {2\enspace Can a larger\\model choose?};
+    \node[head] (h3) at (2*\dx,0) {3\enspace Which gains\\survive?};
+    \node[head] (h4) at (3*\dx,0) {4\enspace What does\\it measure?};
+    \node[head] (h5) at (4*\dx,0) {5\enspace Can it be\\cheaper?};
+    % what we tried, in order (one line each)
+    \node[col] (c1) at (0*\dx,0) {%
+      logit adjustment: +0.073\\
+      16 epochs, full question\\
+      hierarchy, gate: no gain\\
+      rebalanced losses: no gain\\
+      experts, re-ranker: no gain\\
+      model soup: $-$0.117\\[3pt]
+      \textbf{Qwen3-8B: +0.092}\\
+      {\scriptsize one change, 10/10 seeds}};
+    \node[col] (c2) at (1*\dx,0) {%
+      M1, 12 epochs: 0.598\\
+      top 3 holds 93\%\\
+      5 seeds below 10 seeds\\
+      few-shot: worse\\
+      a 304B LLM: worse\\[3pt]
+      \textbf{27B picks: 0.669}\\
+      {\scriptsize top 4, least sure 30\%}\\
+      student: $\tfrac14$ GPU time};
+    \node[col] (c3) at (2*\dx,0) {%
+      unseen rows: +0.014\\
+      beats random routing\\
+      learned router: lost 4 of 4\\
+      no ``LLM knowledge'' effect\\
+      cached prompt: worse\\
+      option A bias: 4 orders\\[3pt]
+      \textbf{frozen: 0.650}\\
+      {\scriptsize on par with the winner}};
+    \node[col] (c4) at (3*\dx,0) {%
+      siblings differ 72\%\\
+      5 CPU ideas: all dropped\\[3pt]
+      \textbf{swap: 25\% $\rightarrow$ 1\%}\\
+      question alone: OR 1.18\\
+      \textbf{role: OR 2.74} (exploratory)\\
+      pursuit: 66\% reply\\
+      shortcuts: too lossy};
+    \node[col] (c5) at (4*\dx,0) {%
+      FP8 keeps 96\% of labels\\
+      FP8 not faster: 0.83$\times$\\
+      NF4 memory: 0.67$\times$\\[3pt]
+      \textbf{flips land where}\\
+      \textbf{the 27B looks: 71\%}\\
+      M1 $-$0.045\\
+      instrument $-$0.003};
+    \foreach \a/\b in {h1/h2,h2/h3,h3/h4,h4/h5} \draw[arr] (\a.east) -- (\b.west);
+    % the two questions
+    \draw[decorate, decoration={brace, mirror, amplitude=5pt}, navy, thick]
+      ($(c1.south west)+(0,-2mm)$) -- ($(c3.south east)+(0,-2mm)$)
+      node[midway, below=6pt, font=\small\bfseries, text=navy] {Question A: build the best classifier, freeze it as an instrument};
+    \draw[decorate, decoration={brace, mirror, amplitude=5pt}, navy, thick]
+      ($(c4.south west)+(0,-2mm)$) -- ($(c5.south east)+(0,-2mm)$)
+      node[midway, below=6pt, font=\small\bfseries, text=navy] {Question B: use it};
+  \end{tikzpicture}}
+  \par\vspace{1pt}
+  {\scriptsize Numbers are dev S2 unless stated.}
 \end{frame}
 
 % ====================================================================== STAGE 1
 \setstage{Stage 1: what limits a classifier?}
-\begin{frame}{The classification pipeline shared by both backbones}
+% ---------------------------------------------------------------------- 6
+\begin{frame}{Stage 1\quad One pipeline, two backbones, one decision rule}
   \centering
-  \resizebox{\textwidth}{!}{\input{figures/fig_architecture}}
-  \vspace{6pt}
-  \begin{itemize}\small
-    \item \textbf{Backbone (one of two):} DeBERTa-v3-large, fully fine-tuned, reads the \texttt{[CLS]} state. Qwen3-8B-Base with LoRA reads the last token. Both see the sub-question $q$, the full question $Q$ and the answer $a$ ($\le$ 1,024 tokens).
-    \item \textbf{Head:} a new linear layer gives 9 logits and a softmax $p_s(c\mid x)$ over the evasion types for each seed $s$.
-    \item \textbf{System:} average the 10 seeds into $\bar p(c\mid x)$, then divide by the train class prior $\pi_c$ raised to $\tau$.
-    \item \textbf{Output:} the Subtask 2 label (9 types) fixes the Subtask 1 clarity level (3) through the taxonomy.
-  \end{itemize}
-\end{frame}
-
-\begin{frame}{A controlled DeBERTa baseline and seed ensembling}
-  \centering
-  \includegraphics[height=0.43\textheight]{figures/deberta_seeds.pdf}
-  \vspace{2pt}
-  \begin{itemize}\small
-    \item[] \textcolor{navy}{\textbf{Seeds:}} the ten models differ only in their random seed. Averaging their softmax outputs reduces the variance between runs, and every claim in this talk compares paired seeds.
-        \item[] \textcolor{navy}{\textbf{Result:}} 16 epochs plus the full question raised the model from \hl{0.315 to 0.384} (+0.069, 9 of 10 seeds up). The 10-seed system with logit adjustment scores 0.405 S2 and 0.648 S1.
-    \item[] \textcolor{navy}{\textbf{Takeaway:}} undertraining hid the gain (at 8 epochs, 0.282 against 0.337, with the loss still at 1.3--1.5), so we report fit next to every score.
-  \end{itemize}
-\end{frame}
-
-\begin{frame}{The decision rule: logit adjustment}
-  \begin{columns}[c]
-    \begin{column}{0.46\textwidth}
-      \includegraphics[width=\linewidth]{figures/decision_rules.pdf}
-    \end{column}
-    \begin{column}{0.52\textwidth}
-      \begin{block}{How it works}
-        \small
-        An argmax picks the class with the highest averaged probability. Macro-F1 weights all nine classes equally, but the train labels are dominated by the Ambivalent types (59\%) and Explicit (31\%).
-        Dividing $\bar p(c\mid x)$ by $\pi_c^{\tau}$ lowers the score of frequent classes, so rare ones are predicted more often. With $\tau = 0$ this is the plain argmax, and $\tau = 1$ removes the train prior entirely.
-        $\tau$ is the only fitted parameter, chosen on dev by nested cross-validation.
-      \end{block}
-      \expcard{E4 \quad Logit adjustment against per-class weights}
-        {nine free class weights could fit the metric better than one scalar.}
-        {logit adjustment 0.365 $\rightarrow$ \hl{0.438}. Nine weights reach only 0.394, with an in-fold gain of +0.098 that does not transfer.}
-        {one scalar beats nine weights on 308 items. Every system uses it.}
-    \end{column}
-  \end{columns}
-\end{frame}
-
-\begin{frame}{Structural changes failed, while the decision rule, training length and full question helped}
-  \begin{columns}[c]
-    \begin{column}{0.44\textwidth}
-      \begin{block}{Four explanations for the plateau (DeBERTa-v3-large)}
-        \small
-        \begin{itemize}\setlength{\itemsep}{2pt}
-          \item \textbf{Noisy labels?} No: 53 errors were on items all annotators agreed on.
-          \item \textbf{The decision rule?} A little: logit adjustment +0.073.
-          \item \textbf{Label meaning?} No: a re-ranker given label definitions $-$0.011, though gold was in the top 3 for 90\%.
-          \item \textbf{Missing knowledge?} $\rightarrow$ tested by changing the backbone.
-        \end{itemize}
-      \end{block}
-    \end{column}
-    \begin{column}{0.54\textwidth}
-      \centering
-      \includegraphics[width=\linewidth,height=0.62\textheight,keepaspectratio]{figures/s_changes.pdf}
-    \end{column}
-  \end{columns}
-  \takeaway{no structural change moved the system, so we changed the model itself.}
-\end{frame}
-
-\begin{frame}{Where the DeBERTa ensemble fails}
-  \begin{columns}[c]
-    \begin{column}{0.5\textwidth}
-      \centering
-      \includegraphics[width=\linewidth,height=0.66\textheight,keepaspectratio]{figures/confusion.pdf}
-    \end{column}
-    \begin{column}{0.46\textwidth}
-      \footnotesize
-      \begin{block}{How to read it}
-        \footnotesize
-        \begin{itemize}
-          \item Rows are the majority gold label (at least 2 of 3 annotators), plus a ``no majority'' row (33 items).
-          \item Columns are the argmax of the 10-seed ensemble. The diagonal is right for 121 of 275 majority items.
-          \item Scoring never uses the majority. A prediction counts if \emph{any} annotator gave it.
-        \end{itemize}
-      \end{block}
-      \begin{block}{What it tells us}
-        \footnotesize
-        \begin{itemize}
-          \item Errors sit inside \emph{Ambivalent}. Implicit is predicted as Explicit 20 times, and General is spread over five other labels.
-          \item Partial/half-answer is never predicted.
-          \item The encoder fails on \hl{how committed} an answer is, the same pairs annotators disagree on.
-        \end{itemize}
-      \end{block}
-    \end{column}
-  \end{columns}
-  \takeaway{a model with more knowledge should improve these boundaries. We test this by changing only the backbone.}
-\end{frame}
-
-\begin{frame}{A stronger pretrained backbone gained more per model than all encoder changes combined}
-  \begin{columns}[c]
-    \begin{column}{0.46\textwidth}
-      \centering
-      \includegraphics[width=\linewidth,height=0.64\textheight,keepaspectratio]{figures/s_backbone.pdf}
-    \end{column}
+  \resizebox{0.97\textwidth}{!}{\input{figures/fig_architecture}}
+  \vspace{4pt}
+  \begin{columns}[T]
     \begin{column}{0.52\textwidth}
       \small
-      One change: DeBERTa-v3-large $\rightarrow$ Qwen3-8B-Base + LoRA, with the same rows, input, loss and selection, on 10 paired seeds.
-      \vspace{4pt}
-
-      \textcolor{navy}{\textbf{Expected:}} gains on the Explicit--Implicit--General boundaries of the confusion matrix\\[3pt]
-      \found{+0.092 per model, 10 of 10 seeds up (all encoder changes together: +0.069)}\\[3pt]
-      \found{the gain is broad, largest on the Non-Reply types (Claims ignorance +0.40), so the expected location did not hold} \failed
-      \vspace{4pt}
-
-      {\footnotesize\textcolor{gray}{``Stronger backbone'', not ``knowledge'' alone: size, pretraining, LoRA and the head all changed together.}}
+      \begin{itemize}\setlength{\itemsep}{2pt}
+        \item \textbf{Seeds:} ten models that differ only in their random seed; a \emph{system} averages them. Every
+              claim compares paired seeds.
+        \item \textbf{Logit adjustment:} divide by the train prior $\pi_c^{\tau}$, so rare classes, which macro-F1 weights
+              equally, get predicted. $\tau$ is the only parameter fitted on dev (nested CV).
+      \end{itemize}
+    \end{column}
+    \begin{column}{0.45\textwidth}
+      \begin{block}{E4\quad one scalar beats nine weights}
+        \small
+        Logit adjustment: 0.365 $\rightarrow$ \hl{0.438}.\\
+        Nine per-class weights: 0.394, with an in-fold gain of +0.098 that did not transfer to held-out folds.
+      \end{block}
     \end{column}
   \end{columns}
-  \raises{the 8B model ranks the right label far better than it picks it.}
+\end{frame}
+
+% ---------------------------------------------------------------------- 7
+\begin{frame}{Stage 1\quad Structural changes failed; a stronger backbone did not}
+  \begin{columns}[T]
+    \begin{column}{0.42\textwidth}
+      \centering
+      {\scriptsize\textbf{Gains:} each change against its control}\par\vspace{1pt}
+      \includegraphics[width=\linewidth,height=0.47\textheight,keepaspectratio]{figures/s_changes.pdf}
+      \par\vspace{2pt}\raggedright\small
+      \textbf{DeBERTa-v3-large}, one change against a named control. 10-seed system: 0.405 S2 / 0.648 S1.
+      \textbf{Not label noise:} 53 errors were on items all three annotators agreed on.
+    \end{column}
+    \begin{column}{0.56\textwidth}
+      \centering
+      {\scriptsize\textbf{S2 and S1:} the DeBERTa baseline, one line per seed}\par\vspace{1pt}
+      \includegraphics[width=\linewidth,height=0.47\textheight,keepaspectratio]{figures/deberta_seeds.pdf}
+      \par\vspace{2pt}\raggedright\small
+      16 epochs plus the full question: S2 0.315 $\rightarrow$ \textbf{0.384} (9 of 10 seeds up), S1 0.576 $\rightarrow$ 0.614.\\[2pt]
+      \textbf{One change:} DeBERTa $\rightarrow$ Qwen3-8B-Base + LoRA, same rows, input, loss and selection:
+      \hl{+0.092} S2 per model, 10 of 10 seeds. The gain was broad, largest on Claims ignorance (+0.40), not only on
+      Explicit--Implicit--General as predicted.
+    \end{column}
+  \end{columns}
+  \raises{the 8B model ranks the right label far better than it picks it. Can someone else pick for it?}
 \end{frame}
 
 % ====================================================================== STAGE 2
 \setstage{Stage 2: the cascade}
-\begin{frame}{The classifier ranks the right label better than it picks it}
+% ---------------------------------------------------------------------- 8
+\begin{frame}{Stage 2\quad The classifier ranks better than it decides}
   \centering
-  \includegraphics[width=0.92\linewidth,height=0.58\textheight,keepaspectratio]{figures/s_ranking.pdf}
-  \par\vspace{4pt}\raggedright
-  \takeaway{errors are mostly a choice among a few top candidates, made where the model is unsure. So let a larger model choose among them, \emph{only} for the least confident items.}
+  \includegraphics[width=0.88\linewidth,height=0.47\textheight,keepaspectratio]{figures/s_ranking.pdf}
+  \par\vspace{3pt}\raggedright
+  \begin{columns}[T]
+    \begin{column}{0.49\textwidth}
+      \small
+      \textbf{M1} = Qwen3-8B, 12 epochs, 10 seeds: \hl{0.598} S2 / 0.743 S1.\\[2pt]
+      An acceptable label is first for 60\% of items but in the \textbf{top 3 for 93\%}, and correctness rises from 40\% to
+      87\% with confidence.
+    \end{column}
+    \begin{column}{0.49\textwidth}
+      \small
+      \textbf{Two registered checks} on the least sure 30\%:\\[1pt]
+      an oracle choosing in the top 3 \(\rightarrow\) 0.727\\
+      a \emph{random} choice there \(\rightarrow\) 0.587 $<$ 0.598\\
+      {\footnotesize so M1's first choice carries information: \textbf{fuse} a second opinion, don't replace M1.}
+    \end{column}
+  \end{columns}
 \end{frame}
 
-\begin{frame}{System design: a classifier, a router and an LLM adjudicator}
+% ---------------------------------------------------------------------- 9
+\begin{frame}{Stage 2\quad The cascade: a classifier, a router and an LLM adjudicator}
   \centering
   \begin{tikzpicture}[
-      font=\scriptsize,
-      box/.style={draw=navy, rounded corners=3pt, align=center, fill=white, minimum height=11mm, inner sep=3pt},
+      font=\footnotesize,
+      box/.style={draw=navy, rounded corners=3pt, align=center, fill=white, minimum height=12mm, inner sep=3pt},
       main/.style={box, fill=soft, line width=0.9pt},
       arr/.style={-{Stealth[length=5pt]}, navy, thick},
-      lab/.style={font=\scriptsize\itshape, text=navy!80}]
-    \node[box, text width=19mm] (in) {\textbf{Input}\\sub-question\\full question\\answer};
-    \node[box, text width=33mm, right=6mm of in] (m1) {\textbf{M1: Qwen3-8B + LoRA}\\10 seeds, 12 epochs\\top-4 labels $=C(x)$, uncertainty $u(x)$};
-    \node[draw=navy, diamond, aspect=1.7, inner sep=0.5pt, align=center, right=6mm of m1] (m2) {\textbf{M2}\\unsure?};
-    \node[main, text width=36mm, right=17mm of m2] (m3) {\textbf{M3: LLM adjudicator}\\Qwen3.8-27B-FP8 (local), one letter from $C(x)$, fused with M1};
-    \node[box, text width=28mm, below=7mm of m2] (keep) {\textbf{Keep M1's answer}};
-    \node[box, text width=44mm, dashed, below=7mm of m1, xshift=-14mm] (m4) {\textbf{M4: distillation} (for cost)\\one student on $\tfrac12$gold$+\tfrac12 q$ replaces the 10 seeds};
-    \node[box, dashed, text width=40mm, below=7mm of m3] (m5) {\textbf{M5 (future):} question-side prior\\two LLMs answer $Q$ as the President, and the share that evade enters the fusion};
-    \draw[arr, dashed] (m5.north) -- (m3.south);
+      lab/.style={font=\footnotesize\itshape, text=navy!80}]
+    \node[box, text width=19mm] (in) {\textbf{Input}\\$q$, $Q$, $a$};
+    \node[box, text width=38mm, right=5mm of in] (m1) {\textbf{M1}\enspace Qwen3-8B + LoRA\\10 seeds $\rightarrow$ top 4 labels $C(x)$\\and uncertainty $u(x)$};
+    \node[draw=navy, diamond, aspect=1.7, inner sep=0.5pt, align=center, right=5mm of m1] (m2) {\textbf{M2}\\unsure?};
+    \node[main, text width=40mm, right=14mm of m2] (m3) {\textbf{M3}\enspace Qwen3.8-27B (local)\\reads definitions + item,\\answers \textbf{one letter} from $C(x)$};
+    \node[box, text width=30mm, below=6mm of m2] (keep) {\textbf{Keep M1's label}\\(70\% of slice items)};
+    \node[box, text width=40mm, below=6mm of m3] (fuse) {\textbf{Fuse} over $C(x)$:\\$\lambda \log\bar p + (1-\lambda)\log q - \tau\log\pi_c$};
+    \node[box, dashed, text width=40mm, below=6mm of m1, xshift=-12mm] (m4) {\textbf{M4} (for cost): one student on\\$\tfrac12$gold $+\ \tfrac12$ the 27B's $q$ replaces 10 seeds};
     \draw[arr] (in) -- (m1);
     \draw[arr] (m1) -- (m2);
-    \draw[arr] (m2) -- node[lab, above, yshift=1mm] {yes (30\%)} (m3);
+    \draw[arr] (m2) -- node[lab, above] {yes: 30\%} (m3);
     \draw[arr] (m2) -- node[lab, right] {no} (keep);
+    \draw[arr] (m3) -- (fuse);
     \draw[arr, dashed] (m4.north) -- (m4.north |- m1.south);
   \end{tikzpicture}
-  \vspace{2pt}
-  \begin{itemize}\footnotesize\raggedright
-    \item Registered checks that set the design: choosing at random inside M1's top 3 \emph{lowers} S2 (0.587 vs 0.598), so the LLM is \hl{fused} with M1, not substituted. Candidate sets by probability mass did not transfer to new rows, but sets by rank did (\textbf{top 4}).
-    \item On 300 cross-fitted train rows (fused accuracy), retrieved examples \emph{hurt} the 27B (0.330 vs 0.353 without), and a 304B model did worse than the local 27B (0.317): short prompt, local model, one output token.
-  \end{itemize}
+  \par\vspace{6pt}\raggedright
+  \begin{columns}[T]
+    \begin{column}{0.49\textwidth}
+      \small
+      \textbf{Design set by registered checks}
+      \begin{itemize}\setlength{\itemsep}{1pt}
+        \item Candidate sets by \emph{rank} transfer to new rows; by probability mass they do not $\rightarrow$ \textbf{top 4}
+        \item Threshold: 30\% of the train slice, which is 36\% of dev
+      \end{itemize}
+    \end{column}
+    \begin{column}{0.49\textwidth}
+      \small
+      \textbf{Two assumptions refuted} \src{(300 held-out train rows)}
+      \begin{itemize}\setlength{\itemsep}{1pt}
+        \item Retrieved examples \emph{hurt}: 0.330 vs 0.353 without
+        \item A 304B model did worse than the local 27B (0.317)
+      \end{itemize}
+    \end{column}
+  \end{columns}
 \end{frame}
 
-\begin{frame}{Deferral rate against cost on dev}
+% ---------------------------------------------------------------------- 11
+\begin{frame}{Stage 2\quad Deferral rate against cost on dev}
   \begin{columns}[c]
     \begin{column}{0.50\textwidth}
       \centering
@@ -382,32 +428,8 @@
   \raises{was 0.669 luck? One ensemble, parameters fitted on 308 items.}
 \end{frame}
 
-\setstage{Example: a shared answer}
-\begin{frame}{One answer, two sub-questions, two labels}
-  \begin{block}{One journalist's turn at a President's news conference, and one answer}
-    \small ``Is that a make-or-break issue for you, in terms of domestic politics? There's a Republican in Pennsylvania who says he doesn't think the troops should \ldots\ would you campaign for Mike Fitzpatrick?''
-    \par\vspace{3pt}\centering\textcolor{navy}{\large\textbf{``I already have.''}}
-  \end{block}
-  \begin{columns}[T]
-    \begin{column}{0.48\textwidth}
-      \excard{Explicit \quad (3 of 3 annotators)}
-        {Would you campaign for Mike Fitzpatrick?}
-        {I already have.}
-        {the answer states what was asked.}
-    \end{column}
-    \begin{column}{0.48\textwidth}
-      \excard{Dodging \quad (3 of 3 annotators)}
-        {Is that a make-or-break issue for you, in terms of domestic politics?}
-        {I already have.}
-        {the answer says nothing about whether the issue is make-or-break.}
-    \end{column}
-  \end{columns}
-  \takeaway{69\% of training rows share their answer with another sub-question, so one answer can receive two labels. Whether an answer evades then depends on the question it is paired with. Stage~4 tests this, and the last slides return to this answer.}
-\end{frame}
-
-% ====================================================================== STAGE 3
-\setstage{Stage 3: which gains survive?}
-\begin{frame}{Controls on the cascade: routing, fusion and where the 27B helps}
+% ---------------------------------------------------------------------- 12
+\begin{frame}{Stage 2\quad Controls on the cascade: routing, fusion and where the 27B helps}
   \centering
   \includegraphics[width=0.96\linewidth,height=0.46\textheight,keepaspectratio]{figures/s_robust.pdf}
   \par\vspace{4pt}\raggedright
@@ -418,361 +440,343 @@
   \end{itemize}
 \end{frame}
 
-\begin{frame}{The 27B prioritises option A}
-  \centering
-  \includegraphics[width=0.96\linewidth,height=0.42\textheight,keepaspectratio]{figures/s_nondet.pdf}
-  \par\vspace{3pt}\raggedright
-  \begin{itemize}\small
-    \item LLMs choosing among lettered options are known to prefer some positions (Zheng et al., ICLR 2024). Ours prioritises \hl{option A}: it picks A for 40\% of items in taxonomy order, against 22--29\% in the other orders (chance is 25\%).
-    \item In taxonomy order slot A usually holds Explicit, so a preference for A is also a preference for Explicit.
-    \item Two orders of the same four candidates give the same pick on only 72\% of dev items.
-    \item We therefore average four cyclic orders. This costs four calls per deferred item and moved the system by +0.011 at split 0 but only +0.002 over ten splits.
-  \end{itemize}
-  \takeaway{the final system averages four option orders, and all later numbers use that setting.}
-  \par{\scriptsize\textcolor{gray}{C.\ Zheng, H.\ Zhou, F.\ Meng, J.\ Zhou, M.\ Huang. Large Language Models Are Not Robust Multiple Choice Selectors. ICLR 2024.}}
+% ====================================================================== STAGE 3
+\setstage{Stage 3: which gains survive?}
+% ---------------------------------------------------------------------- 11
+\begin{frame}{Stage 3\quad We attacked our own result, one registered test at a time}
+  \begin{columns}[T]
+    \begin{column}{0.66\textwidth}
+      \footnotesize
+      \renewcommand{\arraystretch}{1.22}\setlength{\tabcolsep}{3pt}
+      \begin{tabular}{@{}>{\raggedright\arraybackslash}p{3.1cm}>{\raggedright\arraybackslash}p{4.4cm}@{}}
+        \toprule
+        \textbf{Registered question} & \textbf{Result} \\
+        \midrule
+        Does the gain hold on unseen rows? & Yes: 3,448 cross-fitted train rows, \textbf{+0.014} [+0.002, +0.026] \\
+        Does confidence beat random routing? & Yes: 0.669 vs 0.604 over 200 random routings \\
+        Does a learned router beat it? & No: it lost at 4 of 4 budgets \\
+        Does the student learn the LLM's knowledge? & No: an M1-taught student does as well (0.563 vs 0.575), a soft-target effect \\
+        Do test transcripts change labels? & Yes: artifacts in 97\% of test answers flip 15.6\% $\rightarrow$ we normalise them \\
+        Do cheaper prompts keep decisions? & No: the cached prompt flips 9.4\%; escalation ladder 0.600 $<$ 0.625 \\
+        \bottomrule
+      \end{tabular}
+    \end{column}
+    \begin{column}{0.32\textwidth}
+      \centering
+      \includegraphics[width=\linewidth,height=0.42\textheight,keepaspectratio]{figures/s_optA.pdf}
+      \par\raggedright\footnotesize
+      \textbf{The 27B prefers option A} (known bias, Zheng et al., ICLR 2024). Two orders of the same four options agree on only
+      72\% of items, so we \textbf{average four orders}.
+    \end{column}
+  \end{columns}
 \end{frame}
 
-\begin{frame}{The frozen system compared with the winning system}
-  \begin{columns}[T]
-    \begin{column}{0.60\textwidth}
-      \footnotesize
-      \setlength{\tabcolsep}{3.5pt}
+% ---------------------------------------------------------------------- 12
+\begin{frame}{Stage 3\quad The frozen system, against the winner}
+  \vfill
+  \begin{columns}[c]
+    \begin{column}{0.61\textwidth}
+      \small
+      \renewcommand{\arraystretch}{1.35}\setlength{\tabcolsep}{3pt}
       \begin{tabular}{@{}lcccc@{}}
         \toprule
         System (dev) & S2 & S1 & LLM calls & GPU-s \\
         \midrule
         DeBERTa-v3-large, 10 seeds & 0.405 & 0.648 & 0 & -- \\
         M1: Qwen3-8B, 10 seeds & 0.598 & 0.743 & 0 & 0.40 \\
-        \textbf{Accuracy point}, M1 + 27B & \textbf{0.650} & \textbf{0.788} & 1.43 & 0.54 \\
-        \textbf{Distilled point}, 4 orders & \textbf{0.608} & \textbf{0.785} & 2.30 & 0.27 \\
-        \quad one option order & 0.599 & 0.784 & 0.57 & 0.10 \\
+        \textbf{Accuracy point}: M1 + 27B & \hl{0.650} & \textbf{0.788} & 1.43 & 0.54 \\
+        \textbf{Distilled}: student + 27B & \textbf{0.599} & \textbf{0.784} & 0.57 & \textbf{0.10} \\
         \midrule
         TeleAI, 1st place & 0.617 & 0.812 & 1.94 & n/a \\
         \bottomrule
       \end{tabular}
-      \vspace{3pt}
-
-      {\scriptsize\textcolor{gray}{Nested-CV split 0 (0.639 over ten splits for the accuracy point). All records re-scored once on one serving setup. LLM calls are 27B calls per item, four per deferred item with four orders. GPU-s is inference time per item, all on one GPU. TeleAI's row is its own dev result, with ${\sim}$7.3k LLM input tokens against our ${\sim}$1.6k. Its GPU time is not published.}}
     \end{column}
-    \begin{column}{0.37\textwidth}
-      \begin{block}{Relation to the task's system papers}
-        \footnotesize
-        In the task's 30 system papers, these parts were already in use: candidate sets, LLM choosers, routing, distillation. \textbf{None tested whether such systems read the question.}\\[3pt]
-        So we froze every setting and used the cascade as an \hl{instrument}.
-      \end{block}
+    \begin{column}{0.35\textwidth}
+      {\setbeamerfont{block title}{size=\small,series=\mdseries}
+      \begin{block}{Against the winner}
+        \small
+        S2 higher, S1 lower.\\
+        $\tfrac34$ of its LLM calls.\\
+        $\tfrac15$ of its input tokens (${\sim}$1.6k vs 7.3k).\\
+        Distilled: $\tfrac14$ of M1's GPU time.
+      \end{block}}
     \end{column}
   \end{columns}
-  \raises{if a label is not a property of the answer alone, what is it a property of?}
+  \vfill
 \end{frame}
 
 % ====================================================================== STAGE 4
 \setstage{Stage 4: what it measures}
-\begin{frame}{Labels of one answer across its sub-questions}
+% ---------------------------------------------------------------------- 13
+\begin{frame}{Stage 4\quad Evasion is a relation between a question and an answer}
   \centering
-  \includegraphics[width=0.94\linewidth,height=0.46\textheight,keepaspectratio]{figures/s_relation.pdf}
+  \includegraphics[width=0.92\linewidth,height=0.47\textheight,keepaspectratio]{figures/s_relation.pdf}
   \par\vspace{3pt}\raggedright
-  \begin{itemize}\small
-    \item On dev, two sub-questions of one answer get different labels 72\% of the time, against 83\% for random items and 43\% for two annotators on the same item. On train, 61.5\% of 3,079 sibling pairs differ.
-    \item Partial, Implicit, Deflection and General answers fit their question as well as Explicit ones, so relevance is not answerhood \src{(Clear Reply vs rest: AUROC 0.566)}.
-  \end{itemize}
-  \takeaway{evasion is a relation between a question and an answer. The ``I already have'' answer is typical, not an exception.}
+  \begin{columns}[T]
+    \begin{column}{0.5\textwidth}
+      \small
+      \textbf{Left:} two sub-questions of \emph{one} answer get different labels \hl{72\%} of the time: nearly as often as
+      random items (83\%), far more than two annotators on the same item (43\%). On train: 61.5\% of 3,079 sibling pairs.
+      \textbf{The label moves because the question moves.}
+    \end{column}
+    \begin{column}{0.47\textwidth}
+      \small
+      \textbf{Right:} political science scores answers by how well they fit their own question. Partial, Implicit,
+      Deflection and General fit as well as Explicit (AUROC 0.566): \textbf{relevance is not answerhood.}
+      \takeaway{``I already have'' is the rule, not the exception.}
+    \end{column}
+  \end{columns}
 \end{frame}
 
-\begin{frame}{Validity check: removing or swapping the question}
+% ---------------------------------------------------------------------- 14
+\begin{frame}{Stage 4\quad Validity check: does the instrument read the question?}
   \begin{columns}[c]
-    \begin{column}{0.40\textwidth}
+    \begin{column}{0.42\textwidth}
       \centering
       \includegraphics[width=\linewidth,height=0.66\textheight,keepaspectratio]{figures/s_swap.pdf}
     \end{column}
-    \begin{column}{0.58\textwidth}
+    \begin{column}{0.56\textwidth}
       \small
-      A validity check before using it on new speakers: pair each answer with an unrelated question, or with none.\\[4pt]
-      \pred{the Clear-Reply share at least halves}\\
-      \found{25\% $\rightarrow$ 1\%} \held\\[4pt]
-      Surprise: with \emph{no} question, Clear Replies \emph{rise} to 64\%. Without a question, nothing is evaded.
-      \vspace{4pt}
+      Keep each answer, change only the question. Training never showed a mismatched pair.\\[5pt]
+      \pred{paired with a question from another interview, Clear Replies at least halve}\\
+      \found{\hl{25\% $\rightarrow$ 1\%}; 62 of 78 Clear Replies become Dodging}\\[4pt]
+      \textbf{Surprise:} with \emph{no} question, Clear Replies \emph{rise} to 64\%. If nothing was asked, nothing can be
+      evaded.
+      \vspace{5pt}
 
-      \begin{block}{Our answer again, under an unrelated question}
+      \begin{block}{``I already have'', under an unrelated question}
         \footnotesize
         ``Why did you keep saying there was a relationship between Saddam Hussein, Zarqawi, and Al Qaida \ldots?''\\
-        \textcolor{navy}{\textbf{``I already have.''}} $\rightarrow$ instrument: \hl{Dodging}\\
-        With its own two questions it gives Explicit and Dodging, as all six annotations say.
+        $\rightarrow$ instrument: \hl{Dodging}. Under its own two questions: Explicit and Dodging, as all six annotations say.
       \end{block}
     \end{column}
   \end{columns}
 \end{frame}
 
-\begin{frame}{Does the question or the speaker drive evasion? Design}
+% ---------------------------------------------------------------------- 15
+\begin{frame}{Stage 4\quad Is evasion driven by the question or by the speaker?}
   \begin{columns}[c]
     \begin{column}{0.52\textwidth}
       \centering
       \begin{tikzpicture}[
           font=\footnotesize,
-          r/.style={draw=navy, rounded corners=3pt, text width=64mm, align=left, inner sep=3pt, fill=white},
-          top/.style={draw=navy, rounded corners=3pt, text width=64mm, align=center, inner sep=3pt, fill=soft, line width=0.9pt},
+          r/.style={draw=navy, rounded corners=3pt, text width=63mm, align=left, inner sep=3pt, fill=white},
+          top/.style={draw=navy, rounded corners=3pt, text width=63mm, align=center, inner sep=3pt, fill=soft, line width=0.9pt},
           arr/.style={-{Stealth[length=4pt]}, navy, thick}]
-        \node[top] (q) {308 dev sub-questions (191 interview turns) $\rightarrow$ Mistral-7B and Qwen3-8B};
-        \node[r, below=4mm of q] (n) {\textbf{N}\enspace a neutral analyst with no stake};
+        \node[top] (q) {The Presidents' 308 dev sub-questions (191 turns)\\ $\rightarrow$ Mistral-7B and Qwen3-8B answer them as \ldots};
+        \node[r, below=4mm of q] (n) {\textbf{N}\enspace a neutral analyst, with no stake};
         \node[r, below=1.5mm of n] (p) {\textbf{P}\enspace the President, in that interview, on that date};
         \node[r, below=1.5mm of p] (f) {\textbf{F}\enspace P, then ``With respect, you haven't answered the question.''};
         \node[r, below=1.5mm of f] (b) {\textbf{B}\enspace P, with the President's real answer as private notes};
-        \node[top, below=3mm of b] (o) {2,464 answers, labelled by the \textbf{frozen} instrument};
+        \node[top, below=4mm of b] (o) {2,464 answers, labelled by the \textbf{frozen} instrument};
         \draw[arr] (q) -- (n); \draw[arr] (b) -- (o);
       \end{tikzpicture}
     \end{column}
     \begin{column}{0.45\textwidth}
       \begin{block}{Registered predictions}
         \small
-        \begin{itemize}\setlength{\itemsep}{2pt}
-          \item If the \textbf{question} drives evasion, a speaker with no stake (N) evades where the Presidents did: odds ratio $\ge 1.5$.
-          \item If the \textbf{stake} drives it, playing the President (P) raises the evasion rate by $\ge 0.10$.
-          \item \textbf{Pursuit} (F) turns $\ge 50\%$ of evasions into replies.
-          \item \textbf{Notes} (B) help more on questions answered indirectly than on non-answers ($\ge +0.15$).
+        \begin{itemize}\setlength{\itemsep}{3pt}
+          \item \textbf{Question-driven:} the neutral analyst (N) evades where the Presidents did: odds ratio $\ge 1.5$
+          \item \textbf{Stake-driven:} playing the President (P) raises the evasion rate by $\ge 0.10$
+          \item \textbf{Pursuit} (F) turns $\ge 50\%$ of evasions into replies
+          \item \textbf{Notes} (B) help indirect answers more than non-answers, by $\ge 0.15$
         \end{itemize}
       \end{block}
+      {\footnotesize Each condition differs from P in one factor. N and P are labelled by the same instrument on the same
+      questions, so a bias of the instrument towards some questions affects both alike.}
     \end{column}
   \end{columns}
 \end{frame}
 
-\begin{frame}{Evasion rates by role}
+% ---------------------------------------------------------------------- 16
+\begin{frame}{Stage 4\quad The role changes \emph{where} models evade, not how often}
   \centering
-  \includegraphics[width=0.93\linewidth,height=0.47\textheight,keepaspectratio]{figures/s_audit.pdf}
-  \par\vspace{2pt}
+  \includegraphics[width=0.92\linewidth,height=0.45\textheight,keepaspectratio]{figures/s_audit.pdf}
+  \par\vspace{2pt}\raggedright
   \begin{columns}[T]
-    \begin{column}{0.49\textwidth}
-      \footnotesize
-      \textbf{No stake (N)}: odds ratio 1.18 \src{[0.80, 1.73]} \failed\\[2pt]
-      \textbf{Stake} raises the rate: $-$0.031 \failed\\[2pt]
-      \textbf{President's role (P)}: odds ratio \hl{2.74} \src{[1.87, 4.17]} \explor
+    \begin{column}{0.47\textwidth}
+      \small
+      \textbf{Question-driven (N):} OR 1.18 \src{[0.80, 1.73]}, below the 1.5 predicted\\[1pt]
+      \textbf{Stake raises the rate:} $-$0.031, not the +0.10 predicted\\[1pt]
+      \textbf{Pursuit (F):} 66\% of evasions become replies, as predicted\\[1pt]
+      \textbf{President's role (P):} OR \hl{2.74} \src{[1.87, 4.17]}, exploratory
     \end{column}
-    \begin{column}{0.49\textwidth}
-      \footnotesize
-      \textbf{Pursuit (F)}: 66\% of evasions become replies \held\\[2pt]
-      \textbf{Notes (B)}: +0.113 \src{[$-$0.006, +0.225]}, below the bar \failed
+    \begin{column}{0.50\textwidth}
+      \small
+      \textbf{Panel (b):} where the President \emph{answered}, a neutral analyst still evades 52\%, but in the President's role
+      only \hl{34\%}. In the role, models answer directly what the Presidents answered directly (Mistral 3.0, Qwen 2.5).\\[2pt]
+      {\footnotesize\textcolor{gray}{Not shown: real politicians' intent. Two model families (Qwen shares the judge's family);
+      P adds identity and date. The instrument was human-checked on LLM text and is \emph{more} confident there (seed
+      agreement 0.81 vs 0.73).}}
     \end{column}
   \end{columns}
-  \par\vspace{3pt}
-  \small\textcolor{navy}{\textbf{In panel (b)}}, the change is in the open dots. Where the President answered, a neutral analyst still evades 52\%, but in the President's role the models evade only 34\%.
-\end{frame}
-
-\begin{frame}{What the role result shows and does not show}
-  \begin{columns}[T]
-    \begin{column}{0.48\textwidth}
-      \begin{block}{What it shows}
-        \small
-        \begin{itemize}\setlength{\itemsep}{2pt}
-          \item The role changes \emph{where} models evade, not \emph{how often} (52\% vs 55\%).
-          \item In the President's role they answer directly what the Presidents answered directly. A neutral analyst, to whom the questions are not addressed, evades about half of them whatever the President did.
-          \item So a question's answerability shows only for a speaker who can answer it.
-          \item It holds for each model separately (Mistral 3.0, Qwen 2.5).
-        \end{itemize}
-      \end{block}
-    \end{column}
-    \begin{column}{0.48\textwidth}
-      \begin{block}{What it does not show}
-        \small
-        \begin{itemize}\setlength{\itemsep}{2pt}
-          \item It is exploratory, with two model families, one of them the judge's own (Qwen). Our data cannot separate answerability from strategic evasion.
-          \item The P prompt adds identity, date and context, not only a stake, and the role odds ratio was not adjusted for answer length.
-          \item The instrument was not human-validated on LLM text, though it is \emph{more} confident there (seed agreement 0.81 vs 0.73).
-          \item Anything about real politicians' intent.
-        \end{itemize}
-      \end{block}
-    \end{column}
-  \end{columns}
-  
-\end{frame}
-
-\begin{frame}{What the evasion study tells us to act on}
-  \small
-  Everything so far comes from one pipeline: the classifier, the router, the 27B adjudicator, frozen as an instrument. Its results point to three things to act on.
-  \vspace{4pt}
-
-  \begin{columns}[T]
-    \begin{column}{0.32\textwidth}
-      \begin{block}{1\quad Labels follow the question}
-        \footnotesize
-        One answer gets different labels under different sub-questions, and the instrument reads the question causally.\\[3pt]
-        \textcolor{navy}{\textbf{Act on it:}} always feed the full question with the answer. Never label an answer alone.
-      \end{block}
-    \end{column}
-    \begin{column}{0.32\textwidth}
-      \begin{block}{2\quad The question carries signal}
-        \footnotesize
-        LLMs in the President's role, who never saw the real answer, answer directly the questions the Presidents answered directly (odds ratio 2.74).\\[3pt]
-        \textcolor{navy}{\textbf{Act on it:}} no module uses this signal yet. A \hl{question-side prior, M5}, could feed it to the fusion.
-      \end{block}
-    \end{column}
-    \begin{column}{0.32\textwidth}
-      \begin{block}{3\quad No shortcut}
-        \footnotesize
-        Half an answer agrees with the full-answer label on only 66\% of items, and probes on the frozen model reach 0.397 S2 against 0.525 for one fine-tuned seed.\\[3pt]
-        \textcolor{navy}{\textbf{Act on it:}} keep the full model and make it cheaper instead. That is Stage 5.
-      \end{block}
-    \end{column}
-  \end{columns}
-  \takeaway{the second point gives the next architectural element, M5, to which we return after Stage 5.}
-  \raises{can the full instrument run cheaper?}
 \end{frame}
 
 % ====================================================================== STAGE 5
 \setstage{Stage 5: cheaper?}
-\begin{frame}{Cost of reduced precision: memory, throughput and latency}
+% ---------------------------------------------------------------------- 17
+\begin{frame}{Stage 5\quad Can the full instrument run cheaper?}
+  \vfill
   \begin{columns}[c]
-    \begin{column}{0.60\textwidth}
-      \small
-      \renewcommand{\arraystretch}{1.3}
+    \begin{column}{0.42\textwidth}
+      \footnotesize
+      \renewcommand{\arraystretch}{1.2}\setlength{\tabcolsep}{3pt}
       \begin{tabular}{@{}lcc@{}}
         \toprule
-        M1, 16-bit $\rightarrow$ reduced & FP8 & NF4 \\
+        M1, 16-bit $\rightarrow$ & FP8 & NF4 \\
         \midrule
-        Throughput (items/s) & 43.1 $\rightarrow$ 35.9 & 7.7 $\rightarrow$ 6.3 \\
-        \quad ratio & \hl{0.83$\times$} & \hl{0.82$\times$} \\
-        Batch-1 latency, p50 (ms) & 33.6 $\rightarrow$ 30.2 & 169 $\rightarrow$ 259 \\
-        \quad ratio & 0.90$\times$ & \hl{1.53$\times$} \\
-        Peak memory (GB) & 21.9 $\rightarrow$ 20.9 & 16.8 $\rightarrow$ 11.3 \\
-        \quad ratio & \hl{0.96$\times$} & \hl{0.67$\times$} \\
-        Label agreement (10 seeds) & 96.1\% & 86.7\% \\
+        Label agreement & 96.1\% & 86.7\% \\
+        Throughput & \hl{0.83$\times$} & 0.82$\times$ \\
+        Batch-1 latency & 0.90$\times$ & 1.53$\times$ \\
+        Peak memory & 0.96$\times$ & 0.67$\times$ \\
         \bottomrule
       \end{tabular}
-      \vspace{3pt}
-
-      {\scriptsize\textcolor{gray}{FP8: native FP8 tensor cores of one RTX PRO 6000 (Blackwell), batch 32 for both. NF4: two RTX A4000, with 16-bit split over two cards at batch 8 and NF4 on one card at batch 16, so its speed is not like for like. Peak memory is per process. The weights of an 8B model alone take about 16, 8 and 4.5\,GB in 16-bit, FP8 and NF4.}}
+      \par\vspace{3pt}
+      {\scriptsize\textcolor{gray}{Same GPU type for each pair. FP8 activations are quantized in \emph{unfused} ops; NF4 weights
+      are computed in bf16.}}
     \end{column}
-    \begin{column}{0.37\textwidth}
-      \begin{block}{What we saw}
-        \footnotesize
-        \begin{itemize}\setlength{\itemsep}{2pt}
-          \item \textbf{FP8} ran on native FP8 tensor cores but was slower, not 1.3$\times$ faster as predicted, and barely smaller. Activations are quantized in unfused operations around each matrix product. Reported FP8 speed-ups rely on fused kernels, which we did not use.
-          \item \textbf{NF4} saves memory (0.67$\times$, short of the predicted 0.4$\times$) but is slower. Its 4-bit weights are computed in bf16.
-          \item Applied to the accuracy point's one-GPU cost, FP8's speed would raise it from 0.538 to 0.619 GPU-s per item (\hl{+15\%}).
-        \end{itemize}
-      \end{block}
+    \begin{column}{0.56\textwidth}
+      \centering
+      \includegraphics[width=\linewidth,height=0.55\textheight,keepaspectratio]{figures/s_precision.pdf}
     \end{column}
   \end{columns}
-\end{frame}
-
-\begin{frame}{Lower precision: accuracy lost and flipped decisions}
-  \centering
-  \includegraphics[width=0.93\linewidth,height=0.43\textheight,keepaspectratio]{figures/s_precision.pdf}
-  \par\vspace{2pt}\raggedright\footnotesize
-  \begin{itemize}\setlength{\itemsep}{1pt}
-    \item Frozen M1 in FP8 or NF4, each against 16-bit on the same GPU type. FP8: agreement 96.1\% (bar 98\%) \failed\quad speed 0.83$\times$ (bar 1.3$\times$) \failed\quad flips fall where the 27B re-decides, 71\% vs 36\% by chance \held
-    \item All 10 of M1's membership-changing flips lose it, while the system's go both ways (5 lose, 7 gain), so with the same frozen parameters it loses 0.003 against M1's 0.045.
-    \item$^{*}$NF4: 27B records are missing for 60 of 136 deferred items and the system flips more decisions than M1 (57 vs 45): no conclusion.
-  \end{itemize}
-  \takeaway{precision is not a cost lever with these kernels.}
+  \vfill
+  \small
+  \takeaway{not a cost lever with these kernels, but a cheaper first stage is safe where its errors stay where the
+  adjudicator looks.}
 \end{frame}
 
 % ====================================================================== CLOSE
 \setstage{Conclusions}
-\begin{frame}{Registered predictions that steered the work}
-  \footnotesize
-  \renewcommand{\arraystretch}{1.7}
-  \begin{tabular}{@{}>{\raggedright\arraybackslash}p{0.17\textwidth}>{\raggedright\arraybackslash}p{0.79\textwidth}@{}}
-    \textbf{\textcolor{navy}{1\, Classifier}} & \fc{gain on the expected boundaries} \fc{gain larger on agreed items} \\
-    \textbf{\textcolor{navy}{2\, Cascade}} & \hc{top-3 headroom} \hc{dev gain at 30\%} \fc{5 seeds $\approx$ 10} \fc{examples help} \fc{student at 30\%} \fc{student ranks errors better} \\
-    \textbf{\textcolor{navy}{3\, What survives}} & \hc{test text matters} \fc{learned router} \fc{LLM-knowledge distillation} \fc{cached prompt} \fc{escalation ladder} \\
-    \textbf{\textcolor{navy}{4\, What it measures}} & \hc{reads the question} \hc{pursuit} \hc{probe less question-bound} \fc{question-driven (N)} \fc{stake raises rate} \fc{notes} \fc{half answer suffices} \fc{frozen probe suffices} \\
-    \textbf{\textcolor{navy}{5\, Precision}} & \hc{FP8 flips land where the 27B re-decides} \fc{FP8 fidelity} \fc{FP8 speed} \fc{NF4 memory (0.4$\times$)} \\
-  \end{tabular}
-  \vspace{4pt}
-
-  \small
-  \hc{held}~registered prediction held \qquad \fc{failed}~failed, and changed the next step\\[2pt]
-  {\footnotesize\textcolor{gray}{A selection of the registered predictions that steered the work. Every one, held or not, is in the experiment log.}}
-\end{frame}
-
-\begin{frame}{Limitations, each with what we did and what comes next}
-  \small
-  \renewcommand{\arraystretch}{1.2}
-  \begin{tabular}{@{}>{\raggedright\arraybackslash}p{0.27\textwidth}>{\raggedright\arraybackslash}p{0.30\textwidth}>{\raggedright\arraybackslash}p{0.37\textwidth}@{}}
-    \toprule
-    \textbf{Limitation} & \textbf{What we did} & \textbf{Next step} \\
-    \midrule
-    308 dev items, and test labels unreleased & 10 paired seeds and nested CV & Score the frozen test predictions once labels are out, and test a second corpus \\
-    Not human-checked on LLM text & Label-free check: more confident on LLM text & Two annotators, 100 answers, the registered agreement bar \\
-    Two LLM families, and the role effect is exploratory & Per-model results & Add Llama and OLMo, register the role effect and adjust it for answer length \\
-    LLM decisions depend on option order and the serving stack & Four orders averaged, one serving setup & Repeat runs (none yet) and pin software and hardware \\
-    Quantization not faster as implemented & Same GPU type, and the same batch for FP8 & Fused FP8 kernels, QLoRA for NF4, and every NF4-deferred item scored \\
-    \bottomrule
-  \end{tabular}
-\end{frame}
-
-\begin{frame}{Future work: a question-side evasion prior}
+% ---------------------------------------------------------------------- 18
+\begin{frame}{Limitations, and the next module they point to}
   \begin{columns}[T]
-    \begin{column}{0.52\textwidth}
-      \begin{block}{Proposed module M5}
-        \footnotesize
-        \begin{itemize}\setlength{\itemsep}{2pt}
-          \item Every module reads the answer, but the role study suggests the question carries evasion signal of its own.
-          \item For the items M2 defers, two open LLMs answer the question as the President, \emph{without} the real answer.
-          \item The frozen instrument labels those answers, and the share that evade enters the fusion as an extra term.
-          \item Its weight is fitted on training rows, whose P-role answers must still be generated. The prediction will be registered before dev is scored.
-        \end{itemize}
-      \end{block}
+    \begin{column}{0.55\textwidth}
+      \footnotesize
+      \renewcommand{\arraystretch}{1.25}\setlength{\tabcolsep}{3pt}
+      \begin{tabular}{@{}>{\raggedright\arraybackslash}p{2.75cm}>{\raggedright\arraybackslash}p{4.2cm}@{}}
+        \toprule
+        \textbf{Limitation} & \textbf{What we did $\rightarrow$ next step} \\
+        \midrule
+        308 dev items; test labels unreleased & 10 paired seeds, nested CV $\rightarrow$ score the frozen test predictions when released \\
+        Instrument trained on presidential speech, applied to LLM text & human check done; more confident on LLM answers (0.81 vs 0.73) $\rightarrow$ extend the check to more model families \\
+        Two LLM families; role effect exploratory & per-model results $\rightarrow$ Llama, OLMo; register the effect; adjust for length \\
+        27B depends on option order and serving stack & 4 orders, one setup $\rightarrow$ repeat runs, pin software and hardware \\
+        Reduced precision not faster & same GPU type $\rightarrow$ fused FP8 kernels, QLoRA for NF4 \\
+        \bottomrule
+      \end{tabular}
     \end{column}
-    \begin{column}{0.44\textwidth}
-      \begin{block}{Preliminary check on dev \explor}
+    \begin{column}{0.42\textwidth}
+      \begin{block}{Future work: M5, a question-side prior}
         \footnotesize
-        \renewcommand{\arraystretch}{1.15}
-        \begin{tabular}{@{}cccc@{}}
+        Every module reads the answer, yet the role study says the question carries signal. For deferred items, two LLMs answer
+        $Q$ as the President, \emph{without} the real answer; the share that evade enters the fusion.
+        \par\vspace{3pt}\centering
+        \renewcommand{\arraystretch}{1.1}
+        \begin{tabular}{@{}ccc@{}}
           \toprule
-          P-role LLMs & & & President \\
-          that evade & items & & evaded \\
+          P-role LLMs evading & items & President evaded \\
           \midrule
-          0 of 2 & 101 & & 61\% \\
-          1 of 2 & 95 & & 72\% \\
-          2 of 2 & 112 & & \hl{88\%} \\
+          0 of 2 & 101 & 61\% \\
+          1 of 2 & 95 & 72\% \\
+          2 of 2 & 112 & \hl{88\%} \\
           \bottomrule
         \end{tabular}
-        \vspace{3pt}
-
-        Added to M1 it helps only a little. AUROC for ``the President evaded'' goes from 0.872 to 0.875 on all items and from 0.722 to 0.746 on the 111 items M1 is least sure of.
-      \end{block}
-    \end{column}
-  \end{columns}
-  \vspace{2pt}
-  {\small\textcolor{navy}{\textbf{Expected effect:}} a small gain on the items M1 is unsure about, mainly on the evade-or-not decision. It costs two extra generations per deferred item and needs the instrument to be valid on LLM text.}
-  \par\vspace{2pt}{\tiny\textcolor{gray}{The check was written after the E25 results, on 308 dev items. It motivates a registered test and is not evidence for the module.}}
-\end{frame}
-
-\begin{frame}{Conclusions}
-  \begin{columns}[T]
-    \begin{column}{0.58\textwidth}
-      \begin{block}{What we learned}
-        \small
-        \begin{enumerate}\setlength{\itemsep}{4pt}
-          \item \textbf{A stronger pretrained backbone, not more structure,} broke the classifier plateau, with +0.092 per model on 10 of 10 seeds.
-          \item \textbf{Rank, then adjudicate only where unsure.} The cascade reaches 0.65 dev S2, on par with the winner, with three quarters of its LLM calls. A distilled variant needs a quarter of the classifier's GPU time.
-          \item \textbf{Evasion is a relation.} Labels follow the question. In two LLMs, in the President's role, models answer directly what the Presidents answered directly (exploratory). This motivates M5, a question-side prior.
-        \end{enumerate}
-      \end{block}
-    \end{column}
-    \begin{column}{0.38\textwidth}
-      \begin{block}{The shared answer, again}
-        \small
-        \textcolor{navy}{\textbf{``I already have.''}}\\[3pt]
-        campaign for him? $\rightarrow$ Explicit\\
-        make-or-break? $\rightarrow$ Dodging\\
-        an unrelated question? $\rightarrow$ Dodging\\[3pt]
-        {\footnotesize The instrument gets all three, because it reads the pair.}
+        \par\vspace{3pt}\raggedright
+        Added to M1: AUROC 0.722 $\rightarrow$ 0.746 on the 111 least-sure items (exploratory). \src{written after E25; motivates a registered test}
       \end{block}
     \end{column}
   \end{columns}
 \end{frame}
 
-\begin{frame}{Thank you. Questions?}
-  \vspace{6mm}
+% ---------------------------------------------------------------------- 21  MAIN DIAGRAM
+% Five aligned rows: input, M1, M2, the decision (keep / 27B), the output. Left of each row: how that part was built and
+% fitted (Stages 1-3); right of it: what the frozen instrument was used for (Stages 4-5).
+\begin{frame}{The whole project in one picture}
   \centering
-  \begin{block}{Code, pre-registered log and every raw output}
-    \centering\small\texttt{github.com/IamSid44/CLARITY-Unmasking-Political-Question-Evasions}
-  \end{block}
-  \vspace{2mm}
-  \small
-  \textcolor{navy}{\textbf{Runs and adapters}}\enspace\texttt{huggingface.co/siddarthg44/clarity-semeval26}\\[3pt]
-  \textcolor{navy}{\textbf{Training curves}}\enspace\texttt{wandb.ai/iamsid44-iiit-hyderabad/clarity-semeval26}
+  \resizebox{\textwidth}{!}{%
+  \begin{tikzpicture}[
+      font=\footnotesize,
+      box/.style={draw=navy, rounded corners=2pt, align=center, inner xsep=3pt, inner ysep=2.5pt, fill=white},
+      side/.style={box, align=left, text width=53mm},
+      arr/.style={-{Stealth[length=4.5pt]}, navy, thick},
+      darr/.style={arr, densely dashed},
+      head/.style={font=\normalsize\bfseries, text=navy, anchor=south, inner sep=2pt},
+      frame/.style={draw=navy!45, densely dotted, rounded corners=4pt, inner sep=2.5mm}]
+    % ---------------- middle: the cascade = the frozen instrument ----------------
+    \node[box, fill=soft, text width=66mm] (in) at (0,0) {\textbf{Input}\enspace sub-question $q$, full question $Q$, answer $a$};
+    \node[box, text width=66mm, below=6mm of in] (m1) {\textbf{M1}\enspace Qwen3-8B + LoRA, 10 seeds {\color{gray}(0.598)}\\
+      mean $\bar p$, top-4 candidates $C(x)$, uncertainty $u(x)$};
+    \node[box, text width=66mm, below=5mm of m1] (m2) {\textbf{M2}\enspace defer iff $u \ge 0.638$ (30\% of slice, 36\% of dev)};
+    \node[box, text width=27mm, below=6mm of m2.south west, anchor=north west] (keep) {\textbf{Keep M1}\\ $\arg\max_c \bar p/\pi_c^{\tau_1}$};
+    \node[box, text width=33mm, below=6mm of m2.south east, anchor=north east, fill=soft] (m3) {\textbf{M3}\enspace Qwen3.8-27B\\
+      one letter from $C(x)$,\\ 4 orders, fused};
+    \node[box, fill=navy, text=white, text width=66mm, below=24mm of m2] (out) {\textbf{S2} type (9) $\rightarrow$ \textbf{S1} level (3):\enspace\textbf{0.650 / 0.788}\\
+      1.43 LLM calls \textbullet\ 0.54 GPU-s per item};
+    \draw[arr] (in) -- (m1);
+    \draw[arr] (m1) -- (m2);
+    \draw[arr] (m2.south -| keep.north) -- node[right, inner sep=1pt, font=\scriptsize] {no} (keep.north);
+    \draw[arr] (m2.south -| m3.north) -- node[right, inner sep=1pt, font=\scriptsize] {yes} (m3.north);
+    \draw[arr] (keep.south) -- (keep.south |- out.north);
+    \draw[arr] (m3.south) -- (m3.south |- out.north);
+
+    % ---------------- left: how it was built and fitted (Stages 1-3) ----------------
+    \node[side, anchor=east] (a0) at ($(in.west)+(-10mm,0)$) {\textbf{Backbone}: DeBERTa 0.405, structural changes did not help; one change to Qwen3-8B + LoRA: \textbf{+0.092}/model};
+    \node[side, anchor=east] (a1) at ($(m1.west)+(-10mm,0)$) {\textbf{Train} 10 LoRA seeds on 3,103 rows, 12 epochs; epoch chosen on the 345-row \textbf{train slice}};
+    \node[side, anchor=east] (a2) at ($(m2.west)+(-10mm,0)$) {\textbf{Calibrate on the slice}: temperature, top-4 rule, threshold};
+    \node[side, anchor=east] (a3) at ($(keep.west)+(-10mm,0)$) {\textbf{Fit on dev by nested CV}: $\tau_1$, fusion $\lambda, \tau$.; holds on 3,448 unseen rows: +0.014};
+    \node[side, anchor=east, dashed] (a4) at ($(out.west)+(-10mm,0)$) {\textbf{M4} one student on $\tfrac12$gold $+\tfrac12$27B replaces the 10 seeds: 0.599 at \textbf{$\tfrac14$ of M1's GPU time}};
+    \draw[arr] (a0.east) -- (in.west);
+    \draw[arr] (a1.east) -- (m1.west);
+    \draw[arr] (a2.east) -- (m2.west);
+    \draw[arr] (a3.east) -- (keep.west);
+    \draw[darr] (a4.east) -- ++(5mm,0) |- ($(m1.west)+(0,-2.5mm)$);
+
+    % ---------------- right: what the frozen instrument was used for (Stages 4-5) ----------------
+    \node[side, anchor=west] (c0) at ($(in.east)+(10mm,0)$) {\textbf{E24} one answer, sibling questions: labels differ 72\% (annotators 43\%) $\Rightarrow$ \textbf{a relation}};
+    \node[side, anchor=west] (c1) at ($(m1.east)+(10mm,0)$) {\textbf{E25a} swap the question: Clear Reply \textbf{25\% $\rightarrow$ 1\%}; with no question 64\%};
+    \node[side, anchor=west] (c2) at ($(m2.east)+(10mm,0)$) {\textbf{E25b} LLMs answer as N/P/F/B: N OR 1.18, P \textbf{OR 2.74} (exploratory), pursuit 66\%};
+    \node[side, anchor=west, dashed, draw=accent] (c3) at ($(m3.east)+(10mm,0)$) {\textbf{M5 (future)} question-side prior: the P-role LLMs' evasion share enters the fusion};
+    \node[side, anchor=west, dashed] (c4) at ($(out.east)+(10mm,0)$) {\textbf{E26} M1 in FP8: not faster (0.83$\times$); M1 $-$0.045, instrument only \textbf{$-$0.003}};
+    \draw[arr] (c0.west) -- (in.east);
+    \draw[arr] (c1.west) -- (m1.east);
+    \draw[arr] (c2.west) -- (m2.east);
+    \draw[darr, accent] (c3.west) -- (m3.east);
+    \draw[darr] (c4.west) -- ++(-5mm,0) |- ($(m1.east)+(0,-2.5mm)$);
+
+    % ---------------- frames and titles ----------------
+    \node[frame, fit=(a0)(a1)(a2)(a3)(a4)] (fl) {};
+    \node[frame, fit=(in)(out)(keep)(m3), draw=navy, solid, line width=0.9pt] (fm) {};
+    \node[frame, fit=(c0)(c1)(c2)(c3)(c4)] (fr) {};
+    \node[head] at (fl.north) {Building and fitting it\enspace(Stages 1--3)};
+    \node[head] at (fm.north) {The cascade = the frozen instrument};
+    \node[head] at (fr.north) {Using it\enspace(Stages 4--5)};
+  \end{tikzpicture}}
+  \par\vspace{2pt}
+  {\footnotesize\textcolor{navy}{\textbf{Thesis:}} evasion is a relation between a question and an answer, and the frozen
+  cascade measures it causally and stably.}
+  \par\vspace{1pt}
+  {\tiny Dashed: optional (M4), variant (E26), future (M5).}
 \end{frame}
 
+% ---------------------------------------------------------------------- 22
+\begin{frame}
+  \vfill
+  \begin{center}
+    {\Huge\textcolor{navy}{\textbf{Thank you}}}\par\vspace{10pt}
+    {\LARGE\textcolor{navy}{Questions?}}
+  \end{center}
+  \vfill
+  \begin{center}
+    \small
+    \textcolor{navy}{\textbf{Code, pre-registered log, every raw output}}\\
+    \texttt{github.com/IamSid44/CLARITY-Unmasking-Political-Question-Evasions}\\[7pt]
+    \textcolor{navy}{\textbf{Runs}}\\
+    \texttt{huggingface.co/siddarthg44/clarity-semeval26}\\[7pt]
+    \textcolor{navy}{\textbf{Training curves}}\\
+    \texttt{wandb.ai/iamsid44-iiit-hyderabad/clarity-semeval26}
+  \end{center}
+  \vfill
+\end{frame}
 
 \end{document}

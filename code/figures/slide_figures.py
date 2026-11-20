@@ -88,7 +88,7 @@ def changes() -> None:
     ax.tick_params(axis="y", length=0, right=False)
     ax.set_xlim(-0.185, 0.145)
     ax.set_xlabel(r"$\Delta$ dev S2 vs its control")
-    ax.legend(handles=[Patch(fc=MID, ec=INK, lw=0.6, label="helped"), Patch(fc="white", ec=INK, lw=0.6, label="failed")],
+    ax.legend(handles=[Patch(fc=MID, ec=INK, lw=0.6, label="improved"), Patch(fc="white", ec=INK, lw=0.6, label="no gain")],
               loc="upper left", handlelength=1.0, borderaxespad=0.1, fontsize=7)
     save(fig, "s_changes")
 
@@ -187,6 +187,65 @@ def frontier() -> None:
     ax.set_ylabel("dev S2")
     ax.legend(loc="lower right", handlelength=1.8, fontsize=7.2)
     save(fig, "s_frontier")
+
+
+def cascade() -> None:
+    """The cascade on dev, split 0 (first scoring, one option order). (a) confidence vs 200 random routings by deferral
+    rate (raw/E19_tier0.txt E.1 curve summary); (b) what each part contributes at the 30% slice threshold
+    (raw/E19_tier0.txt section 2 fusion ablations; the 27B alone over all nine labels: raw/E21_E22_analysis.txt A)."""
+    fig, (a, b) = plt.subplots(1, 2, figsize=(5.5, 1.95), gridspec_kw={"width_ratios": [1, 1.0], "wspace": 0.62})
+    dl = [0.0, 0.1, 0.2, 0.3, 0.5, 1.0]
+    conf = [0.598, 0.597, 0.635, 0.669, 0.628, 0.636]
+    rx, rmean, rsd = [0.1, 0.2, 0.3, 0.5], [0.599, 0.601, 0.604, 0.608], np.array([0.009, 0.014, 0.015, 0.018])
+    a.fill_between(rx, np.array(rmean) - 2 * rsd, np.array(rmean) + 2 * rsd, color=PALE, lw=0)
+    a.plot(rx, rmean, color=MID, lw=1.0, ls="--")
+    a.plot(dl, conf, color=NAVY, lw=1.6, marker="o", ms=3.6)
+    a.plot(0.3, 0.669, marker="*", ms=10, color=NAVY, mec="white", mew=0.4, zorder=5)
+    a.text(0.33, 0.672, "0.669", color=NAVY, fontsize=8, fontweight="bold", va="bottom")
+    a.text(0.0, 0.590, "M1 alone", fontsize=7, va="top", ha="left")
+    a.text(1.0, 0.641, "defer all", fontsize=7, va="bottom", ha="right")
+    a.text(0.3, 0.566, "200 random routings", color=MID, fontsize=7, ha="center", va="bottom")
+    a.set_xticks([0, 0.1, 0.2, 0.3, 0.5, 1.0], ["0", "10", "20", "30", "50", "100"])
+    a.set_xlim(-0.04, 1.05)
+    a.set_ylim(0.56, 0.69)
+    a.set_xlabel("share of items deferred to the 27B (%)")
+    a.set_ylabel("dev S2")
+    title(a, "(a) Which items to defer?")
+    rows = [("M1 alone", 0.598, LIGHT), ("27B alone, 9 labels", 0.591, "white"),
+            ("27B alone on the 30%", 0.631, "white"), ("fused, defer all", 0.636, LIGHT),
+            ("fused, defer 30%", 0.669, NAVY)]
+    yy = np.arange(len(rows))[::-1]
+    for y, (lab, v, c) in zip(yy, rows):
+        b.barh(y, v, height=0.62, color=c, edgecolor=INK, linewidth=0.5)
+        hi = c == NAVY
+        b.text(v + 0.002, y, f"{v:.3f}", va="center", fontsize=7.6, color=NAVY if hi else INK,
+               fontweight="bold" if hi else "normal")
+    b.set_yticks(yy, [r[0] for r in rows])
+    for t, r in zip(b.get_yticklabels(), rows):
+        if r[2] == NAVY:
+            t.set_color(NAVY)
+            t.set_fontweight("bold")
+    b.tick_params(axis="y", length=0, right=False, labelsize=7.4)
+    b.set_xlim(0.56, 0.69)
+    b.set_xticks([0.57, 0.60, 0.63, 0.66])
+    b.set_xlabel("dev S2")
+    title(b, "(b) Both routing and fusion needed")
+    save(fig, "s_cascade")
+
+
+def option_a() -> None:
+    """The 27B's position bias: share of items where it picks option A, by option order (raw/E21_E22_analysis.txt B)."""
+    fig, ax = plt.subplots(figsize=(2.3, 1.75))
+    orders, pa = ["tax.", "+1", "+2", "+3", "rev."], [0.400, 0.293, 0.247, 0.250, 0.220]
+    ax.bar(orders, pa, width=0.62, color=[NAVY] + [LIGHT] * 4, edgecolor=INK, linewidth=0.5)
+    ax.axhline(0.25, color=INK, lw=0.6, ls=":")
+    ax.text(4.45, 0.262, "chance", fontsize=7, ha="right", va="bottom")
+    ax.text(0, 0.41, "40%", ha="center", va="bottom", fontsize=8, color=NAVY, fontweight="bold")
+    ax.set_ylim(0, 0.48)
+    ax.set_yticks([0, 0.2, 0.4], ["0", "20%", "40%"])
+    ax.set_xlabel("order of the four options")
+    ax.set_ylabel("27B picks option A")
+    save(fig, "s_optA")
 
 
 # ------------------------------------------------------------------------------------------------ Stage 3
@@ -360,7 +419,9 @@ def audit(R: dict) -> None:
     title(a, "(a) How often LLMs evade")
     for k, (c, _) in enumerate(conds):
         ev, an = S[c]
-        col = NAVY if c == "P" else MID
+        # N and P are the comparison the slide is about; F and B are greyed: F follows a push, and B is shown the
+        # President's own answer, so its agreement with the President is expected rather than informative.
+        col = NAVY if c == "P" else (MID if c == "N" else LIGHT)
         b.plot([k, k], [an, ev], color=col, lw=1.2)
         b.plot([k], [ev], marker="o", ms=5, mfc=col, mec=col, ls="none")
         b.plot([k], [an], marker="o", ms=5, mfc="white", mec=col, mew=1.0, ls="none")
@@ -370,6 +431,7 @@ def audit(R: dict) -> None:
         else:
             b.text(k + 0.2, (ev + an) / 2, lab, fontsize=7.2, va="center", color=col,
                    fontweight="bold" if c == "P" else "normal")
+    b.text(3, 0.02, "sees the\nreal answer", fontsize=6.4, ha="center", va="bottom", color=MID, style="italic")
     b.plot([], [], marker="o", ms=5, mfc=MID, mec=MID, ls="none", label="President evaded")
     b.plot([], [], marker="o", ms=5, mfc="white", mec=MID, ls="none", label="President answered")
     b.set_xticks(range(4), ["N", "P", "F", "B"])
@@ -447,6 +509,8 @@ def main() -> None:
     backbone()
     ranking()
     frontier()
+    cascade()
+    option_a()
     robust()
     nondet()
     relation()

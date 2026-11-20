@@ -461,3 +461,23 @@ and is not a test of it.
 | AUROC for "the President evaded": M1 (1 − p(Explicit)) / P-role share; correlation | 0.880 / 0.661; 0.312 | A |
 | cross-validated AUROC, all items: M1 / M1 + P-role share | 0.872 / 0.875 | A |
 | cross-validated AUROC, least sure 36% (n = 111): M1 / M1 + P-role share | 0.722 / 0.746 | A |
+
+
+## 20. Improvement checks (2026-11-19; not shown in the final slides)
+
+Sources: `raw/sibling_error_check.txt` (`python -m preregistered_analyses.sibling_error_check`) and
+`raw/question_dependence_check.txt` (`python -m preregistered_analyses.question_dependence_check`), CPU, seconds, from
+existing E25 outputs. Descriptive and written after E25; dev only (308 items). They motivate the proposed sibling-contrast
+module (M6) and the decision not to add a no-question view of M1; they are not tests of either. "Correct" is the
+any-annotator rule; the system's labels are the frozen system as replayed in E25 (S2 0.659 there, 0.650 in E23).
+
+| Number | Value | Source |
+|---|---|---|
+| dev items sharing their answer with another sub-question; shared answers | 203 of 308; 86 | sibling |
+| frozen system correct: answer given to one sub-question / shared answer | 0.724 (n = 105) / 0.655 (n = 203) | sibling |
+| system errors on shared answers whose label is a sibling's reference label; chance | 23 of 70 (32.9%); 18.2% | sibling |
+| the same for M1 alone; chance | 20 of 78 (25.6%); 16.0% | sibling |
+| same label on sibling pairs with disjoint reference sets: system / M1 | 22.4% / 15.5% of 58 | sibling |
+| mean p(Explicit): own question / no question / another interview's question | 0.228 / 0.463 / 0.017 | dependence |
+| AUROC for "the President evaded": no-question gap alone; correlation of the gap with M1 | 0.842; 0.870 | dependence |
+| cross-validated AUROC, least sure 36% (n = 111): M1 / M1 + gap / M1 + P-role share / all three | 0.722 / 0.708 / 0.746 / 0.728 | dependence |

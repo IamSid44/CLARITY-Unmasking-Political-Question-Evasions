@@ -1,0 +1,26 @@
+Question-dependence signal, preliminary check (dev, n = 308; the President evaded on 0.744)
+
+Explicit (Clear Reply) probability, mean over items:
+   own question 0.228   no question 0.463   another interview's question 0.017
+
+President evaded, by tercile of the gap logit p_null(Explicit) - logit p_own(Explicit):
+   low    gap: 103 items, the President evaded on 0.408
+   middle gap: 102 items, the President evaded on 0.882
+   high   gap: 103 items, the President evaded on 0.942
+
+AUROC for 'the President evaded' (no fitting):
+   M1, 1 - p(Explicit): 0.880
+   gap: 0.842     JS(own, no question): 0.676
+   correlation gap / M1: 0.870   gap / P-role share: 0.309
+
+Cross-validated logistic regression, 5 folds, mean AUROC over 40 repeats:
+   all items:
+      M1                         0.872
+      M1 + gap                   0.868
+      M1 + P-role share          0.875
+      M1 + gap + P-role share    0.872
+   least sure 36% (n = 111):
+      M1                         0.722
+      M1 + gap                   0.708
+      M1 + P-role share          0.746
+      M1 + gap + P-role share    0.728

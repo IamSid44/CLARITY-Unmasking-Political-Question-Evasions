@@ -1,307 +1,242 @@
-# Speaker notes: final presentation
+# Speaker notes: final presentation (22 slides)
 
-**Slot:** 30 minutes, made up of about 20 minutes of talk and 10 of questions. Aim to finish the talk at **19:40** so there is slack for speaker changes.
+**Slot:** 30 minutes, made up of about 20 minutes of talk and 10 of questions. Aim to finish the talk by **18:36**.
 
-The script below is about 2,300 spoken words, roughly 17 minutes at 135 words a minute, and about 19 with pauses on the figures and the hand-overs. Read it aloud once with a timer, and use the running clock to see where you drift.
+The script is about 2,120 spoken words: about 16 minutes at 135 words a minute,
+plus short pauses on the figures and the hand-overs. Read it aloud once with a timer, and use the running clock to see
+where you drift.
 
-**Four speakers.** Hand over at the stage boundaries. These match the progress bar at the top of each slide.
+**Four speakers.** Hand over at the stage boundaries, which match the stage name in the footline of each slide.
 
-| Speaker | Slides | Part | Target time |
+| Speaker | Slides | Part | Ends at |
 |---|---|---|---|
-| A | 1–5 | Opening: the task, examples, shared-task results, overview | 2:55 |
-| B | 6–14 | Stage 1 and Stage 2: the encoder, the backbone change and the cascade | 5:55 |
-| C | 15–24 | Stage 3 and Stage 4: what survives, and what the instrument measures | 6:55 |
-| D | 25–31 | Stage 5 and close | 3:15 |
-| | | **Total** | **19:40** |
+| A | 1–6 | Opening: the task, three items, the hook, the shared task, the timeline | 4:36 |
+| B | 7–12 | Stages 1 and 2: the classifier and the cascade | 10:24 |
+| C | 13–18 | Stages 3 and 4: what survives, and what the instrument measures | 15:32 |
+| D | 19–22 | Stage 5, limitations, the whole project, thank you | 18:36 |
 
-**Who speaks when** is the team's choice. One rule: each speaker should deliver the last line of their own section, the "What it raised" line. The next speaker then opens their section with that question. This hand-off is what makes the talk sound like one story.
+**The hand-off rule.** Stages 1 and 2 end with a red "What it raised" line. The speaker who reads it hands the
+question to the next slide, which answers it. That is what makes four voices sound like one story.
 
-**Running clock:** the time at the end of each slide is shown in brackets after its heading.
+**Three things never to say.** "We beat the winner" (we are on par on S2 and lower on S1). "We are close to human"
+(0.684 is a two-annotator score; ours is three-annotator). "Politicians evade strategically" (the role effect is
+exploratory, on LLMs, and cannot separate answerability from strategy).
+
+The running clock is in brackets after each heading.
 
 ---
 
-## 1. Title [0:15]
+## 1. Title [0:22]
 
-> Good afternoon. We are Team Nier_ANLP. Our project started as a SemEval shared task on political question evasion. It ended as a study of what evasion actually is.
+> Good afternoon. We are Team Nier_ANLP. Our project started as a SemEval shared task on classifying how clearly
+> politicians answer questions, and it ended as a study of what evasion actually is.
 
-## 2. The task [0:50]
+## 2. The task [1:23]
 
-> Formally, each item is a sub-question, the journalist's full question, and the answer. Subtask 2 assigns one of nine evasion types. Subtask 1 is the three-way clarity level, and it follows directly from the type.
+> Each item is a sub-question, the journalist's full question, and the President's whole answer. Subtask 2 asks for
+> one of nine evasion types; Subtask 1 is the three-way clarity level, and it follows from the type, so we predict the
+> type and map it up.
 >
-> One thing to know before any number. The test labels were never released. So every score in this talk is on the 308-item development set, and it comes with a seed spread or a bootstrap interval.
+> Two facts before any number. The test labels were never released, so every score today is on the 308-item dev set.
+> And the metric is macro-F1 where a prediction counts if any annotator gave it, with all nine classes weighted equally.
 >
-> The metric is macro-F1, and a prediction counts if any annotator gave it. The task is hard for two reasons. Annotators often disagree. And 69% of training answers serve more than one sub-question.
+> It is hard because annotators disagree, one against the other two scores 0.684, and because 69% of training answers
+> serve more than one sub-question. That second fact is the thread of this talk.
 
-## 3. Three real dev items [1:35]
+## 3. What are we classifying? Three real dev items [2:14]
 
-> Before the system, three real dev items. Each pairs a sub-question with the politician's answer.
+> Three real items, one per clarity level, each with all three annotators agreeing. "Do you stand by your figure?" "I
+> stand by the figure": Explicit, a clear reply. "Do you see a risk of a wider war?" "I thought you were going to ask me
+> about the pig": Dodging. And "are CIA operatives in Pakistan?" "I'm not going to talk about ongoing intelligence
+> matters": Declining, a clear non-reply.
 >
-> "Do you stand by your figure, 30,000?" The answer is "I stand by the figure". That is Explicit, a Clear Reply.
->
-> "Do you see a risk of triggering a wider war?" The answer is "I thought you were going to ask me about the pig." That is Dodging: he ignores the question and changes the subject.
->
-> Asked about CIA operatives in Pakistan, he says he is not going to talk about ongoing intelligence matters. That is Declining to answer, a Clear Non-Reply.
->
-> All three annotators agree on each of these. Note that the "pig" answer is attached to all three sub-questions of its turn, so the model must work out which part of an answer responds to which sub-question.
+> Notice the pig answer is attached to all three sub-questions of its turn. So the model has to work out which part of
+> an answer responds to which sub-question.
 
-## 4. Shared-task results [2:10]
+## 4. One answer, two sub-questions, two labels [2:53]
 
-> The winning system, TeleAI, called DeepSeek-V3 in three chain-of-thought stages. That is about two LLM calls per item. Fine-tuned encoders stalled near 0.50.
+> Here is the extreme case. A journalist asks two things in one breath: is this a make-or-break issue for you, and would
+> you campaign for Mike Fitzpatrick? The answer is three words: "I already have."
 >
-> That left us with two questions. A: why do fine-tuned classifiers stop where they do? And B: once we have a good classifier of evasion, what can it tell us about evasion itself?
+> For "would you campaign for him", all three annotators said Explicit. For "is this make-or-break", all three said
+> Dodging. Same words, opposite labels. Hold on to this answer: we come back to it in Stage 4.
 
-## 5. Overview [2:55]
+## 5. The shared task [3:43]
 
-> The talk has five stages. Each stage asks one question, and its answer leads to the next.
+> The winner, TeleAI, called DeepSeek-V3 in three chain-of-thought stages, about two LLM calls per item. Fine-tuned
+> encoders stalled near 0.50. The table is test; TeleAI's dev score, 0.617, is the number we compare with.
 >
-> Stages 1 to 3 answer question A: we build an instrument. Stages 4 and 5 answer question B: we use it.
+> That left us two questions. A: why do fine-tuned classifiers stop where they do, and what gets past it? B: once we
+> have a good classifier of evasion, what can it tell us about evasion itself? And one rule: every experiment's
+> prediction and decision rule was written down before it ran, one change at a time, on ten paired seeds.
+
+## 6. The timeline [4:36]
+
+> This is everything we did, in order. Each column is a stage, and each stage asks one question raised by the one
+> before.
 >
-> From experiment 8 on, each plan, prediction and decision rule was written down before the run, and anything we did not register is marked exploratory. So on each result slide you will see what we predicted next to what we found. That includes the many predictions that failed. Those failures are what moved us forward.
+> Stage 1: on DeBERTa, structural ideas gave no gain; changing only the backbone to Qwen3-8B gained 0.092. Stage 2: that model ranks better than it decides, so a 27B LLM picks among its top four, reaching
+> 0.669. Stage 3: we attacked that number and froze what survived, 0.650. Stage 4: we used the frozen system to measure
+> evasion. Stage 5: we tried to make it cheaper. Stages 1 to 3 answer question A; 4 and 5 answer question B.
 
 *[Hand over to Speaker B.]*
 
-## 6. The classification pipeline [3:25]
+## 7. Stage 1: one pipeline, two backbones [5:26]
 
-> The classifier has the same shape for both backbones. The input is the sub-question, the full question and the answer. A backbone reads it, a new linear head gives nine logits, and a softmax gives one probability per evasion type for each seed.
+> Stage 1 asks what limits a fine-tuned classifier. The pipeline is the same for both backbones: the three texts go into
+> a backbone, a new linear head gives nine probabilities, ten seeds are averaged, and a logit adjustment makes the
+> decision.
 >
-> A system is ten seeds averaged, followed by a logit adjustment. The nine-way type fixes the three-way clarity level through the taxonomy.
+> The logit adjustment divides each probability by the class's training share to a power tau, so rare classes, which
+> macro-F1 weights equally, actually get predicted. One scalar took the system from 0.365 to 0.438. Nine free per-class
+> weights reached only 0.394; they overfit 308 items. So every system uses the one scalar.
 
-## 7. A controlled baseline and seed ensembling [3:55]
+## 8. Structure failed; a stronger backbone did not [6:50]
 
-> Our first encoder trailed the other teams, and 69% of rows share an answer, so we gave it the full question and trained it longer. That raised a single model from 0.315 to 0.384, with nine of ten seeds up.
+> Three panes. On the left, the gain of every change we tried on DeBERTa, each against a named control. Longer training
+> and the full question improved it. Hierarchies, rebalanced losses, experts, a definition re-ranker and model soups did
+> not. And it was not label noise: 53 errors were on items all three annotators agreed on.
 >
-> The ten models differ only in their random seed. Averaging their softmax outputs reduces the variance between runs, and every claim in this talk compares paired seeds. The ten-seed system scores 0.405 on Subtask 2.
+> The middle and right panes are Subtask 2 and Subtask 1, one line per seed: 16 epochs plus the full question take
+> Subtask 2 from 0.315 to 0.384, nine of ten seeds up, and Subtask 1 from 0.576 to 0.614.
 >
-> One caution. At 8 epochs the gain was hidden, because the model was still under-trained. So we report fit next to every score.
+> Then we changed only the backbone, to Qwen3-8B with LoRA: same rows, input, loss and selection. Plus 0.092 per model,
+> on all ten seeds, the dark bar at the bottom left, more than all the encoder changes together. The gain was broad,
+> largest on Claims ignorance, not only on the boundary we had predicted.
+>
+> What it raised: the 8B model ranks the right label far better than it picks it. Can someone else pick for it?
 
-## 8. The decision rule: logit adjustment [4:35]
+## 9. The classifier ranks better than it decides [7:38]
 
-> A plain argmax picks the class with the highest averaged probability. But macro-F1 weights all nine classes equally, and the training labels are dominated by Explicit and the Ambivalent types.
+> M1 is Qwen3-8B at 12 epochs and ten seeds: 0.598. An acceptable label is its first choice 60% of the time, but in its
+> top three 93% of the time. And it knows when it is unsure: correctness rises from 40% to 87% with confidence.
 >
-> Logit adjustment divides each class probability by the training prior raised to a power tau. That lowers the score of frequent classes, so rare ones are predicted more often. With tau zero it is the plain argmax. Tau is the only fitted parameter, and we choose it by nested cross-validation.
->
-> We compared it with nine free per-class weights. Logit adjustment took the system from 0.365 to 0.438. Nine weights reached only 0.394, with an in-fold gain that did not transfer. So every system uses one scalar.
+> Two registered checks on the least sure 30%. An oracle choosing within the top three would reach 0.727. But a random
+> choice there drops to 0.587, below M1. So M1's first choice carries information: a second opinion has to be fused
+> with it, not replace it.
 
-## 9. Structural changes and the decision rule [5:15]
+## 10. The cascade [8:32]
 
-> Question A first. Why do classifiers stall? We wrote down four explanations, and each predicts a different fix. We tested them on DeBERTa one change at a time, each against a named control.
+> That gives the cascade. M1 proposes four candidates and an uncertainty. M2, the router, sends only the least confident
+> items onward: 30% of the training slice, which is 36% of dev. There, M3, a 27-billion-parameter LLM run locally,
+> reads the label definitions and the item and answers with one letter, and that choice is fused with M1. Optionally,
+> M4 distils the whole thing into one student model.
 >
-> - Noisy labels? No. 53 of the errors were on items all three annotators agreed on.
-> - The decision rule? It helps a little: a one-parameter logit adjustment adds 0.073. Longer training and the full journalist question help a little too.
-> - Label meaning? No. A re-ranker given the label definitions did worse, even though the gold label was in the top three 90% of the time.
->
-> On the right is every change we tried. Hierarchies, expert models, rebalanced losses and model soups all failed. Nothing trained on the same 3,448 rows moved the system. So we changed the model itself.
+> Two of our design assumptions were refuted on held-out training rows: retrieved few-shot examples hurt the 27B, and a
+> 304-billion-parameter model did worse than our local one. So: a short prompt, a local model, one output token.
 
-## 10. Where the DeBERTa ensemble fails [5:45]
+## 11. Deferral rate against cost [9:34]
 
-> This is the confusion matrix of the ten-seed DeBERTa ensemble on dev. Rows are the majority gold label, columns are what the ensemble predicts.
+> This plot is score against GPU time per item. The navy line is the ten-seed M1 plus the 27B at growing deferral rates.
+> Deferring 30% reaches 0.669, up 0.067 over M1, with 33 items fixed and 9 broken. We only saw this after finding and
+> fixing a bug in our own fusion code, and it is in the log. Deferring everything is worse: where M1 is confident, the
+> LLM is the weaker reader.
 >
-> The errors sit inside Ambivalent. Implicit is predicted as Explicit 20 times, General is spread over five other labels, and Partial is never predicted. The encoder fails on how committed an answer is, which is also where annotators disagree with each other.
+> The other two lines are cheaper first stages. One distilled student plus the 27B matches the ten-seed M1 at a quarter
+> of its GPU time; ten students add almost nothing.
 >
-> If a stronger model knows more about these cases, we expect it to improve exactly these boundaries. So we change only the backbone.
+> What it raised: was 0.669 luck? It rests on one ensemble and parameters fitted on 308 items.
 
-## 11. A stronger backbone [6:35]
+## 12. Controls on the cascade [10:24]
 
-> One change: DeBERTa becomes Qwen3-8B with LoRA. The data, input, loss and selection rule stay the same, on ten paired seeds.
+> Three controls. On 3,448 cross-fitted training rows the cascade still gains, plus 0.014: smaller than on dev, where its
+> parameters were fitted, but real. Left panel: no random routing of the same size comes near confidence routing, 0.669
+> against 0.604. And the 27B alone over all nine labels scores 0.591, below M1, so fusion is needed.
 >
-> From the confusion matrix on the previous slide, we expected a stronger model to improve the Explicit–Implicit–General boundaries. The gain was plus 0.092 per model, with all ten seeds up. That is more than all our encoder changes together, which gave 0.069 per model.
->
-> But the location was not what we expected. The gain was broad, and largest on the non-reply types, which depend on recognising what kind of statement an answer is.
->
-> We say "stronger backbone", not "knowledge". Size, pretraining data and the adapter all changed together.
->
-> **What it raised:** this model ranks the right label far better than it picks it.
-
-## 12. Ranking against choosing [7:00]
-
-> An acceptable label is its first choice 60% of the time, but in its top three 93% of the time. And it knows when it is unsure: correctness goes from 40% in the least confident fifth to 87% in the most confident.
->
-> So the errors are mostly a choice among a few candidates, made where the model is unsure. Let a larger model choose, but only there.
-
-## 13. System design [7:55]
-
-> That is the cascade.
->
-> 1. M1, our classifier, proposes four candidate labels and a confidence.
-> 2. M2 sends only the least confident items onward: the threshold is set for 30% on a training slice, which defers 36% of dev.
-> 3. On those items, M3, a 27-billion-parameter LLM, picks one of the four candidates, and its choice is fused with M1.
-> 4. Optionally, M4 distils all of this into one student model.
->
-> Three registered checks set the design, and each surprised us:
->
-> - Choosing at random among M1's top three *lowers* the score. So M1's first choice carries information, and the LLM must be fused with M1, not substituted for it.
-> - Retrieved examples *hurt* the LLM, and a 304B model did worse than the 27B. So we use a short prompt, a local model and one output token.
-> - Candidate sets defined by probability mass did not transfer to new rows; sets defined by rank did. So we use the top four.
-
-## 14. Deferral rate against cost [8:50]
-
-> On this plot, further left is cheaper and higher is better.
->
-> - Deferring 30% reaches 0.669, up 0.067 over M1. We only saw this after finding and fixing a bug in our own fusion code. It is in the log.
-> - Deferring everything is worse, 0.636. Where M1 is confident, the LLM is the weaker reader.
-> - One distilled student, the grey star, matches the ten seeds at a quarter of their GPU time.
->
-> **What it raised:** was 0.669 luck? It came from one ensemble, with parameters fitted on 308 items.
+> Right panel: where M1 is confident, the 27B fixes about as many items as it breaks; it helps only where M1 is unsure.
+> A learned router that tried to predict fixes lost to plain confidence at all four budgets.
 
 *[Hand over to Speaker C.]*
 
-## 15. One answer, two sub-questions, two labels [9:35]
+## 13. We attacked our own result [11:09]
 
-> Before the robustness tests, one more shared answer. A journalist asks the President two things in one breath. Is this a make-or-break issue for you? And, would you campaign for Mike Fitzpatrick?
->
-> The answer is three words: "I already have."
->
-> Three annotators labelled it once for each sub-question. For "would you campaign for him", all three said Explicit. For "is this make-or-break", all three said Dodging.
->
-> Same answer, opposite labels. 69% of training rows share their answer with another sub-question, so this is common. Whether an answer evades depends on the question it is paired with. Stage 4 tests this, and we return to this answer at the end.
+> Stage 3 goes through every remaining doubt with one registered test each. The first three rows you have just seen.
+> Two results changed our claims. A student taught by M1 itself did as well as one taught by the 27B, so distillation is
+> a soft-target effect, not the LLM's knowledge. And the 27B prefers option A: 40% in one order, a quarter in others, a
+> known bias. Two orders of the same options agree on only 72% of items, so we average four orders.
 
-## 16. Controls on the cascade [10:25]
+## 14. The frozen system, against the winner [11:55]
 
-> Three controls on the cascade.
+> We froze every setting and re-scored once on one serving setup: 0.650 on Subtask 2 and 0.788 on Subtask 1. Against
+> the winner that is higher on Subtask 2 and lower on Subtask 1, with three quarters of their LLM calls and a fifth of
+> their input tokens. The distilled version needs a quarter of M1's GPU time.
 >
-> On 3,448 cross-fitted training rows the cascade gains a small but clear 0.014. That is less than on dev, where its parameters were fitted.
->
-> Left panel: no random choice of which items to defer comes close to confidence routing. The 27B alone over all nine labels scores 0.591, below M1, so fusion is needed too.
->
-> Right panel: the 27B fixes about as many items as it breaks where M1 is confident, and helps only where M1 is unsure. A learned fix-or-break router lost to confidence at all four budgets.
+> The task's system papers already used every part we built; none tested whether such systems read the question. So
+> from here on, this frozen cascade is our instrument.
 
-## 17. The 27B prioritises option A [11:00]
+## 15. Evasion is a relation [12:43]
 
-> One more check on the 27B. We show it four candidate labels as options A to D. In taxonomy order, slot A is usually Explicit, so preferring A and preferring Explicit cannot be told apart. Known work shows that LLMs choosing among lettered options prefer some positions, Zheng and colleagues at ICLR 2024. Ours prioritises option A: it picks A for 40% of items in taxonomy order, against about a quarter in the other orders.
+> Back to "I already have". Was it a one-off? On the left: two sub-questions that share one answer get different labels
+> 72% of the time, nearly as often as two random items, and far more than two annotators disagree on the same item,
+> 43%. The label moves because the question moves.
 >
-> Two orders of the same four candidates give the same pick on only 72% of dev items. So we average four cyclic orders. That costs four calls per deferred item, and it moved the system by 0.011 at one split but only 0.002 over ten.
->
-> From here on, the final system averages four orders.
+> On the right: is evasion just answering off-topic? No. Partial, Implicit, Deflection and General answers fit their own
+> question as well as explicit replies. Relevance is not answerhood. So "I already have" is the rule, not the exception.
 
-## 18. The frozen system and the winner [11:40]
+## 16. Validity check [13:26]
 
-> With four orders averaged and every setting frozen, the system scores 0.650. We re-scored all records once on one serving setup, which is why this differs from the 0.669 of Stage 2.
+> Before using the instrument on anything new, we checked it actually reads the question. Keep each answer, give it a
+> question from another interview. We predicted Clear Replies would at least halve. They went from 25% to 1%, and 62 of
+> 78 clear replies became Dodging.
 >
-> Against the winner, that is on par on Subtask 2 and lower on Subtask 1. It uses three quarters of their LLM calls and a fifth of their LLM input tokens.
->
-> The task's system papers already used these parts: candidate sets, LLM choosers, routing, distillation. What none of them tested is whether such systems read the question. So we froze every setting and used the cascade as an instrument.
->
-> **What it raised:** if a label is not a property of the answer alone, what is it a property of?
+> The surprise is the reverse: remove the question and Clear Replies rise to 64%. If nothing was asked, nothing can be
+> evaded. And "I already have" under a question about Saddam Hussein: Dodging.
 
-## 19. Labels of one answer across its sub-questions [12:30]
+## 17. Question or speaker? [14:19]
 
-> Back to "I already have". Was that a one-off?
+> If evasion lives in the pair, is it the question that is hard to answer, or the speaker who chooses not to? We put the
+> Presidents' 308 questions to two open LLMs in four roles: N, a neutral analyst with no stake; P, the President in that
+> interview; F, the President pressed with "you haven't answered the question"; B, the President with the real answer
+> as private notes. The frozen instrument labels all 2,464 answers.
 >
-> Left panel: take two sub-questions that share one answer. Their labels differ 72% of the time. That is almost as often as two random items, at 83%, and far more than two annotators disagreeing on the same item, at 43%.
->
-> Right panel: is evasion just answering off-topic? No. Partial, Implicit, Deflection and General answers fit their own question as well as explicit replies do. Relevance is not answerhood.
->
-> So "I already have" was the rule, not the exception. Evasion is a relation between a question and an answer.
+> We registered: if the question drives evasion, the neutral analyst evades where the Presidents did. If the stake drives
+> it, playing the President raises the evasion rate.
 
-## 20. Validity check [13:15]
+## 18. The role changes where models evade [15:32]
 
-> Before using the instrument on new speakers, we checked that it actually reads the question.
+> Neither of those was supported. The neutral analyst's evasions show no clear link to the Presidents': odds ratio 1.18,
+> below the 1.5 we predicted. And playing the President does not raise the rate. Pursuit works as predicted: one
+> follow-up turns two thirds of evasions into replies.
 >
-> Pair each answer with a question from a different interview. Clear replies drop from 25% to 1%, as registered.
+> But look at panel b, the open circles. Where the President answered directly, a neutral analyst still evades 52%; in
+> the President's role, only 34%. In the role, the models answer directly what the Presidents answered directly. Odds
+> ratio 2.74, in each model separately. We did not register this, so it is exploratory. B is greyed out because it sees
+> the real answer, so agreeing with the President is expected.
 >
-> The surprise is the opposite case. Remove the question entirely, and clear replies *rise* to 64%. If nothing was asked, nothing can be evaded.
->
-> Here is our answer again, paired with a question about Saddam Hussein and Al Qaida. The instrument says Dodging.
-
-## 21. Design: question or speaker [14:00]
-
-> Now the real question. When an answer evades, is it the question that is hard to answer, or the speaker who chooses not to?
->
-> We put the Presidents' 308 questions to two open LLMs, in four roles. N is a neutral analyst with no stake. P is the President, in that interview, on that date. F is the President pressed with "you haven't answered the question". B is the President with his real answer as private notes.
->
-> The frozen instrument labels all 2,464 answers. Our registered predictions were these:
->
-> - If the question drives evasion, the neutral analyst evades where the Presidents did.
-> - If the stake drives it, playing the President raises the evasion rate.
-
-## 22. Evasion rates by role [15:00]
-
-> Both registered predictions failed.
->
-> The neutral analyst does not evade where the Presidents did: the odds ratio is 1.18, with an interval spanning 1. And playing the President does not raise the rate. On the left, the neutral and President rates are the same.
->
-> But look at the right panel. In the President's role, the same models evade *on the same questions the Presidents evaded*. The odds ratio is 2.74, and its interval is well above 1.
->
-> This comparison was not registered, so we label it exploratory.
->
-> Pursuit works: one follow-up turns two thirds of evasions into replies.
-
-## 23. What the role result shows and does not show [15:45]
-
-> So the role changes *where* the models evade, not *how often*.
->
-> - Why we trust it: N and P are labelled by the same instrument on the same questions, so an instrument bias towards some questions cannot create the gap. And it holds for each model separately.
-> - What it does not show: it is two model families, one of them the judge's own. The President prompt adds identity and context, not only stake, and we did not adjust this odds ratio for answer length. The instrument was not human-checked on LLM text. And it says nothing about real politicians' intent.
->
-> **What it raised:** measuring this needs the whole answer and the fine-tuned ten-seed ensemble. There is no shortcut, and the details are in backup. Can it run cheaper?
-
-## 24. What the evasion study tells us to act on [16:25]
-
-> Everything so far comes from one pipeline: the classifier, the router and the 27B adjudicator, frozen as an instrument. Its results give three things to act on.
->
-> First, labels follow the question, so the full question must always go in with the answer.
->
-> Second, the question carries signal on its own. Models playing the President, who never saw the real answer, evade on the questions the Presidents evaded. No module uses that signal yet, and that is the next architectural element, a question-side prior we call M5.
->
-> Third, there is no shortcut: the label needs the whole answer and the fine-tuned model. So instead of a smaller model, we try to make the full one cheaper. That is Stage 5.
+> And what it does not show: anything about real politicians' intent. The instrument was human-checked on LLM text, and
+> it is more confident there than on the Presidents' answers.
 
 *[Hand over to Speaker D.]*
 
-## 25. Cost of reduced precision [17:05]
+## 19. Can the full instrument run cheaper? [16:28]
 
-> Quantization is supposed to save memory and time. These are the measured costs of running M1 in 8-bit and 4-bit, each against 16-bit on the same type of GPU.
+> Stage 5 asks whether the same instrument can run cheaper. We ran M1 in FP8 and NF4 against 16-bit on the same GPU
+> type. FP8 was not faster, 0.83 times the throughput, because activations are quantized in separate, unfused
+> operations. NF4 saves a third of the memory but is slower.
 >
-> FP8 ran on the card's native FP8 tensor cores, but it was not faster. Throughput fell from 43 to 36 items per second, 0.83 times, against a predicted 1.3 times or better. Batch-1 latency improved slightly, and peak memory barely changed, 0.96 times. As implemented, activations are quantized in separate operations around each matrix product. Published FP8 speed-ups rely on kernels that fuse these steps, which we did not use.
->
-> NF4 saves memory: 0.67 times, from 16.8 to 11.3 gigabytes. That is short of the 0.4 times we predicted. And it is slower, 0.82 times throughput and 1.5 times the batch-1 latency, because the 4-bit weights are stored compactly but computed in bf16. Its speed is not like for like, since the 16-bit reference was split over two cards.
->
-> Applied to the accuracy point, FP8's speed would raise the cost from 0.538 to 0.619 GPU-seconds per item, 15% more.
+> Panel a: M1 alone loses 0.045 in FP8, but the full instrument loses only 0.003. Panel b shows why: M1's flipped
+> decisions all lose, while the full system's go both ways. So it is not a cost lever with these kernels, but a cheaper
+> first stage is safe as long as its errors stay where the adjudicator looks.
 
-## 26. Lower precision: accuracy lost and flipped decisions [17:45]
+## 20. Limitations and the next module [17:24]
 
-> The ten seeds are three quarters of the instrument's GPU time, so we ran them in 8-bit and 4-bit.
+> Every limitation comes with what we did and what comes next. The two that matter most: only dev, so the frozen test
+> predictions are ready to score when labels are released; and the role finding needs more model families.
 >
-> As implemented, 8-bit is not faster, and it changes 4% of labels. Both of those predictions failed.
->
-> But the third held. 71% of the decisions FP8 flipped fall on items the 27B re-decides anyway, against 36% by chance. With the same frozen parameters the full instrument loses 0.003 S2, while the classifier alone loses 0.045. The flips that change reference-set membership all hurt the classifier: ten of ten. In the system they go both ways, five lose and seven gain. So the cascade turns a one-sided loss into noise.
->
-> This is partly by design: flips happen near the margin, which is exactly what the router defers. The measurement tells you how much, and in which direction. A cheaper first stage is safe as long as its errors stay where the adjudicator looks.
+> The role study also points to the next module, M5. Every module reads the answer, yet the question carries signal.
+> When neither P-role model evades, the President evaded 61% of the time; when both do, 88%. As a prior, it moves M1's
+> AUROC on its least sure items from 0.722 to 0.746. Small, exploratory, and the next registered test.
 
-## 27. Registered predictions [18:15]
+## 21. The whole project in one picture [18:19]
 
-> These are the registered predictions that steered the work. Navy held; red failed.
+> This is the whole project in one picture. In the middle, the cascade that became our instrument: M1 proposes, M2
+> routes, M3 decides the uncertain 36%, 0.650 at the bottom. On the left, how it was built: the backbone from Stage 1,
+> training and calibration on the slice, nested cross-validation on dev, and the distilled student. On the right, what
+> we used it for: labels follow the question, swapping the question destroys Clear Replies, the role study, FP8, and
+> M5 as future work.
 >
-> Most failed, and each failure redirected us. The wrong location of the gain led to the cascade. Our attack on our own headline led to the instrument. The failed question-only hypothesis led to the role finding.
->
-> Every registered prediction, held or not, is in the log in our repository.
+> Our thesis in one line: evasion is a relation between a question and an answer, and the frozen cascade measures it.
 
-## 28. Limitations [18:35]
+## 22. Thank you [18:36]
 
-> Each limitation comes with what we already did and what comes next. The most important two:
->
-> - Dev only: the frozen test predictions are ready to score when labels are released.
-> - The role finding needs a human check of the instrument on LLM text, and more model families, with the effect registered in advance.
-
-## 29. Future work: a question-side evasion prior [19:10]
-
-> One idea for future work. Every module reads the answer, but the role study suggests that the question carries evasion signal of its own.
->
-> The proposal is a fifth module, M5, drawn dashed in the system diagram. For the items M2 defers, two open LLMs answer the question as the President, without ever seeing the real answer. The frozen instrument labels those answers, and the share that evade enters the fusion as an extra term.
->
-> A first look on dev, which is exploratory: when neither model evades, the President evaded on 61% of questions. When both evade, 88%. Added to M1, though, it helps only a little: AUROC 0.872 to 0.875 overall, and 0.722 to 0.746 on the least confident items.
->
-> So we expect a small gain, mainly on the evade-or-not decision. It would need training-row generations, a registered prediction, and a human check of the instrument on LLM text.
-
-## 30. Conclusions [19:40]
-
-> Three things to take away.
->
-> 1. A stronger backbone, not more structure, broke the classifier plateau.
-> 2. Rank, then adjudicate only where unsure. That gave 0.65, on par with the winner, with fewer LLM calls.
-> 3. Evasion is a relation. Labels follow the question, and in two LLMs, which questions get evaded follows the speaker's role.
->
-> And our three words: "I already have" is Explicit for one question, Dodging for another, and Dodging for an unrelated one. The instrument gets all three, because it reads the pair.
-
-## 31. Thank you
-
-> Thank you. We are happy to take questions.
+> Thank you. The code, the pre-registered log and every raw output are at these links. We are happy to take questions.
