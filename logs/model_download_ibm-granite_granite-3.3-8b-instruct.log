@@ -1,0 +1,8 @@
+2026-11-21 11:56:08 try 1
+Fetching 13 files:   0%|          | 0/13 [00:00<?, ?it/s]Fetching 13 files:   8%|▊         | 1/13 [00:00<00:09,  1.25it/s]Fetching 13 files:  15%|█▌        | 2/13 [00:01<00:10,  1.04it/s]Fetching 13 files:  23%|██▎       | 3/13 [00:02<00:06,  1.62it/s]Fetching 13 files:  31%|███       | 4/13 [00:02<00:04,  1.90it/s]Fetching 13 files:  38%|███▊      | 5/13 [00:02<00:03,  2.42it/s]Fetching 13 files:  46%|████▌     | 6/13 [00:03<00:03,  2.04it/s]Fetching 13 files:  54%|█████▍    | 7/13 [00:03<00:02,  2.65it/s]Fetching 13 files:  69%|██████▉   | 9/13 [00:03<00:01,  3.37it/s]Fetching 13 files:  77%|███████▋  | 10/13 [1:01:52<47:34, 951.43s/it]Fetching 13 files:  85%|████████▍ | 11/13 [2:49:13<1:20:46, 2423.42s/it]Fetching 13 files:  92%|█████████▏| 12/13 [2:57:07<31:23, 1883.46s/it]  Fetching 13 files: 100%|██████████| 13/13 [3:00:31<00:00, 1407.40s/it]Fetching 13 files: 100%|██████████| 13/13 [3:00:31<00:00, 833.18s/it] 
+complete: /scratch/shlok/.cache/huggingface/hub/models--ibm-granite--granite-3.3-8b-instruct/snapshots/51dd4bc2ade4059a6bd87649d68aa11e4fb2529b
+2026-11-21 14:56:41 COMPLETE
+2026-11-21 15:17:39 try 1
+Fetching 13 files:   0%|          | 0/13 [00:00<?, ?it/s]Fetching 13 files: 100%|██████████| 13/13 [00:00<00:00, 3026.87it/s]
+complete: /scratch/shlok/.cache/huggingface/hub/models--ibm-granite--granite-3.3-8b-instruct/snapshots/51dd4bc2ade4059a6bd87649d68aa11e4fb2529b
+2026-11-21 15:17:39 COMPLETE

@@ -1,0 +1,37 @@
+E31 role-effect robustness: 3696 LLM answers, models ['mistral_7b', 'olmo2_7b', 'qwen3_8b']; answers containing 'nan': mistral_7b 13, olmo2_7b 3, qwen3_8b 4
+
+odds ratio [95% turn-bootstrap interval]; columns: pooled (MH over models) and per model
+
+condition N
+   a raw                           pooled 1.24 [0.84, 1.80]   mistral_7b 0.98 [0.58, 1.62]   olmo2_7b 1.37 [0.83, 2.29]   qwen3_8b 1.40 [0.85, 2.33]
+   b MH length terciles            pooled 1.23 [0.83, 1.77]   mistral_7b 0.97 [0.57, 1.62]   olmo2_7b 1.39 [0.81, 2.32]   qwen3_8b 1.37 [0.82, 2.31]
+   c logistic + lengths            pooled 1.24 [0.85, 1.81]   mistral_7b 0.94 [0.55, 1.58]   olmo2_7b 1.42 [0.86, 2.38]   qwen3_8b 1.43 [0.86, 2.44]
+   d (c) + question prior          pooled 1.23 [0.83, 1.82]   mistral_7b 0.89 [0.50, 1.49]   olmo2_7b 1.40 [0.83, 2.36]   qwen3_8b 1.49 [0.90, 2.56]
+   e raw, no 'nan' answers         pooled 1.24 [0.84, 1.80]   mistral_7b 0.98 [0.58, 1.62]   olmo2_7b 1.39 [0.83, 2.33]   qwen3_8b 1.40 [0.85, 2.33]
+   f raw, President by instrument  pooled 1.44 [0.96, 2.09]   mistral_7b 1.08 [0.62, 1.82]   olmo2_7b 1.87 [1.10, 3.18]   qwen3_8b 1.46 [0.86, 2.46]
+
+condition P
+   a raw                           pooled 2.81 [1.97, 4.16]   mistral_7b 3.01 [1.81, 5.34]   olmo2_7b 2.90 [1.81, 5.04]   qwen3_8b 2.46 [1.50, 4.15]
+   b MH length terciles            pooled 2.77 [1.95, 4.13]   mistral_7b 3.05 [1.83, 5.52]   olmo2_7b 2.88 [1.77, 5.02]   qwen3_8b 2.44 [1.50, 4.18]
+   c logistic + lengths            pooled 2.84 [2.00, 4.26]   mistral_7b 3.03 [1.80, 5.63]   olmo2_7b 2.95 [1.80, 5.29]   qwen3_8b 2.64 [1.62, 4.61]
+   d (c) + question prior          pooled 2.82 [1.98, 4.25]   mistral_7b 2.97 [1.76, 5.52]   olmo2_7b 2.85 [1.72, 5.06]   qwen3_8b 2.73 [1.69, 4.86]
+   e raw, no 'nan' answers         pooled 2.91 [2.04, 4.28]   mistral_7b 3.28 [2.01, 5.86]   olmo2_7b 2.90 [1.81, 5.04]   qwen3_8b 2.51 [1.53, 4.25]
+   f raw, President by instrument  pooled 3.26 [2.22, 4.97]   mistral_7b 4.00 [2.39, 7.22]   olmo2_7b 2.82 [1.71, 4.92]   qwen3_8b 2.98 [1.77, 5.23]
+
+condition F
+   a raw                           pooled 1.90 [1.20, 3.40]   mistral_7b 1.88 [0.98, 4.00]   olmo2_7b 1.46 [0.77, 3.06]   qwen3_8b 2.45 [1.26, 6.39]
+   b MH length terciles            pooled 1.83 [1.15, 3.22]   mistral_7b 1.83 [0.93, 4.04]   olmo2_7b 1.40 [0.72, 3.04]   qwen3_8b 2.61 [1.32, 7.61]
+   c logistic + lengths            pooled 1.93 [1.21, 3.45]   mistral_7b 1.90 [0.98, 4.28]   olmo2_7b 1.55 [0.82, 3.39]   qwen3_8b 2.83 [1.47, 8.26]
+   d (c) + question prior          pooled 1.99 [1.23, 3.61]   mistral_7b 1.86 [0.95, 4.21]   olmo2_7b 1.62 [0.84, 3.58]   qwen3_8b 3.06 [1.58, 11.00]
+   e raw, no 'nan' answers         pooled 1.88 [1.18, 3.32]   mistral_7b 1.83 [0.96, 3.87]   olmo2_7b 1.46 [0.77, 3.06]   qwen3_8b 2.45 [1.26, 6.39]
+   f raw, President by instrument  pooled 2.04 [1.30, 3.57]   mistral_7b 1.85 [0.97, 3.93]   olmo2_7b 1.81 [0.98, 4.00]   qwen3_8b 2.40 [1.24, 6.34]
+
+condition B
+   a raw                           pooled 3.74 [2.51, 5.49]   mistral_7b 8.13 [4.67, 14.65]   olmo2_7b 3.05 [1.83, 5.37]   qwen3_8b 2.30 [1.35, 4.01]
+   b MH length terciles            pooled 3.76 [2.51, 5.63]   mistral_7b 8.64 [4.93, 16.23]   olmo2_7b 3.00 [1.76, 5.50]   qwen3_8b 2.35 [1.37, 4.17]
+   c logistic + lengths            pooled 3.99 [2.63, 6.14]   mistral_7b 8.69 [4.94, 16.66]   olmo2_7b 3.16 [1.91, 5.84]   qwen3_8b 2.44 [1.39, 4.56]
+   d (c) + question prior          pooled 4.06 [2.68, 6.29]   mistral_7b 9.09 [5.13, 17.70]   olmo2_7b 3.18 [1.89, 5.93]   qwen3_8b 2.45 [1.41, 4.56]
+   e raw, no 'nan' answers         pooled 3.74 [2.49, 5.58]   mistral_7b 7.80 [4.52, 14.06]   olmo2_7b 3.05 [1.83, 5.37]   qwen3_8b 2.39 [1.42, 4.18]
+   f raw, President by instrument  pooled 5.82 [3.87, 9.25]   mistral_7b 7.86 [4.55, 14.90]   olmo2_7b 4.72 [2.71, 9.26]   qwen3_8b 5.10 [2.98, 9.64]
+
+H31-1 (pooled OR(P) >= 1.5 with interval above 1 under (b)-(e), and OR(N) < 1.5 throughout): HELD (P part held, N part held)

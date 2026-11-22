@@ -1,0 +1,26 @@
+E36 (exploratory): confirmation sample, CF, trio; 34296 answers
+
+1. ROR P/N within subgroups
+   you=1                              n  1411  ROR 1.43 [1.16, 1.75]  p 0.0000  Holm 0.0000
+   you=0                              n  1447  ROR 1.07 [0.89, 1.29]  p 0.2330  Holm 1.0000
+   multi=1                            n    77  ROR 0.75 [0.42, 1.32]  p 0.8310  Holm 1.0000
+   multi=0                            n  2781  ROR 1.26 [1.10, 1.46]  p 0.0020  Holm 0.0240
+   affirm=1                           n   675  ROR 1.10 [0.82, 1.50]  p 0.2780  Holm 1.0000
+   affirm=0                           n  2183  ROR 1.31 [1.12, 1.55]  p 0.0000  Holm 0.0000
+   hypo=1                             n   368  ROR 1.38 [0.93, 2.05]  p 0.0690  Holm 0.4830
+   hypo=0                             n  2490  ROR 1.23 [1.06, 1.45]  p 0.0040  Holm 0.0400
+   future=1                           n   425  ROR 1.26 [0.92, 1.78]  p 0.0750  Holm 0.4830
+   future=0                           n  2433  ROR 1.26 [1.09, 1.45]  p 0.0030  Holm 0.0330
+   President=Barack Obama             n   867  ROR 1.31 [1.04, 1.67]  p 0.0180  Holm 0.1440
+   President=Donald J. Trump          n  1208  ROR 1.29 [1.04, 1.60]  p 0.0090  Holm 0.0810
+   President=George W. Bush           n   384  ROR 1.01 [0.74, 1.40]  p 0.4630  Holm 1.0000
+   President=Joseph R. Biden          n   399  ROR 1.12 [0.77, 1.60]  p 0.3090  Holm 1.0000
+
+2-3. By role: word overlap with the President's real answer / with a random real answer; meta-answer share; words
+              overlap  overlap_rand   meta  n_words
+   condition                                       
+   G            0.106         0.064  0.000  224.069
+   N            0.091         0.053  0.001  238.680
+   P            0.129         0.079  0.000  225.590
+   S            0.109         0.064  0.000  229.319
+e36 exit 0

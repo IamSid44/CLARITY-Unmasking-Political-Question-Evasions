@@ -1,0 +1,26 @@
+E35 binding on dev: 58 sibling pairs with disjoint gold sets (40 answers); matched null = 2,000 random pairs from different answers with disjoint gold sets; bootstrap over answers (2000 draws)
+
+   instrument (M1 + 27B adjudicator)        S2 0.659  binding 0.224 [0.120, 0.328]  null 0.135  index -0.66 [-1.43, 0.11]  ratio to null 1.66
+   M1 (Qwen3-8B LoRA, 10 seeds)             S2 0.611  binding 0.155 [0.071, 0.259]  null 0.118  index -0.31 [-1.19, 0.40]  ratio to null 1.31
+   deberta (3 seeds)                        S2 0.444  binding 0.310 [0.200, 0.421]  null 0.154  index -1.01 [-1.73, -0.29]  ratio to null 2.01
+   llm27b_zeroshot (1 seeds)                S2 0.604  binding 0.362 [0.218, 0.509]  null 0.146  index -1.47 [-2.47, -0.49]  ratio to null 2.47
+   frozen probe, layer 0                    S2 0.060  binding 1.000 [1.000, 1.000]  null 1.000  index 0.00 [0.00, 0.00]  ratio to null 1.00
+   frozen probe, layer 4                    S2 0.241  binding 0.793 [0.678, 0.891]  null 0.305  index -1.60 [-1.92, -1.22]  ratio to null 2.60
+   frozen probe, layer 8                    S2 0.328  binding 0.793 [0.667, 0.917]  null 0.126  index -5.32 [-6.30, -4.31]  ratio to null 6.32
+   frozen probe, layer 12                   S2 0.333  binding 0.724 [0.586, 0.846]  null 0.157  index -3.63 [-4.41, -2.75]  ratio to null 4.63
+   frozen probe, layer 16                   S2 0.350  binding 0.724 [0.574, 0.846]  null 0.135  index -4.38 [-5.29, -3.27]  ratio to null 5.38
+   frozen probe, layer 20                   S2 0.308  binding 0.534 [0.400, 0.656]  null 0.253  index -1.11 [-1.59, -0.58]  ratio to null 2.11
+   frozen probe, layer 24                   S2 0.299  binding 0.379 [0.254, 0.526]  null 0.140  index -1.71 [-2.76, -0.81]  ratio to null 2.71
+   frozen probe, layer 28                   S2 0.397  binding 0.448 [0.319, 0.579]  null 0.208  index -1.15 [-1.78, -0.53]  ratio to null 2.15
+   frozen probe, layer 32                   S2 0.298  binding 0.534 [0.373, 0.682]  null 0.182  index -1.93 [-2.74, -1.04]  ratio to null 2.93
+   frozen probe, layer 36                   S2 0.339  binding 0.397 [0.271, 0.530]  null 0.168  index -1.37 [-2.17, -0.62]  ratio to null 2.37
+   anchor: majority label                   S2 0.060  binding 1.000 [1.000, 1.000]  null 1.000  index 0.00 [0.00, 0.00]  ratio to null 1.00
+   anchor: answer-only (M1, no question)    S2 0.359  binding 1.000 [1.000, 1.000]  null 0.221  index -3.52 [-3.52, -3.52]  ratio to null 4.52
+
+   M1 - 27B zero-shot (S2 0.611 vs 0.604): binding difference -0.207 [-0.379, -0.022] (descriptive)
+   DeBERTa - 27B zero-shot: -0.052 [-0.226, +0.115] (descriptive)
+
+Train, confirmation interviews: 1605 sibling pairs with different gold labels, 2858 items
+   CF (cross-fit M1, out of fold)     S2 0.437  binding 0.282 [0.251, 0.334]  null 0.141  index -1.00 [-1.37, -0.78]  ratio to null 2.00
+   ZS (27B zero-shot)                 S2 0.458  binding 0.297 [0.235, 0.389]  null 0.169  index -0.76 [-1.30, -0.39]  ratio to null 1.76
+   H35-1 binding(CF) - binding(ZS) = -0.015 [-0.104, +0.038]; |S2 difference| 0.021 (<= 0.05: True) -> FAILED

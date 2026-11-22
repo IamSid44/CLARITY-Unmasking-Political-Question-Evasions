@@ -1,0 +1,53 @@
+E34 confirmation sample: 248 interviews not in dev, 2858 sub-questions; President evaded 0.688; answers 57160; primary instrument cf
+
+H34-1 (primary): ROR P/N, pooled over the trio, lower bound > 1 and ROR > 1 in >= 2 of 3 models
+   1.25 [1.09, 1.43], one-sided p 0.0010; per model mistral_7b 1.44 [1.21, 1.72]  olmo2_7b 1.34 [1.09, 1.62]  qwen3_8b 1.01 [0.82, 1.24]
+   point estimate >= 1.5: False (reported, not a gate) -> HELD
+
+Secondary (Holm over the family below)
+   H34-2 ROR S/N > 1: 1.34 [1.19, 1.49], p 0.0000, Holm 0.0000 -> HELD
+   H34-3 ROR P/S (two-sided): 0.93 [0.85, 1.03], p 0.1710, Holm 0.5130 -> FAILED
+   H34-4 ROR G/N > 1: 1.22 [1.08, 1.38], p 0.0000, Holm 0.0000 -> HELD
+   H34-5 ROR P/N > 1, granite3_8b: 1.19 [0.98, 1.45], p 0.0475, Holm 0.1900 -> FAILED
+   H34-5 ROR P/N > 1, olmo2_32b: 1.08 [0.89, 1.31], p 0.2210, Holm 0.5130 -> FAILED
+   H34-6 ROR P/N > 1, sub-questions without 'you': 1.07 [0.90, 1.29], p 0.2325, Holm 0.5130 -> FAILED
+
+Robustness (reported, no gate)
+   cf: trio, logistic: 1.25 [1.09, 1.44]
+   cf: GEE: 1.25 [1.09, 1.43]
+   cf: conditional logit: 1.35 [1.15, 1.59]
+   zs: trio, logistic: 1.22 [1.06, 1.42]
+   zs: GEE: 1.22 [1.05, 1.42]
+   zs: conditional logit: 1.29 [1.09, 1.53]
+   cf: answer-length terciles: 1.25 [1.09, 1.43]
+   cf: annotator-specific slopes: 1.25 [1.10, 1.45]
+   cf: without Qwen3-8B: 1.39 [1.20, 1.60]
+   cf: non-answer outcome: 1.24 [1.01, 1.53]
+   cf: without meta answers: 1.25 [1.10, 1.44]
+   cf: soft labels: 1.26 [1.11, 1.42]
+   cf: full train (incl. dev interviews): 1.23 [1.10, 1.38]
+   tipping point (extra symmetric noise in N labels that brings ROR to 1): e* = 0.25
+
+H33-2 CF vs ZS evade agreement by condition: G 0.717  N 0.730  P 0.742  S 0.730; |N - P| = 0.012 -> HELD
+
+Evasion rate by model x condition (P - N is descriptive):
+   condition       G      N      P      S
+   model                                 
+   mistral_7b  0.455  0.561  0.497  0.545
+   olmo2_7b    0.467  0.563  0.467  0.469
+   qwen3_8b    0.447  0.623  0.502  0.542
+   evasion rate by model x condition, on sub-questions the President answered / evaded:
+      pres_evade            answered  evaded
+      model      condition                  
+      mistral_7b G             0.383   0.487
+                 N             0.537   0.572
+                 P             0.410   0.536
+                 S             0.448   0.589
+      olmo2_7b   G             0.419   0.489
+                 N             0.536   0.575
+                 P             0.391   0.502
+                 S             0.401   0.499
+      qwen3_8b   G             0.368   0.483
+                 N             0.577   0.644
+                 P             0.453   0.525
+                 S             0.459   0.579

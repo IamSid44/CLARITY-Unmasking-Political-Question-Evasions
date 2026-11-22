@@ -1,0 +1,128 @@
+Loading weights:   0%|          | 0/398 [00:00<?, ?it/s]Loading weights:   0%|          | 1/398 [00:00<00:53,  7.48it/s]Loading weights:   6%|▋         | 25/398 [00:00<00:02, 125.65it/s]Loading weights:  12%|█▏        | 49/398 [00:00<00:02, 170.84it/s]Loading weights:  20%|█▉        | 79/398 [00:00<00:01, 217.52it/s]Loading weights:  26%|██▌       | 104/398 [00:00<00:01, 225.36it/s]Loading weights:  34%|███▍      | 135/398 [00:00<00:01, 252.41it/s]Loading weights:  40%|████      | 161/398 [00:00<00:00, 254.15it/s]Loading weights:  48%|████▊     | 190/398 [00:00<00:00, 264.19it/s]Loading weights:  55%|█████▍    | 217/398 [00:00<00:00, 262.83it/s]Loading weights:  61%|██████▏   | 244/398 [00:01<00:00, 263.42it/s]Loading weights:  68%|██████▊   | 271/398 [00:01<00:00, 260.63it/s]Loading weights:  75%|███████▌  | 300/398 [00:01<00:00, 266.70it/s]Loading weights:  82%|████████▏ | 327/398 [00:01<00:00, 264.95it/s]Loading weights:  89%|████████▉ | 356/398 [00:01<00:00, 265.31it/s]Loading weights:  97%|█████████▋| 388/398 [00:01<00:00, 274.43it/s]Loading weights: 100%|██████████| 398/398 [00:01<00:00, 246.36it/s]
+[transformers] [1mQwen3ForSequenceClassification LOAD REPORT[0m from: Qwen/Qwen3-8B-Base
+Key            | Status     | 
+---------------+------------+-
+lm_head.weight | UNEXPECTED | 
+score.weight   | MISSING    | 
+
+Notes:
+- UNEXPECTED:	can be ignored when loading from different task/architecture; not ok if you expect identical arch.
+- MISSING:	those params were newly initialized because missing from the checkpoint. Consider training on your downstream task.
+[data] train 2758 (mean 439 tokens, max 1024), slice 690, dev 308, test 237
+[model] Qwen/Qwen3-8B-Base: trainable 43.7M parameters
+[transformers] `use_return_dict` is deprecated! Use `return_dict` instead!
+[check] padded vs alone: max |logit difference| / mean |logit| = 0.0358 (should be << 1)
+[transformers] `use_cache=True` is incompatible with gradient checkpointing. Setting `use_cache=False`.
+[wandb] online init failed (AttributeError: module 'wandb' has no attribute 'init'); logging offline
+[wandb] disabled for this run: AttributeError: module 'wandb' has no attribute 'init'
+  ep0 step 20/173 loss 6.0808 1644 tok/s  epoch ETA 10.5 min
+  ep0 step 40/173 loss 4.8341 1638 tok/s  epoch ETA 9.0 min
+  ep0 step 60/173 loss 3.9517 1631 tok/s  epoch ETA 7.7 min
+  ep0 step 80/173 loss 3.4679 1626 tok/s  epoch ETA 6.6 min
+  ep0 step 100/173 loss 3.1328 1624 tok/s  epoch ETA 5.2 min
+  ep0 step 120/173 loss 2.9208 1620 tok/s  epoch ETA 3.8 min
+  ep0 step 140/173 loss 2.7523 1620 tok/s  epoch ETA 2.4 min
+  ep0 step 160/173 loss 2.6379 1620 tok/s  epoch ETA 0.9 min
+[E33_cf_url fold0] ep0 loss=2.5652 val=0.1769 devS2=0.1578 devS1=0.3463 (14.0m)
+/scratch/shlok/Temp/.pylib-peft/peft/utils/save_and_load.py:438: UserWarning: Could not find a config file in Qwen/Qwen3-8B-Base - will assume that the vocabulary was not modified.
+  warnings.warn(
+  ep1 step 20/173 loss 1.6337 1615 tok/s  epoch ETA 10.7 min
+  ep1 step 40/173 loss 1.6435 1623 tok/s  epoch ETA 9.6 min
+  ep1 step 60/173 loss 1.6293 1615 tok/s  epoch ETA 8.4 min
+  ep1 step 80/173 loss 1.6172 1612 tok/s  epoch ETA 6.9 min
+  ep1 step 100/173 loss 1.5936 1614 tok/s  epoch ETA 5.4 min
+  ep1 step 120/173 loss 1.5985 1612 tok/s  epoch ETA 4.0 min
+  ep1 step 140/173 loss 1.5671 1615 tok/s  epoch ETA 2.4 min
+  ep1 step 160/173 loss 1.5771 1616 tok/s  epoch ETA 0.9 min
+[E33_cf_url fold0] ep1 loss=1.5741 val=0.3781 devS2=0.3402 devS1=0.6812 (14.1m)
+  ep2 step 20/173 loss 1.1375 1618 tok/s  epoch ETA 10.0 min
+  ep2 step 40/173 loss 1.1631 1616 tok/s  epoch ETA 9.7 min
+  ep2 step 60/173 loss 1.1458 1617 tok/s  epoch ETA 8.2 min
+  ep2 step 80/173 loss 1.2231 1621 tok/s  epoch ETA 6.8 min
+  ep2 step 100/173 loss 1.2387 1622 tok/s  epoch ETA 5.2 min
+  ep2 step 120/173 loss 1.2998 1617 tok/s  epoch ETA 3.8 min
+  ep2 step 140/173 loss 1.2924 1618 tok/s  epoch ETA 2.4 min
+  ep2 step 160/173 loss 1.2753 1618 tok/s  epoch ETA 0.9 min
+[E33_cf_url fold0] ep2 loss=1.2670 val=0.3937 devS2=0.3538 devS1=0.6404 (14.0m)
+  ep3 step 20/173 loss 0.8001 1606 tok/s  epoch ETA 9.7 min
+  ep3 step 40/173 loss 0.8348 1614 tok/s  epoch ETA 9.2 min
+  ep3 step 60/173 loss 0.8970 1613 tok/s  epoch ETA 8.1 min
+  ep3 step 80/173 loss 0.9044 1613 tok/s  epoch ETA 6.8 min
+  ep3 step 100/173 loss 0.8949 1619 tok/s  epoch ETA 5.2 min
+  ep3 step 120/173 loss 0.8996 1620 tok/s  epoch ETA 3.8 min
+  ep3 step 140/173 loss 0.9228 1620 tok/s  epoch ETA 2.4 min
+  ep3 step 160/173 loss 0.9268 1617 tok/s  epoch ETA 0.9 min
+[E33_cf_url fold0] ep3 loss=0.9184 val=0.3530 devS2=0.4529 devS1=0.7040 (14.0m)
+  ep4 step 20/173 loss 0.5396 1613 tok/s  epoch ETA 11.2 min
+  ep4 step 40/173 loss 0.5092 1604 tok/s  epoch ETA 9.9 min
+  ep4 step 60/173 loss 0.5609 1604 tok/s  epoch ETA 8.5 min
+  ep4 step 80/173 loss 0.5634 1610 tok/s  epoch ETA 6.9 min
+  ep4 step 100/173 loss 0.5314 1610 tok/s  epoch ETA 5.4 min
+  ep4 step 120/173 loss 0.5201 1612 tok/s  epoch ETA 3.9 min
+  ep4 step 140/173 loss 0.5191 1615 tok/s  epoch ETA 2.4 min
+  ep4 step 160/173 loss 0.5375 1613 tok/s  epoch ETA 0.9 min
+[E33_cf_url fold0] ep4 loss=0.5441 val=0.4172 devS2=0.5560 devS1=0.7271 (14.1m)
+  ep5 step 20/173 loss 0.2288 1598 tok/s  epoch ETA 9.6 min
+  ep5 step 40/173 loss 0.2568 1616 tok/s  epoch ETA 8.7 min
+  ep5 step 60/173 loss 0.2523 1621 tok/s  epoch ETA 8.0 min
+  ep5 step 80/173 loss 0.2752 1622 tok/s  epoch ETA 6.6 min
+  ep5 step 100/173 loss 0.2850 1613 tok/s  epoch ETA 5.2 min
+  ep5 step 120/173 loss 0.2870 1615 tok/s  epoch ETA 3.8 min
+  ep5 step 140/173 loss 0.2878 1614 tok/s  epoch ETA 2.4 min
+  ep5 step 160/173 loss 0.2981 1617 tok/s  epoch ETA 0.9 min
+[E33_cf_url fold0] ep5 loss=0.3103 val=0.3994 devS2=0.5032 devS1=0.7150 (14.0m)
+  ep6 step 20/173 loss 0.1168 1633 tok/s  epoch ETA 11.7 min
+  ep6 step 40/173 loss 0.1666 1619 tok/s  epoch ETA 9.7 min
+  ep6 step 60/173 loss 0.1687 1615 tok/s  epoch ETA 8.4 min
+  ep6 step 80/173 loss 0.1653 1616 tok/s  epoch ETA 6.9 min
+  ep6 step 100/173 loss 0.1753 1618 tok/s  epoch ETA 5.4 min
+  ep6 step 120/173 loss 0.1752 1615 tok/s  epoch ETA 3.9 min
+  ep6 step 140/173 loss 0.1912 1617 tok/s  epoch ETA 2.4 min
+  ep6 step 160/173 loss 0.1950 1618 tok/s  epoch ETA 0.9 min
+[E33_cf_url fold0] ep6 loss=0.2022 val=0.4176 devS2=0.5133 devS1=0.6992 (14.0m)
+  ep7 step 20/173 loss 0.0792 1633 tok/s  epoch ETA 11.6 min
+  ep7 step 40/173 loss 0.0772 1616 tok/s  epoch ETA 10.2 min
+  ep7 step 60/173 loss 0.0999 1609 tok/s  epoch ETA 8.4 min
+  ep7 step 80/173 loss 0.0977 1610 tok/s  epoch ETA 6.9 min
+  ep7 step 100/173 loss 0.1105 1584 tok/s  epoch ETA 5.5 min
+  ep7 step 120/173 loss 0.1195 1561 tok/s  epoch ETA 4.1 min
+  ep7 step 140/173 loss 0.1274 1551 tok/s  epoch ETA 2.6 min
+  ep7 step 160/173 loss 0.1276 1541 tok/s  epoch ETA 1.0 min
+[E33_cf_url fold0] ep7 loss=0.1310 val=0.4273 devS2=0.6033 devS1=0.7330 (14.6m)
+  ep8 step 20/173 loss 0.0722 1607 tok/s  epoch ETA 11.2 min
+  ep8 step 40/173 loss 0.0544 1619 tok/s  epoch ETA 9.8 min
+  ep8 step 60/173 loss 0.0580 1605 tok/s  epoch ETA 8.6 min
+  ep8 step 80/173 loss 0.0652 1610 tok/s  epoch ETA 6.8 min
+  ep8 step 100/173 loss 0.0716 1615 tok/s  epoch ETA 5.2 min
+  ep8 step 120/173 loss 0.0672 1616 tok/s  epoch ETA 3.7 min
+  ep8 step 140/173 loss 0.0676 1613 tok/s  epoch ETA 2.3 min
+  ep8 step 160/173 loss 0.0752 1617 tok/s  epoch ETA 0.9 min
+[E33_cf_url fold0] ep8 loss=0.0824 val=0.4405 devS2=0.5874 devS1=0.7103 (14.0m)
+  ep9 step 20/173 loss 0.0210 1623 tok/s  epoch ETA 12.0 min
+  ep9 step 40/173 loss 0.0601 1630 tok/s  epoch ETA 9.5 min
+  ep9 step 60/173 loss 0.0621 1627 tok/s  epoch ETA 8.1 min
+  ep9 step 80/173 loss 0.0581 1626 tok/s  epoch ETA 6.6 min
+  ep9 step 100/173 loss 0.0538 1625 tok/s  epoch ETA 5.2 min
+  ep9 step 120/173 loss 0.0490 1623 tok/s  epoch ETA 3.8 min
+  ep9 step 140/173 loss 0.0524 1622 tok/s  epoch ETA 2.4 min
+  ep9 step 160/173 loss 0.0464 1620 tok/s  epoch ETA 0.9 min
+[E33_cf_url fold0] ep9 loss=0.0460 val=0.4310 devS2=0.5645 devS1=0.7170 (14.0m)
+  ep10 step 20/173 loss 0.0385 1616 tok/s  epoch ETA 12.2 min
+  ep10 step 40/173 loss 0.0342 1618 tok/s  epoch ETA 10.5 min
+  ep10 step 60/173 loss 0.0298 1620 tok/s  epoch ETA 8.7 min
+  ep10 step 80/173 loss 0.0363 1621 tok/s  epoch ETA 7.2 min
+  ep10 step 100/173 loss 0.0305 1620 tok/s  epoch ETA 5.4 min
+  ep10 step 120/173 loss 0.0306 1620 tok/s  epoch ETA 3.8 min
+  ep10 step 140/173 loss 0.0297 1621 tok/s  epoch ETA 2.3 min
+  ep10 step 160/173 loss 0.0341 1618 tok/s  epoch ETA 0.9 min
+[E33_cf_url fold0] ep10 loss=0.0330 val=0.4416 devS2=0.5658 devS1=0.7237 (14.1m)
+  ep11 step 20/173 loss 0.0557 1623 tok/s  epoch ETA 12.7 min
+  ep11 step 40/173 loss 0.0408 1615 tok/s  epoch ETA 10.6 min
+  ep11 step 60/173 loss 0.0332 1619 tok/s  epoch ETA 8.9 min
+  ep11 step 80/173 loss 0.0281 1620 tok/s  epoch ETA 7.3 min
+  ep11 step 100/173 loss 0.0250 1619 tok/s  epoch ETA 5.5 min
+  ep11 step 120/173 loss 0.0266 1620 tok/s  epoch ETA 3.9 min
+  ep11 step 140/173 loss 0.0253 1619 tok/s  epoch ETA 2.4 min
+  ep11 step 160/173 loss 0.0268 1619 tok/s  epoch ETA 0.9 min
+[E33_cf_url fold0] ep11 loss=0.0258 val=0.4477 devS2=0.5766 devS1=0.7181 (14.1m)
+[done] E33_cf_url fold0: epoch 11 selected; dev S2 0.5765715362127959, S1 0.7180834813441014; 170 min

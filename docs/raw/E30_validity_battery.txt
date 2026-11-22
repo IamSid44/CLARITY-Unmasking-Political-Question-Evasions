@@ -1,0 +1,22 @@
+E30 counterfactual validity battery (dev n = 308, test n = 237 label-free; 58 disjoint sibling pairs). Presidents' gold Clear-Reply share on dev: 0.256
+
+Per frame: Clear-Reply share / label persistence vs own / JS distance of the label distribution from own
+
+system                                         dev_own            dev_rand            dev_null           dev_qonly           dev_pre25           dev_pre50           dev_pre75            test_own           test_rand           test_null
+M1 (Qwen3-8B LoRA, 10 seeds)           0.179/1.00/0.00     0.010/0.18/0.58     0.321/0.33/0.33     0.000/0.14/0.81     0.091/0.58/0.24     0.114/0.69/0.16     0.140/0.81/0.08     0.295/1.00/0.00     0.072/0.38/0.44     0.304/0.51/0.26
+frozen instrument (M1 + 27B)           0.253/1.00/0.00     0.013/0.19/0.64     0.640/0.35/0.39     0.006/0.14/0.81     0.127/0.54/0.25     0.172/0.66/0.15     0.192/0.77/0.08     0.338/1.00/0.00     0.110/0.37/0.47     0.481/0.52/0.21
+deberta (3 seeds)                      0.312/1.00/0.00     0.026/0.20/0.57     0.776/0.39/0.48     0.003/0.14/0.77     0.205/0.48/0.21     0.240/0.63/0.11     0.286/0.72/0.07     0.354/1.00/0.00     0.114/0.34/0.44     0.591/0.50/0.33
+llm27b_zeroshot (1 seeds)              0.377/1.00/0.00     0.026/0.13/0.71     0.289/0.37/0.40                   -                   -                   -                   -                   -                   -                   -
+
+system                              dev S2 (own)   binding   (binding: same label on disjoint sibling pairs; lower = more question-bound)
+M1 (Qwen3-8B LoRA, 10 seeds)               0.611     0.155
+frozen instrument (M1 + 27B)               0.659     0.224
+deberta (3 seeds)                          0.444     0.310
+llm27b_zeroshot (1 seeds)                  0.604     0.362
+   deberta (3 seeds): logit-adjustment tau 0.35 fitted once on dev own, then frozen for every frame
+   llm27b_zeroshot (1 seeds): logit-adjustment tau -0.20 fitted once on dev own, then frozen for every frame
+
+swap test (M1 (Qwen3-8B LoRA, 10 seeds)): Clear-Reply 0.179 -> 0.010, persistence 0.175 -> PASSED
+swap test (frozen instrument (M1 + 27B)): Clear-Reply 0.253 -> 0.013, persistence 0.188 -> PASSED
+swap test (deberta (3 seeds)): Clear-Reply 0.312 -> 0.026, persistence 0.198 -> PASSED
+swap test (llm27b_zeroshot (1 seeds)): Clear-Reply 0.377 -> 0.026, persistence 0.133 -> PASSED

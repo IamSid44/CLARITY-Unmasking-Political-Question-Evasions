@@ -1,0 +1,121 @@
+2026-11-22 01:52:52 infer_cf controls start
+Loading weights:   0%|          | 0/398 [00:00<?, ?it/s]Loading weights:   6%|▌         | 24/398 [00:00<00:01, 238.18it/s]Loading weights:  12%|█▏        | 49/398 [00:00<00:01, 238.47it/s]Loading weights:  20%|██        | 80/398 [00:00<00:01, 265.67it/s]Loading weights:  27%|██▋       | 107/398 [00:00<00:01, 262.93it/s]Loading weights:  34%|███▍      | 135/398 [00:00<00:00, 267.25it/s]Loading weights:  41%|████      | 162/398 [00:00<00:00, 262.55it/s]Loading weights:  48%|████▊     | 190/398 [00:00<00:00, 266.29it/s]Loading weights:  55%|█████▍    | 217/398 [00:00<00:00, 265.29it/s]Loading weights:  62%|██████▏   | 246/398 [00:00<00:00, 264.72it/s]Loading weights:  69%|██████▉   | 274/398 [00:01<00:00, 268.84it/s]Loading weights:  76%|███████▌  | 301/398 [00:01<00:00, 267.44it/s]Loading weights:  83%|████████▎ | 331/398 [00:01<00:00, 276.97it/s]Loading weights:  90%|█████████ | 359/398 [00:01<00:00, 267.71it/s]Loading weights:  98%|█████████▊| 389/398 [00:01<00:00, 272.99it/s]Loading weights: 100%|██████████| 398/398 [00:01<00:00, 269.70it/s]
+[transformers] [1mQwen3ForSequenceClassification LOAD REPORT[0m from: Qwen/Qwen3-8B-Base
+Key            | Status     | 
+---------------+------------+-
+lm_head.weight | UNEXPECTED | 
+score.weight   | MISSING    | 
+
+Notes:
+- UNEXPECTED:	can be ignored when loading from different task/architecture; not ok if you expect identical arch.
+- MISSING:	those params were newly initialized because missing from the checkpoint. Consider training on your downstream task.
+[transformers] `use_return_dict` is deprecated! Use `return_dict` instead!
+{"frame": "train_own", "fold": 0, "items": 690, "items_per_s": 12.62, "ctrl_argmax_agree": 1.0, "ctrl_max_abs_dp": 0.0}
+{"frame": "dev_llm", "fold": 0, "items": 1848, "items_per_s": 14.34}
+{"frame": "dev_llm_rand", "fold": 0, "items": 1848, "items_per_s": 14.38}
+Loading weights:   0%|          | 0/398 [00:00<?, ?it/s]Loading weights:   0%|          | 1/398 [00:00<00:48,  8.21it/s]Loading weights:   6%|▋         | 25/398 [00:00<00:02, 131.25it/s]Loading weights:  12%|█▏        | 49/398 [00:00<00:02, 173.65it/s]Loading weights:  20%|██        | 80/398 [00:00<00:01, 224.02it/s]Loading weights:  26%|██▌       | 104/398 [00:00<00:01, 226.81it/s]Loading weights:  34%|███▍      | 135/398 [00:00<00:01, 251.33it/s]Loading weights:  40%|████      | 161/398 [00:00<00:00, 249.53it/s]Loading weights:  48%|████▊     | 190/398 [00:00<00:00, 259.62it/s]Loading weights:  55%|█████▍    | 217/398 [00:00<00:00, 258.40it/s]Loading weights:  62%|██████▏   | 245/398 [00:01<00:00, 262.40it/s]Loading weights:  68%|██████▊   | 272/398 [00:01<00:00, 261.48it/s]Loading weights:  75%|███████▌  | 299/398 [00:01<00:00, 262.76it/s]Loading weights:  82%|████████▏ | 326/398 [00:01<00:00, 261.41it/s]Loading weights:  89%|████████▉ | 355/398 [00:01<00:00, 268.51it/s]Loading weights:  96%|█████████▌| 382/398 [00:01<00:00, 268.20it/s]Loading weights: 100%|██████████| 398/398 [00:01<00:00, 246.39it/s]
+[transformers] [1mQwen3ForSequenceClassification LOAD REPORT[0m from: Qwen/Qwen3-8B-Base
+Key            | Status     | 
+---------------+------------+-
+lm_head.weight | UNEXPECTED | 
+score.weight   | MISSING    | 
+
+Notes:
+- UNEXPECTED:	can be ignored when loading from different task/architecture; not ok if you expect identical arch.
+- MISSING:	those params were newly initialized because missing from the checkpoint. Consider training on your downstream task.
+{"frame": "train_own", "fold": 1, "items": 690, "items_per_s": 13.59, "ctrl_argmax_agree": 1.0, "ctrl_max_abs_dp": 0.0}
+{"frame": "dev_llm", "fold": 1, "items": 1848, "items_per_s": 14.36}
+{"frame": "dev_llm_rand", "fold": 1, "items": 1848, "items_per_s": 14.38}
+Loading weights:   0%|          | 0/398 [00:00<?, ?it/s]Loading weights:   0%|          | 1/398 [00:00<00:55,  7.18it/s]Loading weights:   7%|▋         | 26/398 [00:00<00:02, 130.10it/s]Loading weights:  14%|█▍        | 56/398 [00:00<00:01, 200.73it/s]Loading weights:  20%|██        | 81/398 [00:00<00:01, 215.04it/s]Loading weights:  28%|██▊       | 110/398 [00:00<00:01, 239.44it/s]Loading weights:  34%|███▍      | 136/398 [00:00<00:01, 241.99it/s]Loading weights:  41%|████      | 164/398 [00:00<00:00, 252.15it/s]Loading weights:  48%|████▊     | 191/398 [00:00<00:00, 252.24it/s]Loading weights:  55%|█████▌    | 220/398 [00:00<00:00, 262.58it/s]Loading weights:  62%|██████▏   | 247/398 [00:01<00:00, 252.64it/s]Loading weights:  70%|██████▉   | 277/398 [00:01<00:00, 265.27it/s]Loading weights:  76%|███████▋  | 304/398 [00:01<00:00, 265.48it/s]Loading weights:  84%|████████▍ | 334/398 [00:01<00:00, 268.56it/s]Loading weights:  92%|█████████▏| 366/398 [00:01<00:00, 277.89it/s]Loading weights:  99%|█████████▉| 396/398 [00:01<00:00, 282.34it/s]Loading weights: 100%|██████████| 398/398 [00:01<00:00, 248.59it/s]
+[transformers] [1mQwen3ForSequenceClassification LOAD REPORT[0m from: Qwen/Qwen3-8B-Base
+Key            | Status     | 
+---------------+------------+-
+lm_head.weight | UNEXPECTED | 
+score.weight   | MISSING    | 
+
+Notes:
+- UNEXPECTED:	can be ignored when loading from different task/architecture; not ok if you expect identical arch.
+- MISSING:	those params were newly initialized because missing from the checkpoint. Consider training on your downstream task.
+{"frame": "train_own", "fold": 2, "items": 690, "items_per_s": 11.23, "ctrl_argmax_agree": 1.0, "ctrl_max_abs_dp": 0.0}
+{"frame": "dev_llm", "fold": 2, "items": 1848, "items_per_s": 14.36}
+{"frame": "dev_llm_rand", "fold": 2, "items": 1848, "items_per_s": 14.38}
+Loading weights:   0%|          | 0/398 [00:00<?, ?it/s]Loading weights:   0%|          | 1/398 [00:00<00:48,  8.16it/s]Loading weights:   7%|▋         | 26/398 [00:00<00:02, 130.90it/s]Loading weights:  14%|█▍        | 55/398 [00:00<00:01, 196.23it/s]Loading weights:  20%|██        | 81/398 [00:00<00:01, 217.66it/s]Loading weights:  28%|██▊       | 110/398 [00:00<00:01, 241.67it/s]Loading weights:  34%|███▍      | 136/398 [00:00<00:01, 245.09it/s]Loading weights:  41%|████▏     | 165/398 [00:00<00:00, 258.79it/s]Loading weights:  48%|████▊     | 192/398 [00:00<00:00, 251.19it/s]Loading weights:  56%|█████▌    | 223/398 [00:00<00:00, 267.37it/s]Loading weights:  63%|██████▎   | 250/398 [00:01<00:00, 265.06it/s]Loading weights:  70%|██████▉   | 278/398 [00:01<00:00, 267.87it/s]Loading weights:  77%|███████▋  | 305/398 [00:01<00:00, 264.09it/s]Loading weights:  84%|████████▎ | 333/398 [00:01<00:00, 267.84it/s]Loading weights:  90%|█████████ | 360/398 [00:01<00:00, 266.58it/s]Loading weights:  98%|█████████▊| 389/398 [00:01<00:00, 269.23it/s]Loading weights: 100%|██████████| 398/398 [00:01<00:00, 248.96it/s]
+[transformers] [1mQwen3ForSequenceClassification LOAD REPORT[0m from: Qwen/Qwen3-8B-Base
+Key            | Status     | 
+---------------+------------+-
+lm_head.weight | UNEXPECTED | 
+score.weight   | MISSING    | 
+
+Notes:
+- UNEXPECTED:	can be ignored when loading from different task/architecture; not ok if you expect identical arch.
+- MISSING:	those params were newly initialized because missing from the checkpoint. Consider training on your downstream task.
+{"frame": "train_own", "fold": 3, "items": 689, "items_per_s": 12.48, "ctrl_argmax_agree": 1.0, "ctrl_max_abs_dp": 0.0}
+{"frame": "dev_llm", "fold": 3, "items": 1848, "items_per_s": 14.37}
+{"frame": "dev_llm_rand", "fold": 3, "items": 1848, "items_per_s": 14.37}
+Loading weights:   0%|          | 0/398 [00:00<?, ?it/s]Loading weights:   0%|          | 1/398 [00:00<00:59,  6.69it/s]Loading weights:   7%|▋         | 28/398 [00:00<00:02, 135.25it/s]Loading weights:  15%|█▍        | 58/398 [00:00<00:01, 201.61it/s]Loading weights:  21%|██        | 82/398 [00:00<00:01, 212.56it/s]Loading weights:  28%|██▊       | 112/398 [00:00<00:01, 241.59it/s]Loading weights:  35%|███▍      | 138/398 [00:00<00:01, 244.52it/s]Loading weights:  42%|████▏     | 169/398 [00:00<00:00, 256.96it/s]Loading weights:  50%|█████     | 200/398 [00:00<00:00, 264.52it/s]Loading weights:  57%|█████▋    | 227/398 [00:00<00:00, 264.30it/s]Loading weights:  65%|██████▍   | 257/398 [00:01<00:00, 267.24it/s]Loading weights:  72%|███████▏  | 286/398 [00:01<00:00, 272.22it/s]Loading weights:  79%|███████▉  | 314/398 [00:01<00:00, 260.98it/s]Loading weights:  86%|████████▋ | 344/398 [00:01<00:00, 270.28it/s]Loading weights:  93%|█████████▎| 372/398 [00:01<00:00, 269.20it/s]Loading weights: 100%|██████████| 398/398 [00:01<00:00, 248.18it/s]
+[transformers] [1mQwen3ForSequenceClassification LOAD REPORT[0m from: Qwen/Qwen3-8B-Base
+Key            | Status     | 
+---------------+------------+-
+lm_head.weight | UNEXPECTED | 
+score.weight   | MISSING    | 
+
+Notes:
+- UNEXPECTED:	can be ignored when loading from different task/architecture; not ok if you expect identical arch.
+- MISSING:	those params were newly initialized because missing from the checkpoint. Consider training on your downstream task.
+{"frame": "train_own", "fold": 4, "items": 689, "items_per_s": 11.75, "ctrl_argmax_agree": 1.0, "ctrl_max_abs_dp": 0.0}
+{"frame": "dev_llm", "fold": 4, "items": 1848, "items_per_s": 14.36}
+{"frame": "dev_llm_rand", "fold": 4, "items": 1848, "items_per_s": 14.37}
+train_own: 3448 rows -> /scratch/shlok/Temp/CLARITY-Unmasking-Political-Question-Evasions/runs/E34/cf/train_own.npz
+dev_llm: 1848 rows -> /scratch/shlok/Temp/CLARITY-Unmasking-Political-Question-Evasions/runs/E34/cf/dev_llm.npz
+dev_llm_rand: 1848 rows -> /scratch/shlok/Temp/CLARITY-Unmasking-Political-Question-Evasions/runs/E34/cf/dev_llm_rand.npz
+E33 checks (registered 2026-11-21)
+C33-1 no url in two folds: PASSED
+C33-2 per-fold dev S2 (raw argmax) 0.577, 0.574, 0.564, 0.542, 0.480; min 0.480 (>= 0.45), mean 0.547 (>= 0.50): PASSED
+C33-3 infer_cf reproduces each fold's val_probs: argmax agreement 1.000, 1.000, 1.000, 1.000, 1.000 (>= 0.97): PASSED
+tau (fitted once on the out-of-fold train answers, then frozen): 0.50; out-of-fold train S2 0.434 raw -> 0.435 adjusted
+E33 H33-1: CF on the dev LLM answers (3 models x N/P, 1848 answers), own question vs another interview's
+(tau 0.50 frozen)
+
+   N: Clear-Reply share 0.418 -> 0.000; labels kept 0.069 -> HELD (registered: at least halves)
+   P: Clear-Reply share 0.530 -> 0.000; labels kept 0.061 -> HELD (registered: at least halves)
+
+   per model:
+                            cr_own  cr_swap  persist
+      model      condition                          
+      mistral_7b N           0.367      0.0    0.071
+                 P           0.542      0.0    0.071
+      olmo2_7b   N           0.422      0.0    0.075
+                 P           0.549      0.0    0.039
+      qwen3_8b   N           0.464      0.0    0.062
+                 P           0.500      0.0    0.071
+
+H33-1: HELD
+E35 binding on dev: 58 sibling pairs with disjoint gold sets (40 answers); matched null = 2,000 random pairs from different answers with disjoint gold sets; bootstrap over answers (2000 draws)
+
+   instrument (M1 + 27B adjudicator)        S2 0.659  binding 0.224 [0.120, 0.328]  null 0.135  index -0.66 [-1.43, 0.11]  ratio to null 1.66
+   M1 (Qwen3-8B LoRA, 10 seeds)             S2 0.611  binding 0.155 [0.071, 0.259]  null 0.118  index -0.31 [-1.19, 0.40]  ratio to null 1.31
+   deberta (3 seeds)                        S2 0.444  binding 0.310 [0.200, 0.421]  null 0.154  index -1.01 [-1.73, -0.29]  ratio to null 2.01
+   llm27b_zeroshot (1 seeds)                S2 0.604  binding 0.362 [0.218, 0.509]  null 0.146  index -1.47 [-2.47, -0.49]  ratio to null 2.47
+   frozen probe, layer 0                    S2 0.060  binding 1.000 [1.000, 1.000]  null 1.000  index 0.00 [0.00, 0.00]  ratio to null 1.00
+   frozen probe, layer 4                    S2 0.241  binding 0.793 [0.678, 0.891]  null 0.305  index -1.60 [-1.92, -1.22]  ratio to null 2.60
+   frozen probe, layer 8                    S2 0.328  binding 0.793 [0.667, 0.917]  null 0.126  index -5.32 [-6.30, -4.31]  ratio to null 6.32
+   frozen probe, layer 12                   S2 0.333  binding 0.724 [0.586, 0.846]  null 0.157  index -3.63 [-4.41, -2.75]  ratio to null 4.63
+   frozen probe, layer 16                   S2 0.350  binding 0.724 [0.574, 0.846]  null 0.135  index -4.38 [-5.29, -3.27]  ratio to null 5.38
+   frozen probe, layer 20                   S2 0.308  binding 0.534 [0.400, 0.656]  null 0.253  index -1.11 [-1.59, -0.58]  ratio to null 2.11
+   frozen probe, layer 24                   S2 0.299  binding 0.379 [0.254, 0.526]  null 0.140  index -1.71 [-2.76, -0.81]  ratio to null 2.71
+   frozen probe, layer 28                   S2 0.397  binding 0.448 [0.319, 0.579]  null 0.208  index -1.15 [-1.78, -0.53]  ratio to null 2.15
+   frozen probe, layer 32                   S2 0.298  binding 0.534 [0.373, 0.682]  null 0.182  index -1.93 [-2.74, -1.04]  ratio to null 2.93
+   frozen probe, layer 36                   S2 0.339  binding 0.397 [0.271, 0.530]  null 0.168  index -1.37 [-2.17, -0.62]  ratio to null 2.37
+   anchor: majority label                   S2 0.060  binding 1.000 [1.000, 1.000]  null 1.000  index 0.00 [0.00, 0.00]  ratio to null 1.00
+   anchor: answer-only (M1, no question)    S2 0.359  binding 1.000 [1.000, 1.000]  null 0.221  index -3.52 [-3.52, -3.52]  ratio to null 4.52
+
+   M1 - 27B zero-shot (S2 0.611 vs 0.604): binding difference -0.207 [-0.379, -0.022] (descriptive)
+   DeBERTa - 27B zero-shot: -0.052 [-0.226, +0.115] (descriptive)
+
+Train, confirmation interviews: 1605 sibling pairs with different gold labels, 2858 items
+   CF (cross-fit M1, out of fold)     S2 0.437  binding 0.282 [0.251, 0.334]  null 0.141  index -1.00 [-1.37, -0.78]  ratio to null 2.00
+   ZS (27B zero-shot)                 S2 0.458  binding 0.297 [0.235, 0.389]  null 0.169  index -0.76 [-1.30, -0.39]  ratio to null 1.76
+   H35-1 binding(CF) - binding(ZS) = -0.015 [-0.104, +0.038]; |S2 difference| 0.021 (<= 0.05: True) -> FAILED
+
+wrote /scratch/shlok/Temp/CLARITY-Unmasking-Political-Question-Evasions/docs/raw/E35_binding.txt and /scratch/shlok/Temp/CLARITY-Unmasking-Political-Question-Evasions/runs/E35/binding.json
+2026-11-22 02:19:21 E33 post done

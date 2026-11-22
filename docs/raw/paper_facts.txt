@@ -1,0 +1,27 @@
+Paper facts (descriptive)
+
+train: 3448 items, 287 interviews, 2062 turns; dates 2006-10-25 to 2023-09-10; Presidents: Donald J. Trump 1325, Barack Obama 1010, George W. Bush 714, Joseph R. Biden 399
+   titles containing 'News Conference': 0.992
+   President evaded (clarity != Clear Reply): 0.695
+dev: 308 items, 56 interviews, 191 turns; president/date empty: True
+dev interviews also in train: 39 of 56 (590 train rows)
+confirmation sample (train interviews not in dev): 248 interviews, 2858 items, 1710 turns; President evaded 0.688
+
+Discovery (dev, frozen instrument, protocol A): evasion rate N 0.554, P 0.515; per model:
+   condition       N      P
+   model                   
+   mistral_7b  0.591  0.516
+   olmo2_7b    0.565  0.510
+   qwen3_8b    0.506  0.519
+
+27B zero-shot on dev, unadjusted argmax (as used in E34/E35-train): S2 0.599, sibling same-label 0.362, Clear-Reply share 0.373
+
+E34 answers: 68960; per model x condition:
+   condition       G     N     P     S
+   model                              
+   granite3_8b  3448  3448  3448  3448
+   mistral_7b   3448  3448  3448  3448
+   olmo2_32b    3448  3448  3448  3448
+   olmo2_7b     3448  3448  3448  3448
+   qwen3_8b     3448  3448  3448  3448
+   cut at 400 tokens: 0.033; median words {'G': 216.0, 'N': 228.0, 'P': 213.0, 'S': 218.0}

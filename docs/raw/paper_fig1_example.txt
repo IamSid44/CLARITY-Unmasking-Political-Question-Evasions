@@ -1,0 +1,16 @@
+Figure 1 example (dev): one answer, two sub-questions; labels of the frozen instrument (E25 replay)
+turn: Q. Is that a make-or-break issue for you, in terms of domestic politics? There's a Republican in Pennsylvania who says he doesn't think the troops should—would you campaign for Mike Fitzpatrick?
+answer: I already have.
+
+row 147: annotators Explicit, Explicit, Explicit
+   own sub-question                     -> Explicit   | Q: Would you campaign for Mike Fitzpatrick? | A: I already have.
+   sub-question from another interview  -> Dodging    | Q: Why did you keep saying that there was a relationship between Saddam Hussein, Zarqawi, and Al Qaida despite the report stating there was no link? | A: I already have.
+   no question                          -> Explicit   | Q:  | A: I already have.
+   own sub-question, constant answer    -> Dodging    | Q: Would you campaign for Mike Fitzpatrick? | A: Well, thank you for the question.
+
+row 206: annotators Dodging, Dodging, Dodging
+   own sub-question                     -> Dodging    | Q: Is that a make-or-break issue for you, in terms of domestic politics? | A: I already have.
+   sub-question from another interview  -> Dodging    | Q: Do you believe America's corporations are not making enough money these days? | A: I already have.
+   no question                          -> Explicit   | Q:  | A: I already have.
+   own sub-question, constant answer    -> Dodging    | Q: Is that a make-or-break issue for you, in terms of domestic politics? | A: Well, thank you for the question.
+

@@ -1,0 +1,37 @@
+E31 role-effect robustness: 2464 LLM answers, models ['mistral_7b', 'qwen3_8b']; answers containing 'nan': mistral_7b 13, qwen3_8b 4
+
+odds ratio [95% turn-bootstrap interval]; columns: pooled (MH over models) and per model
+
+condition N
+   a raw                           pooled 1.18 [0.80, 1.73]   mistral_7b 0.98 [0.58, 1.62]   qwen3_8b 1.40 [0.85, 2.33]
+   b MH length terciles            pooled 1.15 [0.79, 1.70]   mistral_7b 0.97 [0.57, 1.62]   qwen3_8b 1.37 [0.82, 2.31]
+   c logistic + lengths            pooled 1.17 [0.80, 1.72]   mistral_7b 0.94 [0.55, 1.58]   qwen3_8b 1.43 [0.86, 2.44]
+   d (c) + question prior          pooled 1.16 [0.79, 1.73]   mistral_7b 0.89 [0.50, 1.49]   qwen3_8b 1.49 [0.90, 2.56]
+   e raw, no 'nan' answers         pooled 1.18 [0.80, 1.73]   mistral_7b 0.98 [0.58, 1.62]   qwen3_8b 1.40 [0.85, 2.33]
+   f raw, President by instrument  pooled 1.26 [0.81, 1.91]   mistral_7b 1.08 [0.62, 1.82]   qwen3_8b 1.46 [0.86, 2.46]
+
+condition P
+   a raw                           pooled 2.74 [1.87, 4.17]   mistral_7b 3.01 [1.81, 5.34]   qwen3_8b 2.46 [1.50, 4.15]
+   b MH length terciles            pooled 2.72 [1.85, 4.15]   mistral_7b 3.05 [1.83, 5.52]   qwen3_8b 2.44 [1.50, 4.18]
+   c logistic + lengths            pooled 2.79 [1.90, 4.32]   mistral_7b 3.03 [1.80, 5.63]   qwen3_8b 2.64 [1.62, 4.61]
+   d (c) + question prior          pooled 2.81 [1.91, 4.35]   mistral_7b 2.97 [1.76, 5.52]   qwen3_8b 2.73 [1.69, 4.86]
+   e raw, no 'nan' answers         pooled 2.89 [1.98, 4.40]   mistral_7b 3.28 [2.01, 5.86]   qwen3_8b 2.51 [1.53, 4.25]
+   f raw, President by instrument  pooled 3.49 [2.34, 5.48]   mistral_7b 4.00 [2.39, 7.22]   qwen3_8b 2.98 [1.77, 5.23]
+
+condition F
+   a raw                           pooled 2.19 [1.28, 4.11]   mistral_7b 1.88 [0.98, 4.00]   qwen3_8b 2.45 [1.26, 6.39]
+   b MH length terciles            pooled 2.13 [1.26, 3.98]   mistral_7b 1.83 [0.93, 4.04]   qwen3_8b 2.61 [1.32, 7.61]
+   c logistic + lengths            pooled 2.19 [1.29, 4.18]   mistral_7b 1.90 [0.98, 4.28]   qwen3_8b 2.83 [1.47, 8.26]
+   d (c) + question prior          pooled 2.24 [1.31, 4.37]   mistral_7b 1.86 [0.95, 4.21]   qwen3_8b 3.06 [1.58, 11.00]
+   e raw, no 'nan' answers         pooled 2.15 [1.27, 4.04]   mistral_7b 1.83 [0.96, 3.87]   qwen3_8b 2.45 [1.26, 6.39]
+   f raw, President by instrument  pooled 2.14 [1.26, 4.06]   mistral_7b 1.85 [0.97, 3.93]   qwen3_8b 2.40 [1.24, 6.34]
+
+condition B
+   a raw                           pooled 4.13 [2.68, 6.34]   mistral_7b 8.13 [4.67, 14.65]   qwen3_8b 2.30 [1.35, 4.01]
+   b MH length terciles            pooled 4.21 [2.72, 6.39]   mistral_7b 8.64 [4.93, 16.23]   qwen3_8b 2.35 [1.37, 4.17]
+   c logistic + lengths            pooled 4.58 [2.91, 7.37]   mistral_7b 8.69 [4.94, 16.66]   qwen3_8b 2.44 [1.39, 4.56]
+   d (c) + question prior          pooled 4.70 [2.97, 7.54]   mistral_7b 9.09 [5.13, 17.70]   qwen3_8b 2.45 [1.41, 4.56]
+   e raw, no 'nan' answers         pooled 4.14 [2.66, 6.37]   mistral_7b 7.80 [4.52, 14.06]   qwen3_8b 2.39 [1.42, 4.18]
+   f raw, President by instrument  pooled 6.45 [4.14, 10.52]   mistral_7b 7.86 [4.55, 14.90]   qwen3_8b 5.10 [2.98, 9.64]
+
+H31-1 (pooled OR(P) >= 1.5 with interval above 1 under (b)-(e), and OR(N) < 1.5 throughout): HELD (P part held, N part held)

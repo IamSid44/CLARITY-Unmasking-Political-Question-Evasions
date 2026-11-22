@@ -1,0 +1,6 @@
+[23:16:38] OLMo-2 start
+Fetching 11 files:   0%|          | 0/11 [00:00<?, ?it/s]Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+Fetching 11 files:   9%|▉         | 1/11 [00:00<00:02,  3.63it/s]Fetching 11 files:  45%|████▌     | 5/11 [00:00<00:00, 14.46it/s]Fetching 11 files:  64%|██████▎   | 7/11 [00:00<00:00,  7.49it/s]Fetching 11 files:  73%|███████▎  | 8/11 [00:20<00:00,  7.49it/s]Fetching 11 files:  82%|████████▏ | 9/11 [21:46<07:38, 229.02s/it][23:51:24] OLMo-2 restart (xet disabled)
+Fetching 11 files:   0%|          | 0/11 [00:00<?, ?it/s]Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+Fetching 11 files:  91%|█████████ | 10/11 [36:03<03:36, 216.33s/it]Fetching 11 files: 100%|██████████| 11/11 [37:19<00:00, 198.76s/it]Fetching 11 files: 100%|██████████| 11/11 [37:19<00:00, 203.55s/it]
+[00:28:43] OLMo-2 done /scratch/shlok/.cache/huggingface/hub/models--allenai--OLMo-2-1124-7B-Instruct/snapshots/470b1fba1ae01581f270116362ee4aa1b97f4c84

@@ -1,0 +1,8 @@
+Fetching 9 files:   0%|          | 0/9 [00:00<?, ?it/s]Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+Fetching 9 files:  11%|█         | 1/9 [00:00<00:03,  2.04it/s]Fetching 9 files:  44%|████▍     | 4/9 [00:00<00:00,  5.61it/s]Fetching 9 files:  78%|███████▊  | 7/9 [01:59<00:42, 21.40s/it]Fetching 9 files:  89%|████████▉ | 8/9 [02:25<00:22, 22.16s/it]Fetching 9 files: 100%|██████████| 9/9 [02:28<00:00, 17.93s/it]Fetching 9 files: 100%|██████████| 9/9 [02:28<00:00, 16.50s/it]
+[23:22:16] M1 adapters seeds 0-2 done
+[23:42:34] DeBERTa E10_fullq_16ep seed0 done
+[23:46:32] DeBERTa E10_fullq_16ep seed1 done
+[23:49:14] DeBERTa E10_fullq_16ep seed2 done
+[23:52:44] DeBERTa E10_fullq_16ep seed3 done
+[23:56:17] DeBERTa E10_fullq_16ep seed4 done

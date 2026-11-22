@@ -1,0 +1,5 @@
+E33 checks (registered 2026-11-21)
+C33-1 no url in two folds: PASSED
+C33-2 per-fold dev S2 (raw argmax) 0.577, 0.574, 0.564, 0.542, 0.480; min 0.480 (>= 0.45), mean 0.547 (>= 0.50): PASSED
+C33-3 infer_cf reproduces each fold's val_probs: argmax agreement 1.000, 1.000, 1.000, 1.000, 1.000 (>= 0.97): PASSED
+tau (fitted once on the out-of-fold train answers, then frozen): 0.50; out-of-fold train S2 0.434 raw -> 0.435 adjusted

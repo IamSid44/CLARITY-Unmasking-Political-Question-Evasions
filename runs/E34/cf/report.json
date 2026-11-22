@@ -1,0 +1,92 @@
+{
+ "train_own/fold0": {
+  "items": 690,
+  "items_per_s": 12.62,
+  "ctrl_argmax_agree": 1.0,
+  "ctrl_max_abs_dp": 0.0
+ },
+ "dev_llm/fold0": {
+  "items": 1848,
+  "items_per_s": 14.34
+ },
+ "dev_llm_rand/fold0": {
+  "items": 1848,
+  "items_per_s": 14.38
+ },
+ "train_own/fold1": {
+  "items": 690,
+  "items_per_s": 13.59,
+  "ctrl_argmax_agree": 1.0,
+  "ctrl_max_abs_dp": 0.0
+ },
+ "dev_llm/fold1": {
+  "items": 1848,
+  "items_per_s": 14.36
+ },
+ "dev_llm_rand/fold1": {
+  "items": 1848,
+  "items_per_s": 14.38
+ },
+ "train_own/fold2": {
+  "items": 690,
+  "items_per_s": 11.23,
+  "ctrl_argmax_agree": 1.0,
+  "ctrl_max_abs_dp": 0.0
+ },
+ "dev_llm/fold2": {
+  "items": 1848,
+  "items_per_s": 14.36
+ },
+ "dev_llm_rand/fold2": {
+  "items": 1848,
+  "items_per_s": 14.38
+ },
+ "train_own/fold3": {
+  "items": 689,
+  "items_per_s": 12.48,
+  "ctrl_argmax_agree": 1.0,
+  "ctrl_max_abs_dp": 0.0
+ },
+ "dev_llm/fold3": {
+  "items": 1848,
+  "items_per_s": 14.37
+ },
+ "dev_llm_rand/fold3": {
+  "items": 1848,
+  "items_per_s": 14.37
+ },
+ "train_own/fold4": {
+  "items": 689,
+  "items_per_s": 11.75,
+  "ctrl_argmax_agree": 1.0,
+  "ctrl_max_abs_dp": 0.0
+ },
+ "dev_llm/fold4": {
+  "items": 1848,
+  "items_per_s": 14.36
+ },
+ "dev_llm_rand/fold4": {
+  "items": 1848,
+  "items_per_s": 14.37
+ },
+ "llm/fold0": {
+  "items": 13800,
+  "items_per_s": 15.74
+ },
+ "llm/fold1": {
+  "items": 13800,
+  "items_per_s": 15.86
+ },
+ "llm/fold2": {
+  "items": 13800,
+  "items_per_s": 15.33
+ },
+ "llm/fold3": {
+  "items": 13780,
+  "items_per_s": 15.19
+ },
+ "llm/fold4": {
+  "items": 13780,
+  "items_per_s": 15.31
+ }
+}

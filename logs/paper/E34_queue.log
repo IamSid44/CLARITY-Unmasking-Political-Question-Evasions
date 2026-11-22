@@ -1,0 +1,211 @@
+llm frame: 27584 answers (0 empty); words median 239; per model x condition:
+condition     G     N     P     S
+model                            
+olmo2_7b   3448  3448  3448  3448
+qwen3_8b   3448  3448  3448  3448
+llm frame: 55168 answers (0 empty); words median 224; per model x condition:
+condition       G     N     P     S
+model                              
+granite3_8b  3448  3448  3448  3448
+mistral_7b   3448  3448  3448  3448
+olmo2_7b     3448  3448  3448  3448
+qwen3_8b     3448  3448  3448  3448
+2026-11-21 15:49:00 frames built (7-8B models)
+2026-11-21 19:12:21 ZS on 7-8B answers done
+2026-11-21 20:11:19 32B answers done
+llm frame: 68960 answers (0 empty); words median 219; per model x condition:
+condition       G     N     P     S
+model                              
+granite3_8b  3448  3448  3448  3448
+mistral_7b   3448  3448  3448  3448
+olmo2_32b    3448  3448  3448  3448
+olmo2_7b     3448  3448  3448  3448
+qwen3_8b     3448  3448  3448  3448
+2026-11-21 20:11:29 frames rebuilt (with 32B)
+2026-11-21 21:30:34 ZS on all answers done
+2026-11-22 02:22:52 CF on all answers start (trio + granite)
+Loading weights:   0%|          | 0/398 [00:00<?, ?it/s]Loading weights:   0%|          | 1/398 [00:00<00:57,  6.89it/s]Loading weights:   7%|▋         | 26/398 [00:00<00:02, 127.22it/s]Loading weights:  14%|█▍        | 55/398 [00:00<00:01, 193.64it/s]Loading weights:  20%|██        | 81/398 [00:00<00:01, 214.83it/s]Loading weights:  28%|██▊       | 110/398 [00:00<00:01, 238.01it/s]Loading weights:  34%|███▍      | 136/398 [00:00<00:01, 241.52it/s]Loading weights:  42%|████▏     | 166/398 [00:00<00:00, 259.27it/s]Loading weights:  48%|████▊     | 193/398 [00:00<00:00, 252.93it/s]Loading weights:  56%|█████▌    | 223/398 [00:00<00:00, 258.68it/s]Loading weights:  64%|██████▎   | 253/398 [00:01<00:00, 270.27it/s]Loading weights:  71%|███████   | 281/398 [00:01<00:00, 262.62it/s]Loading weights:  78%|███████▊  | 311/398 [00:01<00:00, 273.07it/s]Loading weights:  85%|████████▌ | 339/398 [00:01<00:00, 269.69it/s]Loading weights:  92%|█████████▏| 367/398 [00:01<00:00, 271.42it/s]Loading weights: 100%|██████████| 398/398 [00:01<00:00, 248.77it/s]
+[transformers] [1mQwen3ForSequenceClassification LOAD REPORT[0m from: Qwen/Qwen3-8B-Base
+Key            | Status     | 
+---------------+------------+-
+lm_head.weight | UNEXPECTED | 
+score.weight   | MISSING    | 
+
+Notes:
+- UNEXPECTED:	can be ignored when loading from different task/architecture; not ok if you expect identical arch.
+- MISSING:	those params were newly initialized because missing from the checkpoint. Consider training on your downstream task.
+[transformers] `use_return_dict` is deprecated! Use `return_dict` instead!
+{"frame": "llm", "fold": 0, "items": 13800, "items_per_s": 15.74}
+Loading weights:   0%|          | 0/398 [00:00<?, ?it/s]Loading weights:   0%|          | 1/398 [00:00<00:48,  8.13it/s]Loading weights:   6%|▋         | 25/398 [00:00<00:02, 124.65it/s]Loading weights:  14%|█▍        | 55/398 [00:00<00:01, 197.35it/s]Loading weights:  20%|██        | 81/398 [00:00<00:01, 217.59it/s]Loading weights:  28%|██▊       | 110/398 [00:00<00:01, 239.63it/s]Loading weights:  34%|███▍      | 135/398 [00:00<00:01, 238.34it/s]Loading weights:  41%|████      | 163/398 [00:00<00:00, 251.35it/s]Loading weights:  48%|████▊     | 191/398 [00:00<00:00, 253.40it/s]Loading weights:  55%|█████▌    | 220/398 [00:00<00:00, 261.84it/s]Loading weights:  62%|██████▏   | 247/398 [00:01<00:00, 253.94it/s]Loading weights:  69%|██████▉   | 276/398 [00:01<00:00, 254.39it/s]Loading weights:  77%|███████▋  | 308/398 [00:01<00:00, 271.91it/s]Loading weights:  84%|████████▍ | 336/398 [00:01<00:00, 262.89it/s]Loading weights:  92%|█████████▏| 367/398 [00:01<00:00, 269.49it/s]Loading weights: 100%|██████████| 398/398 [00:01<00:00, 247.13it/s]
+[transformers] [1mQwen3ForSequenceClassification LOAD REPORT[0m from: Qwen/Qwen3-8B-Base
+Key            | Status     | 
+---------------+------------+-
+lm_head.weight | UNEXPECTED | 
+score.weight   | MISSING    | 
+
+Notes:
+- UNEXPECTED:	can be ignored when loading from different task/architecture; not ok if you expect identical arch.
+- MISSING:	those params were newly initialized because missing from the checkpoint. Consider training on your downstream task.
+{"frame": "llm", "fold": 1, "items": 13800, "items_per_s": 15.86}
+Loading weights:   0%|          | 0/398 [00:00<?, ?it/s]Loading weights:   0%|          | 1/398 [00:00<01:00,  6.58it/s]Loading weights:   7%|▋         | 27/398 [00:00<00:02, 123.95it/s]Loading weights:  14%|█▍        | 57/398 [00:00<00:01, 191.76it/s]Loading weights:  21%|██        | 82/398 [00:00<00:01, 211.81it/s]Loading weights:  28%|██▊       | 113/398 [00:00<00:01, 234.42it/s]Loading weights:  36%|███▌      | 143/398 [00:00<00:01, 254.61it/s]Loading weights:  43%|████▎     | 170/398 [00:00<00:00, 248.59it/s]Loading weights:  51%|█████     | 201/398 [00:00<00:00, 266.19it/s]Loading weights:  58%|█████▊    | 229/398 [00:01<00:00, 264.12it/s]Loading weights:  64%|██████▍   | 256/398 [00:01<00:00, 265.42it/s]Loading weights:  71%|███████   | 283/398 [00:01<00:00, 263.01it/s]Loading weights:  78%|███████▊  | 311/398 [00:01<00:00, 259.50it/s]Loading weights:  86%|████████▌ | 342/398 [00:01<00:00, 273.93it/s]Loading weights:  93%|█████████▎| 370/398 [00:01<00:00, 269.06it/s]Loading weights: 100%|██████████| 398/398 [00:01<00:00, 246.70it/s]
+[transformers] [1mQwen3ForSequenceClassification LOAD REPORT[0m from: Qwen/Qwen3-8B-Base
+Key            | Status     | 
+---------------+------------+-
+lm_head.weight | UNEXPECTED | 
+score.weight   | MISSING    | 
+
+Notes:
+- UNEXPECTED:	can be ignored when loading from different task/architecture; not ok if you expect identical arch.
+- MISSING:	those params were newly initialized because missing from the checkpoint. Consider training on your downstream task.
+{"frame": "llm", "fold": 2, "items": 13800, "items_per_s": 15.33}
+Loading weights:   0%|          | 0/398 [00:00<?, ?it/s]Loading weights:   0%|          | 1/398 [00:00<01:05,  6.06it/s]Loading weights:   9%|▉         | 36/398 [00:00<00:02, 158.90it/s]Loading weights:  15%|█▌        | 60/398 [00:00<00:01, 187.01it/s]Loading weights:  23%|██▎       | 92/398 [00:00<00:01, 225.84it/s]Loading weights:  30%|███       | 121/398 [00:00<00:01, 244.45it/s]Loading weights:  37%|███▋      | 147/398 [00:00<00:01, 245.98it/s]Loading weights:  44%|████▍     | 176/398 [00:00<00:00, 258.05it/s]Loading weights:  51%|█████     | 203/398 [00:00<00:00, 249.13it/s]Loading weights:  59%|█████▉    | 234/398 [00:01<00:00, 263.57it/s]Loading weights:  66%|██████▌   | 261/398 [00:01<00:00, 262.33it/s]Loading weights:  73%|███████▎  | 290/398 [00:01<00:00, 262.86it/s]Loading weights:  80%|████████  | 320/398 [00:01<00:00, 272.56it/s]Loading weights:  87%|████████▋ | 348/398 [00:01<00:00, 265.39it/s]Loading weights:  95%|█████████▍| 378/398 [00:01<00:00, 270.74it/s]Loading weights: 100%|██████████| 398/398 [00:01<00:00, 247.13it/s]
+[transformers] [1mQwen3ForSequenceClassification LOAD REPORT[0m from: Qwen/Qwen3-8B-Base
+Key            | Status     | 
+---------------+------------+-
+lm_head.weight | UNEXPECTED | 
+score.weight   | MISSING    | 
+
+Notes:
+- UNEXPECTED:	can be ignored when loading from different task/architecture; not ok if you expect identical arch.
+- MISSING:	those params were newly initialized because missing from the checkpoint. Consider training on your downstream task.
+{"frame": "llm", "fold": 3, "items": 13780, "items_per_s": 15.19}
+Loading weights:   0%|          | 0/398 [00:00<?, ?it/s]Loading weights:   0%|          | 1/398 [00:00<00:48,  8.17it/s]Loading weights:   6%|▋         | 25/398 [00:00<00:02, 131.68it/s]Loading weights:  12%|█▏        | 49/398 [00:00<00:01, 175.67it/s]Loading weights:  20%|█▉        | 79/398 [00:00<00:01, 219.77it/s]Loading weights:  26%|██▌       | 104/398 [00:00<00:01, 228.46it/s]Loading weights:  34%|███▎      | 134/398 [00:00<00:01, 251.57it/s]Loading weights:  40%|████      | 160/398 [00:00<00:00, 252.04it/s]Loading weights:  48%|████▊     | 190/398 [00:00<00:00, 265.54it/s]Loading weights:  55%|█████▍    | 217/398 [00:00<00:00, 264.41it/s]Loading weights:  62%|██████▏   | 246/398 [00:01<00:00, 264.08it/s]Loading weights:  70%|██████▉   | 278/398 [00:01<00:00, 264.37it/s]Loading weights:  78%|███████▊  | 309/398 [00:01<00:00, 276.77it/s]Loading weights:  85%|████████▍ | 337/398 [00:01<00:00, 267.68it/s]Loading weights:  92%|█████████▏| 367/398 [00:01<00:00, 271.80it/s]Loading weights: 100%|██████████| 398/398 [00:01<00:00, 250.76it/s]
+[transformers] [1mQwen3ForSequenceClassification LOAD REPORT[0m from: Qwen/Qwen3-8B-Base
+Key            | Status     | 
+---------------+------------+-
+lm_head.weight | UNEXPECTED | 
+score.weight   | MISSING    | 
+
+Notes:
+- UNEXPECTED:	can be ignored when loading from different task/architecture; not ok if you expect identical arch.
+- MISSING:	those params were newly initialized because missing from the checkpoint. Consider training on your downstream task.
+{"frame": "llm", "fold": 4, "items": 13780, "items_per_s": 15.31}
+llm: 68960 rows -> /scratch/shlok/Temp/CLARITY-Unmasking-Political-Question-Evasions/runs/E34/cf/llm.npz
+2026-11-22 03:37:25 CF done (trio + granite); running analyses
+/scratch/shlok/Temp/.venv-clarity-cpu/lib/python3.12/site-packages/statsmodels/discrete/conditional_models.py:303: ModelWarning: Dropped 5553 groups and 11106 observations for having no within-group variance
+  super().__init__(endog, exog, missing=missing, **kwargs)
+/scratch/shlok/Temp/.venv-clarity-cpu/lib/python3.12/site-packages/statsmodels/discrete/conditional_models.py:303: ModelWarning: Dropped 5246 groups and 10492 observations for having no within-group variance
+  super().__init__(endog, exog, missing=missing, **kwargs)
+E34 confirmation sample: 248 interviews not in dev, 2858 sub-questions; President evaded 0.688; answers 57160; primary instrument cf
+
+H34-1 (primary): ROR P/N, pooled over the trio, lower bound > 1 and ROR > 1 in >= 2 of 3 models
+   1.25 [1.09, 1.43], one-sided p 0.0010; per model mistral_7b 1.44 [1.21, 1.72]  olmo2_7b 1.34 [1.09, 1.62]  qwen3_8b 1.01 [0.82, 1.24]
+   point estimate >= 1.5: False (reported, not a gate) -> HELD
+
+Secondary (Holm over the family below)
+   H34-2 ROR S/N > 1: 1.34 [1.19, 1.49], p 0.0000, Holm 0.0000 -> HELD
+   H34-3 ROR P/S (two-sided): 0.93 [0.85, 1.03], p 0.1710, Holm 0.5130 -> FAILED
+   H34-4 ROR G/N > 1: 1.22 [1.08, 1.38], p 0.0000, Holm 0.0000 -> HELD
+   H34-5 ROR P/N > 1, granite3_8b: 1.19 [0.98, 1.45], p 0.0475, Holm 0.1900 -> FAILED
+   H34-5 ROR P/N > 1, olmo2_32b: 1.08 [0.89, 1.31], p 0.2210, Holm 0.5130 -> FAILED
+   H34-6 ROR P/N > 1, sub-questions without 'you': 1.07 [0.90, 1.29], p 0.2325, Holm 0.5130 -> FAILED
+
+Robustness (reported, no gate)
+   cf: trio, logistic: 1.25 [1.09, 1.44]
+   cf: GEE: 1.25 [1.09, 1.43]
+   cf: conditional logit: 1.35 [1.15, 1.59]
+   zs: trio, logistic: 1.22 [1.06, 1.42]
+   zs: GEE: 1.22 [1.05, 1.42]
+   zs: conditional logit: 1.29 [1.09, 1.53]
+   cf: answer-length terciles: 1.25 [1.09, 1.43]
+   cf: annotator-specific slopes: 1.25 [1.10, 1.45]
+   cf: without Qwen3-8B: 1.39 [1.20, 1.60]
+   cf: non-answer outcome: 1.24 [1.01, 1.53]
+   cf: without meta answers: 1.25 [1.10, 1.44]
+   cf: soft labels: 1.26 [1.11, 1.42]
+   cf: full train (incl. dev interviews): 1.23 [1.10, 1.38]
+   tipping point (extra symmetric noise in N labels that brings ROR to 1): e* = 0.25
+
+H33-2 CF vs ZS evade agreement by condition: G 0.717  N 0.730  P 0.742  S 0.730; |N - P| = 0.012 -> HELD
+
+Evasion rate by model x condition (P - N is descriptive):
+   condition       G      N      P      S
+   model                                 
+   mistral_7b  0.455  0.561  0.497  0.545
+   olmo2_7b    0.467  0.563  0.467  0.469
+   qwen3_8b    0.447  0.623  0.502  0.542
+   evasion rate by model x condition, on sub-questions the President answered / evaded:
+      pres_evade            answered  evaded
+      model      condition                  
+      mistral_7b G             0.383   0.487
+                 N             0.537   0.572
+                 P             0.410   0.536
+                 S             0.448   0.589
+      olmo2_7b   G             0.419   0.489
+                 N             0.536   0.575
+                 P             0.391   0.502
+                 S             0.401   0.499
+      qwen3_8b   G             0.368   0.483
+                 N             0.577   0.644
+                 P             0.453   0.525
+                 S             0.459   0.579
+
+wrote /scratch/shlok/Temp/CLARITY-Unmasking-Political-Question-Evasions/docs/raw/E34_confirmation_train.txt and /scratch/shlok/Temp/CLARITY-Unmasking-Political-Question-Evasions/runs/E34/analysis_train.json
+E35 binding on dev: 58 sibling pairs with disjoint gold sets (40 answers); matched null = 2,000 random pairs from different answers with disjoint gold sets; bootstrap over answers (2000 draws)
+
+   instrument (M1 + 27B adjudicator)        S2 0.659  binding 0.224 [0.120, 0.328]  null 0.135  index -0.66 [-1.43, 0.11]  ratio to null 1.66
+   M1 (Qwen3-8B LoRA, 10 seeds)             S2 0.611  binding 0.155 [0.071, 0.259]  null 0.118  index -0.31 [-1.19, 0.40]  ratio to null 1.31
+   deberta (3 seeds)                        S2 0.444  binding 0.310 [0.200, 0.421]  null 0.154  index -1.01 [-1.73, -0.29]  ratio to null 2.01
+   llm27b_zeroshot (1 seeds)                S2 0.604  binding 0.362 [0.218, 0.509]  null 0.146  index -1.47 [-2.47, -0.49]  ratio to null 2.47
+   frozen probe, layer 0                    S2 0.060  binding 1.000 [1.000, 1.000]  null 1.000  index 0.00 [0.00, 0.00]  ratio to null 1.00
+   frozen probe, layer 4                    S2 0.241  binding 0.793 [0.678, 0.891]  null 0.305  index -1.60 [-1.92, -1.22]  ratio to null 2.60
+   frozen probe, layer 8                    S2 0.328  binding 0.793 [0.667, 0.917]  null 0.126  index -5.32 [-6.30, -4.31]  ratio to null 6.32
+   frozen probe, layer 12                   S2 0.333  binding 0.724 [0.586, 0.846]  null 0.157  index -3.63 [-4.41, -2.75]  ratio to null 4.63
+   frozen probe, layer 16                   S2 0.350  binding 0.724 [0.574, 0.846]  null 0.135  index -4.38 [-5.29, -3.27]  ratio to null 5.38
+   frozen probe, layer 20                   S2 0.308  binding 0.534 [0.400, 0.656]  null 0.253  index -1.11 [-1.59, -0.58]  ratio to null 2.11
+   frozen probe, layer 24                   S2 0.299  binding 0.379 [0.254, 0.526]  null 0.140  index -1.71 [-2.76, -0.81]  ratio to null 2.71
+   frozen probe, layer 28                   S2 0.397  binding 0.448 [0.319, 0.579]  null 0.208  index -1.15 [-1.78, -0.53]  ratio to null 2.15
+   frozen probe, layer 32                   S2 0.298  binding 0.534 [0.373, 0.682]  null 0.182  index -1.93 [-2.74, -1.04]  ratio to null 2.93
+   frozen probe, layer 36                   S2 0.339  binding 0.397 [0.271, 0.530]  null 0.168  index -1.37 [-2.17, -0.62]  ratio to null 2.37
+   anchor: majority label                   S2 0.060  binding 1.000 [1.000, 1.000]  null 1.000  index 0.00 [0.00, 0.00]  ratio to null 1.00
+   anchor: answer-only (M1, no question)    S2 0.359  binding 1.000 [1.000, 1.000]  null 0.221  index -3.52 [-3.52, -3.52]  ratio to null 4.52
+
+   M1 - 27B zero-shot (S2 0.611 vs 0.604): binding difference -0.207 [-0.379, -0.022] (descriptive)
+   DeBERTa - 27B zero-shot: -0.052 [-0.226, +0.115] (descriptive)
+
+Train, confirmation interviews: 1605 sibling pairs with different gold labels, 2858 items
+   CF (cross-fit M1, out of fold)     S2 0.437  binding 0.282 [0.251, 0.334]  null 0.141  index -1.00 [-1.37, -0.78]  ratio to null 2.00
+   ZS (27B zero-shot)                 S2 0.458  binding 0.297 [0.235, 0.389]  null 0.169  index -0.76 [-1.30, -0.39]  ratio to null 1.76
+   H35-1 binding(CF) - binding(ZS) = -0.015 [-0.104, +0.038]; |S2 difference| 0.021 (<= 0.05: True) -> FAILED
+
+wrote /scratch/shlok/Temp/CLARITY-Unmasking-Political-Question-Evasions/docs/raw/E35_binding.txt and /scratch/shlok/Temp/CLARITY-Unmasking-Political-Question-Evasions/runs/E35/binding.json
+Paper facts (descriptive)
+
+train: 3448 items, 287 interviews, 2062 turns; dates 2006-10-25 to 2023-09-10; Presidents: Donald J. Trump 1325, Barack Obama 1010, George W. Bush 714, Joseph R. Biden 399
+   titles containing 'News Conference': 0.992
+   President evaded (clarity != Clear Reply): 0.695
+dev: 308 items, 56 interviews, 191 turns; president/date empty: True
+dev interviews also in train: 39 of 56 (590 train rows)
+confirmation sample (train interviews not in dev): 248 interviews, 2858 items, 1710 turns; President evaded 0.688
+
+Discovery (dev, frozen instrument, protocol A): evasion rate N 0.554, P 0.515; per model:
+   condition       N      P
+   model                   
+   mistral_7b  0.591  0.516
+   olmo2_7b    0.565  0.510
+   qwen3_8b    0.506  0.519
+
+27B zero-shot on dev, unadjusted argmax (as used in E34/E35-train): S2 0.599, sibling same-label 0.362, Clear-Reply share 0.373
+
+E34 answers: 68960; per model x condition:
+   condition       G     N     P     S
+   model                              
+   granite3_8b  3448  3448  3448  3448
+   mistral_7b   3448  3448  3448  3448
+   olmo2_32b    3448  3448  3448  3448
+   olmo2_7b     3448  3448  3448  3448
+   qwen3_8b     3448  3448  3448  3448
+   cut at 400 tokens: 0.033; median words {'G': 216.0, 'N': 228.0, 'P': 213.0, 'S': 218.0}
+2026-11-22 03:50:58 analyses done (trio + granite)
+2026-11-22 03:50:58 CF on all answers start (all models)
+Loading weights:   0%|          | 0/398 [00:00<?, ?it/s]Loading weights:   7%|▋         | 26/398 [00:00<00:01, 256.06it/s]Loading weights:  14%|█▍        | 56/398 [00:00<00:01, 281.70it/s]Loading weights:  21%|██▏       | 85/398 [00:00<00:01, 268.80it/s]Loading weights:  28%|██▊       | 113/398 [00:00<00:01, 272.40it/s]Loading weights:  35%|███▌      | 141/398 [00:00<00:00, 266.47it/s]Loading weights:  42%|████▏     | 169/398 [00:00<00:00, 264.77it/s]Loading weights:  50%|█████     | 199/398 [00:00<00:00, 275.71it/s]Loading weights:  57%|█████▋    | 227/398 [00:00<00:00, 265.05it/s]Loading weights:  64%|██████▍   | 256/398 [00:00<00:00, 271.40it/s]Loading weights:  71%|███████▏  | 284/398 [00:01<00:00, 268.00it/s]Loading weights:  78%|███████▊  | 312/398 [00:01<00:00, 266.93it/s]Loading weights:  86%|████████▌ | 342/398 [00:01<00:00, 275.80it/s]Loading weights:  93%|█████████▎| 370/398 [00:01<00:00, 271.09it/s]Loading weights: 100%|██████████| 398/398 [00:01<00:00, 273.89it/s]
+[transformers] [1mQwen3ForSequenceClassification LOAD REPORT[0m from: Qwen/Qwen3-8B-Base
+Key            | Status     | 
+---------------+------------+-
+lm_head.weight | UNEXPECTED | 
+score.weight   | MISSING    | 
+
+Notes:
+- UNEXPECTED:	can be ignored when loading from different task/architecture; not ok if you expect identical arch.
+- MISSING:	those params were newly initialized because missing from the checkpoint. Consider training on your downstream task.
+[transformers] `use_return_dict` is deprecated! Use `return_dict` instead!

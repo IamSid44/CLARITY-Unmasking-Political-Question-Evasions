@@ -1,0 +1,17 @@
+E27 counterfactual question contrast (dev, n = 308; M1 = 10-seed mean on the E25 frames; 10 nested-CV splits; 2000 turn-bootstrap draws; 58 disjoint sibling pairs)
+
+[dev_null] M1 level: S2 0.584 -> 0.567  delta -0.017 [-0.046, -0.002];  S1 0.743 -> 0.739  delta -0.003 [-0.016, +0.008]
+      alpha chosen per fold: mean 0.04, share alpha = 0 0.78; same label on disjoint sibling pairs 0.155 -> 0.172
+      S2 at fixed alpha (tau nested): 0.0:0.584  0.1:0.553  0.2:0.549  0.3:0.573  0.4:0.528  0.5:0.523  0.6:0.514  0.7:0.484  0.8:0.468  0.9:0.458  1.0:0.347
+[dev_null] cascade: S2 0.605 -> 0.599  delta -0.006 [-0.033, +0.011];  S1 0.779 -> 0.777  delta -0.002 [-0.017, +0.012]
+      alpha chosen: mean 0.07, share 0 0.46; 27B record coverage of deferred items: alpha 0 1.000, min 0.073; same label on disjoint pairs 0.276 -> 0.259
+
+[dev_qonly] M1 level: S2 0.584 -> 0.579  delta -0.005 [-0.011, +0.000];  S1 0.743 -> 0.745  delta +0.003 [-0.003, +0.009]
+      alpha chosen per fold: mean 0.01, share alpha = 0 0.88; same label on disjoint sibling pairs 0.155 -> 0.155
+      S2 at fixed alpha (tau nested): 0.0:0.584  0.1:0.561  0.2:0.553  0.3:0.539  0.4:0.513  0.5:0.479  0.6:0.442  0.7:0.428  0.8:0.401  0.9:0.409  1.0:0.401
+[dev_qonly] cascade: S2 0.605 -> 0.599  delta -0.006 [-0.011, -0.001];  S1 0.779 -> 0.777  delta -0.002 [-0.007, +0.003]
+      alpha chosen: mean 0.01, share 0 0.92; 27B record coverage of deferred items: alpha 0 1.000, min 0.373; same label on disjoint pairs 0.276 -> 0.276
+
+H27-1 (S2 >= +0.010, interval above 0, in any arm): FAILED
+H27-2 (same-label rate on disjoint sibling pairs down >= 5 points, no S2 loss): FAILED
+Decision: CQC not adopted (reported as a negative result)

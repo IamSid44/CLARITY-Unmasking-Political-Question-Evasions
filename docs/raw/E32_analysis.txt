@@ -1,0 +1,20 @@
+A. Hardware control: 200 Mistral-7B answers (50 per condition) re-labelled on the lab RTX PRO 6000 vs E25 (H100)
+   instrument label agreement 0.970 (M1 alone 0.990); evade / not-evade agreement 0.985; evasion rate 0.480 (E25) vs 0.485 (lab); routing identical on 0.995
+   (E25's own cross-GPU agreement on dev: 0.981)
+
+B. OLMo-2-7B-Instruct: 2464 answers; cut at 400 tokens 0.097; answers containing 'nan': olmo2_7b 3, olmo2_7b_generic 0
+   evasion rate (clarity != Clear Reply) by condition; Presidents (gold) 0.744
+   condition             N      P      F      B
+   model                                       
+   olmo2_7b          0.565  0.510  0.211  0.545
+   olmo2_7b_generic  0.503  0.552  0.201  0.578
+   olmo2_7b: odds ratio (evades | President evaded), by condition: N 1.37 [0.83, 2.29]  P 2.90 [1.81, 5.04]  F 1.46 [0.77, 3.06]  B 3.05 [1.83, 5.37]
+      pursuit: of P answers that evade, F gives a Clear Reply in 0.631 (n = 157); P - N evasion rate -0.055
+   olmo2_7b_generic: odds ratio (evades | President evaded), by condition: N 1.13 [0.69, 1.89]  P 2.74 [1.64, 4.70]  F 1.52 [0.81, 3.20]  B 3.97 [2.34, 7.15]
+      pursuit: of P answers that evade, F gives a Clear Reply in 0.676 (n = 170); P - N evasion rate +0.049
+
+C. Registered hypotheses (protocol A)
+   H32-1 OLMo OR(P) >= 1.5, interval above 1: 2.90 [1.81, 5.04] -> HELD
+   H32-2 OLMo OR(N) <= 1.3: 1.37 [0.83, 2.29] -> FAILED
+   H32-3 MH OR(P) over Mistral, Qwen, OLMo >= 1.5, interval above 1: 2.81 [1.97, 4.16] -> HELD   (same pooling in N: 1.24 [+0.841, +1.798])
+   decision: the role effect stays exploratory

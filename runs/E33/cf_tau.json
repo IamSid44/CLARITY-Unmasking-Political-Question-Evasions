@@ -1,0 +1,7 @@
+{
+ "tau": 0.5,
+ "oof_train_s2_at_tau": 0.4345565236290787,
+ "oof_train_s2_raw": 0.43362077291334394,
+ "grid": "cascade.fuse.TAUS",
+ "prior": "cascade.fuse.PRIOR"
+}

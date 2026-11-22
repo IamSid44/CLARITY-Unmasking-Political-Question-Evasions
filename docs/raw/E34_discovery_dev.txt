@@ -1,0 +1,31 @@
+E34 discovery sample (dev): 1848 answers, models ['mistral_7b', 'olmo2_7b', 'qwen3_8b'], conditions N/P, 56 interviews; President evaded 0.744
+
+[frozen instrument] ROR P/N (url bootstrap, 2000 draws): 2.27 [1.61, 3.22], one-sided p 0.0000
+   per model: mistral_7b 3.12 [1.74, 6.53]  olmo2_7b 2.14 [1.12, 4.10]  qwen3_8b 1.76 [1.11, 2.58]
+   'you' sub-questions 2.39 [1.43, 4.42];  others 2.42 [1.55, 4.11]
+   GEE 2.27 [1.61, 3.20];  conditional logit 4.88 [2.47, 9.66]
+   tipping point: extra symmetric label noise in N that brings ROR to 1: e* = 0.39
+   evasion rate by model x condition, on sub-questions the President answered / evaded:
+      pres_evade            answered  evaded
+      model      condition                  
+      mistral_7b N             0.595   0.590
+                 P             0.316   0.585
+      olmo2_7b   N             0.506   0.585
+                 P             0.316   0.576
+      qwen3_8b   N             0.443   0.528
+                 P             0.354   0.576
+
+[cf instrument] ROR P/N (url bootstrap, 2000 draws): 2.03 [1.42, 3.17], one-sided p 0.0000
+   per model: mistral_7b 1.92 [1.03, 3.80]  olmo2_7b 1.94 [1.04, 3.67]  qwen3_8b 2.24 [1.41, 3.85]
+   'you' sub-questions 2.00 [1.11, 4.08];  others 2.22 [1.47, 4.03]
+   GEE 2.05 [1.39, 3.04];  conditional logit 4.23 [2.09, 8.56];  soft labels 1.99 [1.47, 2.77]
+   tipping point: extra symmetric label noise in N that brings ROR to 1: e* = 0.33
+   evasion rate by model x condition, on sub-questions the President answered / evaded:
+      pres_evade            answered  evaded
+      model      condition                  
+      mistral_7b N             0.595   0.646
+                 P             0.304   0.511
+      olmo2_7b   N             0.532   0.594
+                 P             0.291   0.507
+      qwen3_8b   N             0.481   0.555
+                 P             0.304   0.568

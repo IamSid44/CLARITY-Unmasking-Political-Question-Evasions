@@ -1,0 +1,17 @@
+E33 H33-1: CF on the dev LLM answers (3 models x N/P, 1848 answers), own question vs another interview's
+(tau 0.50 frozen)
+
+   N: Clear-Reply share 0.418 -> 0.000; labels kept 0.069 -> HELD (registered: at least halves)
+   P: Clear-Reply share 0.530 -> 0.000; labels kept 0.061 -> HELD (registered: at least halves)
+
+   per model:
+                            cr_own  cr_swap  persist
+      model      condition                          
+      mistral_7b N           0.367      0.0    0.071
+                 P           0.542      0.0    0.071
+      olmo2_7b   N           0.422      0.0    0.075
+                 P           0.549      0.0    0.039
+      qwen3_8b   N           0.464      0.0    0.062
+                 P           0.500      0.0    0.071
+
+H33-1: HELD

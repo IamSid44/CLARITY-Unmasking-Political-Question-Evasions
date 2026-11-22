@@ -1,0 +1,10 @@
+E29 M5 question-side prior on deferred items (dev, n = 308; deferred and scored 111; P-role share s: 0.0: 101, 0.5: 95, 1.0: 112)
+beta = 0 reproduces the frozen replay: S2 0.659, S1 0.786
+in-sample S2 / S1 by fixed beta: 0.0:0.659/0.786  0.2:0.659/0.786  0.4:0.657/0.783  0.6:0.657/0.783  0.8:0.650/0.777  1.0:0.650/0.777  1.2:0.650/0.777  1.4:0.650/0.777  1.6:0.650/0.777  1.8:0.650/0.775  2.0:0.650/0.775
+
+beta chosen by training-fold S2: S2 0.659 -> 0.659  delta +0.000 [-0.000, +0.000];  S1 0.786 -> 0.786  delta +0.000 [-0.000, +0.000];  beta mean 0.00, share 0 1.00
+beta chosen by training-fold S1: S2 0.659 -> 0.659  delta +0.000 [-0.000, +0.000];  S1 0.786 -> 0.786  delta +0.000 [-0.000, +0.000];  beta mean 0.00, share 0 1.00
+
+H29-1 (primary, beta chosen by S2: S2 or S1 rises, interval above 0): FAILED
+   (secondary, beta chosen by S1: no interval above 0)
+Decision: M5 not adopted (reported as a negative result)
