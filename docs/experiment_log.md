@@ -3632,3 +3632,536 @@ robust to a degraded first stage**, which is what a cheaper first stage would ne
 faster here because activations are quantized in unfused PyTorch ops (per-token scales, casts, padding) around each
 FP8 matmul; a speed-up needs fused kernels (e.g. vLLM's FP8 path), which is future work. The peak-memory figure
 (21.9 vs 20.9 GB) includes loading the 16-bit model before conversion, so it does not measure FP8's footprint.
+
+---
+
+## E27–E32 — Closing the loop for the workshop paper *(registered 2026-11-20, 23:19 IST, before any run)*
+
+**Where it sits in the argument.** E24–E26 established that evasion labels are a property of the question–answer pair
+(E24, E25a), that the frozen instrument reads the question causally (E25a), and that in the President's role two LLMs
+evade where the Presidents did (E25b, exploratory). Three preliminary checks written after E25
+(`raw/question_dependence_check.txt`, `raw/sibling_error_check.txt`, `raw/question_prior_check.txt`) point at
+modules and at an error mode that were never tested. E27–E32 test them, turn the E25a frames into a reusable validity
+battery, check the role effect's robustness, and replicate it in a third model family. **Nothing in the frozen
+instrument changes** (`code/experiments/e25/frozen_system.json`); every fitted parameter is fitted by nested CV on dev
+(5 folds × 10 splits, `e19_lib` folds); intervals are cluster bootstraps over the 191 dev interview turns (2,000
+draws, `e25_analysis.BOOT`) unless stated. Dev (308) is the only labelled set: the 237 test labels were checked again
+on 2026-11-20 and are still unreleased (the public HF `ailsntua/QEvasion` "test" split is our dev set).
+
+**Defect found while preparing E32 (recorded 23:17 IST, before any E27–E32 result).** The dev split carries no
+`president` or `date` (both empty for all 308 rows; train has both), and `audit/generate.py` formats them into the N,
+P and B prompts. Every E25b prompt therefore read "You are nan, President of the United States. It is nan, …" (N:
+"… in a press interview on nan"). 17 of 2,464 answers repeat the token (e.g. "President Nan: …"). The E25b role is
+therefore *a generic President of the United States*, not the named President on the interview date. This does not
+touch E25a/c/d or the instrument. It is reported as a limitation of E25b, E31 adds a control for it, and E32 runs
+both the identical protocol (confirmatory replication) and a corrected wording (exploratory).
+
+### E27 — Counterfactual question contrast (CQC): does subtracting the no-question frame improve the instrument?
+**Design.** M1's 10-seed mean on the E25 frames (one GPU, one run): p_own (`dev_own`), p_null (`dev_null`: no
+sub-question, no turn), p_qonly (`dev_qonly`: constant answer). Contrastive score s_α = log p_own − α·log p_null
+(variant Q: − α·log p_qonly), α ∈ {0, 0.1, …, 1.0}; then logit adjustment s − τ·log π (the M1 rule). α and τ are
+both chosen on the training folds of each outer fold (proper nesting); α = 0 under the same protocol is the baseline.
+Cascade arm: the CQC distribution softmax(s_α) replaces p̄ in the frozen calibration (τ_C, T) → q, top-4, u; the
+least-sure 35.7% of dev by u are deferred (the frozen instrument's dev deferral rate; no slice frame exists for the
+null condition, so the slice quantile cannot be recomputed); 27B records are looked up by (item, candidate set) in
+the E23 VM order-averaged records and the E25 dev_own records; items without a record keep the CQC M1 label (a lower
+bound; coverage reported). (λ, τ) of the deferred items and α are fitted by nested CV; baseline α = 0, same protocol.
+* **H27-1 (M1 level):** CQC raises nested S2 by ≥ +0.010 with a 95% turn-bootstrap interval excluding 0.
+  *Not obvious:* the gap logit p_null − logit p_own predicts evasion (AUROC 0.842) but correlates 0.870 with M1 and
+  adds nothing in a logistic regression (0.872 → 0.868), so the honest prior is "no gain".
+* **H27-2 (contamination):** CQC lowers the same-label rate on the 58 dev sibling pairs with disjoint reference
+  sets by ≥ 5 points with no S2 loss (the null frame is identical across siblings, so subtracting it removes the
+  shared, answer-only component).
+* **Decision rule:** adopt CQC as module **M0 "question contrast"** if H27-1 holds in either arm, or H27-2 holds;
+  otherwise report it as a negative result in one sentence.
+
+### E28 — Sibling contamination: do systems give a sub-question its sibling's label?
+**Design.** On dev items whose answer is shared with other sub-questions (203 items, 86 answers): contamination =
+P(the predicted label is in a sibling's reference set and not in the item's own | the prediction is wrong). Systems:
+DeBERTa-v3-large (10 seeds E10+E11 fullq, logit adjustment by nested CV), M1 (10-seed E23 inputs, nested τ), the M4
+student (10 seeds, nested τ), the 27B alone over M1's top-4 (E23 order-averaged records, argmax), and the frozen
+cascade (E25 replay). Nulls: **primary:** 1,000 permutations, each replacing an item's siblings with the same number of
+items drawn from *other* answers in the same answer-length tercile; **secondary:** items from other answers of the same
+interview (url). Uniform chance (share of the item's wrong labels that are sibling-only, the preliminary check's) is
+also reported. Intervals: bootstrap over the 86 shared answers.
+* **H28-1:** contamination exceeds the primary permutation null for every system (one-sided p < 0.05).
+* **H28-2:** contamination is highest for the cascade, and cascade − M1 > 0 with an interval excluding 0.
+  *Not obvious:* the preliminary gap (32.9% vs 25.6%) rests on 23 vs 20 errors, and frequent labels (Dodging,
+  Explicit) appear in many reference sets, which the permutation controls and the uniform chance does not.
+* Already tested and not established (E24 P4): joint sibling decoding. Not re-run.
+
+### E29 — M5, a question-side prior fused on the deferred items
+**Design.** s ∈ {0, ½, 1} = share of the two P-role LLMs (E25b) whose answer the frozen instrument labels evasive
+(`e25_analysis.llm_table()`). On the frozen instrument's deferred dev items only (E25 replay, records as scored), the
+fused score gains −β·(s − ½) on Explicit (the only Clear-Reply label); kept items are unchanged; frozen λ, τ, τ_M1.
+β ∈ {0, 0.1, …, 2.0} is chosen on the training folds (nested CV, 10 splits) and compared with β = 0.
+* **H29-1:** S2 or S1 rises with a 95% turn-bootstrap interval excluding 0. Expected: at most a small S1 gain
+  (the prior adds +0.024 AUROC on the least-sure 36% and nothing on all items).
+* **Caveat registered in advance:** P-role answers exist only for dev, so M5 cannot be applied to test; any gain is a
+  dev-only, deferred-items-only estimate.
+* **Decision rule:** adopt M5 only if H29-1 holds; otherwise the "future work M5" in the report becomes a reported
+  negative result.
+
+### E30 — The counterfactual validity battery: does each model read the question?
+**Design.** One command (`python -m audit.validity_battery`) applies the E25 frames (dev: own, rand, null, qonly,
+pre25, pre50, pre75; test: own, rand, null, label-free) to each system and reports per frame: Clear-Reply share,
+label persistence vs own, Jensen–Shannon distance of the label distribution from own, and (own frame) the same-label
+rate on the 58 disjoint sibling pairs. Systems: M1 and the frozen cascade (E25 labels); DeBERTa-v3-large run on the
+frames with the downloaded E10_fullq seeds (≥ 3; fidelity control: own-frame probabilities vs the saved
+`dev_probs.npy`, argmax agreement ≥ 0.98, else reported as a deviation); stretch arms if the lab GPU allows by hour
+10: the frozen-base linear probe (layer 28) and the 27B zero-shot over the 9 labels (own/rand/null). Nothing is
+trained except the probe's refit with the logged C and τ.
+* **H30-1:** every fine-tuned classifier (DeBERTa, M1, cascade) passes the swap test as registered for E25a
+  (Clear-Reply share at least halves under rand; persistence ≤ 0.5).
+* **H30-2 (descriptive, the reusable result):** question-binding (same-label rate on disjoint sibling pairs) orders
+  the systems; registered expectation: probe (0.448) > DeBERTa > M1 (0.19).
+  *Not obvious:* DeBERTa reads question and answer jointly but stalled at 0.405 S2; it may still bind the label to
+  the question.
+
+### E31 — Robustness of the role effect (exploratory OR 2.74)
+**Design.** The E25b P- and N-condition odds ratios (LLM evades | President evaded, gold), per model and MH-pooled,
+recomputed: (a) raw; (b) MH stratified by model × tercile of the LLM answer's length; (c) logistic regression with
+log LLM-answer length, log President-answer length and model; (d) (c) plus the instrument's question-only prior
+(`qonly_p_cr`); (e) excluding the 17 answers that contain "nan"; (f) the President labelled by the instrument instead
+of gold. Turn-cluster bootstrap intervals for each.
+* **H31-1:** OR(P) stays ≥ 1.5 with an interval above 1 under (b)–(e); OR(N) stays < 1.5. Every variant is reported,
+  including any that weakens the effect; the effect remains "exploratory" whatever the outcome (two models).
+
+### E32 — Third model family: OLMo-2-1124-7B-Instruct (confirmatory)
+**Design.** OLMo-2-7B-Instruct (ungated, open weights and data; a family unrelated to the 27B judge) answers the 308
+dev sub-questions in N, P, F, B with the E25 generator unchanged (greedy, ≤ 400 tokens, max_model_len 4,096: its
+context limit, which made it fail in E25). **Protocol A (confirmatory)** reproduces the E25 prompts exactly, including
+the empty name/date. **Protocol B (exploratory)** renders the persona without them ("You are the President of the
+United States, in a press interview."). Answers are labelled by the frozen instrument (M1 10 seeds → 27B on deferred
+items, 4 orders, max_num_seqs 512 → `audit.system` decide); outputs under `runs/E32/`, never `runs/E25/`. Runs on the
+lab RTX PRO 6000 (GPU 0, shared). **Hardware control:** before labelling OLMo, 200 existing Mistral answers (stratified
+by condition) are re-labelled on this GPU; agreement with their E25 (H100) labels is reported (E25's cross-GPU
+agreement: 98.1%).
+* **H32-1:** OLMo protocol A: OR(P) ≥ 1.5 with a 95% turn-bootstrap interval excluding 1.
+* **H32-2:** OLMo protocol A: OR(N) ≤ 1.3.
+* **H32-3:** MH OR(P) pooled over the three models ≥ 1.5 with an interval excluding 1.
+* **Decision rule:** if H32-1 and H32-2 hold, the paper may say "replicated in a third model family"; otherwise the
+  role effect stays "exploratory", with OLMo reported. Dropped (and said so) if not labelled by 2026-11-21, 23:30 IST.
+
+**Budget.** CPU for E27–E31; E30's DeBERTa arm and E32 on the lab server (free). No JarvisLabs spend (₹230 left).
+Analyses: `preregistered_analyses/e27_cqc.py`, `e28_contamination.py`, `e29_m5.py`, `e31_role_robustness.py`,
+`e32_analysis.py`, and `audit/validity_battery.py` → `docs/raw/E27_cqc.txt` … `E32_analysis.txt`.
+
+### E27, E28, E29, E31 results *(2026-11-20, 23:28 IST; CPU; `raw/E27_cqc.txt`, `raw/E28_contamination.txt`, `raw/E29_m5.txt`, `raw/E31_role_robustness.txt`)*
+
+Anchors reproduced: E28's E25-replay row gives the preliminary check's 32.9% of 70 errors (uniform chance 18.2%); M1
+nested S2 0.598 and the frozen cascade's in-sample 0.673 match E14/E23; E29 at β = 0 reproduces the E25 replay (S2
+0.659, S1 0.786); E31's raw ORs reproduce E25b (N 1.18, P 2.74).
+
+| Hypothesis | Result | Verdict |
+|---|---|---|
+| H27-1 CQC raises S2 ≥ +0.010 | M1 level, no-question contrast: 0.584 → 0.567 (−0.017 [−0.046, −0.002]); question-only contrast −0.005; cascade −0.006 in both. S2 is highest at α = 0 and falls to 0.347 at α = 1; nested CV picks α = 0 in 78–92% of folds | **FAILED** |
+| H27-2 CQC lowers sibling repetition ≥ 5 points | disjoint-pair same-label rate 0.155 → 0.172 (M1), 0.276 → 0.259 (cascade, with an S2 loss) | **FAILED** |
+| CQC decision | | **not adopted** |
+| H28-1 contamination above the permutation null, every system | every system is *below* the length-matched permutation null (DeBERTa 0.323 vs 0.387, M1 0.253 vs 0.339, student 0.385 vs 0.415, 27B alone 0.307 vs 0.359, cascade 0.324 vs 0.426; p 0.77–0.98); same-interview null: no system above it | **FAILED** |
+| H28-2 highest for the cascade, cascade − M1 > 0 | cascade − M1 +0.070 [−0.035, +0.179]; highest is the student (0.385) | **FAILED** |
+| H29-1 M5 prior raises S2 or S1 | every β > 0 lowers in-sample S2/S1 (β = 1: 0.650/0.777); nested CV picks β = 0 in every fold (Δ 0.000) | **FAILED** |
+| M5 decision | | **not adopted** |
+| H31-1 role effect robust | pooled OR(P) 2.72 [1.85, 4.15] (length strata), 2.79 (logistic + lengths), 2.81 (+ question prior), 2.89 [1.98, 4.40] (without the 17 "nan" answers), 3.49 (President by the instrument); OR(N) 1.15–1.26, every interval spans 1 | **HELD** (the effect stays exploratory: two models) |
+
+**Reading.** All three module ideas from the preliminary checks fail when tested properly:
+- **CQC.** Subtracting the answer-only prior removes label information rather than style bias. The answer alone carries part of the label (refusals, E25c), which is consistent with E25a's 0.354 persistence under the null frame.
+- **Sibling contamination.** It was a label-frequency artefact. Errors land on a sibling's labels *less* often than on the labels of random answers of the same length, because the systems already separate sub-questions that share an answer.
+- **M5.** The P-role share adds nothing once the 27B has re-decided the deferred items.
+
+The role effect, by contrast, survives every length, question-prior and prompt-defect control.
+
+### E32 hardware control *(2026-11-20, 23:47 IST; lab RTX PRO 6000, GPU 0 shared; `raw/E32_analysis.txt` §A)*
+
+**Amendments before any OLMo answer was generated.**
+1. *Paths.* `audit.*` and `cascade.exemplars` read `CLARITY_E25_DIR` and `CLARITY_M3_PREFIX` (defaults unchanged, so E25 is
+   reproduced as before). E32 writes only under `runs/E32` and `runs/M3/e32*`.
+2. *Serving.* The 27B runs with gpu-util 0.55, max_model_len 8,192 and max_num_seqs 128, because a lab-mate's job holds
+   41 GB of GPU 0. The control's first order used CUDA graphs, and the later orders and all OLMo labelling run eager
+   (`enforce_eager`, as in E26), to save start-up time. Scoring is unchanged: one token, greedy.
+3. *peft* is not in the vLLM venv, so it is loaded from `/scratch/shlok/Temp/.pylib-peft` (peft 0.20.0, the E26 version).
+
+| Check | Result |
+|---|---|
+| instrument label agreement, 200 Mistral answers (50 per condition), lab vs E25 H100 | **0.970** (M1 alone 0.990) |
+| evade / not-evade agreement; evasion rate E25 vs lab | 0.985; 0.480 vs 0.485 |
+| routing identical | 0.995 (71 of 200 deferred, no 27B record missing) |
+
+**Reading.** The lab GPU reproduces the E25 instrument about as well as E25 reproduced E23 (0.981), so OLMo's labels are
+comparable with Mistral's and Qwen's.
+
+### E30 results *(2026-11-21, 00:00 IST; `raw/E30_validity_battery.txt`, `runs/E30/battery.json`)*
+
+DeBERTa-v3-large: E10_fullq_16ep seeds 0–2 (weights from the Hub), on the MIG slice of the lab server
+(`audit/deberta_frames.py`). The control **passed**: argmax agreement with the saved `dev_probs.npy` was 0.997, 0.994
+and 0.997 (registered bar 0.98; max |dp| 0.03–0.07). The stretch arm, the 27B zero-shot over all nine labels (dev own /
+rand / null, taxonomy order, k = 0, eager, `runs/M3/e30all9_taxonomy`), ran on GPU 0. The probe's frame arm did not run
+(hidden states are not local). Logit-adjustment τ was fitted once on dev own and then frozen for every frame: DeBERTa
+0.35, zero-shot −0.20.
+
+| System | own CR | swap CR | persistence | no-question CR | binding (disjoint siblings same label) |
+|---|---|---|---|---|---|
+| M1 | 0.179 | 0.010 | 0.175 | 0.321 | 0.155 |
+| instrument | 0.253 | 0.013 | 0.188 | 0.640 | 0.224 |
+| DeBERTa (3 seeds) | 0.312 | 0.026 | 0.198 | 0.776 | 0.310 |
+| 27B zero-shot, 9 labels | 0.377 | 0.026 | 0.133 | 0.289 | 0.362 |
+| frozen probe (E25d) | — | — | — | — | 0.448 |
+
+| Hypothesis | Result | Verdict |
+|---|---|---|
+| H30-1 every fine-tuned classifier passes the swap | DeBERTa, M1 and the instrument all pass | **HELD** |
+| H30-2 binding orders probe > DeBERTa > M1 | 0.448 > 0.310 > 0.155 | **HELD** (descriptive) |
+
+**Reading.** The zero-shot 27B, which was never trained on the task, also passes the swap. Any model that reads both
+texts passes it, so the swap is a necessary check but a weak one. Binding discriminates: the zero-shot LLM (0.362) and the
+frozen probe (0.448) give disjoint siblings the same label far more often than the fine-tuned models (0.155–0.310). The
+zero-shot LLM's Clear-Reply share also does *not* rise without a question (0.289), unlike every fine-tuned model's. The
+paper's claim is revised accordingly: fine-tuning on question–answer pairs is what binds the label to the question, and
+the swap alone does not show it.
+
+### E32 results *(2026-11-21, 01:41 IST; lab RTX PRO 6000; `raw/E32_analysis.txt`)*
+
+OLMo-2-1124-7B-Instruct, 2,464 answers: protocol A (the E25 prompts) and protocol B (generic wording), 1,232 each. 717 of
+2,464 were deferred to the 27B (29%, as for E25's LLM answers), and no record was missing. 9.7% of answers were cut at
+400 tokens (E25: 2%); OLMo is wordier (median 257 words), and E31's length controls address this. 3 protocol-A answers
+repeat "nan".
+
+| Hypothesis | Result | Verdict |
+|---|---|---|
+| H32-1 OLMo (A): OR(P) ≥ 1.5, interval above 1 | **2.90 [1.81, 5.04]** | **HELD** |
+| H32-2 OLMo (A): OR(N) ≤ 1.3 | 1.37 [0.83, 2.29] | **FAILED** (narrowly; interval spans 1) |
+| H32-3 MH OR(P), Mistral + Qwen + OLMo, ≥ 1.5, interval above 1 | **2.81 [1.97, 4.16]** (N pooled: 1.24 [0.84, 1.80]) | **HELD** |
+| Decision rule (H32-1 and H32-2) | not met | role effect stays **exploratory** |
+
+*Exploratory, protocol B (no name or date in the prompt):* OR(N) 1.13 [0.69, 1.89], OR(P) 2.74 [1.64, 4.70]. The
+"nan" rendering did not create the effect. Pursuit: 63.1% (A) and 67.6% (B) of evasive P answers become clear replies.
+P − N evasion rate: −0.055 (A), +0.049 (B), so the role again barely changes how often the model evades.
+
+**Reading.** In a third, unrelated family, the President's role again makes the model evade where the Presidents evaded,
+with a pooled odds ratio of 2.81 over three families. The registered null for the neutral analyst missed its bar by 0.07,
+with an interval spanning 1, so by our own rule the effect is not called replicated. The paper says "held in a third
+family; still exploratory".
+
+### E31 on the three-model table *(2026-11-21, 01:47 IST; `raw/E31_role_robustness_e32.txt`)*
+
+Mistral, Qwen and OLMo-2 (protocol A). Pooled OR(P): 2.81 raw, 2.77 (length strata), 2.84 (logistic + lengths), 2.82
+(+ question prior), 2.91 (without "nan" answers), 3.26 (President by the instrument); every interval is above 1.
+Pooled OR(N): 1.23–1.24 under (a)–(e), with every interval spanning 1. H31-1 **HELD** on three models. *Caveat:* with
+the Presidents labelled by the instrument instead of gold (f), OLMo's N ratio is 1.87 [1.10, 3.18], the only N interval
+excluding 1 (pooled N (f): 1.44 [0.96, 2.09]).
+
+## E33–E36 — The confirmation study for the paper *(plan 2026-11-21; each part is registered separately below, before it runs)*
+
+**Where it sits.** An outside review of the draft paper (2026-11-21) found that its most novel result, the role effect
+(E25b, E31, E32), was discovered post hoc on dev. The P-vs-N comparison it rests on was never tested as an interaction,
+and the instrument was never validated on LLM text. The user decided (2026-11-21): the paper leads with the audit; there
+is no human annotation; open models only; venue MultiDems @ EACL 2027. Dev is therefore the **discovery** sample. The
+**confirmation** sample is the part of train that shares no interview with dev: 248 interviews (`url`), 2,858
+sub-questions, 1,709 turns. 39 of dev's 56 interviews also appear in train (590 rows), so full train is not independent of
+dev. Train carries the President's name and date, which removes the E25b "nan" defect. Train has one annotator per item.
+
+### E33 — A leak-free instrument for train questions, and label-free validity checks *(registered 2026-11-21, 11:47 IST, before any run)*
+**Why.** Every M1 seed was trained on all of train, and the old cross-fit folds (`Q8_12ep_crossfit`) leak through
+sibling sub-questions and other turns of the same interview (E19 notes). Labelling LLM answers to train questions with
+either would let the instrument recall the President's label for that question.
+**Design.**
+- Folds: `data/splits/train_5fold_url.json`, sklearn `StratifiedGroupKFold(5, shuffle=True, random_state=12345)`, groups =
+  `url`. 689–690 rows and 56–59 interviews per fold; label counts within ±2 across folds; no url in two folds (asserted
+  in `models/llm_classifier.py --group-by url`).
+- Model: Qwen3-8B-Base LoRA, the M1 recipe unchanged (12 epochs, lr 1e-4, r 16, max_len 1024, a_budget 256, last
+  epoch), seed 0, run name `E33_cf_url`, one model per fold. Lab RTX PRO 6000, our MIG slice.
+- **The cross-fit instrument (CF).** For an item whose question comes from train, CF uses the fold model whose held-out
+  fold contains that item's interview. For a dev item, it uses the mean of the five fold models. Logit adjustment
+  s = log p − τ·log π (π = train prior, `cascade.fuse.PRIOR`). τ ∈ `cascade.fuse.TAUS` is fitted once, on the
+  out-of-fold probabilities of the Presidents' own train answers (single-label S2), then frozen. Label = argmax.
+  Evasion = clarity level ≠ Clear Reply. No routing and no adjudicator, so every condition is labelled by the same procedure.
+- **The second instrument (ZS).** Qwen3.8-27B-FP8, zero-shot over all nine labels, k = 0, taxonomy order (as in E30).
+  Never trained on the task.
+**Checks (all must pass before CF labels any audit answer).**
+- C33-1: the assertion that no url straddles folds passes.
+- C33-2: every fold model's dev S2 (raw argmax) ≥ 0.45, and the mean over folds is ≥ 0.50 (old folds: 0.494–0.578).
+- C33-3: `audit/infer_cf.py` reproduces each fold's saved `val_probs.npy` on the Presidents' answers (argmax
+  agreement ≥ 0.97; E32's cross-GPU control was 0.970).
+**Hypotheses (label-free, on LLM answers).**
+- H33-1 (CF reads the question on LLM text): the E25/E32 dev LLM answers (3 models × N and P) are paired with a
+  sub-question and turn from another interview, using the E25 `rand` mapping. CF's Clear-Reply share at least halves,
+  separately in N and in P.
+- H33-2 (no differential noise between roles): on the E34 confirmation answers (3 models), CF and ZS agree on
+  evade/not-evade at rates that differ by ≤ 0.10 between N and P.
+**Contingency (decided by date, not by result).** If C33-1 to C33-3 have not passed by 2026-11-26, 23:59 IST, ZS becomes
+E34's primary instrument and CF becomes secondary.
+**Budget.** 5 folds × about 3–3.5 h on the MIG slice. Inference on GPU 0 is in E34's budget.
+
+### E34 — The confirmatory audit: does the role change where LLMs evade, on questions the discovery never saw? *(registered 2026-11-21, 11:55 IST, before any E34 answer is generated)*
+**Seen before this registration (to be read as discovery, not confirmation).**
+- The E25/E31/E32 dev results.
+- The dev ratio of odds ratios, computed ad hoc by a planning agent on 2026-11-21 and then by the frozen script below
+  (`raw/E34_discovery_dev.txt`, frozen instrument, url bootstrap): **ROR P/N 2.27 [1.61, 3.22]**.
+  - Mistral 3.12, OLMo 2.14, Qwen 1.76.
+  - "You" sub-questions 2.39, others 2.42.
+  - GEE 2.27, conditional logit 4.88.
+  - Tipping point e* = 0.39.
+- A word-overlap look at P answers against the Presidents' real answers: 0.14 vs 0.09 for a random answer.
+**Sample.** Every train sub-question is generated (2,061 turns, 3,448 rows). The **confirmation sample** is the 248
+interviews not in dev (2,858 sub-questions, 1,709 turns). Full train is a robustness row only. President evaded =
+train `clarity_label` ≠ Clear Reply (one annotator per item).
+**Conditions.** Code: `audit.generate --split train --protocol e34`, `prompts_e34`. Every condition names the
+President and the date, and each is one user message, decoded greedily, ≤ 400 new tokens, at most 250 words of spoken prose.
+- **N:** a neutral analyst, told the question was put to {President} on {date}.
+- **S:** the White House press secretary for {President}, answering for the administration.
+- **G:** a generic President (the E32 protocol-B P prompt).
+- **P:** the named President on the date (the E25 P prompt, with the fields filled).
+- N, S, G and P are generated once per turn and shared by its sub-questions. Qwen3 runs with thinking off.
+- F and B are not run: pursuit and information were measured on dev.
+**Models.**
+- Primary pool, "trio": `mistralai/Mistral-7B-Instruct-v0.3`, `Qwen/Qwen3-8B`, `allenai/OLMo-2-1124-7B-Instruct`.
+- Secondary (H34-5): `ibm-granite/granite-3.3-8b-instruct` and `allenai/OLMo-2-0325-32B-Instruct` (vLLM fp8).
+  If the 32B model cannot run, `mistralai/Mistral-Small-24B-Instruct-2501` replaces it, decided before its answers
+  are labelled.
+**Instruments.**
+- Primary: **CF** (E33). It is replaced by **ZS** under E33's date contingency, recorded in
+  `runs/E34/primary_instrument.json` before the analysis runs.
+- Secondary: **ZS**, tag `e34zs_taxonomy`, jobs over frame `llm` with cand 0..8.
+- Pipeline: `audit.frames llm` → `audit.infer_cf --frames llm` → 27B → `e34_analysis train`.
+**Estimand and analysis.** Frozen script: `preregistered_analyses/e34_analysis.py`.
+- ROR_{A/B} = OR_A / OR_B, from a logistic model pooled over models: model×condition intercepts, model×President-evaded
+  slopes, and γ·President-evaded·[condition = A]. ROR = exp(γ).
+- Interval: 2,000-draw bootstrap over interviews (url), with all rows of a drawn interview kept together.
+- Evasion = instrument clarity level ≠ Clear Reply.
+**Hypotheses.**
+- **H34-1 (primary): ROR_{P/N} > 1.** Held if the trio-pooled 95% interval's lower bound is > 1 **and** the point
+  ROR is > 1 in at least 2 of the 3 models. Whether the point estimate reaches ≥ 1.5 is reported but is not a gate.
+  The single-annotator gold biases ROR toward 1.
+- **Secondary, one family, Holm-adjusted at 0.05:**
+  - H34-2 ROR_{S/N} > 1 (a stake without being the person asked);
+  - H34-3 ROR_{P/S} ≠ 1 (two-sided: does being the person asked matter beyond the stake);
+  - H34-4 ROR_{G/N} > 1 (the effect needs no name, so it is not set off by recall of a named President);
+  - H34-5 ROR_{P/N} > 1 for each added model;
+  - H34-6 ROR_{P/N} > 1 on sub-questions without "you/your".
+- **Robustness (reported, no gate):**
+  - the ZS instrument;
+  - GEE (exchangeable within url) and conditional logit (strata = model × sub-question);
+  - answer-length terciles;
+  - annotator-specific slopes;
+  - without Qwen3-8B (the instrument is Qwen-based);
+  - the non-answer outcome (Dodging, Deflection, Declining, Claims ignorance);
+  - without meta answers (regex);
+  - soft labels (fractional logit on CF's P(evasive));
+  - full train;
+  - tipping point;
+  - the P − N evasion rate.
+**Decision rule.** If H34-1 holds, the paper reports the role effect as a **pre-registered, out-of-sample confirmation
+on 248 held-out interviews**, measured by an instrument validated without humans. If it fails, the paper reports a
+non-replication and leads with the measurement contribution (battery and binding).
+**Frozen code (sha256, first 16 hex).**
+- `e34_analysis.py` 901a0f9487c66d51
+- `generate.py` db4772932a841508
+- `infer_cf.py` 073ad4f66ac13638
+- `frames.py` 514f4358b7ec7155
+- Any later change to these files is logged as a deviation.
+**Budget.** On the lab GPU, shared:
+- generation: about 35 min per 7–8B model for 4 conditions, and about 2 h for the 32B model;
+- CF labelling: about 1.5 h;
+- ZS: 0.32 s per item, about 4–6 h.
+
+### E35 — Binding with uncertainty: is "the classifier reads the question" more than accuracy? *(registered 2026-11-21, 11:55 IST, before any run)*
+**Design.**
+- Binding = the share of sibling pairs (same answer, different sub-questions) whose gold label sets are disjoint and
+  that a system labels identically. Lower means more bound to the question.
+- **Dev:** the 58 E30 pairs. Systems: the E30 rows (probe, ZS, DeBERTa, M1, instrument), plus anchors:
+  - majority label (binding 1 by construction);
+  - an answer-only system (M1 on the `dev_null` frame: the same label for every sibling, 1 by construction).
+- **Matched null:** for each system, the same-label rate on 2,000 random pairs of items from different answers whose
+  gold sets are disjoint, using that system's labels.
+- **Binding index:** (null − sibling rate) / null. 1 means fully bound; 0 means siblings are labelled as alike as unrelated items.
+- **Intervals:** 2,000-draw bootstrap over answers. Paired differences between systems use the same draws.
+- **Train:** sibling pairs with different gold labels (one annotator), restricted to the confirmation interviews.
+  Systems: CF (out of fold) and ZS (27B zero-shot on `train_own`, tag `e35zs_taxonomy`).
+**Hypothesis.**
+- **H35-1:** on train, binding(CF) < binding(ZS), and the 95% interval of the difference excludes 0, while their
+  single-label S2 on the same rows differs by ≤ 0.05.
+- If the accuracy condition is not met, the comparison is reported as descriptive.
+- **Dev:** descriptive, with intervals. No new hypothesis, because E30's H30-1/H30-2 already cover it.
+
+### E36 — What drives the role effect (exploratory, registered 2026-11-21, 11:55 IST; no hypotheses)
+- ROR_{P/N} within subgroups of the confirmation sample (CF, trio), with Holm over the subgroups:
+  - "you" questions;
+  - `multiple_questions` and `affirmative_questions`;
+  - hypothetical wording (if/would/suppose/hypothetically);
+  - future wording (will/going to/plan);
+  - per President.
+- Word overlap with the President's real answer, N vs G vs P (memorisation).
+- Meta-answer share by condition.
+- Answer length by condition.
+
+**E33 amendment (2026-11-21, 14:42 IST, before any C33 check or E34 labelling).** `models.llm_classifier.predict` sorts by length and
+batches, and padding moves logits by a few per cent, so a fold's saved `val_probs.npy` is reproduced exactly only with
+the training-time evaluation batch (16). On fold 0's 690 held-out rows, `infer_cf`'s logic gives argmax agreement
+1.000, max |dp| 0.000 at batch 16, and 0.988, 0.169 at batch 32 (its default); a 32-row subset gives 0.938. Every
+`infer_cf` run is therefore launched with `--batch 16`. `infer_cf.py` itself is unchanged (hash as registered).
+Fold 0: dev S2 0.577 (C33-2 bar 0.45). W&B is unavailable in the lab venv (`wandb` has no `init`); fold metrics are
+in `runs/E33_cf_url/fold*/metrics.json` and `logs/paper/`.
+
+### E33 results *(2026-11-22, 02:19 IST; MIG slice; `raw/E33_checks.txt`, `raw/E33_llm_swap.txt`, `runs/E34/cf/report.json`)*
+| Check / hypothesis | Registered bar | Result | Verdict |
+|---|---|---|---|
+| C33-1 no url in two folds | assertion passes | passes | PASSED |
+| C33-2 per-fold dev S2 (raw argmax) | min ≥ 0.45, mean ≥ 0.50 | 0.577, 0.574, 0.564, 0.542, 0.480; mean 0.547 | PASSED |
+| C33-3 `infer_cf` reproduces `val_probs.npy` | argmax agreement ≥ 0.97 | 1.000 in every fold (max abs dp 0.000; batch 16) | PASSED |
+| H33-1 swap on dev LLM answers, N | Clear-Reply share at least halves | 0.418 → 0.000 | HELD |
+| H33-1 swap on dev LLM answers, P | Clear-Reply share at least halves | 0.530 → 0.000 | HELD |
+| H33-2 CF–ZS agreement, N vs P | difference ≤ 0.10 | reported by `e34_analysis train` | pending |
+
+- τ, fitted once on the out-of-fold train answers and frozen: 0.50. Out-of-fold train S2 is 0.434 raw and 0.435 adjusted.
+- CF passed every check on 2026-11-22, before the 26 Nov contingency date, so CF stays E34's primary instrument.
+- Fold 4 (dev S2 0.480) is the weakest fold.
+- Throughput: `infer_cf` scores 11–14 items/s on the MIG slice.
+
+### E35 results *(2026-11-22, 02:19 IST; CPU; `raw/E35_binding.txt`, `runs/E35/binding.json`)*
+- **Dev (descriptive):** unchanged from results_sources §30.
+- **Train (H35-1):** 1,605 sibling pairs with different gold labels in the confirmation interviews (2,858 items).
+
+| System | S2 (confirmation rows, single label) | binding [95% CI] | null | ratio to null |
+|---|---|---|---|---|
+| CF (out of fold) | 0.437 | 0.282 [0.251, 0.334] | 0.141 | 2.00 |
+| ZS (27B zero-shot) | 0.458 | 0.297 [0.235, 0.389] | 0.169 | 1.76 |
+
+- **H35-1: FAILED.**
+  - The accuracy condition is met: |ΔS2| = 0.021 ≤ 0.05.
+  - binding(CF) − binding(ZS) = −0.015 [−0.104, +0.038]. The interval includes 0.
+  - On train, the fine-tuned cross-fit classifier does not bind its labels to the question more than the zero-shot model.
+
+### E35x — Why H35-1 failed: instrument or sample? *(exploratory, post hoc; 2026-11-22, 02:24 IST; `raw/E35x_exploratory.txt`, `code/preregistered_analyses/e35x_exploratory.py`)*
+- **Not registered.** It was written after H35-1 failed.
+- **What E35 does not identify.** The dev contrast used M1 (ten seeds, trained on all of train). The train test used CF (one seed per fold, four fifths of train). The two samples also define sibling pairs differently: three annotators' disjoint sets vs one annotator's different labels.
+- **Method.** CF's binding on the 58 dev pairs, using E35's null and draws, with τ 0.50 frozen.
+- **CF on dev:**
+  - Mean of the 5 fold models: S2 0.571, binding 0.207 [0.109, 0.328], null 0.122, ratio 1.69.
+  - CF − ZS: −0.155 [−0.339, +0.038]. CF − M1: +0.052 [−0.071, +0.188].
+  - Single fold models: binding 0.155–0.293 (mean 0.210). Their S2 is 0.528–0.577.
+- **Reading:**
+  - On dev, CF sits between M1 and ZS. Its difference from ZS points the same way as M1's, but its interval includes 0.
+  - Single seeds of one recipe differ in dev binding by 0.14, which is as much as the systems differ.
+  - With 58 pairs, the dev binding test does not rank classifiers reliably.
+- **Paper consequence.**
+  - Drop "accuracy-matched classifiers differ in binding" as a finding. It is a dev observation that the registered test did not confirm.
+  - Keep the sibling test as a diagnostic:
+    - every classifier sits far below the answer-only anchor (ratio 4.5 on dev);
+    - siblings are still labelled alike 1.3–2.5 times as often as unrelated items.
+
+### E34 results *(2026-11-22, 03:50 IST; CPU; `raw/E34_confirmation_train.txt`, `runs/E34/analysis_train.json`)*
+- **Sample:** 248 confirmation interviews, 2,858 sub-questions (President evaded 0.688).
+- **Labels:** CF on 57,160 trio and added-model answers. Primary instrument: CF (C33 passed).
+
+| Hypothesis | Registered | Result | Verdict |
+|---|---|---|---|
+| H34-1 ROR P/N, trio pooled | lower bound > 1, and > 1 in ≥ 2 of 3 models | 1.25 [1.09, 1.43], p 0.001; Mistral 1.44 [1.21, 1.72], OLMo-7B 1.34 [1.09, 1.62], Qwen 1.01 [0.82, 1.24] | **HELD** (point ≥ 1.5: no; not a gate) |
+| H34-2 ROR S/N > 1 | Holm | 1.34 [1.19, 1.49], Holm p < 0.001 | HELD |
+| H34-3 ROR P/S ≠ 1 | Holm, two-sided | 0.93 [0.85, 1.03], Holm p 0.51 | FAILED |
+| H34-4 ROR G/N > 1 | Holm | 1.22 [1.08, 1.38], Holm p < 0.001 | HELD |
+| H34-5 Granite-3.3-8B | Holm | 1.19 [0.98, 1.45], p 0.048, Holm 0.19 | FAILED |
+| H34-5 OLMo-2-32B | Holm | 1.08 [0.89, 1.31], Holm 0.51 | FAILED |
+| H34-6 sub-questions without "you" | Holm | 1.07 [0.90, 1.29], Holm 0.51 | FAILED |
+| H33-2 CF–ZS agreement N vs P | difference ≤ 0.10 | N 0.730, P 0.742 (S 0.730, G 0.717); difference 0.012 | HELD |
+
+**Robustness (no gate):**
+- ZS instrument: 1.22 [1.06, 1.42].
+- GEE: 1.25. Conditional logit: 1.35 [1.15, 1.59] (ZS 1.29).
+- Answer-length terciles: 1.25. Annotator slopes: 1.25.
+- Without Qwen: 1.39 [1.20, 1.60].
+- Non-answer outcome: 1.24 [1.01, 1.53].
+- Without meta answers: 1.25. Soft labels: 1.26 [1.11, 1.42].
+- Full train: 1.23 [1.10, 1.38].
+- Tipping point: e* = 0.25.
+
+**Evasion rates (trio):**
+- The analyst evades most: 0.561–0.623.
+- The President role evades less: 0.467–0.502. The rate falls more on the questions the President answered (Mistral 0.537 → 0.410) than on those he evaded (0.572 → 0.536).
+- The registered output is the source for the per-model rates.
+
+**Reading:**
+- The registered effect holds but is small. Discovery's 2.27 was an overestimate.
+- It is not specific to the President: P ≈ S, and the unnamed President shows it too.
+- It does not generalise to every model family: Qwen 1.01, OLMo-32B 1.08, Granite borderline.
+- **Determinism:** `e34_analysis train`, rerun at 03:52, reproduced `E34_confirmation_train.txt` and `analysis_train.json` byte for byte.
+
+### E36 results *(exploratory; 2026-11-22, 04:00 IST; `raw/E36_drivers.txt`, `runs/E34/e36.json`)*
+**Subgroup ROR P/N (CF, trio; Holm over 14 subgroups):**
+- "you" 1.43 [1.16, 1.75] (Holm < 0.001) vs not "you" 1.07 [0.89, 1.29].
+- Single-question turns 1.26 vs multiple 0.75 [0.42, 1.32] (77 sub-questions).
+- Non-affirmative 1.31 vs affirmative 1.10.
+- Hypothetical 1.38 [0.93, 2.05] vs other 1.23.
+- Future 1.26 vs other 1.26.
+- By President: Obama 1.31 [1.04, 1.67], Trump 1.29 [1.04, 1.60], Bush 1.01 [0.74, 1.40], Biden 1.12 [0.77, 1.60]. None survives Holm.
+
+**Word overlap with the President's real answer vs a random real answer** (a share of the answer's words of five or more letters):
+
+| Role | Real answer | Random answer | Ratio |
+|---|---|---|---|
+| N | 0.091 | 0.053 | 1.72 |
+| S | 0.109 | 0.064 | 1.70 |
+| G | 0.106 | 0.064 | 1.66 |
+| P | 0.129 | 0.079 | 1.63 |
+
+- No role is closer to the real answer relative to chance. Together with G ≈ P (no name, no date), recall of the transcripts does not explain the effect.
+
+**Other measures:**
+- Meta answers: ≤ 0.001 in every role.
+- Mean words: N 239, S 229, G 224, P 226.
+
+### E36x — The "you" sub-questions *(exploratory, post hoc; 2026-11-22, 04:08 IST; `raw/E36x_you.txt`, `code/preregistered_analyses/e36x_you.py`)*
+- **Not registered.** It was written after E36 placed the effect on "you" sub-questions.
+- **Method:** trio pooled, CF; 1,000 draws.
+
+**"You" sub-questions (1,411):**
+- The analyst evades 0.621 of the ones the President answered and 0.646 of the ones he evaded: OR 1.11 [0.93, 1.32].
+- Every in-role speaker tracks the President:
+  - press secretary: 0.472 vs 0.587, OR 1.59;
+  - unnamed President: 0.403 vs 0.500, OR 1.48;
+  - named President: 0.420 vs 0.536, OR 1.59.
+- ROR vs analyst: S 1.43, G 1.33, P 1.43.
+
+**Other sub-questions (1,447):**
+- The analyst already tracks the President: 0.475 vs 0.550, OR 1.35 [1.11, 1.63].
+- The roles track similarly: S 1.68, G 1.49, P 1.44.
+- ROR vs analyst: S 1.24 [1.04, 1.49], G 1.10, P 1.07.
+
+**Reading:**
+- In every role, the questions the Presidents evaded are evaded more, with OR about 1.4–1.7. Within one role this OR also contains the instrument's question-specific bias, so only the ratios are identified.
+- The role matters where the analyst cannot answer at all: questions put to "you".
+- Discovery (dev, the same "You are not the President" analyst prompt) showed no such split: "you" 2.39 vs others 2.42. The split is a property of the confirmation sample, not of a prompt change.
+
+**E36x addition** *(2026-11-22, 04:55 IST; post hoc, after an internal number audit noted that no you-vs-other
+difference had been estimated)*
+- Method: ROR(role / analyst) on "you" sub-questions divided by that on the others, using paired draws (1,000).
+- Results:
+  - P: 1.34 [1.00, 1.76], one-sided p 0.025.
+  - S: 1.15 [0.87, 1.49], one-sided p 0.150.
+  - G: 1.21 [0.92, 1.51], one-sided p 0.082.
+- Reading: the "you" concentration is suggestive for the named President only. The paper hedges every "you" statement accordingly.
+
+**Paper audit (2026-11-22, 04:50 IST).** An independent agent checked every number in `report/paper` against
+`docs/raw` and `runs`. It found:
+- 3 wrong numbers: H26–H29 should be 7 failed, not 6; Mistral 59%, not 60%; the probe ratios exceed the answer-only anchor at layers 8–16.
+- About 12 description errors, 4 inconsistencies and 7 overclaims. Among the overclaims: "you" was stated as fact, "adds nothing", and "two of three models" when the registered criterion counts point estimates (all 3 > 1; 2 of 3 have intervals excluding 1).
+- Table widths and text-mode minus signs.
+
+All of these were fixed on 2026-11-22.
+
+### Packaging for review *(2026-11-22, 10:20–10:45 IST)*
+- **Reproducibility rerun.** Every CPU analysis behind the paper was rerun from the current code: `audit.cf_tau`,
+  `e33_llm_swap`, `e34_analysis dev`, `e35_binding`, `e35x_exploratory`, `e36_drivers`, `e36x_you`, `paper_facts`,
+  `figures.paper_figures_v3`, `paper_figures_v2` and `paper_example_frames`. `e34_analysis train` had been rerun
+  earlier (03:50 → byte-identical).
+  - Every text and JSON output is byte-identical except `raw/E34_discovery_dev.txt` and `runs/E34/analysis_dev.json`.
+    Their first run predated the CF labels; the rerun adds the CF section (ROR P/N 2.03 [1.42, 3.17]; "you" 2.00,
+    others 2.22). The frozen-instrument section is unchanged.
+  - Consequence for the paper: §5 now states that CF gives 2.03 on dev, so the change of instrument does not explain
+    the drop from 2.27 to 1.25. §6 no longer lists "the different instrument" as a reason the "you" split was absent
+    on dev, because it is absent with CF too.
+- **Hugging Face** (`siddarthg44/clarity-semeval26`): uploaded `E33_cf_url/fold0–4` (adapters, per-epoch
+  probabilities), `E34/` (including `answers.jsonl` 106 MB and `frames/llm.parquet` 63 MB) and
+  `M3/e34zs_taxonomy/` (`responses.jsonl` 55 MB). Those three large files are gitignored: GitHub rejects files over
+  100 MB, and the repo keeps files under ~5 MB.
+- Docs: `findings.md` §6c (Part V), README part 5 and result rows, `codebase.md`, `reproducing.md` §8.
+

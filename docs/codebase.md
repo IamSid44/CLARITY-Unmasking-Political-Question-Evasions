@@ -68,7 +68,7 @@ Dependencies point one way: `qevasion` ← `models`, `decision_rules` ← `casca
 
 | File | What it does | Important functions |
 |---|---|---|
-| `loader.py` | Loads train/dev (Hugging Face parquet, cached in `data/cache/`); reference sets, consensus levels, fixed splits | `load_qevasion` (the splits), `dev_reference_mask` (308 × 9 gold sets), `stratified_val_index` (the 345-row slice), `stratified_fold_index` (cross-fit folds), `consensus_level` |
+| `loader.py` | Loads train/dev (Hugging Face parquet, cached in `data/cache/`); reference sets, consensus levels, fixed splits | `load_qevasion` (the splits), `dev_reference_mask` (308 × 9 gold sets), `stratified_val_index` (the 345-row slice), `stratified_fold_index` (cross-fit folds), `grouped_fold_index` (folds grouped by interview, E33: `data/splits/train_5fold_url.json`), `consensus_level` |
 | `labels.py` | The 9 evasion labels, the 3 clarity levels and the official 9 → 3 mapping | `encode_evasion`, `encode_clarity`, `leaf_to_official_clarity`, `multi_reference_mask` |
 | `scoring.py` | Replica of the official scorers | `macro_f1_multireference` (Subtask 2: a prediction counts if any annotator gave it), `macro_f1_single_label` (Subtask 1), wrappers `score_subtask2` / `score_subtask1` |
 | `normalize.py` | **E21.** Transcript artifacts of the official test answers | `normalize_answer` (removes speaker tags, footnotes, crosstalk), `inject_artifacts` (adds them to dev at test's rates), `test_inventory` |
@@ -78,7 +78,7 @@ Dependencies point one way: `qevasion` ← `models`, `decision_rules` ← `casca
 
 | File | What it does | Important functions | Experiments |
 |---|---|---|---|
-| `llm_classifier.py` | Qwen3-8B-Base + LoRA (all linear layers) with a 9-way head on the last token. `--soft-targets` trains on distillation targets | `Cfg` (all hyper-parameters), `encode_row` (input text and token budgets), `build_model`, `run` (train, select epoch on the slice, save probabilities), `predict`, `padding_self_check` | E13, E14 (M1), E17 (M4) |
+| `llm_classifier.py` | Qwen3-8B-Base + LoRA (all linear layers) with a 9-way head on the last token. `--soft-targets` trains on distillation targets | `Cfg` (all hyper-parameters), `encode_row` (input text and token budgets), `build_model`, `run` (train, select epoch on the slice, save probabilities), `predict`, `padding_self_check`. `--group-by url` uses interview-grouped folds | E13, E14 (M1), E17 (M4), E33 (CF) |
 | `encoder.py` | DeBERTa-v3-large cross-encoder: input form, token budgets, loss (CE, Balanced Softmax, focal), flat / hierarchical / sub-task heads | `ClarityEncoder`, `build_inputs`, `make_loss`, `param_groups` (layer-wise LR decay), `run`, `predict`, `inset_diagnostics` | E0–E12 |
 | `rerank.py` | Second-stage cross-encoder that re-ranks the top-K labels using label definitions | `RerankModel`, `load_stage1`, `choose` | E6 |
 | `hier_combine.py` | Combines a Non-Reply gate, branch specialists and pair experts into 9-way predictions (CPU) | `compose`, `apply_experts`, `variants` | E12b/c |
@@ -120,6 +120,20 @@ Dependencies point one way: `qevasion` ← `models`, `decision_rules` ← `casca
 | `hidden.py` | Layer-wise linear probes on the frozen base model's hidden states; early-exit latency | `dump` (GPU), `probe` (CPU) | E25d |
 | `quant.py` | M1 at reduced precision: bf16 reference, FP8 W8A8, NF4 with the adapter unmerged | `FP8Linear` (row-wise scaled `torch._scaled_mm`), `fp8_mode`, `to_fp8`, `load`, `latency` | E26 |
 | `quant_system.py` | Routes and labels each precision's outputs through the frozen instrument | `inputs`, `jobs`, `records`, `label` (`--records-from` reuses another site's 27B records) | E26 |
+| `validity_battery.py` | **The counterfactual validity battery, one command**: Clear-Reply share, label persistence and JS distance per frame, and question binding (same label on disjoint siblings), for every system with per-frame labels or probabilities (`runs/E25/labels`, `runs/E30/<name>/<frame>/seed*.npy`) | `compute`, `measure`, `from_probs` | E30 |
+| `deberta_frames.py` | The reported DeBERTa-v3-large (E10/E11 fullq) on the E25 frames, with a reproduction control on dev own | `main` | E30 |
+
+`generate.py`, `frames.py`, `infer.py`, `system.py` and `cascade/exemplars.py` read `CLARITY_E25_DIR` (default
+`runs/E25`) and `system.py` reads `CLARITY_M3_PREFIX` (default `e25`), so E32 reuses them with outputs under `runs/E32`.
+`generate.py --generic-persona` writes prompts without the (empty) name and date fields.
+
+| File | What it does | Important functions | Exp. |
+|---|---|---|---|
+| `generate.py --split train --protocol e34` | The train questions under N (analyst told the President's name and date), S (press secretary), G (unnamed President, no date), P (named President on the date) | `prompts_e34` | E34 |
+| `frames.py e34` / `frames.py llm` | E33/E34 frames (`CLARITY_E25_DIR=runs/E34`): `train_own` (the Presidents' train answers), `dev_llm`, `dev_llm_rand` (question swap), `llm` (every E34 answer) | `e34`, `llm` | E33, E34 |
+| `infer_cf.py` | **CF**: labels each row with the cross-fit fold that never saw its interview (train) or the mean of the five folds (dev); reproduces each fold's `val_probs.npy` (C33-3) | `fold_of`, `main` | E33, E34 |
+| `cf_tau.py` | Fits CF's logit adjustment τ once on the out-of-fold train answers and freezes it (`runs/E33/cf_tau.json`); writes the C33 checks | `main` | E33 |
+| `zs_jobs.py` | Job files for **ZS**, the 27B zero-shot over nine labels (`cascade.adjudicate --k 0`) | `main` | E34, E35 |
 
 ### `evaluation/`
 
@@ -155,6 +169,19 @@ one per registered hypothesis, matching the sections of the output file.
 | `e24_prechecks.py` | `raw/E24_prechecks.txt` | P1–P8: sibling structure, does M1 read the question, five candidate modules, relevance vs answerhood |
 | `e25_analysis.py` | `raw/E25_analysis.txt` | Controls, question swaps, question or speaker (`mh_or`: Mantel–Haenszel odds ratio; `rows_of`: cluster bootstrap over interview turns), prefixes, probes, label-free validity check |
 | `e26_analysis.py` | `raw/E26_analysis.txt` | Each precision against 16-bit on the same GPU type; registered verdicts |
+| `e27_cqc.py` | `raw/E27_cqc.txt` | Counterfactual question contrast (M0), M1 and cascade, α and τ nested |
+| `e28_contamination.py` | `raw/E28_contamination.txt` | Sibling contamination of five systems against permutation nulls |
+| `e29_m5.py` | `raw/E29_m5.txt` | The question-side prior (M5) fused on deferred items, β nested |
+| `e31_role_robustness.py` | `raw/E31_role_robustness.txt` | The role odds ratio under length, question-prior and prompt controls (`--llm-table` for E32's three models) |
+| `e32_analysis.py` | `raw/E32_analysis.txt` | Hardware control; OLMo-2 rates, odds ratios, H32-1–3 |
+| `e33_llm_swap.py` | `raw/E33_llm_swap.txt` | H33-1: CF's Clear-Reply share on dev LLM answers, own question vs another interview's |
+| `e34_analysis.py` | `raw/E34_discovery_dev.txt`, `raw/E34_confirmation_train.txt` | `dev`: the discovery estimate; `train`: H34-1–6 (ratio of odds ratios, interview bootstrap, Holm), H33-2, robustness, tipping point. `train_table` is the shared confirmation table |
+| `e35_binding.py` | `raw/E35_binding.txt` | Sibling binding with a matched null and bootstrap intervals (dev systems, probes, anchors); H35-1 on train |
+| `e35x_exploratory.py` | `raw/E35x_exploratory.txt` | Post hoc: CF and each fold model on the dev siblings |
+| `e36_drivers.py` | `raw/E36_drivers.txt` | Exploratory: ROR P/N by subgroup, word overlap with the real answer, meta answers |
+| `e36x_you.py` | `raw/E36x_you.txt` | Post hoc: "you" vs other sub-questions, rates and OR per role, paired ROR(you)/ROR(other) |
+| `paper_facts.py` | `raw/paper_facts.txt` | Sample sizes and descriptive facts quoted in the paper |
+| `sibling_error_check.py`, `question_prior_check.py`, `question_dependence_check.py` | `raw/*_check.txt` | Preliminary, unregistered checks that motivated E27–E29 |
 
 ### `figures/`
 
@@ -165,6 +192,10 @@ one per registered hypothesis, matching the sections of the output file.
 | `e25_figures.py` | E25 figures → `docs/figures/E25_*` and `report/latex/figures/` |
 | `e13_figures.py`, `mideval_figures.py` | Mid-evaluation figures → `docs/figures/` |
 | `paper_example.py`, `taxonomy_counts.py` | The report's worked example and taxonomy table |
+| `report_final_figures.py`, `report_e25_figures.py` | The course report's data figures → `report/final/figures/` |
+| `slide_figures.py` | The final deck's figures → `report/slides_final/figures/s_*` (incl. `s_battery`, `s_contamination`, `s_role_robust`) |
+| `paper_figures_v2.py`, `paper_example_frames.py` | The workshop paper's audit figure and Figure 1 example → `report/paper/figures/`, values to `docs/raw/paper_*.txt` |
+| `paper_figures_v3.py` | The paper's role figure (`fig_roles.pdf`: rates by role; ROR vs analyst per model, dev and confirmation) and `fig_binding.pdf`; values → `docs/raw/paper_roles.txt` |
 
 ### `utils/`
 
@@ -188,6 +219,9 @@ directives (`@module`, `@hf-push`, `@need-gb`); each line of `lane_gpu<N>_<x>.tx
 | `infer_lane.sh` | cloud VM | The inference lanes: E19–E22 (`PASS=1/2`), E25 (`PASS=3`), E26 FP8 (`PASS=4`); `PASS=5` (NF4 on the same GPU) was prepared but not run. Self-destroys when finished |
 | `e25_collect.sh`, `e26_collect.sh` | laptop | Wait for a lane, copy its outputs from HF, confirm the instance is destroyed, run the analysis |
 | `e26_lab_run.sh`, `e26_lab_resume.sh`, `e26_local_nf4.sh` | lab server | E26's NF4 half on two 16 GB GPUs |
+| `e32_label.sh`, `e32_olmo.sh`, `e32_post.sh` | lab server | E32: OLMo-2 answers, labelling, hardware control |
+| `e33_folds.sh`, `e33_post.sh` | lab server (MIG slice) | E33: the five interview-grouped folds; then CF on the control frames, τ, H33-1, E35 |
+| `e34_generate.sh`, `e34_zs.sh`, `e34_queue.sh`, `e34_zs_gap*.sh` | lab server (GPU 0, shared) | E34: answers per model; ZS labelling; the orchestration that ran CF, the analysis and the figures; gap fillers for ZS |
 
 How to run them: [`reproducing.md`](reproducing.md).
 
@@ -200,8 +234,12 @@ How to run them: [`reproducing.md`](reproducing.md).
 | `runs/<config>/seed<k>/` | `dev_probs.npy`, `test_probs.npy`, `val_probs.npy`, `metrics.json`, `config.json` (+ LoRA adapter) | yes, except adapter weights |
 | `runs/M1/`, `runs/M3/<tag>/`, `runs/M4/` | cascade inputs, 27B records (`responses.jsonl`), distillation targets | yes |
 | `runs/E21/` … `runs/E26/` | outputs of the later experiments (frames, LLM answers, labels, precision runs) | yes, except E25 hidden states |
+| `runs/E30/`, `runs/E32/`, `runs/E33/`, `runs/E35/` | battery, OLMo-2 replication, CF's τ and swap check, binding | yes |
+| `runs/E33_cf_url/fold<k>/` | CF: probabilities, metrics, config (+ adapter, per-epoch probabilities) | yes, except the adapter and `epochs/` |
+| `runs/E34/` | E34 answers, frames, CF labels (`cf/`), analysis JSON | yes, except `answers.jsonl`, `frames/llm.parquet` (Hugging Face only, > 50 MB) |
 | `logs/` | training, queue and cloud-lane logs | yes |
 | `data/` | cached train/dev, the official evaluation file, fixed splits | yes |
 
-Model weights and E25's hidden states are on [Hugging Face](https://huggingface.co/siddarthg44/clarity-semeval26)
+Model weights, E25's hidden states and E34's large files (`E34/answers.jsonl`, `E34/frames/llm.parquet`,
+`M3/e34zs_taxonomy/responses.jsonl`) are on [Hugging Face](https://huggingface.co/siddarthg44/clarity-semeval26)
 only; everything else is also mirrored there.

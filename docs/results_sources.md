@@ -481,3 +481,233 @@ any-annotator rule; the system's labels are the frozen system as replayed in E25
 | mean p(Explicit): own question / no question / another interview's question | 0.228 / 0.463 / 0.017 | dependence |
 | AUROC for "the President evaded": no-question gap alone; correlation of the gap with M1 | 0.842; 0.870 | dependence |
 | cross-validated AUROC, least sure 36% (n = 111): M1 / M1 + gap / M1 + P-role share / all three | 0.722 / 0.708 / 0.746 / 0.728 | dependence |
+
+
+## 21. Workshop-paper checks (2026-11-20)
+
+| Number / fact | Value | Source |
+|---|---|---|
+| test labels released? | no: the public HF `ailsntua/QEvasion` "test" split (308 rows, 3 annotators) is our dev set; the task paper never mentions a release of the 237-item test gold | checked 2026-11-20 (HF dataset card and rows API; `paper/Task_Results_Paper.pdf`) |
+| registered teams in the shared task | 124 | `paper/Task_Results_Paper.pdf` |
+| dev `president` / `date` fields | empty for all 308 rows (train: filled); the E25b prompts rendered them as "nan" | `data/cache/dev.parquet`; `code/audit/generate.py`; log E27–E32 "Defect found" |
+| E25b answers containing the token "nan" | 17 of 2,464 (Mistral 13, Qwen 4) | `raw/E31_role_robustness.txt` |
+| relevance (PMI_c) vs identifiability AUROC for Clear Reply (train) | 0.566 (Kruskal–Wallis p = 2.3e-12) vs 0.549 | `raw/E24_prechecks.txt` P8 (the 0.566 is PMI_c, not identifiability) |
+| Figure 1 example (dev rows 147, 206): labels under own / swap / no question / contentless answer | Explicit / Dodging / Explicit / Dodging (row 147); Dodging / Dodging / Explicit / Dodging (row 206) | `raw/paper_fig1_example.txt` (`python -m figures.paper_example_frames`) |
+| LLM evasion rate where the President evaded / answered, per model and condition | e.g. Mistral N 0.590 / 0.595, P 0.585 / 0.316; Qwen N 0.528 / 0.443, P 0.576 / 0.354 | `raw/paper_audit_rates.txt` (`python -m figures.paper_figures_v2`) |
+
+
+## 22. E27 counterfactual question contrast (registered 2026-11-20; FAILED)
+
+Source: `raw/E27_cqc.txt`, `runs/E27/cqc.json` (`python -m preregistered_analyses.e27_cqc`, CPU, ~30 s). M1 = 10-seed
+mean on the E25 frames; α and τ nested (5 folds × 10 splits); turn-cluster bootstrap (2,000).
+
+| Number | Value |
+|---|---|
+| M1 level, no-question contrast: S2 baseline → CQC (Δ, 95% interval) | 0.584 → 0.567 (−0.017 [−0.046, −0.002]) |
+| M1 level, contentless-answer contrast | 0.584 → 0.579 (−0.005 [−0.011, +0.000]) |
+| cascade (dev-rank deferral 35.7%), both contrasts | 0.605 → 0.599 (−0.006) |
+| S2 at fixed α = 0 / 0.5 / 1 (no-question contrast, M1) | 0.584 / 0.523 / 0.347 |
+| share of folds choosing α = 0 (M1 level) | 0.78 (no question), 0.88 (contentless) |
+| same label on the 58 disjoint sibling pairs, M1 | 0.155 → 0.172 |
+
+
+## 23. E28 sibling contamination (registered 2026-11-20; FAILED)
+
+Source: `raw/E28_contamination.txt`, `runs/E28/contamination.json` (`python -m preregistered_analyses.e28_contamination`,
+CPU, ~10 s). 1,000 length-tercile permutations; 2,000 bootstrap draws over the 86 shared answers.
+
+| System | errors on shared answers | contamination | length-matched null (p) | uniform chance |
+|---|---|---|---|---|
+| DeBERTa-v3-large (10 seeds) | 96 | 0.323 | 0.387 (0.944) | 0.183 |
+| M1 (10 seeds) | 79 | 0.253 | 0.339 (0.977) | 0.161 |
+| M4 student (10 seeds) | 78 | 0.385 | 0.415 (0.765) | 0.174 |
+| 27B alone over M1's top-4 | 88 | 0.307 | 0.359 (0.896) | 0.184 |
+| frozen cascade (E23) | 68 | 0.324 | 0.426 (0.984) | 0.185 |
+| frozen cascade, E25 replay (anchor = preliminary check) | 70 | 0.329 | 0.426 (0.966) | 0.182 |
+| cascade − M1 | | +0.070 [−0.035, +0.179] | | |
+
+
+## 24. E29 M5 question-side prior (registered 2026-11-20; FAILED)
+
+Source: `raw/E29_m5.txt`, `runs/E29/m5.json` (`python -m preregistered_analyses.e29_m5`, CPU, ~5 s).
+
+| Number | Value |
+|---|---|
+| deferred and scored dev items (E25 replay) | 111 |
+| β = 0 (frozen replay) S2 / S1 | 0.659 / 0.786 |
+| in-sample S2 / S1 at β = 1 | 0.650 / 0.777 |
+| nested β (objective S2 or S1): share of folds β = 0; Δ S2, Δ S1 | 1.00; +0.000, +0.000 |
+
+
+## 25. E31 role-effect robustness (registered 2026-11-20; HELD)
+
+Source: `raw/E31_role_robustness.txt`, `runs/E31/role_robustness.json` (`python -m preregistered_analyses.e31_role_robustness`,
+CPU, ~5 min). Pooled = Mantel–Haenszel over models; turn-cluster bootstrap (2,000).
+
+| Specification | OR(N) pooled | OR(P) pooled [95%] | OR(P) Mistral / Qwen |
+|---|---|---|---|
+| (a) raw | 1.18 | 2.74 [1.87, 4.17] | 3.01 / 2.46 |
+| (b) MH over model × LLM-answer-length tercile | 1.15 | 2.72 [1.85, 4.15] | 3.05 / 2.44 |
+| (c) logistic + log lengths (LLM, President) + model | 1.17 | 2.79 [1.90, 4.32] | 3.03 / 2.64 |
+| (d) (c) + question-only prior | 1.16 | 2.81 [1.91, 4.35] | 2.97 / 2.73 |
+| (e) raw, without the 17 "nan" answers | 1.18 | 2.89 [1.98, 4.40] | 3.28 / 2.51 |
+| (f) raw, President labelled by the instrument | 1.26 | 3.49 [2.34, 5.48] | 4.00 / 2.98 |
+
+
+## 26. E32 hardware control (2026-11-20)
+
+Source: `raw/E32_analysis.txt` §A (`python -m preregistered_analyses.e32_analysis`), from `runs/E32/labels/ctrl_mistral.npz`
+(labelled by `code/launch/e32_label.sh ctrl_mistral e32ctrl`) against `runs/E25/labels/llm.npz`.
+
+| Number | Value |
+|---|---|
+| instrument label agreement, 200 Mistral answers, lab RTX PRO 6000 vs E25 H100 (M1 alone) | 0.970 (0.990) |
+| evade / not-evade agreement; evasion rate E25 vs lab; routing identical | 0.985; 0.480 vs 0.485; 0.995 |
+
+
+## 27. E30 validity battery (registered 2026-11-20; HELD)
+
+Source: `raw/E30_validity_battery.txt`, `runs/E30/battery.json` (`python -m audit.validity_battery`; DeBERTa frames
+by `python -m audit.deberta_frames --seeds 0-2`, the 27B zero-shot by `cascade.adjudicate --tag e30all9_taxonomy` and
+then `python -m audit.validity_battery --import-27b e30all9_taxonomy llm27b_zeroshot`). Dev, frozen parameters (S2
+in sample). CR = Clear-Reply share; binding = same label on the 58 disjoint sibling pairs.
+
+| System | S2 (own) | CR own / swap / no question / contentless | persistence under swap | binding |
+|---|---|---|---|---|
+| M1 (E25 labels) | 0.611 | 0.179 / 0.010 / 0.321 / 0.000 | 0.175 | 0.155 |
+| frozen instrument (E25 labels) | 0.659 | 0.253 / 0.013 / 0.640 / 0.006 | 0.188 | 0.224 |
+| DeBERTa-v3-large, 3 seeds (τ 0.35) | 0.444 | 0.312 / 0.026 / 0.776 / 0.003 | 0.198 | 0.310 |
+| Qwen3.8-27B zero-shot, 9 labels (τ −0.20) | 0.604 | 0.377 / 0.026 / 0.289 / — | 0.133 | 0.362 |
+| frozen linear probe, layer 28 (`raw/E25_analysis.txt`) | 0.397 | — | — | 0.448 |
+| Presidents' gold CR (dev) | | 0.256 | | |
+| DeBERTa reproduction control, argmax agreement with saved dev_probs (seeds 0/1/2) | | 0.997 / 0.994 / 0.997 | | |
+
+
+## 28. E32 OLMo-2 replication (registered 2026-11-20; H32-1 and H32-3 HELD, H32-2 FAILED)
+
+Source: `raw/E32_analysis.txt`, `runs/E32/analysis.json` (`python -m preregistered_analyses.e32_analysis`; answers
+by `code/launch/e32_olmo.sh`). Odds ratio = LLM evades | President evaded (gold); turn-cluster bootstrap (2,000 draws).
+
+| Number | Protocol A (E25 prompts) | Protocol B (generic, exploratory) |
+|---|---|---|
+| evasion rate N / P / F / B | 0.565 / 0.510 / 0.211 / 0.545 | 0.503 / 0.552 / 0.201 / 0.578 |
+| OR(N) | 1.37 [0.83, 2.29] | 1.13 [0.69, 1.89] |
+| OR(P) | 2.90 [1.81, 5.04] | 2.74 [1.64, 4.70] |
+| OR(F) / OR(B) | 1.46 / 3.05 | 1.52 / 3.97 |
+| pursuit: evasive P answers that F turns into Clear Replies | 0.631 (n = 157) | 0.676 (n = 170) |
+| answers cut at 400 tokens; containing "nan" | 0.097 (both protocols); 3 | 0 |
+| MH OR(P) over Mistral, Qwen, OLMo (A); same pooling in N | 2.81 [1.97, 4.16]; 1.24 [0.84, 1.80] | |
+| deferred to the 27B; records missing | 717 of 2,464; 0 | |
+
+| E31 on three models (`raw/E31_role_robustness_e32.txt`, `--llm-table runs/E32/llm_table.parquet`) | pooled OR(P) | pooled OR(N) |
+|---|---|---|
+| (a) raw / (b) length strata / (c) logistic / (d) + question prior / (e) no "nan" | 2.81 / 2.77 / 2.84 / 2.82 / 2.91 | 1.24 / 1.23 / 1.24 / 1.23 / 1.24 |
+| (f) President by the instrument | 3.26 [2.22, 4.97] | 1.44 [0.96, 2.09]; OLMo alone 1.87 [1.10, 3.18] |
+
+
+## 29. Paper v2 facts and the E34 discovery estimate (2026-11-21)
+
+Sources: `raw/paper_facts.txt` (`python -m preregistered_analyses.paper_facts`), `raw/E34_discovery_dev.txt`,
+`runs/E34/analysis_dev.json` (`python -m preregistered_analyses.e34_analysis dev`; frozen script, hash in the E34
+registration). The discovery estimate is exploratory: the P-vs-N pattern was found after E25 and this ratio was first
+computed ad hoc on 2026-11-21, before the E34 registration.
+
+| Number | Value |
+|---|---|
+| train: items / interviews / turns / dates | 3,448 / 287 / 2,062 / 2006-10-25 to 2023-09-10 |
+| train: President evaded (clarity ≠ Clear Reply) | 0.695 |
+| dev: items / interviews / turns | 308 / 56 / 191 |
+| dev interviews also in train | 39 of 56 (590 train rows) |
+| confirmation sample (train interviews not in dev) | 248 interviews, 2,858 items, 1,710 turns; President evaded 0.688 |
+| discovery evasion rate N / P (3 models, frozen instrument) | 0.554 / 0.515 |
+| discovery ROR P/N (url bootstrap) | 2.27 [1.61, 3.22]; Mistral 3.12, OLMo 2.14, Qwen 1.76 |
+| discovery ROR P/N: "you" sub-questions / others | 2.39 [1.43, 4.42] / 2.42 [1.55, 4.11] |
+| discovery ROR P/N: GEE / conditional logit | 2.27 [1.61, 3.20] / 4.88 [2.47, 9.66] |
+| discovery tipping point (extra symmetric label noise in N that brings ROR to 1) | 0.39 |
+
+## 30. E35 binding with a matched null, dev (registered 2026-11-21)
+
+Source: `raw/E35_binding.txt`, `runs/E35/binding.json` (`python -m preregistered_analyses.e35_binding`). Binding = share of
+the 58 dev sibling pairs with disjoint gold sets labelled identically; null = the same system's rate on 2,000 random
+pairs from different answers with disjoint gold sets; ratio = binding / null; bootstrap over the 40 answers. S2 is
+in-sample (frozen or dev-fitted tau, as in E30).
+
+| System | dev S2 | binding [95% CI] | null | ratio to null |
+|---|---|---|---|---|
+| Qwen3-8B LoRA (M1, 10 seeds) | 0.611 | 0.155 [0.071, 0.259] | 0.118 | 1.31 |
+| shared-task instrument | 0.659 | 0.224 [0.120, 0.328] | 0.135 | 1.66 |
+| DeBERTa-v3-large (3 seeds) | 0.444 | 0.310 [0.200, 0.421] | 0.154 | 2.01 |
+| 27B zero-shot | 0.604 | 0.362 [0.218, 0.509] | 0.146 | 2.47 |
+| frozen probe, layer 28 (layers 4–36: 0.38–0.79; layer 0 predicts one label) | 0.397 | 0.448 [0.319, 0.579] | 0.208 | 2.15 |
+| answer only (M1, no question) | 0.359 | 1.000 | 0.221 | 4.52 |
+| M1 − 27B zero-shot (paired) | | −0.207 [−0.379, −0.022] | | |
+| DeBERTa − 27B zero-shot (paired) | | −0.052 [−0.226, +0.115] | | |
+
+## 31. E33 instrument checks, H33-1 and E35 train binding (registered 2026-11-21; results 2026-11-22)
+
+Sources: `raw/E33_checks.txt` (`python -m audit.cf_tau`), `raw/E33_llm_swap.txt` (`python -m preregistered_analyses.e33_llm_swap`),
+`runs/E34/cf/report.json` (`python -m audit.infer_cf --batch 16`), `raw/E35_binding.txt` (`python -m preregistered_analyses.e35_binding`),
+`raw/E35x_exploratory.txt` (`python -m preregistered_analyses.e35x_exploratory`, post hoc).
+
+| Number | Value |
+|---|---|
+| CF fold dev S2 (raw argmax), folds 0–4 | 0.577, 0.574, 0.564, 0.542, 0.480 (mean 0.547) |
+| CF reproduces each fold's held-out probabilities | argmax agreement 1.000, max abs dp 0.000 (batch 16) |
+| CF τ (frozen); out-of-fold train S2 raw → adjusted | 0.50; 0.434 → 0.435 |
+| CF dev S2, mean of 5 folds, τ 0.50 (exploratory) | 0.571 |
+| H33-1 CF Clear-Reply share, own → swapped question (dev LLM answers), N / P | 0.418 → 0.000 / 0.530 → 0.000 (HELD) |
+| train confirmation sibling pairs with different gold labels | 1,605 (2,858 items) |
+| train binding, CF / ZS [95% CI]; null; ratio | 0.282 [0.251, 0.334], 0.141, 2.00 / 0.297 [0.235, 0.389], 0.169, 1.76 |
+| train S2 on confirmation rows, CF / ZS | 0.437 / 0.458 |
+| H35-1 binding(CF) − binding(ZS) | −0.015 [−0.104, +0.038] (FAILED) |
+| dev binding, CF mean of 5 folds (exploratory) | 0.207 [0.109, 0.328], null 0.122, ratio 1.69 |
+| dev binding, CF − ZS / CF − M1 (exploratory) | −0.155 [−0.339, +0.038] / +0.052 [−0.071, +0.188] |
+| dev binding, single CF fold models (exploratory) | 0.155–0.293 |
+
+## 32. E34 confirmation, E36 drivers, E36x "you" breakdown and the role figure (2026-11-22)
+
+Sources:
+- `raw/E34_confirmation_train.txt`, `runs/E34/analysis_train.json` (`python -m preregistered_analyses.e34_analysis train`; rerun byte-identical).
+- `raw/E36_drivers.txt`, `runs/E34/e36.json` (`python -m preregistered_analyses.e36_drivers`, exploratory).
+- `raw/E36x_you.txt`, `runs/E34/e36x_you.json` (`python -m preregistered_analyses.e36x_you`, exploratory, post hoc).
+- `raw/paper_roles.txt`, `runs/E34/paper_roles.json` (`python -m figures.paper_figures_v3`, the values in `fig_roles`).
+
+| Number | Value |
+|---|---|
+| confirmation answers labelled (5 models x 4 roles) | 57,160 (trio 34,296) |
+| H34-1 ROR P/N, trio pooled | 1.25 [1.09, 1.43], one-sided p 0.001 (HELD) |
+| H34-1 per model: Mistral / OLMo-2-7B / Qwen3-8B | 1.44 [1.21, 1.72] / 1.34 [1.09, 1.62] / 1.01 [0.82, 1.24] |
+| H34-2 ROR S/N | 1.34 [1.19, 1.49] (HELD) |
+| H34-3 ROR P/S | 0.93 [0.85, 1.03], Holm p 0.51 (FAILED) |
+| H34-4 ROR G/N | 1.22 [1.08, 1.38] (HELD) |
+| H34-5 Granite-3.3-8B / OLMo-2-32B | 1.19 [0.98, 1.45], Holm 0.19 / 1.08 [0.89, 1.31], Holm 0.51 (FAILED) |
+| H34-6 no-"you" sub-questions | 1.07 [0.90, 1.29] (FAILED) |
+| robustness: ZS / GEE / conditional logit / without Qwen | 1.22 [1.06, 1.42] / 1.25 [1.09, 1.43] / 1.35 [1.15, 1.59] / 1.39 [1.20, 1.60] |
+| robustness: soft labels / non-answer outcome / full train | 1.26 [1.11, 1.42] / 1.24 [1.01, 1.53] / 1.23 [1.10, 1.38] |
+| tipping point (confirmation) | 0.25 |
+| H33-2 CF–ZS agreement N / P / S / G | 0.730 / 0.742 / 0.730 / 0.717 (HELD) |
+| evasion rate trio pooled, President answered / evaded: N, S, G, P | 0.550/0.597, 0.436/0.556, 0.390/0.486, 0.418/0.521 (`paper_roles.txt`) |
+| per-model ROR S/N, G/N, P/N (all 5 models; 15 values) | 1.01–1.53 (`paper_roles.txt`) |
+| E36 ROR P/N "you" / other | 1.43 [1.16, 1.75] / 1.07 [0.89, 1.29] |
+| E36 per President: Obama / Trump / Bush / Biden | 1.31 / 1.29 / 1.01 / 1.12 (none survives Holm) |
+| E36 word overlap with the real answer / a random answer, N, S, G, P | 0.091/0.053, 0.109/0.064, 0.106/0.064, 0.129/0.079 |
+| E36 meta answers | ≤ 0.001 in every role |
+| E36x "you": analyst rate answered / evaded; OR | 0.621 / 0.646; 1.11 [0.93, 1.32] |
+| E36x "you": OR S / G / P | 1.59 / 1.48 / 1.59 |
+| E36x other: analyst OR; OR S / G / P | 1.35 [1.11, 1.63]; 1.68 / 1.49 / 1.44 |
+| ln(2.27) / ln(1.25) (discovery vs confirmation, log scale; paper §7 "nearly four times") | 3.67 (arithmetic on the two registered outputs) |
+| E36x "you" / other ROR ratio, paired draws: P / S / G (post hoc) | 1.34 [1.00, 1.76] / 1.15 [0.87, 1.49] / 1.21 [0.92, 1.51] (`raw/E36x_you.txt`) |
+| discovery: Mistral analyst evades on President-answered / evaded questions | 0.595 / 0.590 (`raw/paper_audit_rates.txt`) |
+
+## 33. The discovery estimate with CF, and the packaging rerun (2026-11-22)
+
+Source: `raw/E34_discovery_dev.txt`, `runs/E34/analysis_dev.json` (`python -m preregistered_analyses.e34_analysis dev`).
+The first run predated the CF labels and printed "[cf] not available yet"; the rerun adds the CF section and leaves the
+frozen-instrument section byte-identical.
+
+| Number | Value | Used in |
+|---|---|---|
+| discovery ROR P/N with CF (dev, mean of the five fold models, τ 0.50) | 2.03 [1.42, 3.17]; Mistral 1.92, OLMo-2-7B 1.94, Qwen3-8B 2.24 | paper §5; `findings.md` §6c |
+| discovery with CF, "you" / other sub-questions | 2.00 [1.11, 4.08] / 2.22 [1.47, 4.03] | paper §6 ("Questions put to you") |
+| discovery with CF: GEE / conditional logit / soft labels; tipping point | 2.05 / 4.23 / 1.99; e* = 0.33 | not cited |
+

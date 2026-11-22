@@ -48,6 +48,12 @@ python -m preregistered_analyses.e21_e22_analysis
 python -m preregistered_analyses.e23_systems           # final operating points (~15 min)
 python -m preregistered_analyses.e24_prechecks         # ~5 min
 python -m preregistered_analyses.e25_analysis
+python -m preregistered_analyses.e27_cqc               # E27, ~30 s
+python -m preregistered_analyses.e28_contamination    # E28, ~10 s
+python -m preregistered_analyses.e29_m5               # E29, ~5 s
+python -m audit.validity_battery                      # E30 (after audit.deberta_frames for the DeBERTa row)
+python -m preregistered_analyses.e31_role_robustness  # E31, ~5 min
+python -m preregistered_analyses.e32_analysis         # E32 (after code/launch/e32_*.sh)
 python -m preregistered_analyses.e26_analysis
 python -m evaluation.verify_scorer_geometry            # docs/scorer_geometry.md
 python -m figures.paper_figures && python -m figures.e25_figures
@@ -146,3 +152,52 @@ pipeline) or `lane` (inference, `launch/infer_lane.sh` with `PASS=1…4`). Every
 (`IDLE_MIN`, `MAX_HOURS`), uploads and verifies its outputs, then **destroys** the instance on success or
 **pauses** it on failure. `launch/e25_collect.sh` and `e26_collect.sh` wait on the laptop, copy the outputs
 back and run the analysis.
+
+## 7. The workshop-paper experiments (E27–E32)
+
+E27–E31 run on CPU from existing outputs (commands in §2). The GPU parts ran on the lab server:
+
+```bash
+python -m audit.deberta_frames --seeds 0-2                    # E30: needs runs/E10_fullq_16ep/seed*/model.pt (Hub)
+bash code/launch/e32_label.sh ctrl_mistral e32ctrl            # E32 hardware control (frame from runs/E32/frames)
+bash code/launch/e32_olmo.sh                                  # E32: OLMo-2 answers (protocols A and B) -> labels
+python -m preregistered_analyses.e31_role_robustness --llm-table ../runs/E32/llm_table.parquet   # three models
+python -m figures.paper_figures_v2 && python -m figures.paper_example_frames && python -m figures.slide_figures
+```
+
+The vLLM venv lacks `peft`; `audit.infer` runs with `PYTHONPATH` pointing at a directory holding peft 0.20.0.
+
+## 8. The registered confirmation (E33–E36)
+
+The registrations, with code hashes, are in `experiment_log.md` (E33–E36). GPU steps ran on the lab server with the
+vLLM venv; the analyses run on CPU from `code/` with `CLARITY_E25_DIR=<repo>/runs/E34`. To rerun only the analyses,
+first fetch the three large files from Hugging Face (`E34/answers.jsonl`, `E34/frames/llm.parquet`,
+`M3/e34zs_taxonomy/responses.jsonl`) into the same paths under `runs/`; everything else they read is in git.
+
+```bash
+# E33: CF, five folds grouped by interview (~2.8 h each on a MIG 2g.48gb slice)
+GPU=<id> bash code/launch/e33_folds.sh
+# E34: answers to the 2,858 confirmation questions under N/S/G/P (~15-35 min per 7-8B model on a shared GPU)
+bash code/launch/e34_generate.sh "olmo2_7b=allenai/OLMo-2-1124-7B-Instruct qwen3_8b=Qwen/Qwen3-8B \
+  mistral_7b=mistralai/Mistral-7B-Instruct-v0.3 granite3_8b=ibm-granite/granite-3.3-8b-instruct"
+GPU_UTIL=0.5 QUANT=fp8 bash code/launch/e34_generate.sh "olmo2_32b=allenai/OLMo-2-0325-32B-Instruct"
+cd code && python -m audit.frames e34 && python -m audit.frames llm && cd ..
+# CF on the control frames, tau, H33-1, E35 (waits for fold 4), then CF on every E34 answer
+bash code/launch/e33_post.sh
+(cd code && python -m audit.infer_cf --batch 16 --frames llm)
+# ZS: the 27B zero-shot over nine labels on every E34 answer and on the Presidents' train answers
+GPU=<id> bash code/launch/e34_zs.sh llm e34zs_taxonomy
+GPU=<id> bash code/launch/e34_zs.sh train e35zs_taxonomy
+
+# Analyses (CPU, from code/, CLARITY_E25_DIR set as above)
+python -m audit.cf_tau                                  # C33 checks, tau -> raw/E33_checks.txt
+python -m preregistered_analyses.e33_llm_swap           # H33-1
+python -m preregistered_analyses.e34_analysis dev       # the discovery estimate
+python -m preregistered_analyses.e34_analysis train     # H34-1..6, H33-2, robustness (~30 min; byte-identical on rerun)
+python -m preregistered_analyses.e35_binding            # E35, H35-1
+python -m preregistered_analyses.e35x_exploratory       # E35x (post hoc)
+python -m preregistered_analyses.e36_drivers            # E36 (exploratory)
+python -m preregistered_analyses.e36x_you               # E36x (post hoc)
+python -m preregistered_analyses.paper_facts
+python -m figures.paper_figures_v3 && python -m figures.paper_figures_v2 && python -m figures.paper_example_frames
+```

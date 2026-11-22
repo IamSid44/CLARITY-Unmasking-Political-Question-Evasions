@@ -1,7 +1,11 @@
 # CLARITY: Unmasking Political Question Evasions
 
-**SemEval-2026 Task 6.** A confidence-routed cascade for classifying evasion in political interviews, and what
-it measures: whether evasion lies in the question or in the person answering.
+**SemEval-2026 Task 6.** A confidence-routed cascade for classifying evasion in political interviews, a
+counterfactual test of whether it reads the question, and what it then measures.
+
+> **Thesis.** Evasion is not a property of an answer but of a question–answer pair under a role. Classifiers can be
+> checked for this with counterfactual question interventions, and a classifier that passes reveals that *who* is
+> asked changes *which* questions get evaded.
 
 Vidvathama R, Siddarth Gottumukkula, Sanjana Reddy Vonteri, Shashikanta Sahoo (Team Nier_ANLP)<br>
 Advanced NLP course project, International Institute of Information Technology, Hyderabad
@@ -19,24 +23,37 @@ Subtask 2 assigns one of nine evasion types (Explicit, Implicit, Dodging, Genera
 Declining to answer, Claims ignorance, Clarification); Subtask 1 groups them into three clarity levels (Clear
 Reply, Ambivalent, Clear Non-Reply). Scoring is macro-F1, where a prediction counts if any annotator gave it.
 
-The project has three parts, each prompted by the one before:
+The project has five parts, each prompted by the one before:
 
 1. **Building an instrument (E0–E23).** On DeBERTa-v3-large, architectural changes (hierarchical heads,
    rebalancing losses, specialist experts, re-rankers, model soups) did not help. Changing only the backbone to
    Qwen3-8B + LoRA gained more than all of them combined (+0.092 per model, 10/10 seeds). That classifier
-   *ranks* better than it *decides* (an acceptable label is in its top 3 for 93% of items), so a 27B LLM picks
+   *ranks* better than it *decides* (an acceptable label is in its top 3 for 92.5% of items), so a 27B LLM picks
    among its top four candidates, only for the least confident 30% of items.
 2. **What the instrument measures (E24–E25).** One answer often serves several sub-questions, and its label
    changes with the question far more often than annotator noise explains: **evasion is a relation**. The
    instrument reads the question causally (an answer paired with an unrelated question stops being a Clear
    Reply: 25% → 1%). Putting the Presidents' questions to LLMs shows that a model with no stake does not evade
    where the Presidents did, but in the President's role it answers directly the questions the Presidents
-   answered directly (exploratory, OR 2.74). This suggests a question-side prior (M5) as future work.
+   answered directly (exploratory, OR 2.74).
 3. **Making it cheaper (E26).** FP8 (native tensor cores, unfused activation quantization) and NF4 versions of
    the classifier were not faster as implemented. With frozen parameters FP8 costs the classifier 0.045 S2 and
    the full cascade 0.003.
+4. **Closing the loop (E27–E32).** A one-command counterfactual validity battery (`python -m audit.validity_battery`)
+   for any question–answer classifier; registered tests of the modules the earlier results suggested. The no-question
+   contrast (M0, E27) and the question-side prior (M5, E29) failed, and the suspected "sibling contamination" error mode
+   (E28) was below a proper null. The role effect held under length, question-prior and prompt controls (E31) and in
+   OLMo-2 for the President's role (E32, OR 2.90), but a registered companion criterion failed, so it stays exploratory.
+5. **A registered confirmation (E33–E36).** The role effect, so far seen only on dev, was registered and tested on
+   the 248 train interviews dev never saw (2,858 sub-questions; five open LLMs; analyst, press secretary, unnamed
+   President, named President), labelled by a classifier cross-fitted by interview and by a 27B zero-shot classifier.
+   It held at a smaller size: ratio of odds ratios 1.25 [1.09, 1.43] (2.27 on dev), clearly in two of three models.
+   The press secretary (1.34) and an unnamed President (1.22) show it too, so it belongs to the position, not the
+   person. Sibling binding catches a classifier that ignores the question but did not rank two that read it.
+   Details: [`docs/findings.md` §6c](docs/findings.md#6c-part-v-the-registered-confirmation-e33e36).
 
-Every hypothesis was registered before its run, every change was compared against a named control on paired
+Every hypothesis was registered before its run (the dev discovery of the role effect was not, and is marked
+exploratory), every change was compared against a named control on paired
 seeds, and every reported number traces to a script and a raw output file.
 
 ## Results (dev, 308 items)
@@ -64,6 +81,17 @@ measured on one GPU in one session over the same 308 items (`docs/raw/cost_same_
 | Does the President's role matter? (E25b, exploratory) | — | same questions evaded, OR 2.74 [1.87, 4.17] |
 | Does pursuit work on LLMs? (E25b) | ≥ 50% of evasions become replies when pressed | **held:** 66% |
 | Does the cascade absorb FP8 error? (E26) | ≥ 50% of M1's flips on deferred items, fewer system flips | **held:** 71%; system −0.003 vs M1 −0.045 |
+| Does subtracting the no-question view help? (E27, M0) | S2 +0.010, interval above 0 | **failed:** −0.017 [−0.046, −0.002] |
+| Do errors take a sibling's label? (E28) | above a length-matched permutation null, every system | **failed:** below the null for all five |
+| Does a question-side prior help? (E29, M5) | S2 or S1 up, interval above 0 | **failed:** weight 0 in every fold |
+| Does every model pass the validity battery? (E30) | fine-tuned classifiers pass the swap; binding orders probe > DeBERTa > M1 | **held**; a zero-shot 27B passes the swap too, so binding is the discriminating test |
+| Is the role effect robust? (E31) | OR(P) ≥ 1.5 under length, prior and prompt controls | **held:** 2.72–2.89 |
+| Does it replicate in OLMo-2? (E32) | OR(P) ≥ 1.5, OR(N) ≤ 1.3 | **mixed:** OR(P) 2.90 (three families pooled 2.81) held; OR(N) 1.37 failed → still exploratory |
+| Is the cross-fitted classifier sound, and does it read the question on LLM text? (E33) | folds disjoint by interview, dev S2 ≥ 0.50, Clear-Reply share halves under a swap | **held:** S2 0.547; 0.418 → 0 (analyst), 0.530 → 0 (President) |
+| Does the role effect hold on 248 unseen interviews? (E34, H34-1) | ROR P/N > 1 pooled and in 2 of 3 models | **held:** 1.25 [1.09, 1.43]; second classifier 1.22 |
+| Press secretary / unnamed President / named vs press secretary (E34) | ROR > 1 / > 1 / ≠ 1 | **held** 1.34 / **held** 1.22 / **failed** 0.93 |
+| Does it hold in Granite-3.3-8B and OLMo-2-32B? (E34) | ROR P/N > 1 in each | **failed:** 1.19, 1.08 |
+| Does binding rank classifiers at equal accuracy? (E35) | CF below ZS, interval excludes 0 | **failed:** −0.015 [−0.104, +0.038] |
 
 <p align="center">
   <img src="docs/figures/E25_audit.png" alt="Evasion rate of two LLMs under four conditions against the Presidents' rate" width="560">
