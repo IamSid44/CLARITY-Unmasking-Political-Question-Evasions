@@ -11,10 +11,19 @@ __pycache__/
 # run outputs: probabilities, metrics, configs, LLM records and labels are tracked. Model weights, the Hub
 # download cache and E25's hidden states (158 MB) are on Hugging Face only.
 *.safetensors
+model.pt
 adapters_*.tgz
 runs/.cache/
 runs/**/.hf_pushed
 runs/E25/hidden/*.npy
+# E34's files over 50 MB are on Hugging Face only (E34/, M3/e34zs_taxonomy/); so are CF's adapters and epochs
+runs/E34/answers.jsonl
+runs/E34/frames/llm.parquet
+runs/E34/.gpu0_done
+runs/M3/e34zs_taxonomy/responses.jsonl
+runs/E33_cf_url/*/epochs/
+runs/E33_cf_url/*/adapter_best/
+runs/E33_cf_url/*/wandb_id.txt
 wandb/
 
 # packaging: submission zips and the cloud code bundle built by launch/jarvis_setup.sh

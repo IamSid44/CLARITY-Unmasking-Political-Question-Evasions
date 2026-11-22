@@ -34,6 +34,7 @@ __all__ = [
     "SPLIT_SEED",
     "stratified_val_index",
     "stratified_fold_index",
+    "grouped_fold_index",
 ]
 
 HF_REPO: Final[str] = "ailsntua/QEvasion"
@@ -97,6 +98,17 @@ def stratified_fold_index(y: np.ndarray, n_folds: int, fold: int, seed: int = SP
         rng.shuffle(rows)
         assign[rows] = np.arange(len(rows)) % n_folds
     return np.sort(np.where(assign == fold)[0])
+
+
+def grouped_fold_index(y: np.ndarray, groups: np.ndarray, n_folds: int, fold: int, seed: int = SPLIT_SEED) -> np.ndarray:
+    """Rows of fold `fold` under a K-fold partition that keeps every group (interview url) in one fold and is
+    stratified by label as far as the groups allow (E33: cross-fitting without leakage through sibling
+    sub-questions or other turns of the same interview). Fixed by `seed`."""
+    from sklearn.model_selection import StratifiedGroupKFold
+
+    folds = list(StratifiedGroupKFold(n_splits=n_folds, shuffle=True, random_state=seed).split(
+        np.zeros(len(y)), y, groups))
+    return np.sort(folds[fold][1])
 
 
 def load_qevasion(cache_dir: str | Path | None = DATA_CACHE) -> QEvasionSplits:

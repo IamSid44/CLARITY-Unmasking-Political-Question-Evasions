@@ -17,8 +17,8 @@ import torch
 import torch.nn.functional as F
 
 from qevasion.labels import EVASION_LABELS, N_EVASION, encode_clarity, encode_evasion, leaf_to_official_clarity
-from qevasion.loader import (DATA_CACHE, SPLIT_SEED, dev_reference_mask, load_qevasion, stratified_fold_index,
-                             stratified_val_index)
+from qevasion.loader import (DATA_CACHE, SPLIT_SEED, dev_reference_mask, grouped_fold_index, load_qevasion,
+                             stratified_fold_index, stratified_val_index)
 from qevasion.paths import RUNS, SPLITS, TEST_CSV
 from qevasion.scoring import macro_f1_single_label, score_subtask1, score_subtask2
 
@@ -46,6 +46,7 @@ class Cfg:
     val_frac: float = 0.1
     fold: int = -1
     n_folds: int = 5
+    group_by: str = ""  # E33: train column whose values never straddle folds (e.g. "url"); "" = label-stratified folds
     select: str = "best"
     dtype: str = "bf16"
     device: str = "cuda"
@@ -185,11 +186,17 @@ def run(cfg: Cfg, outroot: Path) -> None:
         # last epoch is kept. Same partition as encoder.py --fold (stratified, SPLIT_SEED).
         if cfg.select != "last":
             raise SystemExit("--fold needs --select last (selecting on the held-out fold would leak)")
-        val_idx = stratified_fold_index(y, cfg.n_folds, cfg.fold, SPLIT_SEED)
-        frozen = SPLITS / "train_5fold.json"
-        if cfg.n_folds == 5 and frozen.exists():
+        if cfg.group_by:
+            groups = train[cfg.group_by].astype(str).to_numpy()
+            val_idx = grouped_fold_index(y, groups, cfg.n_folds, cfg.fold, SPLIT_SEED)
+            frozen = SPLITS / f"train_{cfg.n_folds}fold_{cfg.group_by}.json"
+            assert not set(groups[val_idx]) & set(np.delete(groups, val_idx)), f"{cfg.group_by} straddles folds"
+        else:
+            val_idx = stratified_fold_index(y, cfg.n_folds, cfg.fold, SPLIT_SEED)
+            frozen = SPLITS / "train_5fold.json"
+        if (cfg.n_folds == 5 or cfg.group_by) and frozen.exists():
             assert np.array_equal(val_idx, np.array(json.loads(frozen.read_text())["folds"][cfg.fold])), \
-                "fold differs from data/splits/train_5fold.json"
+                f"fold differs from {frozen}"
     elif cfg.val_frac > 0:
         val_idx = stratified_val_index(y, cfg.val_frac, SPLIT_SEED)
     else:

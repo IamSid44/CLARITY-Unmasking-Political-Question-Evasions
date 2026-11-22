@@ -26,17 +26,17 @@ import numpy as np
 
 from qevasion.labels import N_EVASION, encode_evasion
 from qevasion.loader import DATA_CACHE, load_qevasion
-from qevasion.paths import ROOT, RUNS
+from qevasion.paths import E25_DIR, M3_TAG_PREFIX, ROOT, RUNS
 
 FROZEN = ROOT / "code" / "experiments" / "e25" / "frozen_system.json"
 M1 = "Q8_fullq_lora_12ep"
 DELTA = 0.3
 ORDERS = ("taxonomy", "shift1", "shift2", "shift3")
-E25 = RUNS / "E25"
+E25 = E25_DIR
 
 
 def tag_of(order: str) -> str:
-    return f"e25_{order}"
+    return f"{M3_TAG_PREFIX}_{order}"
 
 
 def prior() -> np.ndarray:

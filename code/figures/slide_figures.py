@@ -503,6 +503,91 @@ def precision() -> None:
     save(fig, "s_precision")
 
 
+# ------------------------------------------------------------------------------------------------ E27-E32 (paper)
+def battery() -> None:
+    """E30 (runs/E30/battery.json, audit.validity_battery): Clear-Reply share per frame, one marker per classifier."""
+    B = json.loads((RUNS / "E30" / "battery.json").read_text())
+    frames = [("dev_own", "own\nquestion"), ("dev_rand", "another\ninterview's"), ("dev_null", "no\nquestion"),
+              ("dev_qonly", "contentless\nanswer")]
+    systems = [(k, v) for k, v in B.items() if not k.startswith("_")]
+    style = {"M1": ("s", "white"), "frozen": ("o", NAVY), "deberta": ("^", MID), "zeroshot": ("D", "white")}
+    fig, ax = plt.subplots(figsize=(3.4, 2.0))
+    for i, (name, r) in enumerate(systems):
+        key = "frozen" if name.startswith("frozen") else ("M1" if name.startswith("M1") else ("zeroshot" if "zeroshot" in name else "deberta"))
+        mk, fc = style[key]
+        xs = np.arange(len(frames)) + (i - (len(systems) - 1) / 2) * 0.16
+        ys = [r[f]["cr"] if f in r else np.nan for f, _ in frames]
+        ax.plot(xs, ys, marker=mk, ms=4.6, mfc=fc, mec=NAVY if key != "deberta" else INK, mew=0.9, ls="none",
+                label=name.replace(" (Qwen3-8B LoRA, 10 seeds)", "").replace("frozen instrument (M1 + 27B)", "instrument")
+                .replace("deberta", "DeBERTa").replace("llm27b_zeroshot (1 seeds)", "27B zero-shot"))
+    ax.axhline(B["_gold_cr"], color=INK, lw=0.6, ls="--")
+    ax.text(1.0, B["_gold_cr"] + 0.02, f"Presidents (gold) {B['_gold_cr']:.0%}", ha="center", va="bottom", fontsize=6.8)
+    ax.set_xticks(range(len(frames)), [n for _, n in frames])
+    ax.tick_params(axis="x", labelsize=7)
+    ax.set_ylim(0, 0.85)
+    ax.set_yticks([0, 0.25, 0.5, 0.75], ["0", "25%", "50%", "75%"])
+    ax.set_ylabel("Clear-Reply share (dev)")
+    ax.legend(loc="upper left", fontsize=6.8, handletextpad=0.2, borderaxespad=0.1)
+    title(ax, "Same answers, the question changed")
+    save(fig, "s_battery")
+
+
+def contamination() -> None:
+    """E28 (runs/E28/contamination.json): share of errors on shared answers that take a sibling's label, against the
+    length-matched permutation null and the uniform chance of the preliminary check."""
+    R = json.loads((RUNS / "E28" / "contamination.json").read_text())
+    names = [("DeBERTa-v3-large (10 seeds)", "DeBERTa"), ("M1 (10 seeds)", "M1"), ("M4 student (10 seeds)", "student"),
+             ("27B alone over M1's top-4", "27B alone"), ("frozen cascade (E23 instrument)", "instrument")]
+    fig, ax = plt.subplots(figsize=(3.3, 1.9))
+    y = np.arange(len(names))[::-1]
+    for yi, (k, lab) in zip(y, names):
+        r = R[k]
+        ax.plot(r["ci"], [yi, yi], color=MID, lw=0.8)
+        ax.plot([r["rate"]], [yi], "o", ms=5, mfc=NAVY if lab == "instrument" else INK, mec="none")
+        ax.plot([r["perm_mean"]], [yi], "|", ms=9, mew=1.6, color=NAVY)
+        ax.plot([r["uniform"]], [yi], "|", ms=7, mew=1.0, color=LIGHT)
+    ax.set_yticks(y, [lab for _, lab in names])
+    ax.set_xlim(0.1, 0.55)
+    ax.set_xticks([0.2, 0.3, 0.4, 0.5], ["20%", "30%", "40%", "50%"])
+    ax.plot([], [], "o", ms=5, color=INK, label="errors with a sibling's label")
+    ax.plot([], [], "|", ms=9, mew=1.6, color=NAVY, label="length-matched null")
+    ax.plot([], [], "|", ms=7, mew=1.0, color=LIGHT, label="uniform chance")
+    ax.legend(loc="upper center", bbox_to_anchor=(0.42, -0.12), ncol=3, fontsize=6.4, handletextpad=0.2, columnspacing=0.8)
+    title(ax, "Errors are not borrowed from siblings")
+    save(fig, "s_contamination")
+
+
+def role_robust() -> None:
+    """E31 (runs/E31/role_robustness.json) and, if present, E32 (runs/E32/analysis.json): odds ratio of an LLM
+    evading where the President evaded, in N and P, under each registered specification."""
+    R = json.loads((RUNS / "E31" / "role_robustness.json").read_text())
+    specs = [("a raw", "raw"), ("b MH length terciles", "length strata"), ("d (c) + question prior", "+ question prior"),
+             ("e raw, no 'nan' answers", "without 'nan' answers"), ("f raw, President by instrument", "President by instrument")]
+    rows = [(lab, R["N"][s]["pooled"], R["P"][s]["pooled"]) for s, lab in specs]
+    e32 = RUNS / "E32" / "analysis.json"
+    if e32.exists():
+        A = json.loads(e32.read_text())
+        if "or" in A and "olmo2_7b" in A["or"]:
+            rows.append(("OLMo-2 (E32)", A["or"]["olmo2_7b"]["N"], A["or"]["olmo2_7b"]["P"]))
+    fig, ax = plt.subplots(figsize=(3.3, 2.0))
+    y = np.arange(len(rows))[::-1].astype(float)
+    for yi, (lab, n, p_) in zip(y, rows):
+        for r, col, dy in ((n, MID, 0.14), (p_, NAVY, -0.14)):
+            ax.plot(r["ci"], [yi + dy] * 2, color=col, lw=0.9)
+            ax.plot([r["or"]], [yi + dy], "o", ms=4.4, color=col)
+    ax.axvline(1, color=INK, lw=0.6, ls="--")
+    ax.set_xscale("log")
+    ax.set_xticks([0.5, 1, 2, 4, 8], ["0.5", "1", "2", "4", "8"])
+    ax.minorticks_off()
+    ax.set_yticks(y, [lab for lab, *_ in rows])
+    ax.plot([], [], "o", ms=4.4, color=MID, label="neutral analyst (N)")
+    ax.plot([], [], "o", ms=4.4, color=NAVY, label="as President (P)")
+    ax.legend(loc="upper center", bbox_to_anchor=(0.3, -0.22), ncol=2, fontsize=6.6, handletextpad=0.2)
+    ax.set_xlabel("odds ratio: LLM evades | President evaded")
+    title(ax, "The role effect under registered controls")
+    save(fig, "s_role_robust")
+
+
 def main() -> None:
     R = json.loads((RUNS / "E25" / "analysis.json").read_text())
     changes()
@@ -518,6 +603,9 @@ def main() -> None:
     audit(R)
     shortcut(R)
     precision()
+    battery()
+    contamination()
+    role_robust()
 
 
 if __name__ == "__main__":

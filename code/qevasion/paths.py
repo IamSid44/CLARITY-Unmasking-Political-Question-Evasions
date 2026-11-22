@@ -17,3 +17,6 @@ DOCS: Final[Path] = ROOT / "docs"
 RAW: Final[Path] = DOCS / "raw"
 FIGURES: Final[Path] = DOCS / "figures"
 REPORT_FIGURES: Final[Path] = ROOT / "report" / "latex" / "figures"
+# E25-style audits (audit/, cascade.exemplars): E32 points these at runs/E32 and its own 27B tags
+E25_DIR: Final[Path] = Path(os.environ.get("CLARITY_E25_DIR", RUNS / "E25"))
+M3_TAG_PREFIX: Final[str] = os.environ.get("CLARITY_M3_PREFIX", "e25")

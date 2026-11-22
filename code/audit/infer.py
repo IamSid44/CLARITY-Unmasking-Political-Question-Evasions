@@ -23,11 +23,11 @@ import torch
 
 from models.llm_classifier import Cfg, encode_df, predict
 from qevasion.labels import N_EVASION
-from qevasion.paths import RUNS
+from qevasion.paths import E25_DIR, RUNS
 
 RUN = "Q8_fullq_lora_12ep"
-FRAMES = RUNS / "E25" / "frames"
-OUT = RUNS / "E25" / "m1"
+FRAMES = E25_DIR / "frames"
+OUT = E25_DIR / "m1"
 
 
 def batch1_latency(model, seqs, pad_id, cfg, n: int = 64) -> dict:

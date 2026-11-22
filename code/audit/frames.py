@@ -33,9 +33,9 @@ import pandas as pd
 
 from qevasion.loader import DATA_CACHE, load_qevasion
 from qevasion.normalize import normalize_answer
-from qevasion.paths import RUNS, TEST_CSV
+from qevasion.paths import E25_DIR, RUNS, TEST_CSV
 
-OUT = RUNS / "E25" / "frames"
+OUT = E25_DIR / "frames"
 KEEP = ["question", "interview_question", "interview_answer", "url", "president", "date"]
 SEED = 25
 PREFIXES = (25, 50, 75)
@@ -125,14 +125,15 @@ def clean(text: str) -> str:
 
 
 def llm() -> None:
-    rows = [json.loads(line) for line in (RUNS / "E25" / "answers.jsonl").read_text().splitlines() if line.strip()]
-    dev = sources()["dev"]
+    rows = [json.loads(line) for line in (E25_DIR / "answers.jsonl").read_text().splitlines() if line.strip()]
+    srcs = {"dev": sources()["dev"], "train": load_qevasion(DATA_CACHE).train.reset_index(drop=True)}
     out = []
     for r in rows:
-        src = dev.iloc[r["src_i"]]
+        src = srcs[r.get("split", "dev")].iloc[r["src_i"]]  # E34: answers to train questions carry split="train"
         out.append({"question": src["question"], "interview_question": src["interview_question"],
                     "interview_answer": clean(r["answer"]), "url": src["url"], "president": src["president"],
-                    "date": src["date"], "src_i": r["src_i"], "model": r["model"], "condition": r["condition"],
+                    "date": src["date"], "split": r.get("split", "dev"), "src_i": r["src_i"], "model": r["model"],
+                    "condition": r["condition"],
                     "raw_answer": r["answer"], "finish": r.get("finish", ""), "n_words": len(clean(r["answer"]).split())})
     df = pd.DataFrame(out)
     empty = (df["n_words"] == 0).sum()
@@ -143,11 +144,35 @@ def llm() -> None:
           f"per model x condition:\n{df.groupby(['model', 'condition']).size().unstack()}")
 
 
+def e34() -> None:
+    """E33/E34 frames (CLARITY_E25_DIR=runs/E34): train_own (the Presidents' train answers: the cross-fit control),
+    dev_llm (the three discovery models' dev N and P answers, protocol A, from runs/E32/llm_table.parquet) and
+    dev_llm_rand (the same answers under the E25 dev_rand question swap: H33-1)."""
+    OUT.mkdir(parents=True, exist_ok=True)
+    tr = base(load_qevasion(DATA_CACHE).train)
+    tr["split"] = "train"
+    tr.to_parquet(OUT / "train_own.parquet")
+    t = pd.read_parquet(RUNS / "E32" / "llm_table.parquet")
+    t = t[t["condition"].isin(["N", "P"])].reset_index(drop=True)
+    keep = KEEP + ["src_i", "model", "condition"]
+    d = t[keep].copy()
+    d["split"] = "dev"
+    d.to_parquet(OUT / "dev_llm.parquet")
+    dev = sources()["dev"]
+    rand_i = pd.read_parquet(RUNS / "E25" / "frames" / "dev_rand.parquet").set_index("src_i")["rand_i"]
+    r = d.copy()
+    r["rand_i"] = rand_i.loc[r["src_i"]].to_numpy()
+    r["question"] = dev["question"].to_numpy()[r["rand_i"]]
+    r["interview_question"] = dev["interview_question"].to_numpy()[r["rand_i"]]
+    r.to_parquet(OUT / "dev_llm_rand.parquet")
+    print(f"train_own {len(tr)}, dev_llm {len(d)}, dev_llm_rand {len(r)} -> {OUT}")
+
+
 def main() -> None:
     p = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    p.add_argument("what", choices=("build", "llm"))
+    p.add_argument("what", choices=("build", "llm", "e34"))
     a = p.parse_args()
-    build() if a.what == "build" else llm()
+    {"build": build, "llm": llm, "e34": e34}[a.what]()
 
 
 if __name__ == "__main__":

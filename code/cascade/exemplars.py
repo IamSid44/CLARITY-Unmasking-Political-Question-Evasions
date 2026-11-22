@@ -22,7 +22,7 @@ import pandas as pd
 
 from qevasion.labels import encode_evasion
 from qevasion.loader import DATA_CACHE, load_qevasion
-from qevasion.paths import RUNS, TEST_CSV
+from qevasion.paths import E25_DIR, RUNS, TEST_CSV
 
 EMBED_MODEL = "Qwen/Qwen3-Embedding-0.6B"
 EMB_DIR = RUNS / "M3" / "embeddings"
@@ -32,7 +32,7 @@ def load_frames() -> dict[str, pd.DataFrame]:
     sp = load_qevasion(DATA_CACHE)
     frames = {"train": sp.train, "dev": sp.dev, "test": pd.read_csv(TEST_CSV)}
     # E25: controlled copies of dev/test (question swaps, answer prefixes) and the LLM answers (audit.frames)
-    for p in sorted((RUNS / "E25" / "frames").glob("*.parquet")):
+    for p in sorted((E25_DIR / "frames").glob("*.parquet")):
         frames[p.stem] = pd.read_parquet(p)
     return frames
 
